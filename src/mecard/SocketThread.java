@@ -55,20 +55,24 @@ public class SocketThread extends Thread {
             
             out.writeObject("Connection successful");
             out.flush();
-            System.out.println("server>" + "Connection successful");
+//            System.out.println("server>" + "Connection successful");
             //4. The two parts communicate via the input and output streams
             do
             {
                 try
                 {
                     message = (String) in.readObject();
-                    System.out.println(new Date() + " client>" + message);
+//                    System.out.println(new Date() + " client>" + message);
                     if (message.equals("bye"))
                     {
-                        
                         out.writeObject("bye");
                         out.flush();
-                        System.out.println("server> bye");
+//                        System.out.println("server> bye");
+                    }
+                    else
+                    {
+                        out.writeObject("Hello "+ message);
+                        out.flush();
                     }
                 }
                 catch (ClassNotFoundException ex)
