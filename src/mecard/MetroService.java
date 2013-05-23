@@ -1,37 +1,53 @@
-
 package mecard;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Date;
-//import java.util.Timer;
-//import java.util.TimerTask;
-import org.apache.commons.daemon.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-///**
-// * This class manages the setup, running and tear-down of MeCard's services.
-// * @author metro
-// */
-//class EchoTask extends TimerTask
-//{
-//
-//    @Override
-//    public void run()
-//    {
-//        System.out.println(new Date() + " running ...");
-//    }
-//}
+import org.apache.commons.daemon.*;
 
 public class MetroService implements Daemon
 {
-
-//    private static Timer timer = null;
-    private static MetroServer server = null;
+    private static ServerSocket serverSocket = null;
+    private static boolean listening = true;
 
     public static void main(String[] args)
     {
-        if (server == null)
+        try
         {
-            server = new MetroServer();
-            server.run();
+            serverSocket = new ServerSocket(2004);
+        }
+        catch (IOException ex)
+        {
+            String msg = "Could not listen on port: 2004.";
+//            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+            System.out.println(new Date() + msg);
+        }
+
+        while (listening)
+        {
+            try
+            {
+                new SocketThread(serverSocket.accept()).start();
+            }
+            catch (IOException ex)
+            {
+                String msg = "unable to start server socket; either accept or start failed.";
+//            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+                System.out.println(new Date() + msg);
+            }
+        }
+        try
+        {
+            serverSocket.close();
+        }
+        catch (IOException ex)
+        {
+            String msg = "failed to close the server socket.";
+//            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+            System.out.println(new Date() + msg);
         }
     }
 
@@ -45,6 +61,7 @@ public class MetroService implements Daemon
     public void start() throws Exception
     {
         System.out.println(new Date() + " starting service...");
+        // Get and parse, test port number.
         main(null);
     }
 

@@ -33,9 +33,13 @@ public class MetroClient
     ObjectOutputStream out;
     ObjectInputStream in;
     String message;
+    public static int HIGHEST;
+    int myNumber;
 
     MetroClient()
     {
+        HIGHEST += 1;
+        myNumber = HIGHEST;
     }
 
     void run()
@@ -56,7 +60,7 @@ public class MetroClient
                 {
                     message = (String) in.readObject();
                     System.out.println("server>" + message);
-                    sendMessage("Hi my server");
+                    sendMessage("Hi server, I am client '"+String.valueOf(myNumber)+"'");
                     message = "bye";
                     sendMessage(message);
                 }
@@ -107,7 +111,9 @@ public class MetroClient
 
     public static void main(String args[])
     {
-        MetroClient client = new MetroClient();
-        client.run();
+        MetroClient client1 = new MetroClient();
+        MetroClient client2 = new MetroClient();
+        client1.run();
+        client2.run();
     }
 }

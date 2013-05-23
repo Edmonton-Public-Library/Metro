@@ -11,18 +11,17 @@ import static org.junit.Assert.*;
  *
  * @author metro
  */
-public class MetroServerTest
+public class SocketServerTest
 {
     
-    private static MetroServer server;
-    public MetroServerTest()
+    private static SocketThread server;
+    public SocketServerTest()
     {
-        server = new MetroServer();
-        server.run();
+        fail("Not implemented yet.");
     }
 
     /**
-     * Test of run method, of class MetroServer.
+     * Test of run method, of class SocketThread.
      */
     @Test
     public void testRun()
@@ -34,28 +33,28 @@ public class MetroServerTest
     }
 
 //    /**
-//     * Test of sendMessage method, of class MetroServer.
+//     * Test of sendMessage method, of class SocketThread.
 //     */
 //    @Test
 //    public void testSendMessage()
 //    {
 //        System.out.println("sendMessage");
 //        String msg = "";
-//        MetroServer instance = new MetroServer();
+//        SocketThread instance = new SocketThread();
 //        instance.sendMessage(msg);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of main method, of class MetroServer.
+//     * Test of main method, of class SocketThread.
 //     */
 //    @Test
 //    public void testMain()
 //    {
 //        System.out.println("main");
 //        String[] args = null;
-//        MetroServer.main(args);
+//        SocketThread.main(args);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }

@@ -25,28 +25,28 @@ import java.util.Date;
  *
  * @author metro
  */
-public class MetroServer
-{
-
-    private ServerSocket providerSocket;
+public class SocketThread extends Thread {
     private Socket connection = null;
+
+    public SocketThread(Socket socket) 
+    {
+	super("MetroSocket");
+	this.connection = socket;
+    }
+
+//    private Socket connection = null;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private String message;
 
-    public MetroServer()
-    {
-    }
 
-    void run()
+    @Override
+    public void run()
     {
         try
         {
-            //1. creating a server socket
-            providerSocket = new ServerSocket(2004, 10);
             //2. Wait for connection
             System.out.println(new Date() + " Waiting for connection");
-            connection = providerSocket.accept();
             System.out.println(new Date() + " Connection received from " + connection.getInetAddress().getHostName());
             //3. get Input and Output streams
             out = new ObjectOutputStream(connection.getOutputStream());
@@ -91,7 +91,7 @@ public class MetroServer
             {
                 in.close();
                 out.close();
-                providerSocket.close();
+                connection.close();
                 System.out.println(new Date() + " transaction completed.");
             }
             catch (IOException ex)
