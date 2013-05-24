@@ -7,7 +7,6 @@ package mecard;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 
@@ -25,20 +24,21 @@ import java.util.Date;
  *
  * @author metro
  */
-public class SocketThread extends Thread {
+public class SocketThread extends Thread
+{
+
     private Socket connection = null;
-
-    public SocketThread(Socket socket) 
-    {
-	super("MetroSocket");
-	this.connection = socket;
-    }
-
-//    private Socket connection = null;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private String message;
+    private final Protocol protocol;
 
+    public SocketThread(Socket socket)
+    {
+        super("MetroSocket");
+        this.connection = socket;
+        protocol = new Protocol();
+    }
 
     @Override
     public void run()
@@ -52,37 +52,33 @@ public class SocketThread extends Thread {
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
             in = new ObjectInputStream(connection.getInputStream());
-            
-            out.writeObject("Connection successful");
-            out.flush();
-//            System.out.println("server>" + "Connection successful");
+            sendMessage(Protocol.ACKNOWLEDGE);
             //4. The two parts communicate via the input and output streams
             do
             {
                 try
                 {
                     message = (String) in.readObject();
-//                    System.out.println(new Date() + " client>" + message);
-                    if (message.equals("bye"))
-                    {
-                        out.writeObject("bye");
-                        out.flush();
-//                        System.out.println("server> bye");
-                    }
-                    else
-                    {
-                        out.writeObject("Hello "+ message);
-                        out.flush();
-                    }
                 }
                 catch (ClassNotFoundException ex)
                 {
-                    System.err.println(new Date() + " Data received in unknown "
-                            + "format " + ex.getMessage());
+                    System.err.println(new Date() + " received unknown object "
+                            + ex.getMessage());
                 }
                 
+                if (message.equals(Protocol.TERMINATE))
+                {
+                    sendMessage(Protocol.TERMINATE);
+                }
+                else
+                {
+                    String response = protocol.processInput(message);
+                    sendMessage(response);
+                }
+
+
             }
-            while (!message.equals("bye"));
+            while (!message.equals(Protocol.TERMINATE));
         }
         catch (IOException ex)
         {
@@ -107,6 +103,20 @@ public class SocketThread extends Thread {
                 System.err.println(new Date() + " can't close the server's "
                         + "listening socket, was it ever open? " + ex.getMessage());
             }
+        }
+    }
+
+    private void sendMessage(String msg)
+    {
+        try
+        {
+            out.writeObject(msg);
+            out.flush();
+//            System.out.println("client>" + msg);
+        }
+        catch (IOException ioException)
+        {
+            ioException.printStackTrace();
         }
     }
 }
