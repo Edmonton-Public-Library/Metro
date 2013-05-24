@@ -18,6 +18,8 @@ package mecard;
 
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
+import mecard.responder.CreateCustomerResponder;
+import mecard.responder.Responder;
 import mecard.security.SecurityManager;
 
 /**
@@ -34,14 +36,16 @@ import mecard.security.SecurityManager;
  */
 public class Protocol
 {
-
     public final static String DELIMITER   = "|";
     public final static String TERMINATE   = "XX0" + DELIMITER;
     public final static String ACKNOWLEDGE = "XK0" + DELIMITER;
+    public final static String ERROR       = "XE0" + DELIMITER;
+    
+    private Responder responder;
+    private ResponseTypes state;
 
     public Protocol()
-    {
-    }
+    {  }
 
     /**
      * Checks incoming commands to the server, parses what the command is and
@@ -52,25 +56,27 @@ public class Protocol
      */
     public String processInput(String cmd)
     {
-        StringBuilder response = new StringBuilder();
+        String response = "";
         String command = SecurityManager.unEncrypt(cmd);
 
         switch (getCommand(command))
         {
             case CREATE_CUSTOMER:
-                response.append("Customer created.");
+                responder = new CreateCustomerResponder(command);
+                response = responder.getResponse();
+                state = responder.getState();
                 break;
             case GET_CUSTOMER:
-                response.append("Customer got.");
+                response = "Customer got.";
                 break;
             case GET_STATUS:
-                response.append("Status OK.");
+                response = "Status OK.";
                 break;
             case UPDATE_CUSTOMER:
-                response.append("Customer Updated.");
+                response = "Customer Updated.";
                 break;
             default:
-                response.append("An error occured.");
+                response = "An error occured.";
                 break;
         }
 

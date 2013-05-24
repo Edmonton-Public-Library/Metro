@@ -65,7 +65,7 @@ public class SocketThread extends Thread
                     System.err.println(new Date() + " received unknown object "
                             + ex.getMessage());
                 }
-                
+                // Catch any protocol related strings, the rest are commands.
                 if (message.equals(Protocol.TERMINATE))
                 {
                     sendMessage(Protocol.TERMINATE);
@@ -106,17 +106,22 @@ public class SocketThread extends Thread
         }
     }
 
+    /**
+     * Helper method to handle writing to stream and any exceptions that may
+     * have been generated.
+     * @param msg 
+     */
     private void sendMessage(String msg)
     {
         try
         {
             out.writeObject(msg);
             out.flush();
-//            System.out.println("client>" + msg);
         }
-        catch (IOException ioException)
+        catch (IOException ex)
         {
-            ioException.printStackTrace();
+            System.err.println(new Date() + " IO error while sending message '"
+                   + msg + "' " + ex.getMessage());
         }
     }
 }

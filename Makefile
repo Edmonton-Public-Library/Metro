@@ -30,4 +30,4 @@ test_it: client
 #	tail ${OUT}.out
 #	echo "==="
 #	tail ${OUT}.err
-	netstat -an | grep 2004
+	-netstat -an | grep 2004

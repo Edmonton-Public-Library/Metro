@@ -12,15 +12,13 @@ public enum ResponseTypes
 {
     ERROR("RA9"), // Command was received but failed to execute
     // either it was malformed, empty (null), or not supported.
-    STATUS_READY("RA0"),
-    STATUS_NOT_READY("RA1"),
-    STATUS_BUSY("RA2"),
-    CUSTOMER_EXISTS("RB0"),
-    CUSTOMER_NOT_EXIST("RB1"),
-    CUSTOMER_CREATED("RC0"),
-    CUSTOMER_NOT_CREATED("RC1"),
-    CUSTOMER_UPDATED("RD0"),
-    CUSTOMER_NOT_UPDATED("RD1");
+    INIT("RA0"),
+    OK("RA1"),
+    BUSY("RA2"),
+    UNAVAILABLE("RA3"),
+    SUCCESS("RA4"),
+    FAIL("RA5"),
+    UNAUTHORIZED("RA6");
     
     private String type;
     

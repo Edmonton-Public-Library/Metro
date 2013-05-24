@@ -15,33 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package mecard.security;
+package mecard.responder;
+
+import mecard.ResponseTypes;
 
 /**
  *
  * @author metro
  */
-public final class SecurityManager 
+public class CreateCustomerResponder extends Responder
 {
-    private SecurityManager()
-    { }
-    
-    public static final boolean isAuthorized(String token)
+    public CreateCustomerResponder(String cmd)
     {
-        // TODO get the MD5 hash of the password from config file and compare
-        // the two strings.
-        return true;
+        super(cmd);
+        this.state = ResponseTypes.BUSY;
+        this.command = splitCommand(cmd);
     }
-    
-    public static final String encrypt(String input)
+
+    @Override
+    public String getResponse()
     {
-        // TODO add encryption as time permits.
-        return input.toString();
-    }
-    
-    public static final String unEncrypt(String input)
-    {
-        // TODO add encryption as time permits.
-        return input;
+        this.state = ResponseTypes.SUCCESS;
+        return pack(response);
     }
 }

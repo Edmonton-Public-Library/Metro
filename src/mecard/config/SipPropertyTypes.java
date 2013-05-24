@@ -14,34 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package mecard.security;
+package mecard.config;
 
 /**
- *
+ * Mandatory properties of the sip2_config.xml file. Any entries added here 
+ * will be validated when the config file is read.
  * @author metro
  */
-public final class SecurityManager 
+enum SipPropertyTypes
 {
-    private SecurityManager()
-    { }
-    
-    public static final boolean isAuthorized(String token)
+
+    HOST("host"),
+    PORT("port");
+    private String type;
+
+    private SipPropertyTypes(String s)
     {
-        // TODO get the MD5 hash of the password from config file and compare
-        // the two strings.
-        return true;
+        this.type = s;
     }
-    
-    public static final String encrypt(String input)
+
+    @Override
+    public String toString()
     {
-        // TODO add encryption as time permits.
-        return input.toString();
-    }
-    
-    public static final String unEncrypt(String input)
-    {
-        // TODO add encryption as time permits.
-        return input;
+        return this.type;
     }
 }
