@@ -28,7 +28,7 @@ import java.net.UnknownHostException;
  */
 public class MetroClient
 {
-    private static int MAX_CLIENTS = 7000;
+    private static int MAX_CLIENTS = 90;
 
     Socket requestSocket;
     ObjectOutputStream out;
@@ -61,10 +61,10 @@ public class MetroClient
                 {
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    sendMessage("client '"+String.valueOf(myNumber)+"'");
+                    sendMessage("QA0|");
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    message = "bye";
+                    message = "XX0|";
                     sendMessage(message);
                     
                 }
@@ -73,7 +73,7 @@ public class MetroClient
                     System.err.println("data received in unknown format");
                 }
             }
-            while (!message.equals("bye"));
+            while (!message.equals("XX0|"));
         }
         catch (UnknownHostException unknownHost)
         {
