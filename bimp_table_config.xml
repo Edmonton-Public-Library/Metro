@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bimport>
+    <table name="borrower">
+        <column customerField="ID">second_id</column>
+        <column customerField="NAME">name</column>
+        <column customerField="PRIVILEGE_EXPIRES">expiration_date</column>
+        <column customerField="PIN">pin</column>
+    </table>
+    <table name="borrower_phone">
+        <column customerField="DEFAULT">phone_type</column>
+        <column customerField="PHONE">phone_no</column>
+    </table>
+    <table name="borrower_address">
+        <column customerField="STREET">address1</column>
+        <column customerField="DEFAULT">address2</column>
+        <column customerField="CITY">city_st</column>
+        <column customerField="POSTALCODE">postal_code</column>
+        <column customerField="EMAIL">email_name</column>
+    </table>
+    <table name="borrower_barcode">
+        <column customerField="ID">bbarcode</column>
+    </table>
+</bimport>

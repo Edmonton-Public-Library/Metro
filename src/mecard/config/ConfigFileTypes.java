@@ -28,5 +28,7 @@ public enum ConfigFileTypes
 {
     DEFAULT_CREATE,
     ENVIRONMENT, 
-    SIP2;
+    SIP2,
+    BIMPORT,
+    API;
 }

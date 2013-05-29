@@ -18,8 +18,14 @@ package mecard;
 
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
-import mecard.responder.CreateCustomerResponder;
-import mecard.responder.Responder;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.responder.BImportResponder;
+import mecard.responder.ResponderMethodTypes;
+import mecard.responder.ResponderStrategy;
+import mecard.responder.SIP2Responder;
+import mecard.responder.APIResponder;
 import mecard.security.SecurityManager;
 
 /**
@@ -40,9 +46,6 @@ public class Protocol
     public final static String TERMINATE   = "XX0" + DELIMITER;
     public final static String ACKNOWLEDGE = "XK0" + DELIMITER;
     public final static String ERROR       = "XE0" + DELIMITER;
-    
-    private Responder responder;
-    private ResponseTypes state;
 
     public Protocol()
     {  }
@@ -56,34 +59,13 @@ public class Protocol
      */
     public String processInput(String cmd)
     {
-        String response = "";
         String command = SecurityManager.unEncrypt(cmd);
-
-        switch (getCommand(command))
-        {
-            case CREATE_CUSTOMER:
-                responder = new CreateCustomerResponder(command);
-                response = responder.getResponse();
-                state = responder.getState();
-                break;
-            case GET_CUSTOMER:
-                response = "Customer got.";
-                break;
-            case GET_STATUS:
-                response = "Status OK.";
-                break;
-            case UPDATE_CUSTOMER:
-                response = "Customer Updated.";
-                break;
-            default:
-                response = "An error occured.";
-                break;
-        }
-
+        ResponderStrategy responder = getResponder(command);
+        String response = responder.getResponse();
         return SecurityManager.encrypt(response);
     }
 
-    protected QueryTypes getCommand(String cmd)
+    public static QueryTypes getCommand(String cmd)
             throws MalformedCommandException, UnsupportedCommandException
     {
         if (cmd == null || cmd.length() == 0)
@@ -98,5 +80,72 @@ public class Protocol
             }
         }
         throw new UnsupportedCommandException();
+    }
+
+    /**
+     *
+     *
+     * @param command the value of command
+     */
+    protected ResponderStrategy getResponder(String command)
+    {
+        QueryTypes queryType = getCommand(command);
+        String serviceType = "";
+        switch (queryType)
+        {
+            case CREATE_CUSTOMER:
+                serviceType = PropertyReader.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
+                return mapResponderType(serviceType, command);
+            case UPDATE_CUSTOMER:
+                serviceType = PropertyReader.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
+                return mapResponderType(serviceType, command);
+            case GET_STATUS:
+                serviceType = PropertyReader.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
+                return mapResponderType(serviceType, command);
+            case GET_CUSTOMER:
+                serviceType = PropertyReader.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
+                return mapResponderType(serviceType, command);
+            default:
+                throw new UnsupportedCommandException(); 
+        }
+    }
+    
+    /**
+     * Creates the appropriate responder based on what string value was entered
+     * in the environment configuration file.
+     * @param configRequestedService
+     * @param command
+     * @return
+     * @throws UnsupportedCommandException 
+     */
+    private ResponderStrategy mapResponderType(
+            String configRequestedService,
+            String command)
+        throws UnsupportedCommandException
+    {
+        if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
+        {
+            return new BImportResponder(command);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
+        {
+            return new SIP2Responder(command);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.LOCAL_CALL.toString()))
+        {
+            return new APIResponder(command);
+        }
+        else
+        {
+            throw new UnsupportedCommandException();
+        }
     }
 }

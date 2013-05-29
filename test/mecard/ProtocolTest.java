@@ -6,6 +6,10 @@ package mecard;
 
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
+import mecard.responder.APIResponder;
+import mecard.responder.BImportResponder;
+import mecard.responder.ResponderStrategy;
+import mecard.responder.SIP2Responder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -78,5 +82,53 @@ public class ProtocolTest
             System.out.println("Successfully thrown exception");
         }
        
+    }
+
+    /**
+     * Test of processInput method, of class Protocol.
+     */
+    @Test
+    public void testProcessInput()
+    {
+        System.out.println("=== processInput ===");
+        // QueryTypes.CREATE_CUSTOMER;
+        String cmd = "QC0";
+        Protocol instance = new Protocol();
+        String expResult = "RA4|hello world|";
+        String result = instance.processInput(cmd);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getResponder method, of class Protocol.
+     */
+    @Test
+    public void testGetResponder()
+    {
+        System.out.println("=== getResponder These tests depend on contents of env_config.xml ===");
+        
+        // QueryTypes.GET_STATUS;
+        String command = "QA0";
+        Protocol instance = new Protocol();
+        ResponderStrategy result = instance.getResponder(command);
+        assertTrue(result instanceof SIP2Responder);
+        
+        // QueryTypes.GET_CUSTOMER;
+        command = "QB0";
+        instance = new Protocol();
+        result = instance.getResponder(command);
+        assertTrue(result instanceof BImportResponder);
+        
+        // QueryTypes.CREATE_CUSTOMER;
+        command = "QC0";
+        instance = new Protocol();
+        result = instance.getResponder(command);
+        assertTrue(result instanceof BImportResponder);
+        
+        // QueryTypes.UPDATE_CUSTOMER;
+        command = "QD0";
+        instance = new Protocol();
+        result = instance.getResponder(command);
+        assertTrue(result instanceof APIResponder);
     }
 }

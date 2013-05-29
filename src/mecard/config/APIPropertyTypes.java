@@ -14,28 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package mecard.responder;
-
-import mecard.ResponseTypes;
+package mecard.config;
 
 /**
  *
  * @author metro
  */
-public class CreateCustomerResponder extends Responder
+public enum APIPropertyTypes
 {
-    public CreateCustomerResponder(String cmd)
+    CREATE_CMD("create-customer"),
+    UPDATE_CMD("update-customer"),
+    GET_USER_CMD("get-customer"),
+    TEST_CMD("ils-status");
+    
+    private String type;
+
+    private APIPropertyTypes(String s)
     {
-        super(cmd);
-        this.state = ResponseTypes.BUSY;
-        this.command = splitCommand(cmd);
+        this.type = s;
     }
 
     @Override
-    public String getResponse()
+    public String toString()
     {
-        this.state = ResponseTypes.SUCCESS;
-        return pack(response);
+        return this.type;
     }
 }

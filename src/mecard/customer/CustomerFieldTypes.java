@@ -1,0 +1,74 @@
+/**
+*
+* This class is part of the Metro, MeCard project.
+*    Copyright (C) 2013  Andrew Nisbet, Edmonton public Library.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+* MA 02110-1301, USA.
+*
+*/
+
+package mecard.customer;
+
+/**
+ *
+ * @author metro
+ */
+public enum CustomerFieldTypes
+{
+    // Note to programmer: The order of these is important for the Customer
+    // class that uses the order in its @Customer#toString method. That in turn
+    // is used for creating the customer's MD5 finger print. We use that for
+    // determining if the the customer account has changed.
+    ID(0), 
+    PIN(1),
+    NAME(2),
+    STREET(3), 
+    CITY(4), 
+    PROVINCE(5), 
+    POSTALCODE(6),
+    GENDER(7), 
+    EMAIL(8), 
+    PHONE(9),
+    DOB(10), 
+    PRIVILEGE_EXPIRES(11),
+    RESERVED(12),
+    DEFAULT(13);
+    
+    private int type;
+    
+    private CustomerFieldTypes(int type)
+    {
+        this.type = type;
+    }
+    
+    private CustomerFieldTypes(String type)
+    {
+        for (CustomerFieldTypes cType : CustomerFieldTypes.values())
+        {
+            if (type.equalsIgnoreCase(cType.name()))
+            {
+                this.type = cType.ordinal();
+                break;
+            }
+        }
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.name();
+    }
+}
