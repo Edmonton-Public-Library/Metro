@@ -34,10 +34,10 @@ import mecard.util.BImportBat;
 public class BImportResponder extends ResponderStrategy
 {
     // Use this to prefix all our files.
-    protected final static String FILE_NAME_PREFIX = "metro-";
-    protected final static String BAT_FILE = "-bimp.bat";
-    protected final static String HEADER_FILE = "-header.txt";
-    protected final static String DATA_FILE   = "-data.txt";
+    public final static String FILE_NAME_PREFIX = "metro-";
+    public final static String BAT_FILE = "-bimp.bat";
+    public final static String HEADER_FILE = "-header.txt";
+    public final static String DATA_FILE   = "-data.txt";
     private String bimportDir;
     private String serverName;
     private String password;

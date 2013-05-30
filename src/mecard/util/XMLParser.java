@@ -31,13 +31,17 @@ import org.w3c.dom.NodeList;
  * Reads XML files.
  *
  * @author metro
+ * @deprecated 
  */
 public class XMLParser
 {
 
     private HashMap<String, EnumMap<CustomerFieldTypes, String>> tables;
 //    private EnumMap<CustomerFieldTypes, String> stateMap;
-
+    /**
+     * @deprecated 
+     * @param xmlFilePath 
+     */
     public XMLParser(String xmlFilePath)
     {
         tables = new HashMap<String, EnumMap<CustomerFieldTypes, String>>();

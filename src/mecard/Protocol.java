@@ -32,8 +32,7 @@ import mecard.security.SecurityManager;
  * Responsible for interpreting incoming MeCard requests.
  *
  * The language is loosely based on SIP but it IS NOT SIP in any way. The
- * command structure has pipe-delimited fields. Each command is terminated with
- * a '\r' character, typically:
+ * command structure has pipe-delimited fields. Typically:
  * <code>QA0|dfae434324354asdfa344|</code><br/>
  * The second field is a MD5 computed hash of the command, salted with a shared
  * secret, to ensure the authenticity of the request.
