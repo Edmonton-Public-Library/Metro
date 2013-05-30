@@ -96,9 +96,12 @@ public class BImportResponder extends ResponderStrategy
         StringBuffer responseBuffer = new StringBuffer();
         switch(this.cmdType)
         {
-            case CREATE_CUSTOMER: // Customers are added if not exist and modified if they do.
+            case CREATE_CUSTOMER:
+                this.state = createCustomer(responseBuffer);
+                this.response.add(responseBuffer.toString());
+                break;
             case UPDATE_CUSTOMER:
-                this.state = addModifyCustomer(responseBuffer);
+                this.state = updateCustomer(responseBuffer);
                 this.response.add(responseBuffer.toString());
                 break;
             default:
@@ -109,7 +112,14 @@ public class BImportResponder extends ResponderStrategy
         return pack(response);
     }
     
-    protected ResponseTypes addModifyCustomer(StringBuffer responseBuffer)
+    protected ResponseTypes createCustomer(StringBuffer responseBuffer)
+    {
+        // create header file.
+        
+        return ResponseTypes.SUCCESS;
+    }
+    
+    protected ResponseTypes updateCustomer(StringBuffer responseBuffer)
     {
         return ResponseTypes.SUCCESS;
     }

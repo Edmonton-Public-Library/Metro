@@ -37,12 +37,10 @@ public class XMLParser
 
     private HashMap<String, EnumMap<CustomerFieldTypes, String>> tables;
 //    private EnumMap<CustomerFieldTypes, String> stateMap;
-    private EnumMap<CustomerFieldTypes, String> currentTable;
+
     public XMLParser(String xmlFilePath)
     {
         tables = new HashMap<String, EnumMap<CustomerFieldTypes, String>>();
-        currentTable = 
-                new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
         try
         {
             File file = new File(xmlFilePath);
@@ -63,7 +61,8 @@ public class XMLParser
 
     private void printNote(NodeList nodeList)
     {
-        
+        EnumMap<CustomerFieldTypes, String> currentTable =
+                new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
         for (int count = 0; count < nodeList.getLength(); count++)
         {
             Node tempNode = nodeList.item(count);
@@ -77,8 +76,7 @@ public class XMLParser
 //                    System.out.print("\nTable '" + nodeName + "'");
 //                    System.out.println(", value ='" + tempNode.getTextContent() + "'");
                     String tableName = getFirstAttribute(tempNode);
-                    // TODO Huh? Why don't these values get placed on the list.
-                    System.out.println("Found: "+tableName+" sieze:"+currentTable.size());
+                    System.out.println("Found: "+tableName);
                     this.tables.put(tableName, currentTable);
                     currentTable = new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
                 }
@@ -90,7 +88,7 @@ public class XMLParser
                         CustomerFieldTypes fieldType = getFieldType(nodeAttrib);
                         String value = tempNode.getFirstChild().getNodeValue();
                         currentTable.put(fieldType, value);
-                        System.out.println(fieldType.toString() + ", size="+ currentTable.size());
+                        System.out.println(fieldType.toString());
                         System.out.println("column name=" + nodeAttrib + " goes in column "+value);
                     }
                 }

@@ -35,7 +35,7 @@ public class XMLParserTest
     @Test
     public void testGetTables()
     {
-        System.out.println("\n==getTables==");
+        System.out.println("==getTables==");
         XMLParser instance = new XMLParser("bimp_table_config.xml");
         HashMap<String, EnumMap<CustomerFieldTypes, String>> result = instance.getTables();
         System.out.println("size = "+result.size());

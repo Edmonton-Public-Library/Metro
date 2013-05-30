@@ -54,17 +54,17 @@ public enum CustomerFieldTypes
         this.type = type;
     }
     
-//    private CustomerFieldTypes(String type)
-//    {
-//        for (CustomerFieldTypes cType : CustomerFieldTypes.values())
-//        {
-//            if (type.equalsIgnoreCase(cType.name()))
-//            {
-//                this.type = cType.ordinal();
-//                break;
-//            }
-//        }
-//    }
+    private CustomerFieldTypes(String type)
+    {
+        for (CustomerFieldTypes cType : CustomerFieldTypes.values())
+        {
+            if (type.equalsIgnoreCase(cType.name()))
+            {
+                this.type = cType.ordinal();
+                break;
+            }
+        }
+    }
     
     @Override
     public String toString()

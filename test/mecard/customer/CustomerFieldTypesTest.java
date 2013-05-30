@@ -43,7 +43,7 @@ public class CustomerFieldTypesTest
         CustomerFieldTypes expResult = CustomerFieldTypes.STREET;
         CustomerFieldTypes result = CustomerFieldTypes.valueOf(name);
         assertEquals(expResult, result);
-
+        
     }
 
     /**
