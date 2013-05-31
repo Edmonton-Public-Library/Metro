@@ -23,6 +23,8 @@ package mecard.config;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -194,6 +196,31 @@ public class PropertyReader
                 throw new UnsupportedOperationException("unsupported property file");
         }
     }
+    
+    /**
+     * Loads properties from the a given config file and updating an existing
+     * property Map or inserts if the values don't exist.
+     *
+     * @see Command
+     * @param props
+     * @param type
+     */
+    public static void augmentProperties(Map<String, String> props, ConfigFileTypes type)
+    {
+        if (props == null)
+        {
+            return;
+        }
+        Properties localProps = PropertyReader.getProperties(type);
+        Enumeration em = localProps.keys();
+        while (em.hasMoreElements())
+        {
+            String key = (String) em.nextElement();
+//            System.out.println("Key:" + key + " value:" + localProps.getProperty(key, ""));
+            props.put(key, (String) localProps.getProperty(key, ""));
+        }
+    }
+
 
     private static Properties readProperties(String whichFile)
             throws FileNotFoundException

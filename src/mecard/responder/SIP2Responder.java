@@ -18,7 +18,6 @@ public class SIP2Responder extends ResponderStrategy
     {
         super(command);
         this.state = ResponseTypes.BUSY;
-        this.command = splitCommand(command);
     }
 
     @Override

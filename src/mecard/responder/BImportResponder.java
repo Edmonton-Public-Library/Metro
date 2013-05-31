@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package mecard.responder;
 
 import java.io.File;
@@ -23,21 +22,24 @@ import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
+import mecard.customer.MeCard2BImportFormatter;
 import mecard.util.BImportBat;
 
 /**
  * BImport responder has special capabilities to write files to the local file
  * system and then execute local commands against that file.
+ *
  * @since 1.1
  * @author metro
  */
 public class BImportResponder extends ResponderStrategy
 {
     // Use this to prefix all our files.
+
     public final static String FILE_NAME_PREFIX = "metro-";
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
-    public final static String DATA_FILE   = "-data.txt";
+    public final static String DATA_FILE = "-data.txt";
     private String bimportDir;
     private String serverName;
     private String password;
@@ -50,7 +52,6 @@ public class BImportResponder extends ResponderStrategy
     private String location; // branch? see 'lalap'
     private String isIndexed; // "y = NOT indexed"
     private String bimpTableFile; // location of the bimport table config XML file.
-    
     private String batFile;
     private String headerFile;
     private String dataFile;
@@ -59,7 +60,6 @@ public class BImportResponder extends ResponderStrategy
     {
         super(cmd);
         this.state = ResponseTypes.BUSY;
-        this.command = splitCommand(cmd);
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
@@ -73,19 +73,19 @@ public class BImportResponder extends ResponderStrategy
         location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
         isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
         bimpTableFile = bimpProps.getProperty(BImportPropertyTypes.TABLE_CONFIG.toString());
-        
+
         // compute header and data file names.
-        batFile    = bimportDir+File.pathSeparator+FILE_NAME_PREFIX+getTransactionId()+BAT_FILE;
-        headerFile = bimportDir+File.pathSeparator+FILE_NAME_PREFIX+getTransactionId()+HEADER_FILE;
-        dataFile   = bimportDir+File.pathSeparator+FILE_NAME_PREFIX+getTransactionId()+DATA_FILE;
-        
+        batFile = bimportDir + File.pathSeparator + FILE_NAME_PREFIX + this.transactionId + BAT_FILE;
+        headerFile = bimportDir + File.pathSeparator + FILE_NAME_PREFIX + this.transactionId + HEADER_FILE;
+        dataFile = bimportDir + File.pathSeparator + FILE_NAME_PREFIX + this.transactionId + DATA_FILE;
+
         // create the bat file.
         new BImportBat.Builder(batFile).server(serverName).password(password)
-            .user(userName).database(database)
+                .user(userName).database(database)
                 .header(headerFile).data(dataFile)
-            .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
-            .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
-            .build();
+                .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
+                .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
+                .build();
     }
 
     @Override
@@ -94,46 +94,33 @@ public class BImportResponder extends ResponderStrategy
         // test for the operations that this responder is capable of performing
         // SIP can't create customers, BImport can't query customers.
         StringBuffer responseBuffer = new StringBuffer();
-        switch(this.cmdType)
+        switch (this.cmdType)
         {
             case CREATE_CUSTOMER:
-                this.state = createCustomer(responseBuffer);
-                this.response.add(responseBuffer.toString());
-                break;
             case UPDATE_CUSTOMER:
-                this.state = updateCustomer(responseBuffer);
-                this.response.add(responseBuffer.toString());
+//                this.state = submitCustomer(responseBuffer);
+//                this.response.add(responseBuffer.toString());
+                this.state = ResponseTypes.OK;
+                this.response.add("Hello World");
                 break;
             default:
                 this.state = ResponseTypes.ERROR;
-                this.response.add(BImportResponder.class.getName() + 
-                        " cannot " + this.cmdType.toString());
+                this.response.add(BImportResponder.class.getName()
+                        + " cannot " + this.cmdType.toString());
         }
         return pack(response);
     }
-    
-    protected ResponseTypes createCustomer(StringBuffer responseBuffer)
-    {
-        // create header file.
-        
-        return ResponseTypes.SUCCESS;
-    }
-    
-    protected ResponseTypes updateCustomer(StringBuffer responseBuffer)
-    {
-        return ResponseTypes.SUCCESS;
-    }
 
-    /**
-     * Returns a unique id of the transaction. Each customer has one so each
-     * transaction is unique and each set of files won't clobber any other
-     * BImportResponder thread.
-     * @return the transaction id, which is the second field of the request,
-     * which in-turn is a hash of the customer's account salted with the metro
-     * server's id.
-     */
-    private String getTransactionId()
+    protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
     {
-        return this.command.get(1);
+        // take the commandArguments, format them to bimport files
+        MeCard2BImportFormatter formatter = new MeCard2BImportFormatter();
+//        SubmitableCustomer customer = formatter.convert();
+//        Command command = new Command(someCommand);
+//        if (command.execute(customer))
+//        {
+//            return ResponseTypes.SUCCESS;
+//        }
+        return ResponseTypes.FAIL;
     }
 }

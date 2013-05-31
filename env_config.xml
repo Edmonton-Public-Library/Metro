@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>
+    Policies for EPL - There can only be one comment per entry
+    api key for EPL 55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d
+    api key for STRATH 0NZFWdQRu2Zw5TS6KdLZkxrINDQlqqbz
+    api key for STALBERT Gw5009Kc7kf412epGC3pyVS3CRndArlo
+    api key for FORTSASK 97fhl4aoVVzGrp106Z8wdfj6iMa61qyB
+</comment>
+<entry key="library-code">EPL</entry>
+<entry key="api-key">55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d</entry>
+<entry key="debug">true</entry>
+<entry key="path">:/s/sirsi/Unicorn/Bincustom:/s/sirsi/Unicorn/Bin:/s/sirsi/Unicorn/Search/Bin:/usr/bin</entry>
+<entry key="upath">/s/sirsi/Unicorn/Config/upath</entry>
+<entry key="working-directory">./</entry>
+<entry key="status-protocol">sip2</entry>
+<entry key="get-protocol">bimport</entry>
+<entry key="update-protocol">api</entry>
+<entry key="create-protocol">bimport</entry>
+<entry key="config-directory">./</entry>
+<entry key="user-name">sirsi</entry>
+<entry key="password">[unset password]</entry>
+</properties>

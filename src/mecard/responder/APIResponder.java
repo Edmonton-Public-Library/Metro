@@ -18,7 +18,6 @@ public class APIResponder extends ResponderStrategy
     {
         super(command);
         this.state = ResponseTypes.BUSY;
-        this.command = splitCommand(command);
     }
 
     @Override

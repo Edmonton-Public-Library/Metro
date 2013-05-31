@@ -16,7 +16,9 @@ import mecard.ResponseTypes;
  */
 public abstract class ResponderStrategy
 {
-    protected List<String> command;
+    protected String queryCode;
+    protected String transactionId;
+    protected List<String> commandArguments;
     protected List<String> response;
     protected ResponseTypes state;
     protected final String originalCommand;
@@ -25,23 +27,26 @@ public abstract class ResponderStrategy
     protected ResponderStrategy(String cmd)
     {
         this.state = ResponseTypes.INIT;
-        this.command = new ArrayList<String>();
+        this.commandArguments = splitCommand(cmd);
+        this.queryCode = this.commandArguments.remove(0); // remove the request code
+        this.transactionId = this.commandArguments.remove(0); // remove the transaction id.
+        // what's left is the command args (which may be none).
         this.response= new ArrayList<String>();
         this.originalCommand = cmd;
         this.cmdType = Protocol.getCommand(cmd);
     }
     
     /**
-     * Split the command on the Protocol's delimiter breaking the command 
-     * into chunks. The first element on the list is the command itself which
+     * Split the commandArguments on the Protocol's delimiter breaking the commandArguments 
+     * into chunks. The first element on the list is the commandArguments itself which
      * can be ignored since it was already dealt with when this object was 
      * created. The second is the MD5 hash of the query salted with the senders 
      * shared secret. The rest of the elements (if any) are arguments to the 
-     * command.
+     * commandArguments.
      * @param cmd
      * @return 
      */
-    protected static final List<String> splitCommand(String cmd)
+    private static List<String> splitCommand(String cmd)
     {
         List<String> args = new ArrayList<String>();
         for (String s: cmd.split("|"))
