@@ -33,7 +33,8 @@ public enum LibraryPropertyTypes
     CREATE_SERVICE("create-protocol"),
     API_KEY("api-key"),
     LIBRARY_CODE("library-code"),
-    DEBUG("debug");
+    DEBUG("debug"), 
+    DATE_FORMAT("date-format");
     
     private String type;
     private LibraryPropertyTypes(String s)

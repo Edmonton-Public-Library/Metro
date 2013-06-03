@@ -34,7 +34,7 @@ public enum CustomerFieldTypes
     // determining if the the customer account has changed.
     ID(0), 
     PIN(1),
-    NAME(2),
+    NAME(2),  // last name first name comma-separated.
     STREET(3), 
     CITY(4), 
     PROVINCE(5), 
@@ -44,8 +44,14 @@ public enum CustomerFieldTypes
     PHONE(9),
     DOB(10), 
     PRIVILEGE_EXPIRES(11),
-    RESERVED(12),
-    DEFAULT(13);
+    RESERVED(12), // General field can be used for what ever, currently empty.
+    DEFAULT(13), // Used for fields that can remain empty like 'province' on Horizon.
+    ISVALID(14), // start of flagged fields. This one means the host library has all customer information.
+    ISMINAGE(15),
+    ISRECIPROCAL(16),
+    ISRESIDENT(17),
+    ISGOODSTANDING(18),
+    ISLOSTCARD(19);
     
     private int type;
     

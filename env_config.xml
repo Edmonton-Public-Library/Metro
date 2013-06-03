@@ -12,14 +12,13 @@
 <entry key="library-code">EPL</entry>
 <entry key="api-key">55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d</entry>
 <entry key="debug">true</entry>
-<entry key="path">:/s/sirsi/Unicorn/Bincustom:/s/sirsi/Unicorn/Bin:/s/sirsi/Unicorn/Search/Bin:/usr/bin</entry>
-<entry key="upath">/s/sirsi/Unicorn/Config/upath</entry>
-<entry key="working-directory">./</entry>
+<entry key="working-directory">/home/metro/bimport</entry>
 <entry key="status-protocol">sip2</entry>
-<entry key="get-protocol">bimport</entry>
+<entry key="get-protocol">sip2</entry>
 <entry key="update-protocol">api</entry>
 <entry key="create-protocol">bimport</entry>
 <entry key="config-directory">./</entry>
 <entry key="user-name">sirsi</entry>
 <entry key="password">[unset password]</entry>
+<entry key="date-format">yyyy-MM-dd</entry>
 </properties>

@@ -7,7 +7,7 @@ package mecard.util;
 import mecard.ResponseTypes;
 
 
-class ProcessWatcherHandler
+public class ProcessWatcherHandler
 {
     private ResponseTypes status;
     private StringBuffer stdout;
@@ -52,15 +52,18 @@ class ProcessWatcherHandler
         this.status = ResponseTypes.ERROR;
     }
 
-    ResponseTypes getStatus() {
+    public ResponseTypes getStatus() 
+    {
         return status;
     }
 
-    String getStdout() {
+    public String getStdout() 
+    {
         return stdout.toString();
     }
 
-    String getStderr() {
+    public String getStderr() 
+    {
         return stderr.toString();
     }
 }

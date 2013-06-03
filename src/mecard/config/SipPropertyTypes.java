@@ -21,7 +21,7 @@ package mecard.config;
  * will be validated when the config file is read.
  * @author metro
  */
-enum SipPropertyTypes
+public enum SipPropertyTypes
 {
 
     HOST("host"),

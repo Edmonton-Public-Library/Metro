@@ -28,7 +28,7 @@ import java.net.UnknownHostException;
  */
 public class MetroClient
 {
-    private static int MAX_CLIENTS = 90;
+    private static int MAX_CLIENTS = 9;
 
     Socket requestSocket;
     ObjectOutputStream out;
@@ -61,12 +61,11 @@ public class MetroClient
                 {
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    sendMessage("QA0|");
+                    sendMessage("QB0|1234567891abcdef|"); // getcustomer
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
                     message = "XX0|";
                     sendMessage(message);
-                    
                 }
                 catch (ClassNotFoundException classNot)
                 {

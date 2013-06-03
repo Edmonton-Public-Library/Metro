@@ -32,10 +32,12 @@ public class BImportBat
 
     private final String fileName;
     private File file;
+    private StringBuilder fileContent;
+    private boolean isDebugMode;
 
     public static class Builder
     {
-        private final String fileName;
+        private String fileName;
         private String user;
         private String server;
         private String password;
@@ -48,10 +50,32 @@ public class BImportBat
         private String mType;
         private String location;
         private boolean isIndexed;
+        private boolean isRunAsBatchFile;
+        private String bimportPath = "bimport";
+        private boolean isDebugMode;
 
+        public Builder()
+        {
+            this.fileName = "obsolete.bat";
+            this.isRunAsBatchFile = false;
+        }
+        
         public Builder(String fileName)
         {
             this.fileName = fileName;
+            this.isRunAsBatchFile = true;
+        }
+        
+        public Builder setBimportPath(String p)
+        {
+            this.bimportPath = p;
+            return this;
+        }
+        
+        public Builder setDebug(boolean b)
+        {
+            this.isDebugMode = b;
+            return this;
         }
         
         public Builder setIndexed(boolean i)
@@ -139,8 +163,9 @@ public class BImportBat
 
     private BImportBat(Builder b)
     {
-        StringBuilder fileContent = new StringBuilder();
-        fileContent.append("bimport");
+        isDebugMode = b.isDebugMode;
+        fileContent = new StringBuilder();
+        fileContent.append(b.bimportPath);
         if (b.server != null)
         {
             fileContent.append("/s");
@@ -200,28 +225,57 @@ public class BImportBat
         {
             fileContent.append("/y");
         }
-        this.fileName = b.fileName;
-        // test if this file exists and if it does, delete it and create a new
-        // one with the values required.
-        this.file = new File(fileName);
-        if (file.exists())
+        
+        // do we need to output as a batch file or command line args?
+        fileName = b.fileName; // regardless ensure the file name is initialized.
+        if (b.isRunAsBatchFile)
         {
-            file.delete();
+            // test if this file exists and if it does, delete it and create a new
+            // one with the values required.
+            this.file = new File(fileName);
+            if (file.exists())
+            {
+                file.delete();
+            }
+            // create a new one.
+            file = new File(fileName);
+            BufferedWriter bWriter;
+            try
+            {
+                // write the builder contents to the file with the correct switches.
+                bWriter = new BufferedWriter(new FileWriter(file));
+                bWriter.write(fileContent.toString());
+                bWriter.close();
+            }
+            catch (IOException ex)
+            {
+                String msg = "unable to create bimport bat file.";
+                Logger.getLogger(BImportBat.class.getName()).log(Level.SEVERE, msg, ex);
+            }
         }
-        // create a new one.
-        file = new File(fileName);
-        BufferedWriter bWriter;
-        try
+    }
+    
+    /**
+     * 
+     * @return the name of the batch file.
+     */
+    public String getBatchFileName()
+    {
+        return fileName;
+    }
+    
+    /**
+     * 
+     * @return the command line necessary to run this customer's bimpload.
+     */
+    public String getCommandLine()
+    {
+        if (isDebugMode)
         {
-            // write the builder contents to the file with the correct switches.
-            bWriter = new BufferedWriter(new FileWriter(file));
-            bWriter.write(fileContent.toString());
-            bWriter.close();
+            // my god this is bad: TODO think of something better than this!
+            // there is a shell script in this directory.
+            return "/home/metro/bimport/bimport";
         }
-        catch (IOException ex)
-        {
-            String msg = "unable to create bimport bat file.";
-            Logger.getLogger(BImportBat.class.getName()).log(Level.SEVERE, msg, ex);
-        }
+        return fileContent.toString();
     }
 }

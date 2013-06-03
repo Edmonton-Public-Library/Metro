@@ -45,9 +45,13 @@ public class Protocol
     public final static String TERMINATE   = "XX0" + DELIMITER;
     public final static String ACKNOWLEDGE = "XK0" + DELIMITER;
     public final static String ERROR       = "XE0" + DELIMITER;
-
+    private boolean debugMode;
     public Protocol()
-    {  }
+    { 
+        String debug = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
+                .getProperty(LibraryPropertyTypes.DEBUG.toString());
+        debugMode = Boolean.valueOf(debug);
+    }
 
     /**
      * Checks incoming commands to the server, parses what the command is and
@@ -132,15 +136,15 @@ public class Protocol
     {
         if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
         {
-            return new BImportResponder(command);
+            return new BImportResponder(command, debugMode);
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
         {
-            return new SIP2Responder(command);
+            return new SIP2Responder(command, debugMode);
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.LOCAL_CALL.toString()))
         {
-            return new APIResponder(command);
+            return new APIResponder(command, debugMode);
         }
         else
         {

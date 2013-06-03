@@ -17,13 +17,18 @@
 package mecard.responder;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
-import mecard.customer.MeCard2BImportFormatter;
+import mecard.customer.CustomerFieldTypes;
 import mecard.util.BImportBat;
+import mecard.util.BImportDBFiles;
+import mecard.util.Command;
+import mecard.util.ProcessWatcherHandler;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -51,14 +56,13 @@ public class BImportResponder extends ResponderStrategy
     private String mailType;
     private String location; // branch? see 'lalap'
     private String isIndexed; // "y = NOT indexed"
-    private String bimpTableFile; // location of the bimport table config XML file.
     private String batFile;
     private String headerFile;
     private String dataFile;
 
-    public BImportResponder(String cmd)
+    public BImportResponder(String cmd, boolean debugMode)
     {
-        super(cmd);
+        super(cmd, debugMode);
         this.state = ResponseTypes.BUSY;
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
@@ -72,20 +76,20 @@ public class BImportResponder extends ResponderStrategy
         mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
         location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
         isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
-        bimpTableFile = bimpProps.getProperty(BImportPropertyTypes.TABLE_CONFIG.toString());
-
+        
         // compute header and data file names.
-        batFile = bimportDir + File.pathSeparator + FILE_NAME_PREFIX + this.transactionId + BAT_FILE;
-        headerFile = bimportDir + File.pathSeparator + FILE_NAME_PREFIX + this.transactionId + HEADER_FILE;
-        dataFile = bimportDir + File.pathSeparator + FILE_NAME_PREFIX + this.transactionId + DATA_FILE;
-
-        // create the bat file.
-        new BImportBat.Builder(batFile).server(serverName).password(password)
-                .user(userName).database(database)
-                .header(headerFile).data(dataFile)
-                .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
-                .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
-                .build();
+        String pathSep;
+        if (isDebugMode)
+        {
+            pathSep = "/";
+        }
+        else
+        {
+            pathSep = File.pathSeparator;
+        }
+        batFile = bimportDir + pathSep + FILE_NAME_PREFIX + this.transactionId + BAT_FILE;
+        headerFile = bimportDir + pathSep + FILE_NAME_PREFIX + this.transactionId + HEADER_FILE;
+        dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + this.transactionId + DATA_FILE;
     }
 
     @Override
@@ -98,10 +102,10 @@ public class BImportResponder extends ResponderStrategy
         {
             case CREATE_CUSTOMER:
             case UPDATE_CUSTOMER:
-//                this.state = submitCustomer(responseBuffer);
-//                this.response.add(responseBuffer.toString());
-                this.state = ResponseTypes.OK;
-                this.response.add("Hello World");
+                this.state = submitCustomer(responseBuffer);
+                this.response.add(responseBuffer.toString());
+//                this.state = ResponseTypes.OK;
+//                this.response.add("Hello World");
                 break;
             default:
                 this.state = ResponseTypes.ERROR;
@@ -111,16 +115,95 @@ public class BImportResponder extends ResponderStrategy
         return pack(response);
     }
 
+    /**
+     * Looks confusing but merely converts the customer into a ILS meaningful
+     * expression of some sort (for BImport that's a command line expression or
+     * bat file name), then executes the command.
+     * @param responseBuffer
+     * @return 
+     */
     protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
     {
-        // take the commandArguments, format them to bimport files
-        MeCard2BImportFormatter formatter = new MeCard2BImportFormatter();
-//        SubmitableCustomer customer = formatter.convert();
-//        Command command = new Command(someCommand);
-//        if (command.execute(customer))
-//        {
-//            return ResponseTypes.SUCCESS;
-//        }
+        // take the commandArguments, format them to bimport files, execute
+        // the batch file.
+        List<String> submittableCustomer = new ArrayList<String>();
+        // This test checks if the customer is complete.
+        if (convert(submittableCustomer))
+        {
+            Command command = new Command.Builder().args(submittableCustomer).build();
+            ProcessWatcherHandler status = command.execute();
+            if (status.getStatus() == ResponseTypes.OK)
+            {
+                responseBuffer.append(status.getStdout());
+                return ResponseTypes.SUCCESS;
+            }
+            else
+            {
+                responseBuffer.append(status.getStderr());
+                return ResponseTypes.FAIL;
+            }
+        }
         return ResponseTypes.FAIL;
+    }
+    
+    /**
+     * Splits apart an in-coming request into it's command, checksum and customer
+     * then maps those fields from the string to tables and columns in Horizon.
+     * @param customerCommands
+     * @return true if the customer files (header and data) were created and 
+     * false otherwise.
+     */
+    protected boolean convert(List<String> customerCommands)
+    {
+        // here we have to match up the CustomerFields with variable values.
+        // the constructor will then make the header and data files.
+        new BImportDBFiles.Builder(headerFile, dataFile)
+                .barcode(commandArguments.get(CustomerFieldTypes.ID.ordinal()))
+                .pin(commandArguments.get(CustomerFieldTypes.PIN.ordinal()))
+                .name(commandArguments.get(CustomerFieldTypes.NAME.ordinal()))
+                .address1(commandArguments.get(CustomerFieldTypes.STREET.ordinal()))
+                .city(commandArguments.get(CustomerFieldTypes.CITY.ordinal()))
+                .postalCode(commandArguments.get(CustomerFieldTypes.POSTALCODE.ordinal()))
+                .emailName(computeEmailName(commandArguments.get(CustomerFieldTypes.EMAIL.ordinal())))
+                .email(commandArguments.get(CustomerFieldTypes.EMAIL.ordinal()))
+                .expire(commandArguments.get(CustomerFieldTypes.PRIVILEGE_EXPIRES.ordinal()))
+                .pNumber(commandArguments.get(CustomerFieldTypes.PHONE.ordinal()))
+                .build();
+        File fTest = new File(headerFile);
+        if (fTest.exists() == false)
+        {
+            return false;
+        }
+        fTest = new File(dataFile);
+        if (fTest.exists() == false)
+        {
+            return false;
+        }
+        // load the submittable customer with what you want executed. In bimport's 
+        // case it is the command and arguments for loading the customer or, even
+        // better the commandline itself.
+        // create the bat file.
+        BImportBat batch = new BImportBat.Builder(batFile).server(serverName).password(password)
+                .user(userName).database(database)
+                .header(headerFile).data(dataFile)
+                .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
+                .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
+                .setDebug(isDebugMode)
+                .build();
+        customerCommands.add(batch.getCommandLine());
+        // alternatively:
+        // sc.setCustomerRepresentation(batch.getBatchFileName());
+        return true;
+    }
+
+    /** 
+     * Horizon has an additional required field, email name, which is just the 
+     * user's email name (without the domain). We compute that here.
+     * @param email
+     * @return 
+     */
+    protected String computeEmailName(String email) 
+    {
+        return email.split("@")[0];
     }
 }

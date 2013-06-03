@@ -5,16 +5,15 @@
 <comment>
     BImport settings for Horizon consumers.
 </comment>
-<entry key="directory">C:\\</entry>
-<entry key="server">Horizon</entry>
-<entry key="password">s7addp</entry>
+<entry key="directory">/home/metro/bimport</entry>
+<entry key="server">horizon</entry>
+<entry key="password">sql54200</entry>
 <entry key="user">sa</entry>
-<entry key="database">training</entry>
+<entry key="database">stalbert</entry>
 <entry key="server-alias">second_id</entry>
 <entry key="version">fm41</entry>
 <entry key="btype">bawb</entry>
 <entry key="mail-type">mdom</entry>
 <entry key="location">alap</entry>
 <entry key="indexed">y</entry>
-<entry key="table-config-path">bimp_table_config.xml</entry>
 </properties>

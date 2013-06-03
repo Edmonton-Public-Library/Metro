@@ -23,9 +23,11 @@ public abstract class ResponderStrategy
     protected ResponseTypes state;
     protected final String originalCommand;
     protected final QueryTypes cmdType;
+    protected final boolean isDebugMode;
     
-    protected ResponderStrategy(String cmd)
+    protected ResponderStrategy(String cmd, boolean debugMode)
     {
+        this.isDebugMode = debugMode;
         this.state = ResponseTypes.INIT;
         this.commandArguments = splitCommand(cmd);
         this.queryCode = this.commandArguments.remove(0); // remove the request code
@@ -34,6 +36,15 @@ public abstract class ResponderStrategy
         this.response= new ArrayList<String>();
         this.originalCommand = cmd;
         this.cmdType = Protocol.getCommand(cmd);
+        if (isDebugMode)
+        {
+            System.out.println("CMD:\n  '"+originalCommand+"' '"+cmdType.name()+"'");
+            System.out.println("ELE:");
+            for (String s: commandArguments)
+            {
+                System.out.println("  S:" + s + ",");
+            }
+        }
     }
     
     /**
@@ -49,7 +60,7 @@ public abstract class ResponderStrategy
     private static List<String> splitCommand(String cmd)
     {
         List<String> args = new ArrayList<String>();
-        for (String s: cmd.split("|"))
+        for (String s: cmd.split("\\|"))
         {
             args.add(s);
         }

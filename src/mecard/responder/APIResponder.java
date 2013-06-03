@@ -14,9 +14,9 @@ import mecard.responder.ResponderStrategy;
 public class APIResponder extends ResponderStrategy
 {
 
-    public APIResponder(String command)
+    public APIResponder(String command, boolean debugMode)
     {
-        super(command);
+        super(command, debugMode);
         this.state = ResponseTypes.BUSY;
     }
 

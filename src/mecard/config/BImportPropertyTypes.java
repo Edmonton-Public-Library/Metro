@@ -21,8 +21,8 @@ public enum BImportPropertyTypes
     DEFAULT_BTYPE("btype"), // like bawb
     MAIL_TYPE("mail-type"),
     LOCATION("location"), // Like lalap
-    IS_INDEXED("indexed"), // "y = NOT indexed"
-    TABLE_CONFIG("table-config-path"); // the path to mandatory table column config.
+    IS_INDEXED("indexed"); // "y = NOT indexed"
+//    DATE_FORMAT("date-format"); // the prefered date formatting. now in Environment file.
     
     private String type;
 
