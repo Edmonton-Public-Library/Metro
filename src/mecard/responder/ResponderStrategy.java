@@ -87,6 +87,8 @@ public abstract class ResponderStrategy
     }
 
     public abstract String getResponse();
+    
+//    protected abstract String applyLibraryPolicies();
 
     public ResponseTypes getState()
     {

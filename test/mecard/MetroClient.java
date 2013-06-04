@@ -61,7 +61,7 @@ public class MetroClient
                 {
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    sendMessage("QB0|1234567891abcdef|"); // getcustomer
+                    sendMessage("QA0|1234567891abcdef|"); // getcustomer
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
                     message = "XX0|";

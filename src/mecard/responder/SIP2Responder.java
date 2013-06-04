@@ -17,8 +17,6 @@
 package mecard.responder;
 
 import java.util.Properties;
-import static mecard.QueryTypes.CREATE_CUSTOMER;
-import static mecard.QueryTypes.UPDATE_CUSTOMER;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
@@ -32,7 +30,7 @@ import mecard.config.SipPropertyTypes;
  */
 public class SIP2Responder extends ResponderStrategy
 {
-    private static String host;
+    private final String host;
     private final String port;
     
     public SIP2Responder(String command, boolean debugMode)
@@ -42,7 +40,7 @@ public class SIP2Responder extends ResponderStrategy
         
         Properties sipProps = PropertyReader.getProperties(ConfigFileTypes.SIP2);
         host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
-        port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001");
+        port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001"); // port optional in config.
     }
 
     @Override

@@ -39,6 +39,16 @@ public enum ResponseTypes
         this.type = s;
     }
     
+    public static int size()
+    {
+        int count = 0;
+        for (ResponseTypes r: ResponseTypes.values())
+        {
+            count++;
+        }
+        return count;
+    }
+    
     @Override
     public String toString()
     {

@@ -51,9 +51,21 @@ public enum CustomerFieldTypes
     ISRECIPROCAL(16),
     ISRESIDENT(17),
     ISGOODSTANDING(18),
-    ISLOSTCARD(19);
+    ISLOSTCARD(19),
+    FIRSTNAME(20),
+    LASTNAME(21);
     
     private int type;
+    
+    public static int size()
+    {
+        int count = 0;
+        for (CustomerFieldTypes c: CustomerFieldTypes.values())
+        {
+            count++;
+        }
+        return count;
+    }
     
     private CustomerFieldTypes(int type)
     {
