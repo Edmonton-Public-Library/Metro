@@ -13,46 +13,46 @@ import java.util.List;
  */
 public class ProtocolPayload 
 {
-    protected List<String> response;
+    protected List<String> payload;
     public ProtocolPayload()
     {
-        response = new ArrayList<String>();
+        payload = new ArrayList<String>();
     }
     
     public ProtocolPayload(int expectedSize) 
     {
-        response = new ArrayList<String>(expectedSize);
+        payload = new ArrayList<String>(expectedSize);
         for (int i = 0; i < expectedSize; i++)
         {
-            this.response.add(""); // initialize customer with empty values for all fields.
+            this.payload.add(Protocol.DEFAULT_FIELD); // initialize customer fields.
         }
     }
     
     public int size()
     {
-        return response.size();
+        return payload.size();
     }
     
-    public void addPayload(String s)
+    public void addResponse(String s)
     {
-        this.response.add(s);
+        this.payload.add(s);
     }
     
     public void setPayloadSlot(int pos, String s)
     {
-        this.response.set(pos, s);
+        this.payload.set(pos, s);
     }
     
     public List<String> getPayload()
     {
-        return this.response;
+        return this.payload;
     }
     
     @Override
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        for (String s: response)
+        for (String s: payload)
         {
             sb.append(s);
             sb.append(Protocol.DELIMITER);

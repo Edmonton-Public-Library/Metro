@@ -5,10 +5,6 @@
 package mecard.responder;
 
 import java.io.File;
-import java.util.List;
-import mecard.Protocol;
-import mecard.ResponseTypes;
-import mecard.util.BImportDBFiles;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

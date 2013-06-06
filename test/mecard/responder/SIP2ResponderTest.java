@@ -22,11 +22,27 @@ public class SIP2ResponderTest {
     @Test
     public void testGetResponse() {
         System.out.println("===getResponse===");
-        SIP2Responder instance = null;
-        String expResult = "";
+        String command = "QA0|";
+        SIP2Responder instance = new SIP2Responder(command, true);
+        String expResult = "RA1||";
         String result = instance.getResponse();
+//        System.out.println("RESULT:"+result);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // to test failure you have to edit the sip2_config.xml file.
+        
+        command = "QA0|12345678abcdef|21221012345678|64058|";
+        instance = new SIP2Responder(command, true);
+        expResult = "RA1||";
+        result = instance.getResponse();
+        System.out.println("RESULT:"+result);
+        assertEquals(expResult, result);
+        
+        // Fail because PIN is wrong.
+        command = "QA0|12345678abcdef|21221012345678|1111|";
+        instance = new SIP2Responder(command, true);
+        expResult = "RA5||";
+        result = instance.getResponse();
+        System.out.println("RESULT:"+result);
+        assertEquals(expResult, result);
     }
 }

@@ -17,7 +17,7 @@ public class ProtocolPayloadTest {
     }
 
     /**
-     * Test of addPayload method, of class ProtocolPayload.
+     * Test of addResponse method, of class ProtocolPayload.
      */
     @Test
     public void testSetResponse() {
@@ -69,7 +69,7 @@ public class ProtocolPayloadTest {
         {
             System.out.println("expected exception, now try setResponse()");
         }
-        instance.addPayload(s);
+        instance.addResponse(s);
         System.out.println("RESP:"+instance);
         assertTrue(instance.toString().compareTo("value again|one|two|three|four|five|") == 0);
 

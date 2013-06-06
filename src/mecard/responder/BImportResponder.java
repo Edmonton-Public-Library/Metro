@@ -63,7 +63,7 @@ public class BImportResponder extends ResponderStrategy
     public BImportResponder(String cmd, boolean debugMode)
     {
         super(cmd, debugMode);
-        this.state = ResponseTypes.BUSY;
+        this.response.setCode(ResponseTypes.BUSY);
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
@@ -87,9 +87,10 @@ public class BImportResponder extends ResponderStrategy
         {
             pathSep = File.pathSeparator;
         }
-        batFile = bimportDir + pathSep + FILE_NAME_PREFIX + this.transactionId + BAT_FILE;
-        headerFile = bimportDir + pathSep + FILE_NAME_PREFIX + this.transactionId + HEADER_FILE;
-        dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + this.transactionId + DATA_FILE;
+        String transactionId = this.request.getTransactionId();
+        batFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + BAT_FILE;
+        headerFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
+        dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + DATA_FILE;
     }
 
     @Override
@@ -98,21 +99,21 @@ public class BImportResponder extends ResponderStrategy
         // test for the operations that this responder is capable of performing
         // SIP can't create customers, BImport can't query customers.
         StringBuffer responseBuffer = new StringBuffer();
-        switch (this.cmdType)
+        switch (request.getCommandType())
         {
             case CREATE_CUSTOMER:
             case UPDATE_CUSTOMER:
-                this.state = submitCustomer(responseBuffer);
-                this.response.add(responseBuffer.toString());
+                this.response.setCode(submitCustomer(responseBuffer));
+                this.response.addResponse(responseBuffer.toString());
 //                this.state = ResponseTypes.OK;
 //                this.response.add("Hello World");
                 break;
             default:
-                this.state = ResponseTypes.ERROR;
-                this.response.add(BImportResponder.class.getName()
-                        + " cannot " + this.cmdType.toString());
+                this.response.setCode(ResponseTypes.ERROR);
+                this.response.addResponse(BImportResponder.class.getName()
+                        + " cannot " + request.toString());
         }
-        return pack(response);
+        return response.toString();
     }
 
     /**
@@ -158,16 +159,16 @@ public class BImportResponder extends ResponderStrategy
         // here we have to match up the CustomerFields with variable values.
         // the constructor will then make the header and data files.
         new BImportDBFiles.Builder(headerFile, dataFile)
-                .barcode(commandArguments.get(CustomerFieldTypes.ID.ordinal()))
-                .pin(commandArguments.get(CustomerFieldTypes.PIN.ordinal()))
-                .name(commandArguments.get(CustomerFieldTypes.NAME.ordinal()))
-                .address1(commandArguments.get(CustomerFieldTypes.STREET.ordinal()))
-                .city(commandArguments.get(CustomerFieldTypes.CITY.ordinal()))
-                .postalCode(commandArguments.get(CustomerFieldTypes.POSTALCODE.ordinal()))
-                .emailName(computeEmailName(commandArguments.get(CustomerFieldTypes.EMAIL.ordinal())))
-                .email(commandArguments.get(CustomerFieldTypes.EMAIL.ordinal()))
-                .expire(commandArguments.get(CustomerFieldTypes.PRIVILEGE_EXPIRES.ordinal()))
-                .pNumber(commandArguments.get(CustomerFieldTypes.PHONE.ordinal()))
+                .barcode(request.get(CustomerFieldTypes.ID.ordinal()))
+                .pin(request.get(CustomerFieldTypes.PIN.ordinal()))
+                .name(request.get(CustomerFieldTypes.NAME.ordinal()))
+                .address1(request.get(CustomerFieldTypes.STREET.ordinal()))
+                .city(request.get(CustomerFieldTypes.CITY.ordinal()))
+                .postalCode(request.get(CustomerFieldTypes.POSTALCODE.ordinal()))
+                .emailName(computeEmailName(request.get(CustomerFieldTypes.EMAIL.ordinal())))
+                .email(request.get(CustomerFieldTypes.EMAIL.ordinal()))
+                .expire(request.get(CustomerFieldTypes.PRIVILEGE_EXPIRES.ordinal()))
+                .pNumber(request.get(CustomerFieldTypes.PHONE.ordinal()))
                 .build();
         File fTest = new File(headerFile);
         if (fTest.exists() == false)

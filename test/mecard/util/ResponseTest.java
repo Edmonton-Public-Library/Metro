@@ -5,6 +5,7 @@
 package mecard.util;
 
 import mecard.ResponseTypes;
+import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -24,22 +25,25 @@ public class ResponseTest
     @Test
     public void testSetCode() {
         System.out.println("==setCode==");
-        ResponseTypes code = ResponseTypes.OK;
-        Response instance = new Response(code);
-        assertTrue(instance.toString().equals(ResponseTypes.OK.toString()));
-    }
-
-    /**
-     * Test of addPayload method, of class Response.
-     */
-    @Test
-    public void testSetResponse_String() {
-        System.out.println("==setResponseString==");
-        ResponseTypes code = ResponseTypes.OK;
-        Response instance = new Response(code);
-        instance.addPayload("Did well");
-//        assertTrue(instance.toString().equals(ResponseTypes.OK.toString()));
-        System.out.println("RESP:'"+instance+"'");
+        Response instance = new Response(ResponseTypes.OK);
+//        System.out.println("RESP:"+instance);
+        assertTrue(instance.toString().compareTo("RA1|") == 0);
+        instance = new Response(ResponseTypes.BUSY);
+        assertTrue(instance.toString().compareTo("RA2|") == 0);
+        instance = new Response(ResponseTypes.ERROR);
+        assertTrue(instance.toString().compareTo("RA9|") == 0);
+        instance = new Response(ResponseTypes.FAIL);
+        assertTrue(instance.toString().compareTo("RA5|") == 0);
+        instance = new Response(ResponseTypes.INIT);
+        assertTrue(instance.toString().compareTo("RA0|") == 0);
+        instance = new Response(ResponseTypes.OK);
+        assertTrue(instance.toString().compareTo("RA1|") == 0);
+        instance = new Response(ResponseTypes.SUCCESS);
+        assertTrue(instance.toString().compareTo("RA4|") == 0);
+        instance = new Response(ResponseTypes.UNAVAILABLE);
+        assertTrue(instance.toString().compareTo("RA3|") == 0);
+        instance = new Response(ResponseTypes.UNAUTHORIZED);
+        assertTrue(instance.toString().compareTo("RA6|") == 0);
     }
 
     
@@ -48,13 +52,10 @@ public class ResponseTest
      */
     @Test
     public void testToString() {
-        System.out.println("toString");
-        Response instance = new Response();
-        String expResult = "";
-        String result = instance.toString();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("===toString===");
+        Response instance = new Response(ResponseTypes.OK);
+//        System.out.println("RESP:"+instance);
+        assertTrue(instance.toString().compareTo("RA1|") == 0);
     }
 
     /**
@@ -62,11 +63,28 @@ public class ResponseTest
      */
     @Test
     public void testSetResponse() {
-        System.out.println("setResponse");
-        String value = "";
+        System.out.println("===setResponse===");
+        String value = "test";
+        Response instance = new Response(ResponseTypes.UNAUTHORIZED);
+//        System.out.println("RESP:"+instance);
+        assertTrue(instance.toString().compareTo("RA6|") == 0);
+        
+        instance.setResponse(value);
+//        System.out.println("RESP:"+instance);
+        assertTrue(instance.toString().compareTo("RA6|test|") == 0);
+    }
+
+    /**
+     * Test of setCustomer method, of class Response.
+     */
+    @Test
+    public void testSetCustomer() {
+        System.out.println("===setCustomer===");
+        Customer c = new Customer();
+        c.setName("Billy, Balzac");
         Response instance = new Response();
-        instance.addPayload(value);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.setCustomer(c);
+//        System.out.println("RESP:"+instance);
+        assertTrue(instance.toString().compareTo("RA0|||Billy, Balzac||||||||||||||||||Balzac|Billy|") == 0);
     }
 }

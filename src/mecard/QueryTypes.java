@@ -13,7 +13,8 @@ public enum QueryTypes
     GET_STATUS("QA0"),
     GET_CUSTOMER("QB0"),
     CREATE_CUSTOMER("QC0"),
-    UPDATE_CUSTOMER("QD0");
+    UPDATE_CUSTOMER("QD0"), 
+    NULL("QN0");
     
     private String type;
     

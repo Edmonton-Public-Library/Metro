@@ -42,6 +42,7 @@ import mecard.security.SecurityManager;
 public class Protocol
 {
     public final static String DELIMITER   = "|";
+    public final static String DEFAULT_FIELD = "X";
     public final static String TERMINATE   = "XX0" + DELIMITER;
     public final static String ACKNOWLEDGE = "XK0" + DELIMITER;
     public final static String ERROR       = "XE0" + DELIMITER;

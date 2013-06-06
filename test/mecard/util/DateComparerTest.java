@@ -96,7 +96,7 @@ public class DateComparerTest
     public void testToday()
     {
         System.out.println("today");
-        String expResult = "20130603";
+        String expResult = "20130606";
         String result = DateComparer.today();
 //        System.out.println("RESULT:"+result);
         assertTrue(expResult.compareTo(result) == 0);

@@ -19,30 +19,39 @@
 * MA 02110-1301, USA.
 *
 */
-package mecard.customer;
 
-import java.util.List;
+package mecard.util;
 
 /**
- * This class formats requests and responses to and from the ILS.
+ *
  * @author metro
  */
-public interface CustomerFormatter
+public enum ProvinceType
 {
-    /**
-     * Converts a string from ILS or SIP into a Customer object.
-     * @param list of strings that represent the customer as it would have 
-     * been received from the ILS.
-     * @return true if the conversion was successful and false otherwise.
-     */
-    public Customer getCustomer(List<String> s);
-    /**
-     * Converts a string from ILS or SIP into a Customer object.
-     * @param list of strings that represent the customer as it would have 
-     * been received from the ILS.
-     * @return true if the conversion was successful and false otherwise.
-     */
-    public Customer getCustomer(String s);
+    ALBERTA("AB"),
+    BRITISH_COLUMBIA("BC"),
+    MANITOBA("MB"),
+    NEW_BRUNSWICK("NB"),
+    NEWFOUNDLAND_LABRADOR("NL"),
+    NORTHWEST_TERRITORIES("NT"),
+    NOVA_SCOTIA("NS"),
+    NUNAVUT("NU"),
+    ONTARIO("ON"),
+    PRINCE_EDWARD_ISLAND("PE"),
+    QUEBEC("QC"),
+    SASKATCHEWAN("SK"),
+    YUKON("YK");
     
-//    public boolean setCustomer(String s);
+    private String province;
+    
+    private ProvinceType(String p)
+    {
+        this.province = p;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.province;
+    }
 }

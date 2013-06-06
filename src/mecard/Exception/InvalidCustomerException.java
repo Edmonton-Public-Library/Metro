@@ -14,33 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package mecard.config;
+
+package mecard.Exception;
 
 /**
- * Mandatory properties of the sip2_config.xml file. Any entries added here 
- * will be validated when the config file is read, they don't need to be set.
+ *
  * @author metro
  */
-public enum SipPropertyTypes
+public class InvalidCustomerException extends RuntimeException 
 {
-
-    HOST("host"),
-    PORT("port"), 
-    USER("sip-user"), 
-    PASSWORD("password"), 
-    TIMEOUT("timeout"), 
-    INSTITUTION_ID("institution-id");
+    private final static String initMessage = "The supplied customer data is malformed. ";
+    private final static String postMessage = "Please refer to the documentation.";
     
-    private String type;
-
-    private SipPropertyTypes(String s)
+    public InvalidCustomerException()
     {
-        this.type = s;
+        super(initMessage + postMessage);
     }
-
-    @Override
-    public String toString()
+    
+    public InvalidCustomerException(String msg)
     {
-        return this.type;
+        super(msg + " " + postMessage);
     }
 }

@@ -7,4 +7,8 @@
 </comment>
 <entry key="host">eplapp.library.ualberta.ca</entry>
 <entry key="port">6001</entry>
+<entry key="sip-user"></entry>
+<entry key="password"></entry>
+<entry key="timeout">5000</entry>
+<entry key="institution-id"></entry>
 </properties>
