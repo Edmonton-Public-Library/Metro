@@ -23,7 +23,6 @@ package mecard.customer;
 
 import java.util.List;
 import mecard.util.Address;
-import mecard.util.DateComparer;
 
 /**
  *
@@ -39,6 +38,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
     @Override
     public Customer getCustomer(String s)
     {
+        System.out.println("SIP:'"+s+"'");
         Customer customer = new Customer();
         // parse the string appart.
 //        sent:63                               AO|AA21221012345678|AD64058|AY0AZF374
@@ -92,14 +92,14 @@ public class SIPCustomerFormatter implements CustomerFormatter
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
         String[] sipResponseFields = s.split("\\|");
-        for (int i = 0; i < sipResponseFields.length; i++)
-        {
-            System.out.println(">"+sipResponseFields[i]);
-        }
         for (String sipField: sipResponseFields)
         {
             // take off the first two characters, that's the name of the field.
             // like 'AA' is the user's id so 'AA21221012345678'.
+            if (sipField.length() == 0)
+            {
+                continue;
+            }
             String fieldName  = sipField.substring(0,2);
             // the rest of the field is the value.
             String fieldValue = sipField.substring(2);
@@ -111,7 +111,6 @@ public class SIPCustomerFormatter implements CustomerFormatter
                 // is just a convension used here.
                 if (fieldType == CustomerFieldTypes.NAME)
                 {
-                    // special case c.set(fieldType, fieldValue);
                     customer.setName(sipField.substring(2));
                 }
                 else if (fieldType == CustomerFieldTypes.STREET)
@@ -127,14 +126,11 @@ public class SIPCustomerFormatter implements CustomerFormatter
                 {
                     // PA20140321    235900
                     String strippedDate = fieldValue.substring(0, 8);
-                    fieldValue = DateComparer.ANSIToHumanReadable(strippedDate);
-                    customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, fieldValue);
+                    customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, strippedDate);
                 }
                 else if (fieldType == CustomerFieldTypes.DOB)
                 {
                     // PD20050303
-                    String strippedDate = fieldValue.substring(0, 8);
-                    fieldValue = DateComparer.ANSIToHumanReadable(strippedDate);
                     customer.set(CustomerFieldTypes.DOB, fieldValue);
                 }
                 else // direct translation, no conversion of data requred.
@@ -182,7 +178,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
         {
             return CustomerFieldTypes.GENDER;
         }
-        // TODO Phone, PIN.
+        // TODO Phone.
         else
         {
             return null;

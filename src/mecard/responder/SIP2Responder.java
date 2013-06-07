@@ -24,6 +24,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
+import mecard.customer.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
 import mecard.util.SIPConnector;
 import mecard.util.SIPRequest;
@@ -36,6 +37,7 @@ import mecard.util.SIPRequest;
  */
 public class SIP2Responder extends ResponderStrategy
 {
+    public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     private static SIPConnector sipServer;
     
     public SIP2Responder(String command, boolean debugMode)
@@ -106,16 +108,23 @@ public class SIP2Responder extends ResponderStrategy
             responseBuffer.append("service is currently unavailable");
             return ResponseTypes.UNAVAILABLE;
         }
+        if (isAuthorized(sipResponse) == false)
+        {
+            responseBuffer.append("invalid PIN");
+            return ResponseTypes.UNAUTHORIZED;
+        }
         CustomerFormatter sipFormatter = new SIPCustomerFormatter();
         Customer customer = sipFormatter.getCustomer(sipResponse);
-        if (meetsMeCardRequirements(customer) == false)
+        if (meetsMeCardRequirements(customer, sipResponse))
         {
-            // this can happen if the user is barred, underage, non-resident, reciprocol.
-            responseBuffer.append("there is a problem with your account, please contact your home library for assistance");
-            return ResponseTypes.FAIL;
+            // all looks good so let's add the pin...
+            customer.set(CustomerFieldTypes.PIN, userPin);
+            this.response.setCustomer(customer);
+            return ResponseTypes.OK;
         }
-        this.response.setCustomer(customer);
-        return ResponseTypes.OK;
+        // this can happen if the user is barred, underage, non-resident, reciprocol.
+        responseBuffer.append("there is a problem with your account, please contact your home library for assistance");
+        return ResponseTypes.FAIL;
     }
 
     /**
@@ -163,8 +172,32 @@ public class SIP2Responder extends ResponderStrategy
         return false;
     }
 
-    protected boolean meetsMeCardRequirements(Customer customer)
+    /**
+     * Tests if customer meets the MeCard requirements of membership.
+     *
+     * @param customer
+     * @param additionalData the value of additionalData
+     * @return true if the customer meets MeCard requirements for age restrictions etc.
+     * and false otherwise.
+     */
+    
+    protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
+    }
+
+    /**
+     * Tests if the request was valid or not based on whether the supplied PIN
+     * matched the user name.
+     * @param sipResponse
+     * @return true if the user is authorized and false otherwise.
+     */
+    private boolean isAuthorized(String sipResponse)
+    {
+        if (sipResponse.contains(SIP2Responder.SIP_AUTHORIZATION_FAILURE))
+        {
+            return false;
+        }
+        return true;
     }
 }

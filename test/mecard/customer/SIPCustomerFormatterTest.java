@@ -44,14 +44,12 @@ public class SIPCustomerFormatterTest
     @Test
     public void testGetCustomer_String()
     {
-        System.out.println("getCustomer");
-        String s = "";
+        System.out.println("== getCustomer ==");
         SIPCustomerFormatter instance = new SIPCustomerFormatter();
-        Customer expResult = null;
-        Customer result = instance.getCustomer(s);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String expResult = "21221012345678|X|Billy, Balzac|7 Sir Winston Churchill Square|"
+                + "Edmonton|AB|T5J2V4|M|ilsteam@epl.ca|X|20050303|20140321|X|X|X|X|X|X|X|X|Balzac|Billy|";
+        Customer result = instance.getCustomer(this.customerString);
+        assertEquals(expResult.compareTo(result.toString()), 0);
     }
 
     /**
@@ -60,14 +58,14 @@ public class SIPCustomerFormatterTest
     @Test
     public void testGetCustomer_List()
     {
-        System.out.println("getCustomer");
+        System.out.println("== getCustomer (list) ==");
         List<String> s = new ArrayList<String>();
         s.add(this.customerString);
         SIPCustomerFormatter instance = new SIPCustomerFormatter();
-        String expResult = "21221012345678|6058|Billy, Balzac|7 Sir Winston Churchill Square|"
-                + "Edmonton|AB|T5J 2V4|X|ilsteam@epl.ca|X|20050303|20140602|Balzac|Billy|X|X|X|X|X|X|Balzac|Billy|";
+        // SIP doesn't return the PIN and currently does not return phone number.
+        String expResult = "21221012345678|X|Billy, Balzac|7 Sir Winston Churchill Square|"
+                + "Edmonton|AB|T5J2V4|M|ilsteam@epl.ca|X|20050303|20140321|X|X|X|X|X|X|X|X|Balzac|Billy|";
         Customer result = instance.getCustomer(s);
-        assertEquals(expResult, result);
-
+        assertEquals(expResult.compareTo(result.toString()), 0);
     }
 }

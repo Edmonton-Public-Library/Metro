@@ -96,9 +96,9 @@ public class Customer extends ProtocolPayload
         // Do first name 
         if (cName.length > 1)
         {
-            this.setPayloadSlot(CustomerFieldTypes.FIRSTNAME.ordinal(), cName[1].trim());
+            this.set(CustomerFieldTypes.FIRSTNAME, cName[1].trim());
         }
-        this.setPayloadSlot(CustomerFieldTypes.LASTNAME.ordinal(), cName[0].trim());
+        this.set(CustomerFieldTypes.LASTNAME, cName[0].trim());
         normalizeFields();
     }
     
@@ -120,7 +120,7 @@ public class Customer extends ProtocolPayload
     {
         for (int i = 0; i < CustomerFieldTypes.size(); i++)
         {
-            if (this.payload.get(i).length() == 0)
+            if (this.payload.get(i).trim().isEmpty())
             {
                 this.payload.set(i, Protocol.DEFAULT_FIELD);
             }

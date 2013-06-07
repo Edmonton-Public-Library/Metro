@@ -24,7 +24,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -63,8 +62,13 @@ public class DateComparer
         {
             return -1;
         }
+        String newDate = date;
+        if (newDate.contains("-") == false)
+        {
+            newDate = DateComparer.ANSIToHumanReadable(date);
+        }
         DateFormat dateFormat = new SimpleDateFormat(DateComparer.CUSTOMER_DATE_FORMAT);
-        Date daysAgo = dateFormat.parse(date);
+        Date daysAgo = dateFormat.parse(newDate);
         Date today = new Date();
         // the delta is in milliseconds.
         long longYears = (today.getTime() - daysAgo.getTime()) / MILLISECONDS_PER_YEAR;
@@ -86,7 +90,12 @@ public class DateComparer
     public static int getDaysUntilExpiry(String date) throws ParseException
     {
         DateFormat dateFormat = new SimpleDateFormat(DateComparer.CUSTOMER_DATE_FORMAT);
-        Date daysFromNow = dateFormat.parse(date);
+        String newDate = date;
+        if (newDate.contains("-") == false)
+        {
+            newDate = DateComparer.ANSIToHumanReadable(date);
+        }
+        Date daysFromNow = dateFormat.parse(newDate);
         Date today = new Date();
         // the delta is in milliseconds.
         long daysLeft = (daysFromNow.getTime() - today.getTime()) / MILLISECONDS_PER_DAY;

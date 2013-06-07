@@ -15,13 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package mecard.customer;
+package mecard.Exception;
 
 /**
  *
  * @author metro
  */
-interface FormattedCustomer 
+public class UnsupportedLibraryException extends RuntimeException 
 {
+    private final static String initMessage = "The requested library '";
+    private final static String postMessage = "' is not supported yet. Please contact administrator.";
     
+    public UnsupportedLibraryException(String library)
+    {
+        super(initMessage + library + " " + postMessage);
+    }
 }

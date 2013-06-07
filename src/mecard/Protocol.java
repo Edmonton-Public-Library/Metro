@@ -43,9 +43,12 @@ public class Protocol
 {
     public final static String DELIMITER   = "|";
     public final static String DEFAULT_FIELD = "X";
+    public final static String TRUE        = "Y";
+    public final static String FALSE       = "N";
     public final static String TERMINATE   = "XX0" + DELIMITER;
     public final static String ACKNOWLEDGE = "XK0" + DELIMITER;
     public final static String ERROR       = "XE0" + DELIMITER;
+    
     private boolean debugMode;
     public Protocol()
     { 
@@ -69,6 +72,13 @@ public class Protocol
         return SecurityManager.encrypt(response);
     }
 
+    /**
+     *
+     * @param cmd
+     * @return
+     * @throws MalformedCommandException
+     * @throws UnsupportedCommandException
+     */
     public static QueryTypes getCommand(String cmd)
             throws MalformedCommandException, UnsupportedCommandException
     {
