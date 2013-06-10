@@ -1,24 +1,23 @@
 /*
-* Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Andrew Nisbet
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-* 
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-* MA 02110-1301, USA.
-*
-*/
-
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.customer;
 
 import java.util.List;
@@ -28,7 +27,7 @@ import mecard.util.Address;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class SIPCustomerFormatter implements CustomerFormatter 
+public class SIPCustomerFormatter implements CustomerFormatter
 {
 
     public SIPCustomerFormatter()
@@ -38,7 +37,6 @@ public class SIPCustomerFormatter implements CustomerFormatter
     @Override
     public Customer getCustomer(String s)
     {
-        System.out.println("SIP:'"+s+"'");
         Customer customer = new Customer();
         // parse the string appart.
 //        sent:63                               AO|AA21221012345678|AD64058|AY0AZF374
@@ -92,7 +90,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
         String[] sipResponseFields = s.split("\\|");
-        for (String sipField: sipResponseFields)
+        for (String sipField : sipResponseFields)
         {
             // take off the first two characters, that's the name of the field.
             // like 'AA' is the user's id so 'AA21221012345678'.
@@ -100,7 +98,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
             {
                 continue;
             }
-            String fieldName  = sipField.substring(0,2);
+            String fieldName = sipField.substring(0, 2);
             // the rest of the field is the value.
             String fieldValue = sipField.substring(2);
             CustomerFieldTypes fieldType = this.translateToCustomerField(fieldName);
@@ -112,7 +110,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
                 if (fieldType == CustomerFieldTypes.NAME)
                 {
                     customer.setName(sipField.substring(2));
-                }
+                } 
                 else if (fieldType == CustomerFieldTypes.STREET)
                 {
                     // special STREET in this context comes with everything
@@ -121,18 +119,23 @@ public class SIPCustomerFormatter implements CustomerFormatter
                     customer.set(CustomerFieldTypes.CITY, address.getCity());
                     customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());
                     customer.set(CustomerFieldTypes.POSTALCODE, address.getPostalCode());
-                }
+                } 
                 else if (fieldType == CustomerFieldTypes.PRIVILEGE_EXPIRES)
                 {
                     // PA20140321    235900
                     String strippedDate = fieldValue.substring(0, 8);
                     customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, strippedDate);
-                }
+                } 
                 else if (fieldType == CustomerFieldTypes.DOB)
                 {
                     // PD20050303
-                    customer.set(CustomerFieldTypes.DOB, fieldValue);
-                }
+                    if (fieldValue.isEmpty() == false)
+                    {
+                        // the site can subclass MeCardPolicy object to test 
+                        // a customer for adult with profile as an alternate.
+                        customer.set(CustomerFieldTypes.DOB, fieldValue);
+                    }
+                } 
                 else // direct translation, no conversion of data requred.
                 {
                     customer.set(fieldType, fieldValue);
@@ -143,7 +146,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
     }
 
     /**
-     * 
+     *
      * @param string
      * @return CustomerField that matches a customer field, or null.
      */
@@ -152,39 +155,32 @@ public class SIPCustomerFormatter implements CustomerFormatter
         if (userFieldValue.equals("AA"))
         {
             return CustomerFieldTypes.ID;
-        }
-        else if (userFieldValue.equals("AE"))
+        } else if (userFieldValue.equals("AE"))
         {
             return CustomerFieldTypes.NAME; // last name, first name.
-        }
-        else if (userFieldValue.equals("BD"))
+        } else if (userFieldValue.equals("BD"))
         {
             return CustomerFieldTypes.STREET; // Complete address break it up.
-        }
-        else if (userFieldValue.equals("BE"))
+        } else if (userFieldValue.equals("BE"))
         {
             return CustomerFieldTypes.EMAIL;
-        }
-        else if (userFieldValue.equals("PA"))
+        } else if (userFieldValue.equals("PA"))
         {
             return CustomerFieldTypes.PRIVILEGE_EXPIRES;
-        }
-        else if (userFieldValue.equals("PD"))
+        } else if (userFieldValue.equals("PD"))
         {
             return CustomerFieldTypes.DOB;
-        }
-        // PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|
+        } // PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|
         else if (userFieldValue.equals("PF"))
         {
             return CustomerFieldTypes.GENDER;
-        }
-        // TODO Phone.
+        } // TODO Phone.
         else
         {
             return null;
         }
     }
-    
+
     @Override
     public Customer getCustomer(List<String> s)
     {

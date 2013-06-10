@@ -64,7 +64,8 @@ public class Customer extends ProtocolPayload
         }
 
         // 1 for command, 1 for authority token. All commands
-        for (int i = 2; i < cmdList.size(); i++)
+        // TODO: Fix this. it doesn't work
+        for (int i = 0; i < cmdList.size(); i++)
         {
             this.payload.set(i, cmdList.get(i));
         }

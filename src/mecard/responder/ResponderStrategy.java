@@ -16,14 +16,14 @@ public abstract class ResponderStrategy
 {
     protected Request request;
     protected Response response;
-    protected final boolean isDebugMode;
+    protected final boolean debug;
     
     protected ResponderStrategy(String cmd, boolean debugMode)
     {
-        this.isDebugMode = debugMode;
+        this.debug = debugMode;
         this.request = new Request(cmd);
         this.response = new Response(ResponseTypes.INIT);
-        if (isDebugMode)
+        if (debug)
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
             System.out.println("ELE:");

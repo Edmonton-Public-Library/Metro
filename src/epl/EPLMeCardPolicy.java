@@ -37,6 +37,17 @@ public class EPLMeCardPolicy extends MeCardPolicy
     // TODO: Fix to read from a unstructured config file.
     public final static String[] JUV_PROFILE  = {"EPL-JUV","EPL-JUV01","EPL-JUV05","EPL-JUV10","EPL-JUVNR","EPL-JUVGR","EPL-JUVIND"};
     public final static String INVALID_CONDITION = "BLOCKED";
+    private final boolean debug;
+    
+    public EPLMeCardPolicy()
+    {
+        this.debug = false;
+    }
+    
+    public EPLMeCardPolicy(boolean debug)
+    {
+        this.debug = debug;
+    }
 
     @Override
     public boolean isResident(Customer customer, String meta)
@@ -44,6 +55,7 @@ public class EPLMeCardPolicy extends MeCardPolicy
         if (meta.contains(EPL_VISITOR))
         {
             customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
+            if (debug) System.out.println("failed resident test");
             return false;
         }
         customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
@@ -56,9 +68,10 @@ public class EPLMeCardPolicy extends MeCardPolicy
         if (meta.contains(EPL_RECIPROCAL))
         {
             customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
+            if (debug) System.out.println("failed reciprocal test");
             return true;
         }
-        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
+        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE); 
         return false;
     }
 
@@ -71,6 +84,7 @@ public class EPLMeCardPolicy extends MeCardPolicy
         if (meta.contains(INVALID_CONDITION))
         {
             customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+            if (debug) System.out.println("failed good-standing test");
             return false;
         }
         customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
@@ -87,6 +101,7 @@ public class EPLMeCardPolicy extends MeCardPolicy
             if (meta.contains(JUV_PROFILE[i]))
             {
                 customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+                if (debug) System.out.println("failed minimum age test");
                 return false;
             }
         }

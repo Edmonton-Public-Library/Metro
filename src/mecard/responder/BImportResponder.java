@@ -79,7 +79,7 @@ public class BImportResponder extends ResponderStrategy
         
         // compute header and data file names.
         String pathSep;
-        if (isDebugMode)
+        if (debug)
         {
             pathSep = "/";
         }
@@ -189,7 +189,7 @@ public class BImportResponder extends ResponderStrategy
                 .header(headerFile).data(dataFile)
                 .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
                 .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
-                .setDebug(isDebugMode)
+                .setDebug(debug)
                 .build();
         customerCommands.add(batch.getCommandLine());
         // alternatively:

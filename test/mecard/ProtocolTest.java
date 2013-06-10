@@ -106,7 +106,9 @@ public class ProtocolTest
     public void testGetResponder()
     {
         System.out.println("=== getResponder These tests depend on contents of env_config.xml ===");
-        
+        // WARNING: these tests are based on values set in the env_config.xml 
+        // files. Please match expected response types with config requested
+        // respondertypes.
         // QueryTypes.GET_STATUS;
         String command = "QA0";
         Protocol instance = new Protocol();

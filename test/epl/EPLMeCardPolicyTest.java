@@ -49,7 +49,7 @@ public class EPLMeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isResident(c, meta);
         boolean expected= true;
         assertTrue(expected == result);
@@ -61,7 +61,7 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isResident(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -79,7 +79,7 @@ public class EPLMeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isReciprocal(c, meta);
 //        System.out.println(meta);
         boolean expected= false;
@@ -92,7 +92,7 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isReciprocal(c, modeMeta);
         expected= true;
         assertTrue(expected == result);
@@ -110,7 +110,7 @@ public class EPLMeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isInGoodStanding(c, meta);
         boolean expected= false;
         assertTrue(expected == result);
@@ -122,7 +122,7 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isInGoodStanding(c, modeMeta);
         expected= true;
         assertTrue(expected == result);
@@ -140,7 +140,7 @@ public class EPLMeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isMinimumAge(c, meta);
         boolean expected= true;
         assertTrue(expected == result);
@@ -152,7 +152,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUV|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -164,7 +164,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUV01|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -176,7 +176,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUV05|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -188,7 +188,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUV10|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -200,7 +200,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUVNR|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -212,7 +212,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUVGR|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);
@@ -224,7 +224,7 @@ public class EPLMeCardPolicyTest
                 + "PCEPL-JUVIND|"
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAge(c, modeMeta);
         expected= false;
         assertTrue(expected == result);

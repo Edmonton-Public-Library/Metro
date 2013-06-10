@@ -27,31 +27,31 @@ public class ProtocolPayloadTest {
         ProtocolPayload instance = new ProtocolPayload(5);
         instance.setPayloadSlot(pos, s);
         System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("value 0|||||") == 0);
+        assertTrue(instance.toString().compareTo("value 0|X|X|X|X|") == 0);
         
         pos = 0;
         s = "value again";
         instance.setPayloadSlot(pos, s);
         System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("value again|||||") == 0);
+        assertTrue(instance.toString().compareTo("value again|X|X|X|X|") == 0);
         
         pos = 2;
         s = "two";
         instance.setPayloadSlot(pos, s);
         System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("value again||two|||") == 0);
+        assertTrue(instance.toString().compareTo("value again|X|two|X|X|") == 0);
         
         pos = 3;
         s = "three";
         instance.setPayloadSlot(pos, s);
         System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("value again||two|three||") == 0);
+        assertTrue(instance.toString().compareTo("value again|X|two|three|X|") == 0);
         
         pos = 1;
         s = "one";
         instance.setPayloadSlot(pos, s);
         System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("value again|one|two|three||") == 0);
+        assertTrue(instance.toString().compareTo("value again|one|two|three|X|") == 0);
 
         pos = 4;
         s = "four";

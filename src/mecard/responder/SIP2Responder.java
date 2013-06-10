@@ -28,6 +28,7 @@ import mecard.customer.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
 import mecard.util.SIPConnector;
 import mecard.util.SIPRequest;
+import site.mecard.MeCardPolicy;
 
 /**
  * The SIP2 strategy is meant to retrieve initial information about customers.
@@ -115,10 +116,10 @@ public class SIP2Responder extends ResponderStrategy
         }
         CustomerFormatter sipFormatter = new SIPCustomerFormatter();
         Customer customer = sipFormatter.getCustomer(sipResponse);
+        // You have this before the test metro requirements b/c it checks for PIN
+        customer.set(CustomerFieldTypes.PIN, userPin);
         if (meetsMeCardRequirements(customer, sipResponse))
         {
-            // all looks good so let's add the pin...
-            customer.set(CustomerFieldTypes.PIN, userPin);
             this.response.setCustomer(customer);
             return ResponseTypes.OK;
         }
@@ -183,6 +184,14 @@ public class SIP2Responder extends ResponderStrategy
     
     protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
     {
+        MeCardPolicy policy = MeCardPolicy.getInstanceOf(this.debug);
+        if (policy.isEmailable(customer, additionalData) == false) return false;
+        if (policy.isInGoodStanding(customer, additionalData) == false) return false;
+        if (policy.isMinimumAge(customer, additionalData) == false) return false;
+        if (policy.isReciprocal(customer, additionalData)) return false; // reciprocals not allowed.
+        if (policy.isResident(customer, additionalData) == false) return false;
+        if (policy.isValidCustomerData(customer) == false) return false;
+        if (policy.isValidExpiryDate(customer, additionalData) == false) return false;
         return true;
     }
 

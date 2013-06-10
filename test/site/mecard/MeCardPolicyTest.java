@@ -51,7 +51,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isMinimumAgeByDate(c, meta);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         boolean expected= true;
@@ -68,7 +68,7 @@ public class MeCardPolicyTest
                 + "BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|" // DOB
                 + "PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isMinimumAgeByDate(c, modeMeta);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         expected= false;
@@ -87,7 +87,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isEmailable(c, meta);
         boolean expected= true;
         assertTrue(expected == result);
@@ -97,7 +97,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isEmailable(c, meta);
         expected= false;
         assertTrue(expected == result);
@@ -115,9 +115,18 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isValidCustomerData(c);
         boolean expected= true;
+        assertTrue(expected == result);
+        
+        custReq =
+                "QC0|342abf3cb129ffccb74|X|6058|Billy, Balzac|12345 123 St.|"
+                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
+                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+        c = new Customer(custReq);
+        result = p.isValidCustomerData(c);
+        expected= false;
         assertTrue(expected == result);
     }
 
@@ -133,7 +142,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
                 + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf("EPL");
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isValidExpiryDate(c, meta);
         boolean expected= true;
         assertTrue(expected == result);
@@ -143,7 +152,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
                 + "19140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isValidExpiryDate(c, meta);
         expected= false;
         assertTrue(expected == result);
@@ -153,7 +162,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
                 + "x|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isValidExpiryDate(c, meta);
         expected= false;
         assertTrue(expected == result);
@@ -163,7 +172,7 @@ public class MeCardPolicyTest
                 + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
                 + "0|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
         c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf("EPL");
+        p = MeCardPolicy.getInstanceOf(false);
         result = p.isValidExpiryDate(c, meta);
         expected= false;
         assertTrue(expected == result);
