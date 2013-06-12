@@ -19,30 +19,16 @@
 * MA 02110-1301, USA.
 *
 */
-package mecard.customer;
-
-import java.util.List;
+package mecard.util;
 
 /**
- * This class formats requests and responses to and from the ILS.
+ *
  * @author metro
  */
-public interface CustomerFormatter
+public enum FlatUserExtendedFields
 {
-    /**
-     * Converts a string from ILS or SIP into a Customer object.
-     * @param list of strings that represent the customer as it would have 
-     * been received from the ILS.
-     * @return true if the conversion was successful and false otherwise.
-     */
-    public Customer getCustomer(List<String> s);
-    /**
-     * Converts a string from ILS or SIP into a Customer object.
-     * @param string that represent the customer as it would have 
-     * been received from the ILS.
-     * @return true if the conversion was successful and false otherwise.
-     */
-    public Customer getCustomer(String s);
-    
-    public boolean setCustomer(Customer c);
+    USER,
+    USER_ADDR1,
+    USER_ADDR2,
+    USER_XINFO;
 }

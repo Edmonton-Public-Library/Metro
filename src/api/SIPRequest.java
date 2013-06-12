@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package mecard.util;
+package api;
+
+import mecard.util.SIPConnector;
 
 /**
  * Helper class for formatting SIP requests.

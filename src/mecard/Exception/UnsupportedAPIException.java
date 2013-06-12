@@ -14,26 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package mecard.config;
+
+package mecard.Exception;
 
 /**
  *
  * @author metro
  */
-public enum APIPropertyTypes
+public class UnsupportedAPIException extends RuntimeException 
 {
-    ILS_TYPE("ils-type");
+    private final static String initMessage = "The requested API '"; ;
+    private final static String postMessage = "' is currently unsupported. Please refer to the documentation.";
     
-    private String type;
-
-    private APIPropertyTypes(String s)
+    public UnsupportedAPIException(String msg)
     {
-        this.type = s;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.type;
+        super(initMessage + msg + postMessage);
     }
 }

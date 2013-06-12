@@ -5,8 +5,5 @@
 <comment>
     commands to run as api, either symphony or SQL on Horizon
 </comment>
-<entry key="create-customer">loadflatuser</entry>
-<entry key="update-customer">loadflatuser</entry>
-<entry key="get-customer">dumpflatuser</entry>
-<entry key="ils-status">seluser</entry>
+<entry key="ils-type">Symphony</entry>
 </properties>

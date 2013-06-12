@@ -5,8 +5,10 @@
 package mecard.responder;
 
 import mecard.ResponseTypes;
+import mecard.customer.Customer;
 import mecard.util.Request;
 import mecard.util.Response;
+import site.mecard.MeCardPolicy;
 
 /**
  *
@@ -32,4 +34,29 @@ public abstract class ResponderStrategy
     }
     
     public abstract String getResponse();
+    
+     /**
+     * Tests if customer meets the MeCard requirements of membership.
+     *
+     * @param customer
+     * @param additionalData the value of additionalData
+     * @return true if the customer meets MeCard requirements for age restrictions etc.
+     * and false otherwise.
+     */
+    protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
+    {
+        if (customer == null || additionalData == null)
+        {
+            return false;
+        }
+        MeCardPolicy policy = MeCardPolicy.getInstanceOf(this.debug);
+        if (policy.isEmailable(customer, additionalData) == false) return false;
+        if (policy.isInGoodStanding(customer, additionalData) == false) return false;
+        if (policy.isMinimumAge(customer, additionalData) == false) return false;
+        if (policy.isReciprocal(customer, additionalData)) return false; // reciprocals not allowed.
+        if (policy.isResident(customer, additionalData) == false) return false;
+        if (policy.isValidCustomerData(customer) == false) return false;
+        if (policy.isValidExpiryDate(customer, additionalData) == false) return false;
+        return true;
+    }
 }

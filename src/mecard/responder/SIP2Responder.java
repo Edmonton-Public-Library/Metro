@@ -27,7 +27,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
 import mecard.util.SIPConnector;
-import mecard.util.SIPRequest;
+import api.SIPRequest;
 import site.mecard.MeCardPolicy;
 
 /**
@@ -171,28 +171,6 @@ public class SIP2Responder extends ResponderStrategy
             }
         }
         return false;
-    }
-
-    /**
-     * Tests if customer meets the MeCard requirements of membership.
-     *
-     * @param customer
-     * @param additionalData the value of additionalData
-     * @return true if the customer meets MeCard requirements for age restrictions etc.
-     * and false otherwise.
-     */
-    
-    protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
-    {
-        MeCardPolicy policy = MeCardPolicy.getInstanceOf(this.debug);
-        if (policy.isEmailable(customer, additionalData) == false) return false;
-        if (policy.isInGoodStanding(customer, additionalData) == false) return false;
-        if (policy.isMinimumAge(customer, additionalData) == false) return false;
-        if (policy.isReciprocal(customer, additionalData)) return false; // reciprocals not allowed.
-        if (policy.isResident(customer, additionalData) == false) return false;
-        if (policy.isValidCustomerData(customer) == false) return false;
-        if (policy.isValidExpiryDate(customer, additionalData) == false) return false;
-        return true;
     }
 
     /**

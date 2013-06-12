@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package mecard.util;
+package mecard.customer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,12 +22,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.util.BImportDBFields;
 
 /**
  * This class creates the data and header files.
  * @author metro
  */
-public class BImportDBFiles
+public class BImportFormatter
 {
     public final static String BORROWER_TABLE = "borrower";
     public final static String BORROWER_PHONE_TABLE = "borrower_phone"; 
@@ -123,13 +124,13 @@ public class BImportDBFiles
             return this;
         }
         
-        public BImportDBFiles build()
+        public BImportFormatter build()
         {
-            return new BImportDBFiles(this);
+            return new BImportFormatter(this);
         }
     }
     
-    private BImportDBFiles(Builder b)
+    private BImportFormatter(Builder b)
     {
         StringBuilder headerContent = new StringBuilder();
         StringBuilder dataContent   = new StringBuilder();
@@ -201,7 +202,7 @@ public class BImportDBFiles
         catch (IOException ex)
         {
             String msg = "unable to create '"+file.getName()+"' file.";
-            Logger.getLogger(BImportBat.class.getName()).log(Level.SEVERE, msg, ex);
+            Logger.getLogger(BImportFormatter.class.getName()).log(Level.SEVERE, msg, ex);
         }
     }
     

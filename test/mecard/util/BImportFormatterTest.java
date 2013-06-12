@@ -4,6 +4,7 @@
  */
 package mecard.util;
 
+import mecard.customer.BImportFormatter;
 import java.io.File;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -12,10 +13,10 @@ import static org.junit.Assert.*;
  *
  * @author metro
  */
-public class BImportDBFilesTest
+public class BImportFormatterTest
 {
     
-    public BImportDBFilesTest()
+    public BImportFormatterTest()
     {
     }
 
@@ -24,7 +25,7 @@ public class BImportDBFilesTest
     {
         String hName = "header.txt";
         String dName = "data.txt";
-        new BImportDBFiles.Builder(hName, dName)
+        new BImportFormatter.Builder(hName, dName)
                 .barcode("21221012345678")
                 .name("Billy, Balzac")
                 .expire("12-25-2014")

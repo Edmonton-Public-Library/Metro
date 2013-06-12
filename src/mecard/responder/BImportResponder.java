@@ -26,7 +26,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.CustomerFieldTypes;
 import mecard.util.BImportBat;
-import mecard.util.BImportDBFiles;
+import mecard.customer.BImportFormatter;
 import mecard.util.Command;
 import mecard.util.ProcessWatcherHandler;
 
@@ -158,7 +158,7 @@ public class BImportResponder extends ResponderStrategy
     {
         // here we have to match up the CustomerFields with variable values.
         // the constructor will then make the header and data files.
-        new BImportDBFiles.Builder(headerFile, dataFile)
+        new BImportFormatter.Builder(headerFile, dataFile)
                 .barcode(request.get(CustomerFieldTypes.ID.ordinal()))
                 .pin(request.get(CustomerFieldTypes.PIN.ordinal()))
                 .name(request.get(CustomerFieldTypes.NAME.ordinal()))

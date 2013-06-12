@@ -186,4 +186,10 @@ public class SIPCustomerFormatter implements CustomerFormatter
     {
         return this.getCustomer(s.get(0));
     }
+
+    @Override
+    public boolean setCustomer(Customer c)
+    {
+        throw new UnsupportedOperationException("SIP does not support customer creation.");
+    }
 }
