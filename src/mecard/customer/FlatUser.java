@@ -20,8 +20,6 @@
 */
 package mecard.customer;
 
-import mecard.util.FlatUserExtendedFields;
-import mecard.util.FlatUserFields;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Enumeration;
@@ -45,20 +43,20 @@ public class FlatUser
 {
 
     private final static String DOC_BOUNDARY = "*** DOCUMENT BOUNDARY ***";
-    private EnumMap<FlatUserFields, String> address1;
-    private EnumMap<FlatUserFields, String> address2;
-    private EnumMap<FlatUserFields, String> xinfo;
-    private EnumMap<FlatUserFields, String> customerFields;
+    private EnumMap<FlatUserFieldTypes, String> address1;
+    private EnumMap<FlatUserFieldTypes, String> address2;
+    private EnumMap<FlatUserFieldTypes, String> xinfo;
+    private EnumMap<FlatUserFieldTypes, String> customerFields;
 
     /**
      * Creates FlatUser.
      */
     public FlatUser()
     {
-        this.customerFields = new EnumMap<FlatUserFields, String>(FlatUserFields.class);
-        this.address1 = new EnumMap<FlatUserFields, String>(FlatUserFields.class);
-        this.address2 = new EnumMap<FlatUserFields, String>(FlatUserFields.class);
-        this.xinfo = new EnumMap<FlatUserFields, String>(FlatUserFields.class);
+        this.customerFields = new EnumMap<FlatUserFieldTypes, String>(FlatUserFieldTypes.class);
+        this.address1 = new EnumMap<FlatUserFieldTypes, String>(FlatUserFieldTypes.class);
+        this.address2 = new EnumMap<FlatUserFieldTypes, String>(FlatUserFieldTypes.class);
+        this.xinfo = new EnumMap<FlatUserFieldTypes, String>(FlatUserFieldTypes.class);
     }
 
     /**
@@ -67,7 +65,8 @@ public class FlatUser
      * @param whichField the value of whichField
      * @param field
      */
-    public void add(FlatUserFields whichField, String field)
+    
+    public void add(FlatUserFieldTypes whichField, String field)
     {
         this.add(FlatUserExtendedFields.USER, whichField, field);
     }
@@ -82,7 +81,8 @@ public class FlatUser
      * @param whichField the enum of the field you are adding.
      * @param field String you are adding as a value to the field.
      */
-    public void add(FlatUserExtendedFields extField, FlatUserFields whichField, String field)
+    
+    public void add(FlatUserExtendedFields extField, FlatUserFieldTypes whichField, String field)
     {
         if (field.isEmpty())
         {
@@ -111,7 +111,7 @@ public class FlatUser
      * @param field
      * @return the value of the field or an empty field if none found.
      */
-    public String getField(FlatUserFields field)
+    public String getField(FlatUserFieldTypes field)
     {
         if (this.customerFields.containsKey(field))
         {
@@ -141,8 +141,8 @@ public class FlatUser
     {
         List<String> flatData = new ArrayList<String>();
         flatData.add(FlatUser.DOC_BOUNDARY + "\n");
-        Set<FlatUserFields> keys = this.customerFields.keySet();
-        for (FlatUserFields key : keys)
+        Set<FlatUserFieldTypes> keys = this.customerFields.keySet();
+        for (FlatUserFieldTypes key : keys)
         {
             flatData.add(this.formatLine(key.name(), this.customerFields.get(key)));
         }
@@ -150,34 +150,34 @@ public class FlatUser
         if (this.address1.size() > 0)
         {
             keys = this.address1.keySet();
-            flatData.add("." + FlatUserFields.USER_ADDR1_BEGIN + ".\n");
-            for (FlatUserFields key : keys)
+            flatData.add("." + FlatUserFieldTypes.USER_ADDR1_BEGIN + ".\n");
+            for (FlatUserFieldTypes key : keys)
             {
                 flatData.add(this.formatLine(key.name(), this.address1.get(key)));
             }
-            flatData.add("." + FlatUserFields.USER_ADDR1_END + ".\n");
+            flatData.add("." + FlatUserFieldTypes.USER_ADDR1_END + ".\n");
         }
         // Address2
         if (this.address2.size() > 0)
         {
             keys = this.address1.keySet();
-            flatData.add("." + FlatUserFields.USER_ADDR2_BEGIN + ".\n");
-            for (FlatUserFields key : keys)
+            flatData.add("." + FlatUserFieldTypes.USER_ADDR2_BEGIN + ".\n");
+            for (FlatUserFieldTypes key : keys)
             {
                 flatData.add(this.formatLine(key.name(), this.address2.get(key)));
             }
-            flatData.add("." + FlatUserFields.USER_ADDR2_END + ".\n");
+            flatData.add("." + FlatUserFieldTypes.USER_ADDR2_END + ".\n");
         }
         // XINFO
         if (this.xinfo.size() > 0)
         {
             keys = this.xinfo.keySet();
-            flatData.add("." + FlatUserFields.USER_XINFO_BEGIN + ".\n");
-            for (FlatUserFields key : keys)
+            flatData.add("." + FlatUserFieldTypes.USER_XINFO_BEGIN + ".\n");
+            for (FlatUserFieldTypes key : keys)
             {
                 flatData.add(this.formatLine(key.name(), this.xinfo.get(key)));
             }
-            flatData.add("." + FlatUserFields.USER_XINFO_END + ".\n");
+            flatData.add("." + FlatUserFieldTypes.USER_XINFO_END + ".\n");
         }
         return flatData;
     }
@@ -205,12 +205,12 @@ public class FlatUser
         Properties defaultCreateProperties = PropertyReader.getProperties(
                 ConfigFileTypes.DEFAULT_CREATE);
         Enumeration defaultProperties = defaultCreateProperties.propertyNames();
-        FlatUserFields[] flatUserFieldKeys = FlatUserFields.values();
+        FlatUserFieldTypes[] flatUserFieldKeys = FlatUserFieldTypes.values();
         while (defaultProperties.hasMoreElements())
         {
             String defaultPropertyName = (String) defaultProperties.nextElement();
             // now we have to iterate over all the fields to find a match
-            for (FlatUserFields flatUserKey : flatUserFieldKeys)
+            for (FlatUserFieldTypes flatUserKey : flatUserFieldKeys)
             {
                 if (flatUserKey.name().equalsIgnoreCase(defaultPropertyName))
                 {
@@ -226,8 +226,8 @@ public class FlatUser
     {
         StringBuilder sb = new StringBuilder();
         sb.append(FlatUser.DOC_BOUNDARY.toString()).append("\n");
-        Set<FlatUserFields> keys = this.customerFields.keySet();
-        for (FlatUserFields key : keys)
+        Set<FlatUserFieldTypes> keys = this.customerFields.keySet();
+        for (FlatUserFieldTypes key : keys)
         {
             sb.append(this.formatLine(key.name(), this.customerFields.get(key)));
         }
@@ -235,34 +235,34 @@ public class FlatUser
         if (this.address1.size() > 0)
         {
             keys = this.address1.keySet();
-            sb.append(".").append(FlatUserFields.USER_ADDR1_BEGIN).append(".").append("\n");
-            for (FlatUserFields key : keys)
+            sb.append(".").append(FlatUserFieldTypes.USER_ADDR1_BEGIN).append(".").append("\n");
+            for (FlatUserFieldTypes key : keys)
             {
                 sb.append(this.formatLine(key.name(), this.address1.get(key)));
             }
-            sb.append(".").append(FlatUserFields.USER_ADDR1_END).append(".").append("\n");
+            sb.append(".").append(FlatUserFieldTypes.USER_ADDR1_END).append(".").append("\n");
         }
         // Address2
         if (this.address2.size() > 0)
         {
             keys = this.address2.keySet();
-            sb.append(".").append(FlatUserFields.USER_ADDR2_BEGIN).append(".").append("\n");
-            for (FlatUserFields key : keys)
+            sb.append(".").append(FlatUserFieldTypes.USER_ADDR2_BEGIN).append(".").append("\n");
+            for (FlatUserFieldTypes key : keys)
             {
                 sb.append(this.formatLine(key.name(), this.address2.get(key)));
             }
-            sb.append(".").append(FlatUserFields.USER_ADDR2_END).append(".").append("\n");
+            sb.append(".").append(FlatUserFieldTypes.USER_ADDR2_END).append(".").append("\n");
         }
         // XINFO
         if (this.xinfo.size() > 0)
         {
             keys = this.xinfo.keySet();
-            sb.append(".").append(FlatUserFields.USER_XINFO_BEGIN).append(".").append("\n");
-            for (FlatUserFields key : keys)
+            sb.append(".").append(FlatUserFieldTypes.USER_XINFO_BEGIN).append(".").append("\n");
+            for (FlatUserFieldTypes key : keys)
             {
                 sb.append(this.formatLine(key.name(), this.xinfo.get(key)));
             }
-            sb.append(".").append(FlatUserFields.USER_XINFO_END).append(".").append("\n");
+            sb.append(".").append(FlatUserFieldTypes.USER_XINFO_END).append(".").append("\n");
         }
         return sb.toString();
     }

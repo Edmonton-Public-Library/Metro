@@ -35,10 +35,73 @@ import mecard.util.PostalCode;
 public class FlatUserFormatter implements CustomerFormatter
 {
     public final static String DEFAULT_DATE = "";
+    
+    /**
+     * Converts a customer into a flatUser that can be loaded by Symphony's
+     * loadflatuser.
+     * @param customer
+     * @return 
+     */
     @Override
     public boolean setCustomer(Customer customer)
     {
-        return true; // does the same as getCustomer(List<String>) but for a single line customer
+        if (customer == null)
+        {
+            return false;
+        }
+        FlatUser flatUser = new FlatUser();
+        flatUser.add(FlatUserFieldTypes.USER_ID, customer.get(CustomerFieldTypes.ID));
+//        flatUser.add(FlatUserFieldTypes.USER_PIN, customer.get(CustomerFields.USER_PIN));
+//        String field = customer.get(CustomerFields.USER_LAST_NAME);
+//        // if that was successful then append a ',' and the first name
+//        if (field.isEmpty() == false)
+//        {
+//            String firstName = customer.get(CustomerFields.USER_FIRST_NAME);
+//            if (firstName.isEmpty() == false)
+//            {
+//                field += ", ";
+//                field += firstName;
+//            }
+//            flatUser.add(FlatUserFieldTypes.USER_NAME, field);
+//        }
+//        flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, customer.get(CustomerFields.USER_FIRST_NAME));
+//        flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, customer.get(CustomerFields.USER_LAST_NAME));
+//        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, customer.get(CustomerFields.USER_PREFERRED_NAME));
+//        if (customer.get(CustomerFields.USER_PREFERRED_NAME).isEmpty() == false)
+//        {
+//            // If the customer has a preferred name, set it to be used.
+//            flatUser.add(FlatUserFieldTypes.USER_NAME_DSP_PREF, "1");
+//        }
+//        // Dates
+//        String date = DateComparer.formatDate(customer.get(CustomerFields.DOB));
+//        flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, date);
+//        date = DateComparer.formatDate(customer.get(CustomerFields.USER_PRIV_EXPIRES));
+//        flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, date);
+//        
+//        // Address
+//        flatUser.add(
+//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.STREET, customer.get(CustomerFields.STREET));
+//        // Symphony uses CITY/STATE as a field (sigh)
+//        String city     = customer.get(CustomerFields.CITY);
+//        String province = customer.get(CustomerFields.PROVINCE);
+//        flatUser.add(
+//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.CITY_STATE, city + ", " + province.toUpperCase() );
+//        flatUser.add(
+//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.POSTALCODE, customer.get(CustomerFields.POSTALCODE));
+//        
+//        flatUser.add(
+//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.EMAIL, customer.get(CustomerFields.EMAIL));
+//        // Load optional fields.
+//        flatUser.add(
+//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.PHONE, customer.get(CustomerFields.PHONE));
+//        flatUser.add(FlatUserFieldTypes.USER_CATEGORY2, customer.get(CustomerFields.GENDER));
+//        // There is not middle name field.
+//        // set todays date as the date privilege granted.
+//        flatUser.add(FlatUserFieldTypes.USER_PRIV_GRANTED,  DateComparer.today());
+//        // Now load all the default values we need to set like PROFILE.
+//        flatUser.setDefaultProperties();
+//        return flatUser.toList();
+        return true; 
     }
 
     @Override
@@ -134,6 +197,8 @@ public class FlatUserFormatter implements CustomerFormatter
         {
             return CustomerFieldTypes.NAME;
         }
+        // uncommenting these lines cause the firt and last names to set in 
+        // Customer, but any salutation will not come across.
 //        else if (flatUserFieldValue.equals("USER_FIRST_NAME"))
 //        {
 //            return CustomerFieldTypes.FIRSTNAME;

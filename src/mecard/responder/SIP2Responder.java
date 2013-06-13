@@ -28,7 +28,6 @@ import mecard.customer.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
 import mecard.util.SIPConnector;
 import api.SIPRequest;
-import site.mecard.MeCardPolicy;
 
 /**
  * The SIP2 strategy is meant to retrieve initial information about customers.
