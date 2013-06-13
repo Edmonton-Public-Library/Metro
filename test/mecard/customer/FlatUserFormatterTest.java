@@ -60,14 +60,13 @@ public class FlatUserFormatterTest
     @Test
     public void testSetCustomer()
     {
-        System.out.println("setCustomer");
+        System.out.println("==setCustomer==");
         Customer customer = null;
-        FlatUserFormatter instance = new FlatUserFormatter();
-        boolean expResult = false;
-        boolean result = instance.setCustomer(customer);
+        FlatUserFormatter formatter = new FlatUserFormatter();
+        boolean expResult = true;
+        boolean result = formatter.setCustomer(customer);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        fail("Not implemented yet.");
     }
 
     /**
@@ -76,29 +75,13 @@ public class FlatUserFormatterTest
     @Test
     public void testGetCustomer_String()
     {
-        System.out.println("==getCustomer==");
+        System.out.println("==getCustomer String==");
         FlatUserFormatter formatter = new FlatUserFormatter();
-        String cString = "RA1|232132132132|21221015133926|64058|Balzac, William (Dr)|11811 72 Ave.|Edmonton|AB|T6G2B2|X|ilsteam@epl.ca|X|X|20140514|X|X|X|Y|N|Y|Y|X|William (Dr)|Balzac||";
+        String cString = "RA1|232132132132|21221015133926|64058|Balzac, William (Dr)|11811 72 Ave.|Edmonton|AB|T6G2B2|X|ilsteam@epl.ca|7803409998|X|20140514|X|X|X|X|X|X|X|X|William (Dr)|Balzac|";
         Customer expResult = new Customer(cString);
-//        System.out.println("EXP_CUST_STR:"+expResult.toString());
+        System.out.println("EXP_CUST_STRING:"+expResult.toString());
         Customer customer = formatter.getCustomer(dumpFlatOutput.toString());
-        System.out.println("RESULT:"+customer.toString());
-        assertEquals(expResult, customer);
-    }
-
-    /**
-     * Test of getCustomer method, of class FlatUserFormatter.
-     */
-    @Test
-    public void testGetCustomer_List()
-    {
-        System.out.println("getCustomer");
-        List<String> customer = null;
-        FlatUserFormatter instance = new FlatUserFormatter();
-        Customer expResult = null;
-        Customer result = instance.getCustomer(customer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("EXP_CUST_RESULT:"+customer.toString());
+        assertTrue(expResult.toString().compareTo(customer.toString()) == 0);
     }
 }

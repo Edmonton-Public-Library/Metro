@@ -85,8 +85,6 @@ public class APIResponder extends ResponderStrategy
         // get the user's code from the request object.
         String userId  = this.request.get(0);
         String userPin = this.request.get(1);
-        System.out.println("Userid: " + userId);
-        System.out.println("Userpin: " + userPin);
         // the response buffer is in case the command fails, we can populate
         // it with a meaningful error message(s).
         Command getUserAPI = api.getUser(userId, userPin, responseBuffer);

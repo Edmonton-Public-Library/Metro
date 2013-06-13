@@ -16,10 +16,14 @@ import mecard.ProtocolPayload;
  */
 public class Customer extends ProtocolPayload
 {
+    private String firstName;
+    private String lastName;
 
     public Customer()
     {
         super(CustomerFieldTypes.size());
+        firstName = "";
+        lastName = "";
     }
 
     /**
@@ -34,6 +38,8 @@ public class Customer extends ProtocolPayload
     public Customer(String c)
     {
         super(CustomerFieldTypes.size());
+        firstName = "";
+        lastName = "";
         this.splitCustomerFields(c);
     }
 
@@ -69,7 +75,6 @@ public class Customer extends ProtocolPayload
         {
             this.payload.set(i, cmdList.get(i));
         }
-        normalizeFields();
     }
 
     /**
@@ -100,11 +105,20 @@ public class Customer extends ProtocolPayload
             this.set(CustomerFieldTypes.FIRSTNAME, cName[1].trim());
         }
         this.set(CustomerFieldTypes.LASTNAME, cName[0].trim());
-        normalizeFields();
+        
     }
     
     public void set(CustomerFieldTypes ft, String value)
     {
+//        System.out.println("CustomerFieldType ordinal:"+ft.toString());
+        if (ft == CustomerFieldTypes.FIRSTNAME)
+        {
+            firstName = value;
+        }
+        if (ft == CustomerFieldTypes.LASTNAME)
+        {
+            lastName = value;
+        }
         this.setPayloadSlot(ft.ordinal(), value);
     }
 
@@ -119,6 +133,13 @@ public class Customer extends ProtocolPayload
      */
     private void normalizeFields()
     {
+        // set name field if empty
+        
+        if (! firstName.isEmpty() && ! lastName.isEmpty())
+        {
+            this.set(CustomerFieldTypes.NAME, 
+               get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME));
+        }
         for (int i = 0; i < CustomerFieldTypes.size(); i++)
         {
             if (this.payload.get(i).trim().isEmpty())
@@ -126,5 +147,22 @@ public class Customer extends ProtocolPayload
                 this.payload.set(i, Protocol.DEFAULT_FIELD);
             }
         }
+    }
+    
+    @Override
+    public String toString()
+    {
+        if (firstName.isEmpty() == false && lastName.isEmpty() == false)
+        {
+            this.set(CustomerFieldTypes.NAME, (get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME)));
+        }
+        normalizeFields();
+        StringBuilder sb = new StringBuilder();
+        for (String s: payload)
+        {
+            sb.append(s);
+            sb.append(Protocol.DELIMITER);
+        }
+        return sb.toString();
     }
 }

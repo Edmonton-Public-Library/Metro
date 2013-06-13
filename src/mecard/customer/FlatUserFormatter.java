@@ -23,6 +23,7 @@ package mecard.customer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import mecard.util.PostalCode;
 
 /**
  * Formats a customer object to and from flat user format and MeCard Customer
@@ -33,7 +34,7 @@ import java.util.List;
  */
 public class FlatUserFormatter implements CustomerFormatter
 {
-    public final static String DEFAULT_DATE = "0";
+    public final static String DEFAULT_DATE = "";
     @Override
     public boolean setCustomer(Customer customer)
     {
@@ -44,9 +45,6 @@ public class FlatUserFormatter implements CustomerFormatter
     public Customer getCustomer(String customerString)
     {
         String[] custStrArray = customerString.split("\n");
-//        System.out.println("CUST_SIZE:"+custStrArray.length
-//                +" 1)'"+custStrArray[0]+"' last)'"
-//                +custStrArray[custStrArray.length-1]+"'");
         List<String> cList = new ArrayList<String>();
         cList.addAll(Arrays.asList(custStrArray));
         return this.getCustomer(cList);
@@ -75,35 +73,47 @@ public class FlatUserFormatter implements CustomerFormatter
                         customerObject.set(CustomerFieldTypes.PROVINCE, cityState[1].trim());
                     }
                 } // we also have to reformat the date from ANSI
-                else
+                else if (fieldType == CustomerFieldTypes.POSTALCODE)
                 {
-                    if (fieldType == CustomerFieldTypes.DOB
+                    PostalCode pCode = new PostalCode(flatUserFieldValue);
+                    customerObject.set(CustomerFieldTypes.POSTALCODE, pCode.toString());
+                }
+                else if (fieldType == CustomerFieldTypes.DOB
                             || fieldType == CustomerFieldTypes.PRIVILEGE_EXPIRES)
+                {
+                    // one value that is a valid return value is 'NEVER' so 
+                    // lets screen for that now.
+                    if (flatUserFieldValue.equalsIgnoreCase("NEVER"))
                     {
-                        // one value that is a valid return value is 'NEVER' so 
-                        // lets screen for that now.
-                        StringBuilder date = new StringBuilder();
-                        if (flatUserFieldValue.equalsIgnoreCase("NEVER"))
-                        {
-                            date.append(DEFAULT_DATE);
-                        } 
-                        else
-                        {
-                            // year
-                            date.append(flatUserFieldValue.substring(0, 4));
-                            date.append("-");
-                            // month
-                            date.append(flatUserFieldValue.substring(4, 6));
-                            date.append("-");
-                            // day
-                            date.append(flatUserFieldValue.substring(6, 8));
-                            customerObject.set(fieldType, date.toString());
-                        }
-                    } else
+                        customerObject.set(fieldType, DEFAULT_DATE);
+                    } 
+                    else
                     {
                         customerObject.set(fieldType, flatUserFieldValue);
                     }
                 }
+                else if (fieldType == CustomerFieldTypes.PHONE)
+                {
+                    Phone phone = new Phone(flatUserFieldValue);
+                    customerObject.set(fieldType, phone.toString());
+                }
+                else if (fieldType == CustomerFieldTypes.NAME)
+                {
+                    customerObject.setName(flatUserFieldValue);
+                }
+//                else if (fieldType == CustomerFieldTypes.LASTNAME)
+//                {
+//                    customerObject.set(CustomerFieldTypes.LASTNAME, flatUserFieldValue);
+//                }
+//                else if (fieldType == CustomerFieldTypes.FIRSTNAME)
+//                {
+//                    customerObject.set(CustomerFieldTypes.FIRSTNAME, flatUserFieldValue);
+//                }
+                else
+                {
+                    customerObject.set(fieldType, flatUserFieldValue);
+                }
+                
             }
         }
         return customerObject;
@@ -119,76 +129,58 @@ public class FlatUserFormatter implements CustomerFormatter
         if (flatUserFieldValue.equals("USER_ID"))
         {
             return CustomerFieldTypes.ID;
-        } else
+        } 
+        else if (flatUserFieldValue.equals("USER_NAME"))
         {
-            if (flatUserFieldValue.equals("USER_FIRST_NAME"))
-            {
-                return CustomerFieldTypes.FIRSTNAME;
-            } else
-            {
-                if (flatUserFieldValue.equals("USER_LAST_NAME"))
-                {
-                    return CustomerFieldTypes.LASTNAME;
-                } else
-                {
-                    if (flatUserFieldValue.equals("USER_PIN"))
-                    {
-                        return CustomerFieldTypes.PIN;
-                    } else
-                    {
-                        if (flatUserFieldValue.equals("USER_PRIV_EXPIRES"))
-                        {
-                            return CustomerFieldTypes.PRIVILEGE_EXPIRES;
-                        } else
-                        {
-                            if (flatUserFieldValue.equals("USER_BIRTH_DATE"))
-                            {
-                                return CustomerFieldTypes.DOB;
-                            } // a little dangerous since other libraries may not use CAT2 for gender.
-                            else
-                            {
-                                if (flatUserFieldValue.equals("USER_CATEGORY2"))
-                                {
-                                    return CustomerFieldTypes.GENDER;
-                                } else
-                                {
-                                    if (flatUserFieldValue.equals("STREET"))
-                                    {
-                                        return CustomerFieldTypes.STREET;
-                                    } else
-                                    {
-                                        if (flatUserFieldValue.equals("CITY/STATE"))
-                                        {
-                                            return CustomerFieldTypes.CITY;
-                                        } else
-                                        {
-                                            if (flatUserFieldValue.equals("POSTALCODE"))
-                                            {
-                                                return CustomerFieldTypes.POSTALCODE;
-                                            } else
-                                            {
-                                                if (flatUserFieldValue.equals("PHONE"))
-                                                {
-                                                    return CustomerFieldTypes.PHONE;
-                                                } else
-                                                {
-                                                    if (flatUserFieldValue.equals("EMAIL"))
-                                                    {
-                                                        return CustomerFieldTypes.EMAIL;
-                                                    } else
-                                                    {
-                                                        return null;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            return CustomerFieldTypes.NAME;
+        }
+//        else if (flatUserFieldValue.equals("USER_FIRST_NAME"))
+//        {
+//            return CustomerFieldTypes.FIRSTNAME;
+//        } 
+//        else if (flatUserFieldValue.equals("USER_LAST_NAME"))
+//        {
+//            return CustomerFieldTypes.LASTNAME;
+//        } 
+        else if (flatUserFieldValue.equals("USER_PIN"))
+        {
+            return CustomerFieldTypes.PIN;
+        } 
+        else if (flatUserFieldValue.equals("USER_PRIV_EXPIRES"))
+        {
+            return CustomerFieldTypes.PRIVILEGE_EXPIRES;
+        } 
+        else if (flatUserFieldValue.equals("USER_BIRTH_DATE"))
+        {
+            return CustomerFieldTypes.DOB;
+        } // a little dangerous since other libraries may not use CAT2 for gender.
+        else if (flatUserFieldValue.equals("USER_CATEGORY2"))
+        {
+            return CustomerFieldTypes.GENDER;
+        } 
+        else if (flatUserFieldValue.equals("STREET"))
+        {
+            return CustomerFieldTypes.STREET;
+        } 
+        else if (flatUserFieldValue.equals("CITY/STATE"))
+        {
+            return CustomerFieldTypes.CITY;
+        } 
+        else if (flatUserFieldValue.equals("POSTALCODE"))
+        {
+            return CustomerFieldTypes.POSTALCODE;
+        } 
+        else if (flatUserFieldValue.equals("PHONE"))
+        {
+            return CustomerFieldTypes.PHONE;
+        } 
+        else if (flatUserFieldValue.equals("EMAIL"))
+        {
+            return CustomerFieldTypes.EMAIL;
+        } 
+        else
+        {
+            return null;
         }
     }
 
@@ -209,5 +201,26 @@ public class FlatUserFormatter implements CustomerFormatter
             }
         }
         return returnStrings;
+    }
+
+    private static class Phone
+    {
+        private String phone;
+        public Phone(String p)
+        {
+            phone = new String();
+            if (p != null)
+            {
+                phone = p.replaceAll("-", "");
+                phone = phone.replaceAll("\\(", "");
+                phone = phone.replaceAll("\\)", "");
+            }
+        }
+        
+        @Override
+        public String toString()
+        {
+            return phone;
+        }
     }
 }
