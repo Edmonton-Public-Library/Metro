@@ -39,7 +39,7 @@ public class Request extends ProtocolPayload
             this.authorityToken = ""; // some commands don't require a token
         }
     }
-
+    
     /**
      * Split the commandArguments on the Protocol's delimiter breaking the
      * commandArguments into chunks. The first element on the list is the
@@ -68,11 +68,21 @@ public class Request extends ProtocolPayload
         }
     }
 
+    /**
+     * 
+     * @return the request code.
+     */
     public QueryTypes getCommandType() 
     {
         return code;
     }
 
+    /** 
+     *
+     * @return the request arguments of the request, not including any request
+     * code or authority token.
+     * @see ProtocolPayload#toString() 
+     */
     public String getArgs() 
     {
         return super.toString();
@@ -117,4 +127,4 @@ public class Request extends ProtocolPayload
         }
         return type;
     }
-}
+        }

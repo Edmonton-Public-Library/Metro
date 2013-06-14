@@ -1,4 +1,5 @@
 package mecard.customer;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -63,8 +64,8 @@ public class FlatUserFormatterTest
         System.out.println("==setCustomer==");
         Customer customer = null;
         FlatUserFormatter formatter = new FlatUserFormatter();
-        boolean expResult = true;
-        boolean result = formatter.setCustomer(customer);
+        List<String> expResult = new ArrayList<String>();
+        List<String> result = formatter.setCustomer(customer);
         assertEquals(expResult, result);
         fail("Not implemented yet.");
     }

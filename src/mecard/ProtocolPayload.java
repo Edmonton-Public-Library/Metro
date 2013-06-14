@@ -14,6 +14,7 @@ import java.util.List;
 public class ProtocolPayload 
 {
     protected List<String> payload;
+    
     public ProtocolPayload()
     {
         payload = new ArrayList<String>();
@@ -48,6 +49,10 @@ public class ProtocolPayload
         return this.payload;
     }
     
+    /**
+     * 
+     * @return String version of just the payload.
+     */
     @Override
     public String toString()
     {

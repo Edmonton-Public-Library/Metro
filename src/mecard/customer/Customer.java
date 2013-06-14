@@ -9,6 +9,7 @@ import java.util.List;
 import mecard.Exception.InvalidCustomerException;
 import mecard.Protocol;
 import mecard.ProtocolPayload;
+import mecard.util.Request;
 
 /**
  * 
@@ -66,7 +67,10 @@ public class Customer extends ProtocolPayload
         // initialized with a default value (See Protocol) or have a value in them.
         if (cmdList.size() != CustomerFieldTypes.size())
         {
-            throw new InvalidCustomerException();
+            throw new InvalidCustomerException("expected " 
+                    + CustomerFieldTypes.size() 
+                    + " but got " 
+                    + cmdList.size());
         }
 
         // 1 for command, 1 for authority token. All commands
@@ -140,7 +144,7 @@ public class Customer extends ProtocolPayload
             this.set(CustomerFieldTypes.NAME, 
                get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME));
         }
-        for (int i = 0; i < CustomerFieldTypes.size(); i++)
+        for (int i = 0; i < payload.size(); i++)
         {
             if (this.payload.get(i).trim().isEmpty())
             {
@@ -164,5 +168,21 @@ public class Customer extends ProtocolPayload
             sb.append(Protocol.DELIMITER);
         }
         return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Customer))
+        {
+            return false;
+        }
+        
+        if (this.toString().compareTo(o.toString()) != 0)
+        {
+            return false;
+        }
+        
+        return true;
     }
 }

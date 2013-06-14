@@ -21,6 +21,7 @@ package api;
 
 import java.util.ArrayList;
 import java.util.List;
+import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.util.Command;
@@ -36,6 +37,8 @@ public class SymphonyAPIBuilder implements APIBuilder
 {
     private static List<String> seluser;
     private static List<String> dumpflatuser;
+    private static List<String> loadFlatUserCreate;
+    private static List<String> loadFlatUserUpdate;
     
     public SymphonyAPIBuilder()
     {
@@ -45,8 +48,17 @@ public class SymphonyAPIBuilder implements APIBuilder
         seluser.add("-oU"); // will output user key.
 //        seluser.add("wc");
 //        seluser.add("-l"); // expects barcode.
+        // Dumpflatuser settings, ready for inclusion in the Command object.
         dumpflatuser = new ArrayList<String>();
         dumpflatuser.add("/home/metro/bimport/dumpflatuser");
+        // loadflatuser settings, ready for inclusion in the Command object.
+        loadFlatUserCreate = new ArrayList<String>();
+        loadFlatUserCreate.add("/home/metro/bimport/loadflatuser");
+        // TODO add flags for creating user.
+        // Update user command.
+        loadFlatUserUpdate = new ArrayList<String>();
+        loadFlatUserUpdate.add("/home/metro/bimport/loadflatuser");
+        // TODO add flags for updating user.
     }
     
     /**
@@ -55,7 +67,6 @@ public class SymphonyAPIBuilder implements APIBuilder
      * @param userId the value of userId
      * @param userPin the value of userPin
      */
-    
     @Override
     public Command getUser(String userId, String userPin, StringBuffer responseBuffer)
     {
@@ -92,6 +103,24 @@ public class SymphonyAPIBuilder implements APIBuilder
     public CustomerFormatter getFormatter()
     {
         return new FlatUserFormatter();
+    }
+
+    @Override
+    public Command createUser(Customer customer, StringBuffer responseBuffer)
+    {
+        // we have a customer let's convert them to a flat user.
+        List<String> flatUser = getFormatter().setCustomer(customer);
+        Command command = new Command.Builder().cat(flatUser).args(loadFlatUserCreate).build();
+        return command;
+    }
+
+    @Override
+    public Command updateUser(Customer customer, StringBuffer responseBuffer)
+    {
+        // we have a customer let's convert them to a flat user.
+        List<String> flatUser = getFormatter().setCustomer(customer);
+        Command command = new Command.Builder().cat(flatUser).args(loadFlatUserUpdate).build();
+        return command;
     }
     
 }

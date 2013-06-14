@@ -5,6 +5,7 @@
 package mecard.util;
 
 import mecard.QueryTypes;
+import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -70,7 +71,7 @@ public class RequestTest {
         instance = new Request("QA0|123456789abcdef|one|two|three|");
         expResult = "one|two|three|";
         result = instance.getArgs();
-        assertEquals(expResult, result);
+        assertEquals(expResult, result);        
     }
 
     /**
@@ -129,5 +130,28 @@ public class RequestTest {
         expResult = "three";
         result = instance.get(ordinal);
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getCustomer method, of class Request.
+     */
+    @Test
+    public void testGetCustomer()
+    {
+        System.out.println("==getCustomer==");           
+        String custRequest =
+                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
+                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|20050101|"
+                + "20140602|X|X|Y|Y|N|Y|Y|N|Balzac|Billy|";
+        String custString =
+                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
+                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|20050101|"
+                + "20140602|X|X|Y|Y|N|Y|Y|N|Balzac|Billy|";
+        Request request = new Request(custRequest);
+        Customer c1 = new Customer(request.toString());
+        Customer c2 = new Customer(custString);
+        System.out.println("C1:"+c1);
+        System.out.println("C2:"+c2);
+        assertEquals(c1, c2);
     }
 }

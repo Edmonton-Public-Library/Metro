@@ -152,4 +152,44 @@ public class CustomerTest {
         System.out.println("RESULT:"+result.toString());
         assertEquals(expResult.compareTo(result.toString()), 0);
     }
+
+    /**
+     * Test of toString method, of class Customer.
+     */
+    @Test
+    public void testToString()
+    {
+        System.out.println("toString");
+        Customer instance = new Customer();
+        String expResult = "X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|";
+        String result = instance.toString();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of equals method, of class Customer.
+     */
+    @Test
+    public void testEquals()
+    {
+        System.out.println("equals");
+        Object o = null;
+        String custRequest1 =
+                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
+                + "Edmonton|Alberta|H0H0H0|M|ilsteam@epl.ca|7804964058|19750822|20140602|X|X|Y|Y|N|Y|Y|N|Balzac|Billy|";
+        String custRequest2 =
+                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
+                + "Edmonton|Alberta|H0H0H0|X|ilsteam@epl.ca|7804964058|19750822|20140602|X|X|Y|Y|N|Y|Y|N|Balzac|Billy|";
+        Customer c1 = new Customer(custRequest1);
+        Customer c2 = new Customer(custRequest1);
+        boolean expResult = true;
+        boolean result = c1.equals(c2);
+        assertEquals(expResult, result);
+        
+        c1 = new Customer(custRequest1);
+        c2 = new Customer(custRequest2);
+        expResult = false;
+        result = c1.equals(c2);
+        assertEquals(expResult, result);
+    }
 }

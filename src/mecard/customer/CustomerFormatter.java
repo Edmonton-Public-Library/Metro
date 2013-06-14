@@ -44,5 +44,10 @@ public interface CustomerFormatter
      */
     public Customer getCustomer(String s);
     
-    public boolean setCustomer(Customer c);
+    /**
+     *
+     * @param c the value of c
+     * @return the List<String>
+     */
+    public List<String> setCustomer(Customer c);
 }

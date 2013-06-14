@@ -23,6 +23,8 @@ package mecard.customer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import mecard.Protocol;
+import mecard.util.DateComparer;
 import mecard.util.PostalCode;
 
 /**
@@ -40,68 +42,68 @@ public class FlatUserFormatter implements CustomerFormatter
      * Converts a customer into a flatUser that can be loaded by Symphony's
      * loadflatuser.
      * @param customer
-     * @return 
+     * @return true if the conversion could be made and false otherwise.
      */
+    /**
+     *
+     * @param customer the value of customer
+     * @return the List<String>
+     */
+    
     @Override
-    public boolean setCustomer(Customer customer)
+    public List<String> setCustomer(Customer c)
     {
-        if (customer == null)
+        if (c == null)
         {
-            return false;
+            return new ArrayList<String>();
         }
         FlatUser flatUser = new FlatUser();
-        flatUser.add(FlatUserFieldTypes.USER_ID, customer.get(CustomerFieldTypes.ID));
-//        flatUser.add(FlatUserFieldTypes.USER_PIN, customer.get(CustomerFields.USER_PIN));
-//        String field = customer.get(CustomerFields.USER_LAST_NAME);
-//        // if that was successful then append a ',' and the first name
-//        if (field.isEmpty() == false)
-//        {
-//            String firstName = customer.get(CustomerFields.USER_FIRST_NAME);
-//            if (firstName.isEmpty() == false)
-//            {
-//                field += ", ";
-//                field += firstName;
-//            }
-//            flatUser.add(FlatUserFieldTypes.USER_NAME, field);
-//        }
-//        flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, customer.get(CustomerFields.USER_FIRST_NAME));
-//        flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, customer.get(CustomerFields.USER_LAST_NAME));
-//        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, customer.get(CustomerFields.USER_PREFERRED_NAME));
-//        if (customer.get(CustomerFields.USER_PREFERRED_NAME).isEmpty() == false)
-//        {
-//            // If the customer has a preferred name, set it to be used.
-//            flatUser.add(FlatUserFieldTypes.USER_NAME_DSP_PREF, "1");
-//        }
-//        // Dates
-//        String date = DateComparer.formatDate(customer.get(CustomerFields.DOB));
-//        flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, date);
-//        date = DateComparer.formatDate(customer.get(CustomerFields.USER_PRIV_EXPIRES));
-//        flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, date);
-//        
-//        // Address
-//        flatUser.add(
-//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.STREET, customer.get(CustomerFields.STREET));
-//        // Symphony uses CITY/STATE as a field (sigh)
-//        String city     = customer.get(CustomerFields.CITY);
-//        String province = customer.get(CustomerFields.PROVINCE);
-//        flatUser.add(
-//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.CITY_STATE, city + ", " + province.toUpperCase() );
-//        flatUser.add(
-//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.POSTALCODE, customer.get(CustomerFields.POSTALCODE));
-//        
-//        flatUser.add(
-//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.EMAIL, customer.get(CustomerFields.EMAIL));
-//        // Load optional fields.
-//        flatUser.add(
-//                FlatUserExtendedFields.USER_ADDR1, FlatUserFieldTypes.PHONE, customer.get(CustomerFields.PHONE));
-//        flatUser.add(FlatUserFieldTypes.USER_CATEGORY2, customer.get(CustomerFields.GENDER));
-//        // There is not middle name field.
-//        // set todays date as the date privilege granted.
-//        flatUser.add(FlatUserFieldTypes.USER_PRIV_GRANTED,  DateComparer.today());
-//        // Now load all the default values we need to set like PROFILE.
-//        flatUser.setDefaultProperties();
-//        return flatUser.toList();
-        return true; 
+        flatUser.add(FlatUserFieldTypes.USER_ID, c.get(CustomerFieldTypes.ID));
+        flatUser.add(FlatUserFieldTypes.USER_PIN, c.get(CustomerFieldTypes.PIN));
+        flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, c.get(CustomerFieldTypes.FIRSTNAME));
+        flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, c.get(CustomerFieldTypes.LASTNAME));
+        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, c.get(CustomerFieldTypes.NAME));
+        // Dates
+        flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, c.get(CustomerFieldTypes.DOB));
+        flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+        // Address
+        flatUser.add(
+                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserFieldTypes.STREET, 
+                c.get(CustomerFieldTypes.STREET));
+        // Symphony uses CITY/STATE as a field (sigh)
+        String city     = c.get(CustomerFieldTypes.CITY);
+        String province = c.get(CustomerFieldTypes.PROVINCE);
+        flatUser.add(
+                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserFieldTypes.CITY_STATE, 
+                city + ", " + province.toUpperCase());
+        flatUser.add(
+                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserFieldTypes.POSTALCODE, 
+                c.get(CustomerFieldTypes.POSTALCODE));
+        flatUser.add(
+                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserFieldTypes.EMAIL, 
+                c.get(CustomerFieldTypes.EMAIL));
+        // Load optional fields.
+        flatUser.add(
+                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserFieldTypes.PHONE, 
+                c.get(CustomerFieldTypes.PHONE));
+        String gender = c.get(CustomerFieldTypes.GENDER);
+        if (gender.contains(Protocol.DEFAULT_FIELD) == false)
+        {
+            // we will have to revisit this since I don't know how Horizon 
+            //  designates different sexes.
+            flatUser.add(FlatUserFieldTypes.USER_CATEGORY2, gender);
+        }
+        // There is not middle name field.
+        // set todays date as the date privilege granted.
+        flatUser.add(FlatUserFieldTypes.USER_PRIV_GRANTED,  DateComparer.today());
+        // Now load all the default values we need to set like PROFILE.
+        flatUser.setDefaultProperties();
+        return flatUser.toList(); 
     }
 
     @Override
@@ -175,8 +177,7 @@ public class FlatUserFormatter implements CustomerFormatter
                 else
                 {
                     customerObject.set(fieldType, flatUserFieldValue);
-                }
-                
+                }    
             }
         }
         return customerObject;
@@ -218,7 +219,10 @@ public class FlatUserFormatter implements CustomerFormatter
         else if (flatUserFieldValue.equals("USER_BIRTH_DATE"))
         {
             return CustomerFieldTypes.DOB;
-        } // a little dangerous since other libraries may not use CAT2 for gender.
+        } 
+        // TODO handle variance of library usage of CAT2.
+        // a little dangerous since other libraries may not use CAT2 for gender,
+        // suggest this be a field that loaded from a property file.
         else if (flatUserFieldValue.equals("USER_CATEGORY2"))
         {
             return CustomerFieldTypes.GENDER;

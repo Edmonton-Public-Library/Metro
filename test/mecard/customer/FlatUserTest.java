@@ -76,29 +76,6 @@ public class FlatUserTest
         assertTrue(instance.getField(FlatUserFieldTypes.USER_ACCESS).equals("PUBLIC"));
         System.out.println(instance);
     }
-
-    /**
-     * Test of toString method, of class FlatUser.
-     */
-    @Test
-    public void testToString()
-    {
-        System.out.println("==toString==");
-        FlatUser instance = new FlatUser();
-        instance.setDefaultProperties();
-        String expResult = "*** DOCUMENT BOUNDARY ***\n" +
-            ".USER_LIBRARY.   |aEPLMNA\n" +
-            ".USER_PROFILE.   |aEPL-METRO\n" +
-            ".USER_PREF_LANG.   |aENGLISH\n" +
-            ".USER_STATUS.   |aOK\n" +
-            ".USER_ROUTING_FLAG.   |aY\n" +
-            ".USER_CHG_HIST_RULE.   |aALLCHARGES\n" +
-            ".USER_ACCESS.   |aPUBLIC\n" +
-            ".USER_ENVIRONMENT.   |aPUBLIC";
-        String result = instance.toString();
-        System.out.println(instance);
-        assertEquals(expResult, result);
-    }
     
     /**
      * Test of setDefaultProperties method, of class FlatUser.

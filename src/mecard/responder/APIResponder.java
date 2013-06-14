@@ -74,29 +74,30 @@ public class APIResponder extends ResponderStrategy
 
     protected ResponseTypes updateCustomer(StringBuffer responseBuffer)
     {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        // I have a customer, I need to reload them into the ils
+        Customer customer = new Customer(request.toString());
+        Command apiCommand = api.updateUser(customer, responseBuffer);
+        ProcessWatcherHandler status = apiCommand.execute();
+        if (status.getStatus() == ResponseTypes.OK)
+        {
+            // alls good so add a nice message.
+            responseBuffer.append("Thank you.");
+        }
+        return status.getStatus(); 
     }
 
     protected ResponseTypes createCustomer(StringBuffer responseBuffer)
     {
-//        // I have a customer, I need to load them into the ils
-//        List<String> submittableCustomer = new ArrayList<String>();
-//        if (convert(submittableCustomer))
-//        {
-//            Command command = new Command.Builder().args(submittableCustomer).build();
-//            ProcessWatcherHandler status = command.execute();
-//            if (status.getStatus() == ResponseTypes.OK)
-//            {
-//                responseBuffer.append(status.getStdout());
-//                return ResponseTypes.SUCCESS;
-//            }
-//            else
-//            {
-//                responseBuffer.append(status.getStderr());
-//                return ResponseTypes.FAIL;
-//            }
-//        }
-        return ResponseTypes.FAIL;
+        // I have a customer, I need to load them into the ils
+        Customer customer = new Customer(request.toString());
+        Command apiCommand = api.createUser(customer, responseBuffer);
+        ProcessWatcherHandler status = apiCommand.execute();
+        if (status.getStatus() == ResponseTypes.OK)
+        {
+            // alls good so add a nice message.
+            responseBuffer.append("Thank you for using the MeCard.");
+        }
+        return status.getStatus();
     }
     
     /**

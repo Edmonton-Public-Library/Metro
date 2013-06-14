@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <comment>Default creation policies for Flat Users at EPL</comment>
+    <comment>Default creation policies for Flat Users at EPL Horizon</comment>
     <entry key="USER_LIBRARY">EPLMNA</entry>
     <entry key="USER_PROFILE">EPL-METRO</entry>
     <entry key="USER_PREF_LANG">ENGLISH</entry>

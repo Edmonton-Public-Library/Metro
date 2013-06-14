@@ -20,6 +20,7 @@
  */
 package api;
 
+import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.util.Command;
 
@@ -34,8 +35,23 @@ public interface APIBuilder
      *
      * @param userId the value of userId
      * @param userPin the value of userPin
-     */
-    
+     */ 
     public Command getUser(String userId, String userPin, StringBuffer responseBuffer);
     public CustomerFormatter getFormatter();
+
+    /**
+     * Creates a user based on the supplied customer, which must not be null.
+     * @param customer
+     * @param responseBuffer
+     * @return command that can be executed on the ILS to create a customer.
+     */
+    public Command createUser(Customer customer, StringBuffer responseBuffer);
+
+    /**
+     * Updates a user based on the supplied customer, which must not be null.
+     * @param customer
+     * @param responseBuffer
+     * @return command that can be executed on the ILS to update a customer.
+     */
+    public Command updateUser(Customer customer, StringBuffer responseBuffer);
 }
