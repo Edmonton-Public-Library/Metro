@@ -1,23 +1,23 @@
-/**
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
  *
- * This class is part of the Metro, MeCard project. Copyright (C) 2013 Andrew
- * Nisbet, Edmonton public Library.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  * 
-* This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
-* This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- * 
-* You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
-*/
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.config;
 
 import java.io.FileInputStream;
@@ -36,11 +36,11 @@ import java.util.logging.Logger;
 public class PropertyReader
 {
 
-    public final static String BIMPORT_PROPERTY_FILE = "bimport_config.xml";
-    public final static String DEFAULT_CREATE_PROPERTY_FILE = "default_create_config.xml";
-    public final static String ENVIRONMENT_FILE = "env_config.xml";
-    public final static String SIP2_FILE = "sip2_config.xml";
-    public final static String API_FILE = "api_config.xml";
+    public final static String BIMPORT_PROPERTY_FILE = "bimport.properties";
+    public final static String DEFAULT_CREATE_PROPERTY_FILE = "default.properties";
+    public final static String ENVIRONMENT_FILE = "environment.properties";
+    public final static String SIP2_FILE = "sip2.properties";
+    public final static String API_FILE = "api.properties";
     private static Properties defaultPolicies = PropertyReader.getProperties(ConfigFileTypes.DEFAULT_CREATE);
     private static Properties bimport; // don't read by default since this is optional.
     private static Properties environment = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
