@@ -49,6 +49,13 @@ public abstract class ResponderStrategy
         }
     }
     
+    public static String getUnautherizedResponse(String msg)
+    {
+        Response r = new Response(ResponseTypes.UNAUTHORIZED);
+        r.addResponse(msg);
+        return r.toString();
+    }
+    
     public abstract String getResponse();
     
      /**

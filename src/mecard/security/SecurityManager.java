@@ -21,6 +21,15 @@
 
 package mecard.security;
 
+import java.util.Properties;
+import mecard.Exception.MetroSecurityException;
+import mecard.ResponseTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.util.Request;
+import mecard.util.Response;
+
 /**
  *
  * @author metro
@@ -30,11 +39,18 @@ public final class SecurityManager
     private SecurityManager()
     { }
     
+    /**
+     * Tests if the argument token is the API key from the client.
+     * @param token pass phrase supplied by client.
+     * @return true if the client sent this request and false if the token
+     * didn't match the expected API-key value.
+     */
     public static final boolean isAuthorized(String token)
     {
-        // TODO get the MD5 hash of the password from config file and compare
-        // the two strings.
-        return true;
+        // Compare if the client sent an appropriate API Key.
+        Properties properties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        String expectedKey = properties.getProperty(LibraryPropertyTypes.API_KEY.toString());
+        return (token.compareTo(expectedKey) == 0);
     }
     
     public static final String encrypt(String input)
@@ -43,9 +59,19 @@ public final class SecurityManager
         return input.toString();
     }
     
-    public static final String unEncrypt(String input)
+    public static final String unEncrypt(String input) throws MetroSecurityException
     {
         // TODO add encryption as time permits.
-        return input;
+        // check if the message came from the client, and refuse queries without
+        // the correct password.
+        Request request = new Request(input);
+        if (! isAuthorized(request.getTransactionId()))
+        {
+            throw new MetroSecurityException();
+        } 
+        else
+        {
+            return input;
+        }
     }
 }

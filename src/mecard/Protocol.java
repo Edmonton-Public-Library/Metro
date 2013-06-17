@@ -22,6 +22,7 @@ package mecard;
 
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
+import mecard.Exception.MetroSecurityException;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -62,17 +63,26 @@ public class Protocol
     }
 
     /**
-     * Checks incoming commands to the server, parses what the command is and
-     * then runs the required activity.
+     * Checks incoming commands to the server, parses what the command, its 
+     * security token and if valid then runs the required activity.
      *
-     * @param cmd
+     * @param cmd command string request.
      * @return formatted response string.
      */
     public String processInput(String cmd)
     {
-        String command = SecurityManager.unEncrypt(cmd);
-        ResponderStrategy responder = getResponder(command);
-        String response = responder.getResponse();
+        String command;
+        String response;
+        try
+        {
+            command = SecurityManager.unEncrypt(cmd);
+            ResponderStrategy responder = getResponder(command);
+            response = responder.getResponse();
+        }
+        catch (MetroSecurityException ex)
+        {
+            response = ResponderStrategy.getUnautherizedResponse(ex.getMessage());
+        }
         return SecurityManager.encrypt(response);
     }
 

@@ -95,7 +95,6 @@ public class MetroService implements Daemon
     public void start() throws Exception
     {
         System.out.println(new Date() + " starting service...");
-        // Get and parse, test port number.
         main(null);
     }
 
