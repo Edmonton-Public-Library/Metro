@@ -24,16 +24,21 @@ import java.util.List;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
-import mecard.util.Command;
-import mecard.util.ProcessWatcherHandler;
 
 /**
- *
+ * SymphonyAPIBuilder creates the commands used to perform the MeCard request
+ * contract. Symphony has excellent facilities for answering all requests except
+ * getting the ILS status. For that reason if you set your request for ILS status
+ * in your environment.properties file to 'Symphony' you will get a 
+ * UnsupportedOperationException. The way around it is to devise some symphony
+ * API that would return the status then implement it in this calls, then switch
+ * the extends ILSRequestAdaptor to implements ILSRequestBuilder.
  * @author andrew
+ * @see UnsupportedOperationException
+ * @see ILSRequestAdaptor
+ * @see ILSRequestBuilder
  */
-
-
-public class SymphonyAPIBuilder implements APIBuilder
+public class SymphonyAPIBuilder extends ILSRequestAdaptor
 {
     private static List<String> seluser;
     private static List<String> dumpflatuser;
@@ -54,11 +59,19 @@ public class SymphonyAPIBuilder implements APIBuilder
         // loadflatuser settings, ready for inclusion in the Command object.
         loadFlatUserCreate = new ArrayList<String>();
         loadFlatUserCreate.add("/home/metro/bimport/loadflatuser");
-        // TODO add flags for creating user.
+        loadFlatUserCreate.add("-aR");
+        loadFlatUserCreate.add("-bR");
+        loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
+        loadFlatUserCreate.add("-mu");
+        loadFlatUserCreate.add("-n");
         // Update user command.
         loadFlatUserUpdate = new ArrayList<String>();
         loadFlatUserUpdate.add("/home/metro/bimport/loadflatuser");
-        // TODO add flags for updating user.
+        loadFlatUserUpdate.add("-aR");
+        loadFlatUserUpdate.add("-bR");
+        loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\"");
+        loadFlatUserUpdate.add("-mu");
+        loadFlatUserUpdate.add("-n");
     }
     
     /**
@@ -68,7 +81,7 @@ public class SymphonyAPIBuilder implements APIBuilder
      * @param userPin the value of userPin
      */
     @Override
-    public Command getUser(String userId, String userPin, StringBuffer responseBuffer)
+    public Command getCustomer(String userId, String userPin, StringBuffer responseBuffer)
     {
         // for Symphony, this is a two stage process.
         // 1) call seluser to get the user key. If that fails append message to reponsebuffer.

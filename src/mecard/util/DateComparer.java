@@ -24,6 +24,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -112,6 +114,20 @@ public class DateComparer
         Date today = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
         return dateFormat.format(today);
+    }
+    
+    public final static String convertToConfigDate(String ANSIDate)
+    {
+        try
+        {
+            SimpleDateFormat sdfSrc = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
+            Date myDate = sdfSrc.parse(ANSIDate);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(CUSTOMER_DATE_FORMAT);
+            return dateFormat.format(myDate);
+        } catch (ParseException ex)
+        {
+            return ANSIDate;
+        }
     }
 
     /**

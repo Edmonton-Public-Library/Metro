@@ -4,6 +4,8 @@
  */
 package mecard.util;
 
+import api.Command;
+import api.ProcessWatcherHandler;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;

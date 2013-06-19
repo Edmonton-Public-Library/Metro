@@ -20,7 +20,7 @@
  */
 package mecard.responder;
 
-import mecard.customer.SIPCustomerFormatter;
+import mecard.customer.SIPFormatter;
 import java.util.Properties;
 import mecard.Exception.SIPException;
 import mecard.ResponseTypes;
@@ -39,7 +39,8 @@ import api.SIPRequest;
  * answers to questions like is this customer a reciprocal customer?
  * @author andrew
  */
-public class SIP2Responder extends ResponderStrategy
+public class SIP2Responder extends Responder 
+    implements StatusQueryable, CustomerQueryable
 {
     public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     private static SIPConnector sipServer;
@@ -79,7 +80,7 @@ public class SIP2Responder extends ResponderStrategy
                 this.response.addResponse(responseBuffer.toString());
                 break;
             case GET_STATUS:
-                this.response.setCode(getStatus(responseBuffer));
+                this.response.setCode(getILSStatus(responseBuffer));
                 this.response.addResponse(responseBuffer.toString());
                 break; // is SIP2 the best way to get the ILS status, it is one way.
             default:
@@ -95,12 +96,13 @@ public class SIP2Responder extends ResponderStrategy
      * @param responseBuffer
      * @return the ResponseTypes from the execution of the query.
      */
-    private ResponseTypes getCustomer(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes getCustomer(StringBuffer responseBuffer)
     {
         SIPRequest sipCustomerRequest = new SIPRequest();
         String userId  = this.request.get(0);
         String userPin = this.request.get(1);
-        String sipResponse = "";
+        String sipResponse;
         try
         {
             sipResponse = sipServer.send(sipCustomerRequest.patronInfoRequest(userId, userPin));
@@ -117,7 +119,7 @@ public class SIP2Responder extends ResponderStrategy
             responseBuffer.append("invalid PIN");
             return ResponseTypes.UNAUTHORIZED;
         }
-        CustomerFormatter sipFormatter = new SIPCustomerFormatter();
+        CustomerFormatter sipFormatter = new SIPFormatter();
         Customer customer = sipFormatter.getCustomer(sipResponse);
         // You have this before the test metro requirements b/c it checks for PIN
         customer.set(CustomerFieldTypes.PIN, userPin);
@@ -126,7 +128,7 @@ public class SIP2Responder extends ResponderStrategy
             this.response.setCustomer(customer);
             return ResponseTypes.OK;
         }
-        // this can happen if the user is barred, underage, non-resident, reciprocol.
+        // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
         responseBuffer.append("there is a problem with your account, please contact your home library for assistance");
         return ResponseTypes.FAIL;
     }
@@ -136,10 +138,11 @@ public class SIP2Responder extends ResponderStrategy
      * @param responseBuffer
      * @return the ResponseTypes from the execution of the query.
      */
-    private ResponseTypes getStatus(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes getILSStatus(StringBuffer responseBuffer)
     {
         SIPRequest sipStatusRequest = new SIPRequest();
-        String sipResponse = "";
+        String sipResponse;
         try
         {
             sipResponse = sipServer.send(sipStatusRequest.getILSStatus());

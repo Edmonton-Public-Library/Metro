@@ -104,7 +104,7 @@ public class CustomerTest {
                 + "BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|"
                 + "DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
-        SIPCustomerFormatter instance = new SIPCustomerFormatter();
+        SIPFormatter instance = new SIPFormatter();
         String expResult = "21221012345678|X|Billy, Balzac|7 Sir Winston Churchill Square|"
                 + "Edmonton|AB|T5J2V4|M|ilsteam@epl.ca|X|20050303|20140321|X|X|X|X|X|X|X|X|Balzac|Billy|";
         Customer result = instance.getCustomer(customerString);

@@ -38,7 +38,7 @@ public class EPLMeCardPolicyTest
     }
 
     /**
-     * Test of isResident method, of class EPLMeCardPolicy.
+     * Test of isResident method, of class EPLPolicy.
      */
     @Test
     public void testIsResident()
@@ -68,7 +68,7 @@ public class EPLMeCardPolicyTest
     }
 
     /**
-     * Test of isReciprocal method, of class EPLMeCardPolicy.
+     * Test of isReciprocal method, of class EPLPolicy.
      */
     @Test
     public void testIsReciprocal()
@@ -99,7 +99,7 @@ public class EPLMeCardPolicyTest
     }
 
     /**
-     * Test of isInGoodStanding method, of class EPLMeCardPolicy.
+     * Test of isInGoodStanding method, of class EPLPolicy.
      */
     @Test
     public void testIsInGoodStanding()
@@ -129,7 +129,7 @@ public class EPLMeCardPolicyTest
     }
 
     /**
-     * Test of isMinimumAge method, of class EPLMeCardPolicy.
+     * Test of isMinimumAge method, of class EPLPolicy.
      */
     @Test
     public void testIsMinimumAge()

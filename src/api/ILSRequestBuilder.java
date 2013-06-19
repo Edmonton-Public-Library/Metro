@@ -22,21 +22,32 @@ package api;
 
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.util.Command;
 
 /**
- *
+ * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.
+ * Note: Programmers implementing a new builder will probably not be able to 
+ * use all these methods. Symphony for instance, does not have a good facility 
+ * to get the ILS status. In that case sub-class the ILSRequestAdaptor, and make 
+ * sure you don't specify that method of response in the environment.properties
+ * file.
  * @author andrew
+ * @see ILSRequestAdaptor
  */
-public interface APIBuilder
+public interface ILSRequestBuilder
 {
     /**
-     *
-     *
+     * Implementers promise to return a Command that, when run, will return the
+     * customer's information.
      * @param userId the value of userId
      * @param userPin the value of userPin
+     * @param responseBuffer Buffer to contain useful response information.
      */ 
-    public Command getUser(String userId, String userPin, StringBuffer responseBuffer);
+    public Command getCustomer(String userId, String userPin, StringBuffer responseBuffer);
+    
+    /**
+     * Gets the CustomerFormatter related to the implementer of the subclass.
+     * @return CustomerFormatter.
+     */
     public CustomerFormatter getFormatter();
 
     /**
@@ -54,4 +65,11 @@ public interface APIBuilder
      * @return command that can be executed on the ILS to update a customer.
      */
     public Command updateUser(Customer customer, StringBuffer responseBuffer);
+
+    /**
+     * Gets the status of the ILS.
+     * @param responseBuffer
+     * @return Command necessary to test the ILS status.
+     */
+    public Command getStatus(StringBuffer responseBuffer);
 }

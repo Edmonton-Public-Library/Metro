@@ -112,7 +112,7 @@ public class APIResponderTest
     }
 
     /**
-     * Test of getUser method, of class APIResponder.
+     * Test of getCustomer method, of class APIResponder.
      */
     @Test
     public void testGetUser()
@@ -124,7 +124,7 @@ public class APIResponderTest
 //      63                               AO|AA21221015133926|AD64058|AY0AZF37A
 //      recv:64              00020130610    095814000000000000000000000000AO|AA21221015133926|AEBalzac, William (Dr)|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 0.00|BD11811 72 Ave. Edmonton, AB T6G 2B2|BEilsteam@epl.ca|BHUSD|PA20140514    235900|PD|PCEPL-ADULT|DB$0.00|DM$0.00|AFOK|AY0AZBA2C
         String expResult = "RA1|21221015133926|64058|Balzac, William (Dr)|11811 72 Ave.|Edmonton|AB|T6G2B2|X|ilsteam@epl.ca|X|X|20140514|X|X|X|Y|N|Y|Y|X|William (Dr)|Balzac||";
-        ResponseTypes result = instance.getUser(responseBuffer);
+        ResponseTypes result = instance.getCustomer(responseBuffer);
         System.out.println("RESULT:"+result);
         String response = instance.getResponse();
         System.out.println("RESPONSE:"+response);
@@ -141,7 +141,7 @@ public class APIResponderTest
         StringBuffer responseBuffer = null;
         APIResponder instance = null;
         ResponseTypes expResult = null;
-        ResponseTypes result = instance.getServerStatus(responseBuffer);
+        ResponseTypes result = instance.getILSStatus(responseBuffer);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

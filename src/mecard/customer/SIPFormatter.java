@@ -27,10 +27,10 @@ import mecard.util.Address;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class SIPCustomerFormatter implements CustomerFormatter
+public class SIPFormatter implements CustomerFormatter
 {
 
-    public SIPCustomerFormatter()
+    public SIPFormatter()
     {
     }
 

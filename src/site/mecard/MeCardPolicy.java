@@ -20,7 +20,7 @@
  */
 package site.mecard;
 
-import epl.EPLMeCardPolicy;
+import epl.EPLPolicy;
 import java.text.ParseException;
 import java.util.Properties;
 import mecard.Exception.UnsupportedLibraryException;
@@ -44,14 +44,14 @@ public abstract class MeCardPolicy
     public final static int MAXIMUM_EXPIRY_DAYS = 365;
     protected static boolean DEBUG;
 
-    public static EPLMeCardPolicy getInstanceOf(boolean debug)
+    public static EPLPolicy getInstanceOf(boolean debug)
     {
         DEBUG = debug;
         Properties props = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         String libCode = props.getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
         if (libCode.equalsIgnoreCase(MemberTypes.EPL.name()))
         {
-            return new EPLMeCardPolicy(DEBUG);
+            return new EPLPolicy(DEBUG);
         } else
         {
             throw new UnsupportedLibraryException(libCode);
@@ -260,4 +260,6 @@ public abstract class MeCardPolicy
         }
         return false;
     }
+    
+    public abstract boolean isLostCard(Customer customer, String meta);
 }

@@ -4,6 +4,7 @@
  */
 package mecard.util;
 
+import api.Request;
 import mecard.QueryTypes;
 import mecard.customer.Customer;
 import org.junit.Test;

@@ -18,53 +18,20 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.util;
+package mecard.responder;
 
-import mecard.Protocol;
-import mecard.ProtocolPayload;
 import mecard.ResponseTypes;
-import mecard.customer.Customer;
 
 /**
- * Simple object to order responses.
- * @author metro
+ * Indicates that the implementer can query the status of theusers.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Response extends ProtocolPayload
+public interface CustomerQueryable
 {
-    protected ResponseTypes code;
-    
-    public Response()
-    {
-        code = ResponseTypes.INIT;
-    }
-    
-    public Response(ResponseTypes rt)
-    {
-        code = rt;
-    }
-    
-    public void setResponse(String s)
-    {
-        this.addResponse(s);
-    }
-
-    public void setCode(ResponseTypes code) 
-    {
-        this.code = code;
-    }
-    
-    public void setCustomer(Customer c)
-    {
-        this.payload = c.getPayload();
-    }
-    
-    @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(code);
-        sb.append(Protocol.DELIMITER);
-        sb.append(super.toString());
-        return sb.toString();
-    }
+    /**
+     * Gets the customer account information.
+     * @param responseBuffer
+     * @return ResponseType result of the query.
+     */
+    public ResponseTypes getCustomer(StringBuffer responseBuffer);
 }

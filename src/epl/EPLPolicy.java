@@ -30,7 +30,7 @@ import site.mecard.MeCardPolicy;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class EPLMeCardPolicy extends MeCardPolicy
+public class EPLPolicy extends MeCardPolicy
 {
     public final static String EPL_RECIPROCAL = "EPL-RECIP";
     public final static String EPL_VISITOR    = "EPL-VISITR"; // Non resident
@@ -38,13 +38,14 @@ public class EPLMeCardPolicy extends MeCardPolicy
     public final static String[] JUV_PROFILE  = {"EPL-JUV","EPL-JUV01","EPL-JUV05","EPL-JUV10","EPL-JUVNR","EPL-JUVGR","EPL-JUVIND"};
     public final static String INVALID_CONDITION = "BLOCKED";
     private final boolean debug;
+    public final static String LOST_CARD = "LOSTCARD";
     
-    public EPLMeCardPolicy()
+    public EPLPolicy()
     {
         this.debug = false;
     }
     
-    public EPLMeCardPolicy(boolean debug)
+    public EPLPolicy(boolean debug)
     {
         this.debug = debug;
     }
@@ -107,6 +108,19 @@ public class EPLMeCardPolicy extends MeCardPolicy
         }
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
         return true;
+    }
+
+    @Override
+    public boolean isLostCard(Customer customer, String meta)
+    {
+        if (meta.contains(LOST_CARD))
+        {
+            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
+            if (debug) System.out.println("passed lost card test");
+            return true;
+        }
+        customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
+        return false;
     }
 
 }

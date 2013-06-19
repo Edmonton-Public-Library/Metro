@@ -25,7 +25,7 @@ import java.util.List;
 import mecard.Exception.InvalidCustomerException;
 import mecard.Protocol;
 import mecard.ProtocolPayload;
-import mecard.util.Request;
+import api.Request;
 
 /**
  * 

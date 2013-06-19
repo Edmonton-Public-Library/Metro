@@ -18,14 +18,20 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.util;
+package mecard.responder;
+
+import mecard.ResponseTypes;
 
 /**
- *
- * @author metro
+ * Indicates that the implementer can query the status of the ils.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum CommandTypes
+public interface StatusQueryable
 {
-    CMD_LINE,
-    CMD_PIPE;
+    /**
+     * Gets the status of the ILS.
+     * @param responseBuffer
+     * @return ResponseType result.
+     */
+    public ResponseTypes getILSStatus(StringBuffer responseBuffer);
 }

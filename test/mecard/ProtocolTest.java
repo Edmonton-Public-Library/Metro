@@ -8,7 +8,7 @@ import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
 import mecard.responder.APIResponder;
 import mecard.responder.BImportResponder;
-import mecard.responder.ResponderStrategy;
+import mecard.responder.Responder;
 import mecard.responder.SIP2Responder;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -112,7 +112,7 @@ public class ProtocolTest
         // QueryTypes.GET_STATUS;
         String command = "QA0";
         Protocol instance = new Protocol();
-        ResponderStrategy result = instance.getResponder(command);
+        Responder result = instance.getResponder(command);
         assertTrue(result instanceof SIP2Responder);
         
         // QueryTypes.GET_CUSTOMER;

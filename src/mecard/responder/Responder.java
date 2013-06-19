@@ -22,21 +22,23 @@ package mecard.responder;
 
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
-import mecard.util.Request;
-import mecard.util.Response;
+import api.Request;
+import api.Response;
+import mecard.Protocol;
+import mecard.customer.CustomerFieldTypes;
 import site.mecard.MeCardPolicy;
 
 /**
  *
  * @author metro
  */
-public abstract class ResponderStrategy
+public abstract class Responder
 {
     protected Request request;
     protected Response response;
     protected final boolean debug;
     
-    protected ResponderStrategy(String cmd, boolean debugMode)
+    protected Responder(String cmd, boolean debugMode)
     {
         this.debug = debugMode;
         this.request = new Request(cmd);
@@ -49,7 +51,7 @@ public abstract class ResponderStrategy
         }
     }
     
-    public static String getUnautherizedResponse(String msg)
+    public static String getUnautherizedRequestResponse(String msg)
     {
         Response r = new Response(ResponseTypes.UNAUTHORIZED);
         r.addResponse(msg);
@@ -80,6 +82,7 @@ public abstract class ResponderStrategy
         if (policy.isResident(customer, additionalData) == false) return false;
         if (policy.isValidCustomerData(customer) == false) return false;
         if (policy.isValidExpiryDate(customer, additionalData) == false) return false;
+        if (policy.isLostCard(customer, additionalData)) return false;
         return true;
     }
 }

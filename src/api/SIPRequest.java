@@ -44,7 +44,6 @@ public class SIPRequest
      */
     public final String patronInfoRequest(String userId, String userPin)
     {
-
         // sipData should look like: "63                               AO|AA21221012345678|AD64058|AY1AZF374\r"
         StringBuilder request = new StringBuilder();
         if (userId == null || userPin == null)

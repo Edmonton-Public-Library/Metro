@@ -31,8 +31,8 @@ import mecard.config.PropertyReader;
 import mecard.customer.CustomerFieldTypes;
 import mecard.util.BImportBat;
 import mecard.customer.BImportFormatter;
-import mecard.util.Command;
-import mecard.util.ProcessWatcherHandler;
+import api.Command;
+import api.ProcessWatcherHandler;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -41,7 +41,8 @@ import mecard.util.ProcessWatcherHandler;
  * @since 1.1
  * @author metro
  */
-public class BImportResponder extends ResponderStrategy
+public class BImportResponder extends Responder
+    implements Updateable, Createable
 {
     // Use this to prefix all our files.
 
@@ -76,6 +77,7 @@ public class BImportResponder extends ResponderStrategy
         database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
         serverAlias = bimpProps.getProperty(BImportPropertyTypes.SERVER_ALIAS.toString());
         bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
+        // TODO these should come from the default.properties.
         defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
         mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
         location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
@@ -106,11 +108,12 @@ public class BImportResponder extends ResponderStrategy
         switch (request.getCommandType())
         {
             case CREATE_CUSTOMER:
-            case UPDATE_CUSTOMER:
-                this.response.setCode(submitCustomer(responseBuffer));
+                this.response.setCode(updateCustomer(responseBuffer));
                 this.response.addResponse(responseBuffer.toString());
-//                this.state = ResponseTypes.OK;
-//                this.response.add("Hello World");
+                break;
+            case UPDATE_CUSTOMER:
+                this.response.setCode(createCustomer(responseBuffer));
+                this.response.addResponse(responseBuffer.toString());
                 break;
             default:
                 this.response.setCode(ResponseTypes.ERROR);
@@ -127,7 +130,9 @@ public class BImportResponder extends ResponderStrategy
      * @param responseBuffer
      * @return 
      */
-    protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes createCustomer(StringBuffer responseBuffer)
+//    protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
     {
         // take the commandArguments, format them to bimport files, execute
         // the batch file.
@@ -152,7 +157,7 @@ public class BImportResponder extends ResponderStrategy
     }
     
     /**
-     * Splits apart an in-coming request into it's command, checksum and customer
+     * Splits apart an in-coming request into it's command, authority token and customer
      * then maps those fields from the string to tables and columns in Horizon.
      * @param customerCommands
      * @return true if the customer files (header and data) were created and 
@@ -210,5 +215,11 @@ public class BImportResponder extends ResponderStrategy
     protected String computeEmailName(String email) 
     {
         return email.split("@")[0];
+    }
+
+    @Override
+    public ResponseTypes updateCustomer(StringBuffer responseBuffer)
+    {
+        return createCustomer(responseBuffer);
     }
 }

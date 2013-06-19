@@ -28,7 +28,7 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.responder.BImportResponder;
 import mecard.responder.ResponderMethodTypes;
-import mecard.responder.ResponderStrategy;
+import mecard.responder.Responder;
 import mecard.responder.SIP2Responder;
 import mecard.responder.APIResponder;
 import mecard.security.SecurityManager;
@@ -76,12 +76,12 @@ public class Protocol
         try
         {
             command = SecurityManager.unEncrypt(cmd);
-            ResponderStrategy responder = getResponder(command);
+            Responder responder = getResponder(command);
             response = responder.getResponse();
         }
         catch (MetroSecurityException ex)
         {
-            response = ResponderStrategy.getUnautherizedResponse(ex.getMessage());
+            response = Responder.getUnautherizedRequestResponse(ex.getMessage());
         }
         return SecurityManager.encrypt(response);
     }
@@ -115,7 +115,7 @@ public class Protocol
      *
      * @param command the value of command
      */
-    protected ResponderStrategy getResponder(String command)
+    protected Responder getResponder(String command)
     {
         QueryTypes queryType = getCommand(command);
         String serviceType = "";
@@ -154,7 +154,7 @@ public class Protocol
      * @return
      * @throws UnsupportedCommandException 
      */
-    private ResponderStrategy mapResponderType(
+    private Responder mapResponderType(
             String configRequestedService,
             String command)
         throws UnsupportedCommandException

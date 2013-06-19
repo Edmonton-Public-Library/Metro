@@ -24,9 +24,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.config.BImportPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import mecard.util.BImportDBFields;
+import mecard.util.DateComparer;
+import mecard.util.Phone;
 
 /**
  * This class creates the data and header files.
@@ -140,6 +146,10 @@ public class BImportFormatter
         StringBuilder dataContent   = new StringBuilder();
         File header = createFile(b.headerName);
         File data   = createFile(b.dataName);
+        // These fields need to be formatted
+        String expiryDate = DateComparer.convertToConfigDate(b.expiry);
+        // Phone
+        String phone = Phone.formatPhone(b.phone);
         
         // Table borrower
         headerContent.append("x- "); // add or modify if exists
@@ -153,7 +163,7 @@ public class BImportFormatter
         dataContent.append(BORROWER_TABLE + ": "); // add or modify if exists
         dataContent.append(b.barcode + "; ");
         dataContent.append(b.name + "; ");
-        dataContent.append(b.expiry + "; ");
+        dataContent.append(expiryDate + "; ");    // see above for computation
         dataContent.append(b.pin + "\n");
         
         // Table borrower_phone
@@ -163,7 +173,7 @@ public class BImportFormatter
         
         dataContent.append(BORROWER_PHONE_TABLE + ": "); // add or modify if exists
         dataContent.append(b.phoneType + "; ");
-        dataContent.append(b.phone + "\n");
+        dataContent.append(phone + "\n"); // see computation above.
         
         // Table borrower_address
         headerContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists

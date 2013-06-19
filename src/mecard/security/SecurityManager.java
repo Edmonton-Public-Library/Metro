@@ -27,8 +27,8 @@ import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
-import mecard.util.Request;
-import mecard.util.Response;
+import api.Request;
+import api.Response;
 
 /**
  *

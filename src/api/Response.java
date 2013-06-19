@@ -18,38 +18,53 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.config;
+package api;
+
+import mecard.Protocol;
+import mecard.ProtocolPayload;
+import mecard.ResponseTypes;
+import mecard.customer.Customer;
 
 /**
- * Mandatory property types of the bimp config file. Note that there are
- * fields 
+ * Simple object to order responses.
  * @author metro
  */
-public enum BImportPropertyTypes
+public class Response extends ProtocolPayload
 {
-    BIMPORT_DIR("directory"),
-    SERVER("server"),
-    PASSWORD("password"),
-    USER("user"),
-    DATABASE("database"),
-    SERVER_ALIAS("server-alias"),
-    VERSION("version"), // like fm41 any other version is currently untested.
-    DEFAULT_BTYPE("btype"), // like bawb
-    MAIL_TYPE("mail-type"),
-    LOCATION("location"), // Like lalap
-    IS_INDEXED("indexed"), // "y = NOT indexed"
-    DATE_FORMAT("date-format"); // the prefered date formatting. now in Environment file.
+    protected ResponseTypes code;
     
-    private String type;
-
-    private BImportPropertyTypes(String s)
+    public Response()
     {
-        this.type = s;
+        code = ResponseTypes.INIT;
+    }
+    
+    public Response(ResponseTypes rt)
+    {
+        code = rt;
+    }
+    
+    public void setResponse(String s)
+    {
+        this.addResponse(s);
     }
 
+    public void setCode(ResponseTypes code) 
+    {
+        this.code = code;
+    }
+    
+    public void setCustomer(Customer c)
+    {
+        this.payload = c.getPayload();
+    }
+    
     @Override
     public String toString()
     {
-        return this.type;
+        StringBuilder sb = new StringBuilder();
+        sb.append(code);
+        sb.append(Protocol.DELIMITER);
+        sb.append(super.toString());
+        return sb.toString();
     }
 }

@@ -1,11 +1,12 @@
 package api;
 
-import mecard.util.Command;
+import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Note on usage: the environment.properties file must have Symphony set in all 
+ * ILS interaction methods.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SymphonyAPIBuilderTest
@@ -16,7 +17,7 @@ public class SymphonyAPIBuilderTest
     }
 
     /**
-     * Test of getUser method, of class SymphonyAPIBuilder.
+     * Test of getCustomer method, of class SymphonyAPIBuilder.
      */
     @Test
     public void testGetUser()
@@ -26,7 +27,7 @@ public class SymphonyAPIBuilderTest
         String userPin = "64058";
         StringBuffer responseBuffer = new StringBuffer();
         SymphonyAPIBuilder api = new SymphonyAPIBuilder();
-        Command command = api.getUser(userId, userPin, responseBuffer);
+        Command command = api.getCustomer(userId, userPin, responseBuffer);
         System.out.println("CMD:" + command.toString());
     }
 
@@ -39,5 +40,56 @@ public class SymphonyAPIBuilderTest
         System.out.println("==getFormatter==");
         SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
         assertTrue(instance.getFormatter() != null);
+    }
+
+    /**
+     * Test of getCustomer method, of class SymphonyAPIBuilder.
+     */
+    @Test
+    public void testGetCustomer()
+    {
+        System.out.println("===getCustomer===");
+        String userId = "21221012345678";
+        String userPin = "64058";
+        StringBuffer responseBuffer = new StringBuffer();
+        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
+        String expResult = "/home/metro/bimport/dumpflatuser ";
+        Command result = instance.getCustomer(userId, userPin, responseBuffer);
+        assertEquals(expResult, result.toString());
+    }
+
+    /**
+     * Test of createUser method, of class SymphonyAPIBuilder.
+     */
+    @Test
+    public void testCreateUser()
+    {
+        System.out.println("===createUser===");
+        String custReq =
+                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
+                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+        Customer customer = new Customer(custReq);
+        StringBuffer responseBuffer = new StringBuffer();
+        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
+        String expResult = ""; //"echo <flatuser> /home/metro/bimport/loadflatuser -aR -bR -l\"ADMIN|PCGUI-DISP\" -mu -n ";
+        Command result = instance.createUser(customer, responseBuffer);
+        assertEquals(expResult, result.toString());
+    }
+
+    /**
+     * Test of updateUser method, of class SymphonyAPIBuilder.
+     */
+    @Test
+    public void testUpdateUser()
+    {
+        System.out.println("updateUser");
+        Customer customer = null;
+        StringBuffer responseBuffer = null;
+        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
+        Command expResult = null;
+        Command result = instance.updateUser(customer, responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

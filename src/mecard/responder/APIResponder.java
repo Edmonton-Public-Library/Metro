@@ -26,22 +26,22 @@ import mecard.ResponseTypes;
 import mecard.config.APIPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
-import api.APIBuilder;
-import java.util.List;
+import api.ILSRequestBuilder;
 import mecard.Exception.UnsupportedAPIException;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.util.Command;
-import mecard.util.ProcessWatcherHandler;
+import api.Command;
+import api.ProcessWatcherHandler;
 
 /**
  *
  * @author andrew
  */
-public class APIResponder extends ResponderStrategy
+public class APIResponder extends Responder
+    implements StatusQueryable, CustomerQueryable, Createable, Updateable
 {
     private static String NULL_QUERY_RESPONSE_MSG = "API says hello.";
-    private final APIBuilder api;
+    private final ILSRequestBuilder api;
     
     public APIResponder(String command, boolean debugMode)
     {
@@ -59,11 +59,11 @@ public class APIResponder extends ResponderStrategy
         switch (request.getCommandType())
         {
             case GET_STATUS:
-                this.response.setCode(getServerStatus(responseBuffer));
+                this.response.setCode(getILSStatus(responseBuffer));
                 this.response.setResponse(responseBuffer.toString());
                 break;
             case GET_CUSTOMER:
-                this.response.setCode(getUser(responseBuffer));
+                this.response.setCode(getCustomer(responseBuffer));
                 this.response.setResponse(responseBuffer.toString());
                 break;
             case CREATE_CUSTOMER:
@@ -86,7 +86,8 @@ public class APIResponder extends ResponderStrategy
         return response.toString();
     }
 
-    protected ResponseTypes updateCustomer(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes updateCustomer(StringBuffer responseBuffer)
     {
         // I have a customer, I need to reload them into the ils
         Customer customer = new Customer(request.toString());
@@ -100,7 +101,8 @@ public class APIResponder extends ResponderStrategy
         return status.getStatus(); 
     }
 
-    protected ResponseTypes createCustomer(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes createCustomer(StringBuffer responseBuffer)
     {
         // I have a customer, I need to load them into the ils
         Customer customer = new Customer(request.toString());
@@ -114,25 +116,8 @@ public class APIResponder extends ResponderStrategy
         return status.getStatus();
     }
     
-    /**
-     * Splits apart an in-coming request into it's command, checksum and customer
-     * then maps those fields from the string to fields an APIBuilder can use to
-     * create commands to execute the request.
-     * 
-     * @param customerCommands
-     * @return f
-     */
-    protected boolean convert(List<String> customerCommands)
-    {
-//        for (CustomerFieldTypes fType: CustomerFieldTypes.values())
-//        {
-//            customerCommands.add(request.get(fType.ordinal()));
-//            System.out.println("FIELD:" + fType.name());
-//        }
-        return true;
-    }
-
-    protected ResponseTypes getUser(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes getCustomer(StringBuffer responseBuffer)
     {
         // creates using a generic api command.
         // get the user's code from the request object.
@@ -140,7 +125,7 @@ public class APIResponder extends ResponderStrategy
         String userPin = this.request.get(1);
         // the response buffer is in case the command fails, we can populate
         // it with a meaningful error message(s).
-        Command getUserAPI = api.getUser(userId, userPin, responseBuffer);
+        Command getUserAPI = api.getCustomer(userId, userPin, responseBuffer);
         ProcessWatcherHandler commandRun = getUserAPI.execute();
         if (commandRun.getStatus() == ResponseTypes.OK)
         {
@@ -153,9 +138,20 @@ public class APIResponder extends ResponderStrategy
         return commandRun.getStatus();
     }
 
-    protected ResponseTypes getServerStatus(StringBuffer responseBuffer)
+    @Override
+    public ResponseTypes getILSStatus(StringBuffer responseBuffer)
     {
-        throw new UnsupportedOperationException("Not supported, use sip for server status.");
+        Command getUserAPI = api.getStatus(responseBuffer);
+        ProcessWatcherHandler commandRun = getUserAPI.execute();
+        if (commandRun.getStatus() == ResponseTypes.OK)
+        {
+            responseBuffer.append("status: up");
+        }
+        else
+        {  
+            responseBuffer.append("status: down");
+        }
+        return commandRun.getStatus();
     }
 
     /**
@@ -166,13 +162,13 @@ public class APIResponder extends ResponderStrategy
     {
         private static boolean debug;
 
-        private static APIBuilder getInstanceOf(String whichAPI, boolean b)
+        private static ILSRequestBuilder getInstanceOf(String whichAPI, boolean b)
         {
             debug = b;
             if (whichAPI.equalsIgnoreCase("Symphony"))
             {
                 return new SymphonyAPIBuilder();
-            }
+            } // example of how to extend
 //            else if (apiName.equalsIgnoreCase("Horizon"))
 //            {
 //                return new SQLAPIBuilder();
