@@ -93,7 +93,8 @@ public class BImportResponder extends Responder
         {
             pathSep = File.pathSeparator;
         }
-        String transactionId = this.request.getTransactionId();
+//        String transactionId = this.request.getTransactionId();
+        String transactionId = this.request.get(CustomerFieldTypes.ID.ordinal());
         batFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + BAT_FILE;
         headerFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
         dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + DATA_FILE;

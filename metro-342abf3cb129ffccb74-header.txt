@@ -1,4 +1,0 @@
-x- borrower: second_id; name; expiration_date; pin#
-borrower_phone: phone_type; phone_no
-borrower_address: address1; address2; city_st; postal_code; email_name; email_address
-borrower_barcode: bbarcode

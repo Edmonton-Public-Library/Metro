@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import site.mecard.MemberTypes;
 
 /**
  *
@@ -41,11 +42,13 @@ public class PropertyReader
     public final static String ENVIRONMENT_FILE = "environment.properties";
     public final static String SIP2_FILE = "sip2.properties";
     public final static String API_FILE = "api.properties";
+    public final static String BIMPORT_CITY_MAPPING = "city_st.properties";
     private static Properties defaultPolicies = PropertyReader.getProperties(ConfigFileTypes.DEFAULT_CREATE);
     private static Properties bimport; // don't read by default since this is optional.
     private static Properties environment = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
     private static Properties sip2; // Optional config file.
     private static Properties api; // Optional config file.
+    private static Properties city; // Optional config file, required for Horizon users.
 
     private PropertyReader()
     {
@@ -192,6 +195,37 @@ public class PropertyReader
                     }
                 }
                 return api;
+            
+            case BIMPORT_CITY_MAPPING:
+                if (city == null)
+                {
+                    try
+                    {
+                        city = readProperties(PropertyReader.BIMPORT_CITY_MAPPING);
+                    }
+                    catch (FileNotFoundException ex)
+                    {
+                        String msg = "Failed to find '" + PropertyReader.BIMPORT_CITY_MAPPING
+                                + "'. It may be empty but one must be defined to continue.";
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
+                    }
+                    catch (NullPointerException npe)
+                    {
+                        String msg = "Failed to read bimport config file. One must be defined.";
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
+                    }
+                    // now check that all mandetory values are here.
+                    for (MemberTypes mType : MemberTypes.values())
+                    {
+                        if (city.get(mType.toString()) == null)
+                        {
+                            String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
+                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        }
+                    }
+                }
+                return city;
+            
             default:
                 throw new UnsupportedOperationException("unsupported property file");
         }

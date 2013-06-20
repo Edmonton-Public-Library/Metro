@@ -31,6 +31,7 @@ import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import mecard.util.BImportDBFields;
+import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
 
@@ -150,6 +151,8 @@ public class BImportFormatter
         String expiryDate = DateComparer.convertToConfigDate(b.expiry);
         // Phone
         String phone = Phone.formatPhone(b.phone);
+        // City needs to be mapped.
+        String cityCode = City.getCity(b.city);
         
         // Table borrower
         headerContent.append("x- "); // add or modify if exists
@@ -187,7 +190,7 @@ public class BImportFormatter
         dataContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
         dataContent.append(b.address1 + "; ");
         dataContent.append(b.address2 + "; ");
-        dataContent.append(b.city + "; ");
+        dataContent.append(cityCode + "; ");
         dataContent.append(b.postalCode + "; ");
         dataContent.append(b.emailName + "; ");
         dataContent.append(b.email + "\n");

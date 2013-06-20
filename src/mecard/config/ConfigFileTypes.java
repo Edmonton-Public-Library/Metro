@@ -30,5 +30,6 @@ public enum ConfigFileTypes
     ENVIRONMENT, 
     SIP2,
     BIMPORT,
-    API;
+    API,
+    BIMPORT_CITY_MAPPING;
 }

@@ -23,7 +23,7 @@ public class PhoneTest
         System.out.println("==formatPhone==");
         String p = "7804366077";
         String expResult = "780-436-6077";
-        String result = Phone.formatPhone(p);
+        String result = Phone.formatPhone(p, true);
         assertEquals(expResult, result);
         
         p = "780-436-6077";

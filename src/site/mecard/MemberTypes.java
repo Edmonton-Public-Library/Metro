@@ -26,8 +26,21 @@ package site.mecard;
  */
 public enum MemberTypes
 {
-    EPL,
-    STA,
-    STR,
-    FTS;
+    EPL("edmonton"), // these values are used to map cities to codes in city_st.properties.
+    STA("st. albert"),
+    STR("strathcona"),
+    FTS("fort saskatchewan");
+    
+    private String type;
+
+    private MemberTypes(String s)
+    {
+        this.type = s;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.type;
+    }
 }

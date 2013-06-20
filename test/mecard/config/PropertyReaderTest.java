@@ -55,5 +55,8 @@ public class PropertyReaderTest
         
         Properties apiProps = PropertyReader.getProperties(ConfigFileTypes.API);
         apiProps.list(System.out);
+        
+        Properties cityProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
+        cityProps.list(System.out);
     }
 }

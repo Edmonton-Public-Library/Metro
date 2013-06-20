@@ -1,10 +1,24 @@
-
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.util;
-
-import java.util.Properties;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
-import mecard.config.PropertyReader;
 
 /**
  * Provides phone conversion.
@@ -13,30 +27,50 @@ import mecard.config.PropertyReader;
 public class Phone 
 {
     public final static CharSequence DEFAULT_PHONE_DELIMITER = "-";
+    
+    /**
+     * Formats a phone number from 7804366077 to 780[delim]436[delim]6077.
+     *
+     * @param p
+     * @param debug the value of debug
+     * @return formatted phone number (area code)-(exchange)-(phone).
+     */
+    
+    public final static String formatPhone(String p)
+    {
+        return formatPhone(p, false);
+    }
+
     /**
      * Formats a phone number from 7804366077 to 780[delim]436[delim]6077.
      * @param p
      * @return formatted phone number (area code)-(exchange)-(phone).
      */
-    public final static String formatPhone(String p)
+    public static final String formatPhone(String p, boolean debug)
     {
         String phNum = p.trim();
-        if (p.contains(DEFAULT_PHONE_DELIMITER)) return p;
+        if (p.contains(DEFAULT_PHONE_DELIMITER))
+        {
+            return p;
+        }
         int len = phNum.length();
-        if (phNum.length() < 4) return p;
+        if (phNum.length() < 4)
+        {
+            return p;
+        }
         // now get the phone number
         String phoneNumber = phNum.substring(len -4);
-        System.out.println("PHONE_NUM:"+phoneNumber);
+        if (debug) System.out.println("PHONE_NUM:"+phoneNumber);
         if (phNum.length() < 7) return phoneNumber;
         String exchange = phNum.substring((len -7), (len -4));
-        System.out.println("EXCHG:"+exchange);
+        if (debug) System.out.println("EXCHG:"+exchange);
         if (phNum.length() < 10) 
         {
             return exchange + DEFAULT_PHONE_DELIMITER +
                phoneNumber;
         }
         String areaCode = phNum.substring(0, (len -7));
-        System.out.println("AREA:"+areaCode);
+        if (debug) System.out.println("AREA:"+areaCode);
         return areaCode + DEFAULT_PHONE_DELIMITER +
                exchange + DEFAULT_PHONE_DELIMITER +
                phoneNumber;
