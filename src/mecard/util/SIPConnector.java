@@ -312,7 +312,8 @@ public class SIPConnector
             try
             {
                 line = in.readLine();
-            } catch (IOException ex)
+            } 
+            catch (IOException ex)
             {
                 Logger.getLogger(SIPConnector.class.getName()).log(Level.SEVERE, null, ex);
             }

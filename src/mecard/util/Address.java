@@ -36,8 +36,10 @@ public class Address
     protected String city;
     protected Province province;
     protected PostalCode postalCode;
+    protected Phone phoneNumber;
     protected Pattern postalCodePattern;
     protected Pattern provincePattern;
+    protected Pattern phonePattern;
     private final boolean isValid;
 
     public Address(String address, boolean isRequired)
@@ -49,6 +51,7 @@ public class Address
         provincePattern = Pattern.compile( // Canadian postal code with or without spaces.
                 "A[B|.{1}b](erta)?" // has to match AB or ALBERTA but not match ST. ALBERT.
                 );
+        phonePattern = Pattern.compile("\\d{3}-\\d{3}-\\d{4}");
         isValid = setContent(address.trim());
     }
 
@@ -72,6 +75,10 @@ public class Address
         return postalCode.toString();
     }
 
+    public String getPhone()
+    {
+        return phoneNumber.toString();
+    }
 
     protected boolean setContent(String address)
     {
@@ -81,12 +88,25 @@ public class Address
         }
         content = address;
         // Typical string:
-        //7 Sir Winston Churchill Square Edmonton, AB T5J 2V4
+        //7 Sir Winston Churchill Square Edmonton, AB T5J 2V4 780-340-9998
         // Here's another one.
         //5 St. Anne St., St. Albert, AB, T8N 3Z9
         // so we can get the postal code that is at the end if it exists
         // and has a specific postalCodePattern.
-        Matcher matcher = postalCodePattern.matcher(address);
+        Matcher matcher = phonePattern.matcher(address);
+        if (matcher.find())
+        {
+            phoneNumber = new Phone(matcher.group());
+            // now chop off the phone number from the address if found.
+            content = address.substring(0, matcher.start()).trim();
+        }
+        else
+        {
+            phoneNumber = new Phone("");
+            System.out.println("no phone number found.");
+        }
+        
+        matcher = postalCodePattern.matcher(address);
         // now chop off the postal code from the address if found.
         if (matcher.find())
         {
@@ -181,6 +201,8 @@ public class Address
         sb.append(getProvince());
         sb.append(", ");
         sb.append(getPostalCode());
+        sb.append(", ");
+        sb.append(getPhone());
         return sb.toString();
     }
 }

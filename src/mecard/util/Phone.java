@@ -27,6 +27,12 @@ package mecard.util;
 public class Phone 
 {
     public final static CharSequence DEFAULT_PHONE_DELIMITER = "-";
+    private final String phone;
+    
+    public Phone(String p)
+    {
+        phone = Phone.formatPhone(p);
+    }
     
     /**
      * Formats a phone number from 7804366077 to 780[delim]436[delim]6077.
@@ -48,10 +54,19 @@ public class Phone
      */
     public static final String formatPhone(String p, boolean debug)
     {
+        if (p == null)
+        {
+            return "";
+        }
         String phNum = p.trim();
+        if (phNum.isEmpty())
+        {
+            return "";
+        }
+        
         if (p.contains(DEFAULT_PHONE_DELIMITER))
         {
-            return p;
+            return phNum;
         }
         int len = phNum.length();
         if (phNum.length() < 4)
@@ -74,5 +89,15 @@ public class Phone
         return areaCode + DEFAULT_PHONE_DELIMITER +
                exchange + DEFAULT_PHONE_DELIMITER +
                phoneNumber;
+    }
+    
+    @Override
+    public String toString()
+    {
+        if (phone == null)
+        {
+            return "";
+        }
+        return phone;
     }
 }

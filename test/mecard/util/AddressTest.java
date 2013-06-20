@@ -25,11 +25,12 @@ public class AddressTest
     public void testAddress()
     {
         System.out.println("=== Address0 ===");
-        Address instance = new Address("5 St. Anne St., St. Albert, AB, T8N 3Z9", true);
+        Address instance = new Address("5 St. Anne St., St. Albert, AB, T8N 3Z9 780-433-5567", true);
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
         
         System.out.println("=== Address1 ===");
@@ -38,6 +39,7 @@ public class AddressTest
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
         
         System.out.println("=== Address1 ===");
@@ -46,6 +48,7 @@ public class AddressTest
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
     }
 }

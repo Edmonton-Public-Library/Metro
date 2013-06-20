@@ -119,6 +119,7 @@ public class SIPFormatter implements CustomerFormatter
                     customer.set(CustomerFieldTypes.CITY, address.getCity());
                     customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());
                     customer.set(CustomerFieldTypes.POSTALCODE, address.getPostalCode());
+                    customer.set(CustomerFieldTypes.PHONE, address.getPhone());
                 } 
                 else if (fieldType == CustomerFieldTypes.PRIVILEGE_EXPIRES)
                 {
@@ -159,7 +160,7 @@ public class SIPFormatter implements CustomerFormatter
         {
             return CustomerFieldTypes.NAME; // last name, first name.
         } else if (userFieldValue.equals("BD"))
-        {
+        { // TODO Phone.
             return CustomerFieldTypes.STREET; // Complete address break it up.
         } else if (userFieldValue.equals("BE"))
         {
@@ -174,7 +175,7 @@ public class SIPFormatter implements CustomerFormatter
         else if (userFieldValue.equals("PF"))
         {
             return CustomerFieldTypes.GENDER;
-        } // TODO Phone.
+        } 
         else
         {
             return null;
