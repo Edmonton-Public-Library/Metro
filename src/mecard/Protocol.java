@@ -23,7 +23,6 @@ package mecard;
 import api.Request;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
-import mecard.Exception.MetroSecurityException;
 import mecard.Exception.UnsupportedResponderException;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
