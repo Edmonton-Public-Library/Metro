@@ -1,0 +1,29 @@
+== Protocol ==
+The protocol for metro is a simple request response message system, where each message is a string of pipe-delimited fields. Once a socket is open to a metro service it will acknowlege with a code <code>XK0|</code> signaling that it is ready for a request, or if there was a socket error on the server you may get a <code>XE0|</code>. The code <code>XX0|</code> terminates the session.
+As soon as the client contacts a mecard service it will receive an acknowlege
+ "XX0|" = TERMINATE
+ "XK0|" = ACKNOWLEDGE
+ "XE0|" = ERROR
+
+All fields are separated with a delimiter
+ DELIMITER   = "|"
+ DEFAULT_FIELD = "X"
+
+=== Query Types ===
+Sending receiving requests from Metro requires some knowlege of the communication protocol. The protocol is broken down into two types of activities standard to all network communication: request, or query, and response. Requests are innumerated below:
+ "QA0" = GET_STATUS
+ "QB0" = GET_CUSTOMER
+ "QC0" = CREATE_CUSTOMER
+ "QD0" = UPDATE_CUSTOMER
+ "QN0" = NULL
+NULL is a special command type that has no effect.
+
+=== Response Types ===
+ "RA9" = ERROR // Command was received but failed to execute either it was malformed, empty (null), or not supported.
+ "RA0" = INIT // all responses start in this state, but once the constructor is finished the state changes to BUSY.
+ "RA1" = OK  // occurs if a query was successful but there is nothing to return, as with get status of the ILS.
+ "RA2" = BUSY // Initial working state of a query, testing a response during execution would return this value.
+ "RA3" = UNAVAILABLE // occurs if the SIP2 server timesout, or the ILS is unavailable.
+ "RA4" = SUCCESS // occurs if the query was successful.
+ "RA5" = FAIL // occurs if the request failed, ie: the customer's account couldn't be found.
+ "RA6" = UNAUTHORIZED // occurs if the client sends the wrong API key, or if the user id and password don't match.

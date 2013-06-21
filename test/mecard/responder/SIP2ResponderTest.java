@@ -47,7 +47,7 @@ public class SIP2ResponderTest {
         instance = new SIP2Responder(command, true);
 //      63                               AO|AA21221015133926|AD64058|AY0AZF37A
 //      recv:64              00020130610    095814000000000000000000000000AO|AA21221015133926|AEBalzac, William (Dr)|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 0.00|BD11811 72 Ave. Edmonton, AB T6G 2B2|BEilsteam@epl.ca|BHUSD|PA20140514    235900|PD|PCEPL-ADULT|DB$0.00|DM$0.00|AFOK|AY0AZBA2C
-        expResult = "RA1|21221015133926|64058|Balzac, William (Dr)|11811 72 Ave.|Edmonton|AB|T6G2B2|X|ilsteam@epl.ca|780-340-9998|X|20140514|X|X|X|Y|N|Y|Y|N|William (Dr)|Balzac||";
+        expResult = "RA1|21221015133926|64058|Balzac, William (Dr)|11811 72 Ave.|Edmonton|AB|T6G2B2|X|ilsteam@epl.ca|7803409998|X|20140514|X|X|X|Y|N|Y|Y|N|William (Dr)|Balzac||";
         result = instance.getResponse();
         System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());

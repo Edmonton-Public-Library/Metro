@@ -85,7 +85,7 @@ public class SIP2Responder extends Responder
                 break; // is SIP2 the best way to get the ILS status, it is one way.
             default:
                 this.response.setCode(ResponseTypes.ERROR);
-                this.response.addResponse(BImportResponder.class.getName()
+                this.response.addResponse(SIP2Responder.class.getName()
                         + " cannot perform operation: " + request.getCommandType().toString());
         }
         return this.response.toString();

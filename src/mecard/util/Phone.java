@@ -91,6 +91,15 @@ public class Phone
                phoneNumber;
     }
     
+    public String getUnformattedPhone()
+    {
+        if (phone == null)
+        {
+            return "";
+        }
+        return phone.replace("-", "");
+    }
+    
     @Override
     public String toString()
     {

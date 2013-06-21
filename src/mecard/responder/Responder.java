@@ -24,8 +24,6 @@ import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import api.Request;
 import api.Response;
-import mecard.Protocol;
-import mecard.customer.CustomerFieldTypes;
 import site.mecard.MeCardPolicy;
 
 /**

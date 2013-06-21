@@ -70,14 +70,22 @@ public class Address
         return province.toString();
     }
 
+    /**
+     * 
+     * @return postal code as raw code (not whitespace).
+     */
     public String getPostalCode()
     {
         return postalCode.toString();
     }
 
+    /**
+     * 
+     * @return phone number as raw digits.
+     */
     public String getPhone()
     {
-        return phoneNumber.toString();
+        return phoneNumber.getUnformattedPhone();
     }
 
     protected boolean setContent(String address)
