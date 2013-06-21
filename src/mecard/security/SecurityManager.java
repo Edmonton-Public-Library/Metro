@@ -23,12 +23,10 @@ package mecard.security;
 
 import java.util.Properties;
 import mecard.Exception.MetroSecurityException;
-import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
 import api.Request;
-import api.Response;
 
 /**
  *

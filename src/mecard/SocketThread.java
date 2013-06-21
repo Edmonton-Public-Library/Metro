@@ -91,8 +91,6 @@ public class SocketThread extends Thread
                     String response = protocol.processInput(message);
                     sendMessage(response);
                 }
-
-
             }
             while (!message.equals(Protocol.TERMINATE));
         }

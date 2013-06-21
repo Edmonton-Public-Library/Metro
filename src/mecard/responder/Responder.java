@@ -24,6 +24,10 @@ import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import api.Request;
 import api.Response;
+import mecard.Exception.MalformedCommandException;
+import mecard.Exception.MetroSecurityException;
+import mecard.Exception.UnsupportedCommandException;
+import mecard.Exception.UnsupportedResponderException;
 import site.mecard.MeCardPolicy;
 
 /**
@@ -49,10 +53,32 @@ public abstract class Responder
         }
     }
     
-    public static String getUnautherizedRequestResponse(String msg)
+    /**
+     * @param ex the exception thrown
+     * @return String value of the response with code.
+     */
+    public static String getExceptionResponse(RuntimeException ex)
     {
-        Response r = new Response(ResponseTypes.UNAUTHORIZED);
-        r.addResponse(msg);
+        Response r = new Response(ResponseTypes.UNKNOWN);
+        if (ex instanceof MetroSecurityException)
+        {
+            r = new Response(ResponseTypes.UNAUTHORIZED);
+        }
+        else if (ex instanceof MalformedCommandException)
+        {
+            r = new Response(ResponseTypes.ERROR);
+        }
+        else if (ex instanceof UnsupportedCommandException)
+        {
+            r = new Response(ResponseTypes.UNKNOWN);
+            r.addResponse("Command not implemented, make sure your server is up to date.");
+        }
+        else if (ex instanceof UnsupportedResponderException)
+        {
+            r = new Response(ResponseTypes.CONFIG_ERROR);
+            r.addResponse("The server doesn't seem to be configured correctly.");
+        }
+        r.addResponse(ex.getMessage());
         return r.toString();
     }
     

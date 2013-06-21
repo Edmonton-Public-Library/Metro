@@ -20,9 +20,11 @@
  */
 package mecard;
 
+import api.Request;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
 import mecard.Exception.MetroSecurityException;
+import mecard.Exception.UnsupportedResponderException;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -72,18 +74,21 @@ public class Protocol
     public String processInput(String cmd)
     {
         String command;
-        String response;
+        String response = TERMINATE; // initialize response.
         try
         {
             command = SecurityManager.unEncrypt(cmd);
             Responder responder = getResponder(command);
             response = responder.getResponse();
         }
-        catch (MetroSecurityException ex)
+        catch (RuntimeException ex)
         {
-            response = Responder.getUnautherizedRequestResponse(ex.getMessage());
+            response = Responder.getExceptionResponse(ex);
         }
-        return SecurityManager.encrypt(response);
+        finally
+        {
+            return SecurityManager.encrypt(response);
+        }
     }
 
     /**
@@ -173,7 +178,10 @@ public class Protocol
         }
         else
         {
-            throw new UnsupportedCommandException();
+            Request r = new Request(command);
+            throw new UnsupportedResponderException(configRequestedService + 
+                    " can't respond to request " + 
+                    r.getCommandType().name());
         }
     }
 }

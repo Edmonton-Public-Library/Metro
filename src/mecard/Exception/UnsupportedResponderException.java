@@ -18,46 +18,25 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard;
+
+package mecard.Exception;
 
 /**
  *
  * @author metro
  */
-public enum ResponseTypes
+public class UnsupportedResponderException extends RuntimeException 
 {
-    ERROR("RA9"), // Command was received but failed to execute
-    // either it was malformed, empty (null), or not supported.
-    INIT("RA0"),
-    OK("RA1"),
-    BUSY("RA2"),
-    UNAVAILABLE("RA3"),
-    SUCCESS("RA4"),
-    FAIL("RA5"),
-    UNAUTHORIZED("RA6"), 
-    UNKNOWN("RA7"), 
-    CONFIG_ERROR("RA8");
+    private final static String initMessage = "The requested responder type hasn't been defined yet: ";
+    private final static String postMessage = "Please refer to the documentation.";
     
-    private String type;
-    
-    private ResponseTypes(String s)
+    public UnsupportedResponderException()
     {
-        this.type = s;
+        super(initMessage + postMessage);
     }
     
-    public static int size()
+    public UnsupportedResponderException(String msg)
     {
-        int count = 0;
-        for (ResponseTypes r: ResponseTypes.values())
-        {
-            count++;
-        }
-        return count;
-    }
-    
-    @Override
-    public String toString()
-    {
-        return this.type;
+        super(initMessage + " " + msg + " " + postMessage);
     }
 }

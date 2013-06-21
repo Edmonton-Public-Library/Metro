@@ -49,7 +49,7 @@ public class MetroService implements Daemon
         }
         catch (IOException ex)
         {
-            String msg = "Could not listen on port: 2004.";
+            String msg = "Could not listen on port: " + portString;
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
             System.out.println(new Date() + msg);
         }
