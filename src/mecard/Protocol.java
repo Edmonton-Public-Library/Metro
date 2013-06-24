@@ -21,9 +21,9 @@
 package mecard;
 
 import api.Request;
-import com.google.gson.Gson;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
+import mecard.Exception.MetroSecurityException;
 import mecard.Exception.UnsupportedResponderException;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
@@ -48,13 +48,12 @@ import mecard.security.SecurityManager;
  */
 public class Protocol
 {
-    public final static String DELIMITER   = "|";
     public final static String DEFAULT_FIELD = "X";
     public final static String TRUE        = "Y";
     public final static String FALSE       = "N";
-    public final static String TERMINATE   = "XX0" + DELIMITER;
-    public final static String ACKNOWLEDGE = "XK0" + DELIMITER;
-    public final static String ERROR       = "XE0" + DELIMITER;
+    public final static String TERMINATE   = "XX0"; // + DELIMITER;
+    public final static String ACKNOWLEDGE = "XK0"; // + DELIMITER;
+    public final static String ERROR       = "XE0"; // + DELIMITER;
     
     private boolean debugMode;
     public Protocol()
@@ -78,6 +77,10 @@ public class Protocol
         {
             String jsonCommand = SecurityManager.unEncrypt(cmd);
             Request request = new Request(jsonCommand);
+            if (! SecurityManager.isAuthorized(request.getTransactionId()))
+            {
+                throw new MetroSecurityException("Unrecognized security token");
+            }
             Responder responder = getResponder(request);
             response = responder.getResponse();
         }

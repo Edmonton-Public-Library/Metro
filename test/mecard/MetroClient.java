@@ -61,10 +61,10 @@ public class MetroClient
                 {
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    sendMessage("QA0|55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d|"); // getcustomer
+                    sendMessage("[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2\"]"); // getstatus
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    message = "XX0|";
+                    message = "[\"XX0\"]";
                     sendMessage(message);
                 }
                 catch (ClassNotFoundException classNot)
