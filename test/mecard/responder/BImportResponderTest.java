@@ -1,9 +1,10 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools \",\" Templates
  * and open the template in the editor.
  */
 package mecard.responder;
 
+import api.Request;
 import java.io.File;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -29,7 +30,7 @@ public class BImportResponderTest
 //        // QueryTypes.CREATE_CUSTOMER;
 //        String cmd = "QC0";
 //        Protocol instance = new Protocol();
-//        String expResult = ResponseTypes.SUCCESS+"|hello world|";
+//        String expResult = ResponseTypes.SUCCESS+"\",\"hello world|";
 //        String result = instance.processInput(cmd);
 //        assertEquals(expResult, result);
     }
@@ -65,10 +66,10 @@ public class BImportResponderTest
 //        ISGOODSTANDING(18),
 //        ISLOSTCARD(19);
         String custReq = 
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|20140602|||Y|Y|N|Y|Y|N|";
+                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\"20140602\",\"\",\"\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\"]";
         
-        BImportResponder br = new BImportResponder(custReq, true);
+        BImportResponder br = new BImportResponder(new Request(custReq), true);
         System.out.println("RESPONSE: '"+br.getResponse()+"'");
         
         File f = new File(hName);
@@ -86,8 +87,9 @@ public class BImportResponderTest
         System.out.println("===computeEmailName===");
         String email = "ilsteam@epl.ca";
         // QueryTypes.CREATE_CUSTOMER;
-        String cmd = "QC0|123456789abcdef|";
-        BImportResponder instance = new BImportResponder(cmd, true);
+        String cmd = "[\"QC0\",\"123456789abcdef\"]";
+        Request r = new Request(cmd);
+        BImportResponder instance = new BImportResponder(r, true);
         String expResult = "ilsteam";
         String result = instance.computeEmailName(email);
         assertEquals(expResult, result);

@@ -60,16 +60,6 @@ public final class SecurityManager
     public static final String unEncrypt(String input) throws MetroSecurityException
     {
         // TODO add encryption as time permits.
-        // check if the message came from the client, and refuse queries without
-        // the correct password.
-        Request request = new Request(input);
-        if (! isAuthorized(request.getTransactionId()))
-        {
-            throw new MetroSecurityException();
-        } 
-        else
-        {
-            return input;
-        }
+        return input;
     }
 }

@@ -28,23 +28,23 @@ public class ResponseTest
         System.out.println("==setCode==");
         Response instance = new Response(ResponseTypes.OK);
 //        System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("RA1|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA1\"]") == 0);
         instance = new Response(ResponseTypes.BUSY);
-        assertTrue(instance.toString().compareTo("RA2|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA2\"]") == 0);
         instance = new Response(ResponseTypes.ERROR);
-        assertTrue(instance.toString().compareTo("RA9|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA9\"]") == 0);
         instance = new Response(ResponseTypes.FAIL);
-        assertTrue(instance.toString().compareTo("RA5|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA5\"]") == 0);
         instance = new Response(ResponseTypes.INIT);
-        assertTrue(instance.toString().compareTo("RA0|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA0\"]") == 0);
         instance = new Response(ResponseTypes.OK);
-        assertTrue(instance.toString().compareTo("RA1|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA1\"]") == 0);
         instance = new Response(ResponseTypes.SUCCESS);
-        assertTrue(instance.toString().compareTo("RA4|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA4\"]") == 0);
         instance = new Response(ResponseTypes.UNAVAILABLE);
-        assertTrue(instance.toString().compareTo("RA3|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA3\"]") == 0);
         instance = new Response(ResponseTypes.UNAUTHORIZED);
-        assertTrue(instance.toString().compareTo("RA6|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA6\"]") == 0);
     }
 
     
@@ -56,7 +56,7 @@ public class ResponseTest
         System.out.println("===toString===");
         Response instance = new Response(ResponseTypes.OK);
 //        System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("RA1|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA1\"]") == 0);
     }
 
     /**
@@ -68,11 +68,11 @@ public class ResponseTest
         String value = "test";
         Response instance = new Response(ResponseTypes.UNAUTHORIZED);
 //        System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("RA6|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA6\"]") == 0);
         
         instance.setResponse(value);
 //        System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("RA6|test|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA6\",\"test\"]") == 0);
     }
 
     /**
@@ -86,6 +86,8 @@ public class ResponseTest
         Response instance = new Response();
         instance.setCustomer(c);
 //        System.out.println("RESP:"+instance);
-        assertTrue(instance.toString().compareTo("RA0|||Billy, Balzac||||||||||||||||||Balzac|Billy|") == 0);
+        assertTrue(instance.toString().compareTo("[\"RA0\",\"X\",\"X\",\"Billy, Balzac\","
+                + "\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\","
+                + "\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]") == 0);
     }
 }

@@ -4,8 +4,7 @@
  */
 package mecard;
 
-import mecard.Exception.UnsupportedCommandException;
-import mecard.Exception.MalformedCommandException;
+import api.Request;
 import mecard.responder.APIResponder;
 import mecard.responder.BImportResponder;
 import mecard.responder.Responder;
@@ -30,57 +29,57 @@ public class ProtocolTest
     @Test
     public void testGetCommand()
     {
-        System.out.println("=== getCommand ===");
-        String cmd = "QA0|Blah blah blah|something_else|\r";
-        Protocol instance = new Protocol();
-        QueryTypes expResult = QueryTypes.GET_STATUS;
-        QueryTypes result = instance.getCommand(cmd);
-        assertEquals(expResult, result);
-        
-        cmd = "QB0";
-        expResult = QueryTypes.GET_CUSTOMER;
-        result = instance.getCommand(cmd);
-        assertEquals(expResult, result);
-        
-        cmd = "QC0|Blah blah blah|something_else|\r";
-        expResult = QueryTypes.CREATE_CUSTOMER;
-        result = instance.getCommand(cmd);
-        assertEquals(expResult, result);
-        
-        cmd = "QD0|";
-        expResult = QueryTypes.UPDATE_CUSTOMER;
-        result = instance.getCommand(cmd);
-        assertEquals(expResult, result);
-        
-        cmd = "QD";
-        try
-        {
-            result = instance.getCommand(cmd);
-        }
-        catch (UnsupportedCommandException ex)
-        {
-            System.out.println("Successfully thrown exception");
-        }
-        
-        cmd = "";
-        try
-        {
-            result = instance.getCommand(cmd);
-        }
-        catch (MalformedCommandException ex)
-        {
-            System.out.println("Successfully thrown exception");
-        }
-        
-        cmd = null;
-        try
-        {
-            result = instance.getCommand(cmd);
-        }
-        catch (MalformedCommandException ex)
-        {
-            System.out.println("Successfully thrown exception");
-        }
+//        System.out.println("=== getCommand ===");
+//        String cmd = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"Blah blah blah\",\"something_else\"]";
+//        Protocol instance = new Protocol();
+//        QueryTypes expResult = QueryTypes.GET_STATUS;
+//        QueryTypes result = instance.getCommand(cmd);
+//        assertEquals(expResult, result);
+//        
+//        cmd = "[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
+//        expResult = QueryTypes.GET_CUSTOMER;
+//        result = instance.getCommand(cmd);
+//        assertEquals(expResult, result);
+//        
+//        cmd = "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"Blah blah blah\",\"something_else\"]";
+//        expResult = QueryTypes.CREATE_CUSTOMER;
+//        result = instance.getCommand(cmd);
+//        assertEquals(expResult, result);
+//        
+//        cmd = "[\"QD0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
+//        expResult = QueryTypes.UPDATE_CUSTOMER;
+//        result = instance.getCommand(cmd);
+//        assertEquals(expResult, result);
+//        
+//        cmd = "[\"QD\"]";
+//        try
+//        {
+//            result = instance.getCommand(cmd);
+//        }
+//        catch (MalformedCommandException ex)
+//        {
+//            System.out.println("Successfully thrown exception");
+//        }
+//        
+//        cmd = "";
+//        try
+//        {
+//            result = instance.getCommand(cmd);
+//        }
+//        catch (MalformedCommandException ex)
+//        {
+//            System.out.println("Successfully thrown exception");
+//        }
+//        
+//        cmd = null;
+//        try
+//        {
+//            result = instance.getCommand(cmd);
+//        }
+//        catch (MalformedCommandException ex)
+//        {
+//            System.out.println("Successfully thrown exception");
+//        }
        
     }
 
@@ -91,10 +90,10 @@ public class ProtocolTest
     public void testProcessInput()
     {
         System.out.println("=== processInput ===");
-        // QueryTypes.CREATE_CUSTOMER;
-        String cmd = "QC0";
+        
+        String cmd = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
         Protocol instance = new Protocol();
-        String expResult = "RA4|hello world|";
+        String expResult = "[\"RA1\",\"\"]";
         String result = instance.processInput(cmd);
         assertEquals(expResult, result);
     }
@@ -110,27 +109,31 @@ public class ProtocolTest
         // files. Please match expected response types with config requested
         // respondertypes.
         // QueryTypes.GET_STATUS;
-        String command = "QA0";
+        String command = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
+        Request r = new Request(command);
         Protocol instance = new Protocol();
-        Responder result = instance.getResponder(command);
+        Responder result = instance.getResponder(r);
         assertTrue(result instanceof SIP2Responder);
         
         // QueryTypes.GET_CUSTOMER;
-        command = "QB0";
+        command = "[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
         instance = new Protocol();
-        result = instance.getResponder(command);
-        assertTrue(result instanceof BImportResponder);
+        r = new Request(command);
+        result = instance.getResponder(r);
+        assertTrue(result instanceof SIP2Responder);
         
         // QueryTypes.CREATE_CUSTOMER;
-        command = "QC0";
+        command = "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
         instance = new Protocol();
-        result = instance.getResponder(command);
+        r = new Request(command);
+        result = instance.getResponder(r);
         assertTrue(result instanceof BImportResponder);
         
         // QueryTypes.UPDATE_CUSTOMER;
-        command = "QD0";
+        command = "[\"QD0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
         instance = new Protocol();
-        result = instance.getResponder(command);
+        r = new Request(command);
+        result = instance.getResponder(r);
         assertTrue(result instanceof APIResponder);
     }
 }

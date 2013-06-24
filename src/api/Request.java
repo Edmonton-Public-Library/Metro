@@ -20,7 +20,10 @@
  */
 package api;
 
-import mecard.Protocol;
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import mecard.Exception.MalformedCommandException;
 import mecard.ProtocolPayload;
 import mecard.QueryTypes;
 
@@ -28,22 +31,20 @@ import mecard.QueryTypes;
  *
  * @author metro
  */
-public class Request extends ProtocolPayload 
+public class Request extends ProtocolPayload
 {
 
     protected QueryTypes code;
     protected String authorityToken;
 
-    public Request(String request) 
+    public Request(String request)
     {
+        // Instantiate query type ot NULL.
+        code = QueryTypes.NULL;
         // split to command into it's parts
         this.splitCommand(request);
-        if (this.authorityToken == null)
-        {
-            this.authorityToken = ""; // some commands don't require a token
-        }
     }
-    
+
     /**
      * Split the commandArguments on the Protocol's delimiter breaking the
      * commandArguments into chunks. The first element on the list is the
@@ -55,60 +56,68 @@ public class Request extends ProtocolPayload
      * @param cmd
      * @return
      */
-    private void splitCommand(String cmd) 
+    private void splitCommand(String cmd)
+            throws MalformedCommandException
     {
-        String[] cmdLine = cmd.split("\\"+Protocol.DELIMITER);
-        // every command must have at least one command.
-        this.code = getQueryType(cmdLine[0]);
-        // some commands like NULL and GET_STATUS don't come with a authorityToken
-        if (cmdLine.length > 1)
+        if (cmd == null || cmd.isEmpty())
         {
-            this.authorityToken = cmdLine[1];
-            // the rest (if any) are arguments.
-            for (int i = 2; i < cmdLine.length; i++) 
+            String msg = "Request is null or empty.";
+            throw new MalformedCommandException(msg);
+        }
+        Gson gson = new Gson();
+        try
+        {
+            List<String> cmdLine = gson.fromJson(cmd, List.class);
+            this.code = this.getQueryType(cmdLine.get(0));
+            this.authorityToken = cmdLine.get(1);
+            for (int i = 2; i < cmdLine.size(); i++)
             {
-                this.addResponse(cmdLine[i]);
+                this.addResponse(cmdLine.get(i));
             }
+        }
+        catch (IndexOutOfBoundsException ex)
+        {
+            throw new MalformedCommandException("queries must include an API key.");
         }
     }
 
     /**
-     * 
+     *
      * @return the request code.
      */
-    public QueryTypes getCommandType() 
+    public QueryTypes getCommandType()
     {
         return code;
     }
 
-    /** 
+    /**
      *
      * @return the request arguments of the request, not including any request
      * code or authority token.
-     * @see ProtocolPayload#toString() 
+     * @see ProtocolPayload#toString()
      */
-    public String getArgs() 
+    public String getArgs()
     {
         return super.toString();
     }
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.code);
-        sb.append(Protocol.DELIMITER);
-        sb.append(this.authorityToken);
-        sb.append(Protocol.DELIMITER);
-        sb.append(super.toString());
-        return sb.toString();
+    public String toString()
+    {
+        List<String> retList = new ArrayList<String>();
+        retList.add(code.toString());
+        retList.add(authorityToken);
+        retList.addAll(payload);
+        Gson gson = new Gson();
+        return gson.toJson(retList, List.class);
     }
 
-    public String getTransactionId() 
+    public String getTransactionId()
     {
         return this.authorityToken;
     }
 
-    public String get(int ordinal) 
+    public String get(int ordinal)
     {
         try
         {
@@ -121,14 +130,19 @@ public class Request extends ProtocolPayload
         }
     }
 
-    private QueryTypes getQueryType(String string) 
+    private QueryTypes getQueryType(String string)
+            throws UnsupportedOperationException
     {
-        QueryTypes type = QueryTypes.NULL;
-        for (QueryTypes q : QueryTypes.values()) {
-            if (q.toString().compareTo(string) == 0) {
-                type = q;
+        QueryTypes type;
+        for (QueryTypes q : QueryTypes.values())
+        {
+            if (q.toString().compareTo(string) == 0)
+            {
+                return q;
             }
         }
-        return type;
+        String msg = "The requested command '" + string 
+                + "' is unsupported. Is there a mistake in your request?";
+        throw new MalformedCommandException(msg);
     }
-        }
+}

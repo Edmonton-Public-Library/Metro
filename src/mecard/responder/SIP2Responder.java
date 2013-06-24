@@ -20,6 +20,7 @@
  */
 package mecard.responder;
 
+import api.Request;
 import mecard.customer.SIPFormatter;
 import java.util.Properties;
 import mecard.Exception.SIPException;
@@ -45,7 +46,12 @@ public class SIP2Responder extends Responder
     public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     private static SIPConnector sipServer;
     
-    public SIP2Responder(String command, boolean debugMode)
+    /**
+     *
+     * @param command the value of command
+     * @param debugMode the value of debugMode
+     */
+    public SIP2Responder(Request command, boolean debugMode)
     {
         super(command, debugMode);
         this.response.setCode(ResponseTypes.BUSY);

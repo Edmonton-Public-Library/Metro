@@ -20,6 +20,7 @@
  */
 package mecard;
 
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,12 +73,7 @@ public class ProtocolPayload
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        for (String s: payload)
-        {
-            sb.append(s);
-            sb.append(Protocol.DELIMITER);
-        }
-        return sb.toString();
+        Gson gson = new Gson();
+        return gson.toJson(this.payload);
     }
 }

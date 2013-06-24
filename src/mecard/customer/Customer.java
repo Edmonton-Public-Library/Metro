@@ -20,12 +20,11 @@
  */
 package mecard.customer;
 
-import java.util.ArrayList;
 import java.util.List;
-import mecard.Exception.InvalidCustomerException;
 import mecard.Protocol;
 import mecard.ProtocolPayload;
-import api.Request;
+import com.google.gson.Gson;
+import mecard.Exception.MalformedCommandException;
 
 /**
  * 
@@ -59,6 +58,15 @@ public class Customer extends ProtocolPayload
         lastName = "";
         this.splitCustomerFields(c);
     }
+    
+    private void insertResponse(String s)
+    {
+        if (payload.size() > 0)
+        {
+            this.payload.remove(0);
+        }
+        this.addResponse(s);
+    }
 
     /**
      * Split the commandArguments on the Protocol's delimiter breaking the
@@ -73,28 +81,43 @@ public class Customer extends ProtocolPayload
      */
     private void splitCustomerFields(String cmd)
     {
-        String[] cmdLine = cmd.split("\\" + Protocol.DELIMITER);
-        List<String> cmdList = new ArrayList<String>();
-        for (int i = 2; i < cmdLine.length; i++)
+        Gson gson = new Gson();
+        try
         {
-            cmdList.add(cmdLine[i]);
+            List<String> cmdLine = gson.fromJson(cmd, List.class);
+            // ignore the command code and authority (API) token.
+            for (int i = 2; i < cmdLine.size(); i++)
+            {
+//                this.addResponse(cmdLine.get(i));
+                this.insertResponse(cmdLine.get(i));
+            }
         }
-        // test if we have all the fields. they are supposed to be either
-        // initialized with a default value (See Protocol) or have a value in them.
-        if (cmdList.size() != CustomerFieldTypes.size())
+        catch (IndexOutOfBoundsException ex)
         {
-            throw new InvalidCustomerException("expected " 
-                    + CustomerFieldTypes.size() 
-                    + " but got " 
-                    + cmdList.size());
+            throw new MalformedCommandException("queries must include an API key.");
         }
-
-        // 1 for command, 1 for authority token. All commands
-        // TODO: Fix this. it doesn't work
-        for (int i = 0; i < cmdList.size(); i++)
-        {
-            this.payload.set(i, cmdList.get(i));
-        }
+//        String[] cmdLine = cmd.split("\\" + Protocol.DELIMITER);
+//        List<String> cmdList = new ArrayList<String>();
+//        for (int i = 2; i < cmdLine.length; i++)
+//        {
+//            cmdList.add(cmdLine[i]);
+//        }
+//        // test if we have all the fields. they are supposed to be either
+//        // initialized with a default value (See Protocol) or have a value in them.
+//        if (cmdList.size() != CustomerFieldTypes.size())
+//        {
+//            throw new InvalidCustomerException("expected " 
+//                    + CustomerFieldTypes.size() 
+//                    + " but got " 
+//                    + cmdList.size());
+//        }
+//
+//        // 1 for command, 1 for authority token. All commands
+//        // TODO: Fix this. it doesn't work
+//        for (int i = 0; i < cmdList.size(); i++)
+//        {
+//            this.payload.set(i, cmdList.get(i));
+//        }
     }
 
     /**
@@ -128,6 +151,11 @@ public class Customer extends ProtocolPayload
         
     }
     
+    /**
+     * Sets the customer's field (ft) with the specified value. 
+     * @param ft
+     * @param value 
+     */
     public void set(CustomerFieldTypes ft, String value)
     {
 //        System.out.println("CustomerFieldType ordinal:"+ft.toString());
@@ -142,6 +170,11 @@ public class Customer extends ProtocolPayload
         this.setPayloadSlot(ft.ordinal(), value);
     }
 
+    /**
+     * Gets the value specified by the argument field type.
+     * @param t
+     * @return the stored value.
+     */
     public String get(CustomerFieldTypes t)
     {
         return this.payload.get(t.ordinal());
@@ -178,11 +211,7 @@ public class Customer extends ProtocolPayload
         }
         normalizeFields();
         StringBuilder sb = new StringBuilder();
-        for (String s: payload)
-        {
-            sb.append(s);
-            sb.append(Protocol.DELIMITER);
-        }
+        sb.append(super.toString());
         return sb.toString();
     }
     

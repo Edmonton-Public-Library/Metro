@@ -33,6 +33,7 @@ import mecard.util.BImportBat;
 import mecard.customer.BImportFormatter;
 import api.Command;
 import api.ProcessWatcherHandler;
+import api.Request;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -65,7 +66,12 @@ public class BImportResponder extends Responder
     private String headerFile;
     private String dataFile;
 
-    public BImportResponder(String cmd, boolean debugMode)
+    /**
+     *
+     * @param cmd the value of cmd
+     * @param debugMode the value of debugMode
+     */
+    public BImportResponder(Request cmd, boolean debugMode)
     {
         super(cmd, debugMode);
         this.response.setCode(ResponseTypes.BUSY);

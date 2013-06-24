@@ -66,8 +66,8 @@ public class SymphonyAPIBuilderTest
     {
         System.out.println("===createUser===");
         String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\"20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
         Customer customer = new Customer(custReq);
         StringBuffer responseBuffer = new StringBuffer();
         SymphonyAPIBuilder instance = new SymphonyAPIBuilder();

@@ -46,8 +46,8 @@ public class SIPCustomerFormatterTest
     {
         System.out.println("== getCustomer ==");
         SIPFormatter instance = new SIPFormatter();
-        String expResult = "21221012345678|X|Billy, Balzac|7 Sir Winston Churchill Square|"
-                + "Edmonton|AB|T5J2V4|M|ilsteam@epl.ca|X|20050303|20140321|X|X|X|X|X|X|X|X|Balzac|Billy|";
+        String expResult = "[\"21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
+                + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
         Customer result = instance.getCustomer(this.customerString);
         assertEquals(expResult.compareTo(result.toString()), 0);
     }
@@ -63,8 +63,8 @@ public class SIPCustomerFormatterTest
         s.add(this.customerString);
         SIPFormatter instance = new SIPFormatter();
         // SIP doesn't return the PIN and currently does not return phone number.
-        String expResult = "21221012345678|X|Billy, Balzac|7 Sir Winston Churchill Square|"
-                + "Edmonton|AB|T5J2V4|M|ilsteam@epl.ca|X|20050303|20140321|X|X|X|X|X|X|X|X|Balzac|Billy|";
+        String expResult = "21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
+                + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
         Customer result = instance.getCustomer(s);
         assertEquals(expResult.compareTo(result.toString()), 0);
     }

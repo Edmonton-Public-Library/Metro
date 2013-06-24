@@ -45,9 +45,9 @@ public class EPLMeCardPolicyTest
     {
         System.out.println("==isResident==");
         String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+                + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
         Customer c = new Customer(custReq);
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isResident(c, meta);
@@ -75,11 +75,11 @@ public class EPLMeCardPolicyTest
     {
         System.out.println("==isReciprocal==");
          String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+                + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
         Customer c = new Customer(custReq);
-        MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
+        MeCardPolicy p = MeCardPolicy.getInstanceOf(true);
         boolean result = p.isReciprocal(c, meta);
 //        System.out.println(meta);
         boolean expected= false;
@@ -106,9 +106,9 @@ public class EPLMeCardPolicyTest
     {
         System.out.println("==isInGoodStanding==");
         String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+                + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
         Customer c = new Customer(custReq);
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isInGoodStanding(c, meta);
@@ -136,9 +136,9 @@ public class EPLMeCardPolicyTest
     {
         System.out.println("==isMinimumAge==");
         String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+                + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
         Customer c = new Customer(custReq);
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isMinimumAge(c, meta);

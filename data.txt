@@ -1,4 +1,4 @@
-M- borrower: 21221012345678; Billy, Balzac; 12-25-2014; 1234
-borrower_phone: h-noTC; 7804964058
-borrower_address: 12345 123 St.; ; Edmonton; H0H 0H0; ilsteam; ilsteam@epl.ca
+M- borrower: 21221012345678; Billy, Balzac; 0011-10-05; 1234
+borrower_phone: h-noTC; 780-496-4058
+borrower_address: 12345 123 St.; ; ed; H0H 0H0; ilsteam; ilsteam@epl.ca
 borrower_barcode: 21221012345678

@@ -40,10 +40,15 @@ public abstract class Responder
     protected Response response;
     protected final boolean debug;
     
-    protected Responder(String cmd, boolean debugMode)
+    /**
+     *
+     * @param cmd the value of cmd
+     * @param debugMode the value of debugMode
+     */
+    protected Responder(Request cmd, boolean debugMode)
     {
         this.debug = debugMode;
-        this.request = new Request(cmd);
+        this.request = cmd;
         this.response = new Response(ResponseTypes.INIT);
         if (debug)
         {

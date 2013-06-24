@@ -32,6 +32,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import api.Command;
 import api.ProcessWatcherHandler;
+import api.Request;
 
 /**
  *
@@ -43,7 +44,12 @@ public class APIResponder extends Responder
     private static String NULL_QUERY_RESPONSE_MSG = "API says hello.";
     private final ILSRequestBuilder api;
     
-    public APIResponder(String command, boolean debugMode)
+    /**
+     *
+     * @param command the value of command
+     * @param debugMode the value of debugMode
+     */
+    public APIResponder(Request command, boolean debugMode)
     {
         super(command, debugMode);
         this.response.setCode(ResponseTypes.BUSY);

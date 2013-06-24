@@ -21,6 +21,7 @@
 package mecard;
 
 import api.Request;
+import com.google.gson.Gson;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
 import mecard.Exception.UnsupportedResponderException;
@@ -72,12 +73,12 @@ public class Protocol
      */
     public String processInput(String cmd)
     {
-        String command;
         String response = TERMINATE; // initialize response.
         try
         {
-            command = SecurityManager.unEncrypt(cmd);
-            Responder responder = getResponder(command);
+            String jsonCommand = SecurityManager.unEncrypt(cmd);
+            Request request = new Request(jsonCommand);
+            Responder responder = getResponder(request);
             response = responder.getResponse();
         }
         catch (RuntimeException ex)
@@ -92,37 +93,14 @@ public class Protocol
 
     /**
      *
-     * @param cmd
-     * @return
-     * @throws MalformedCommandException
-     * @throws UnsupportedCommandException
-     */
-    public static QueryTypes getCommand(String cmd)
-            throws MalformedCommandException, UnsupportedCommandException
-    {
-        if (cmd == null || cmd.length() == 0)
-        {
-            throw new MalformedCommandException("The received command is empty or null.");
-        }
-        for (QueryTypes qType : QueryTypes.values())
-        {
-            if (cmd.startsWith(qType.toString()))
-            {
-                return qType;
-            }
-        }
-        throw new UnsupportedCommandException();
-    }
-
-    /**
-     *
      *
      * @param command the value of command
      */
-    protected Responder getResponder(String command)
+    protected Responder getResponder(Request command)
+            throws UnsupportedCommandException, UnsupportedResponderException, MalformedCommandException
     {
-        QueryTypes queryType = getCommand(command);
-        String serviceType = "";
+        QueryTypes queryType = command.getCommandType();
+        String serviceType;
         switch (queryType)
         {
             case CREATE_CUSTOMER:
@@ -153,14 +131,15 @@ public class Protocol
     /**
      * Creates the appropriate responder based on what string value was entered
      * in the environment configuration file.
+     *
      * @param configRequestedService
      * @param command
      * @return
      * @throws UnsupportedCommandException 
      */
+    
     private Responder mapResponderType(
-            String configRequestedService,
-            String command)
+            String configRequestedService, Request command)
         throws UnsupportedCommandException
     {
         if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
@@ -177,10 +156,9 @@ public class Protocol
         }
         else
         {
-            Request r = new Request(command);
             throw new UnsupportedResponderException(configRequestedService + 
                     " can't respond to request " + 
-                    r.getCommandType().name());
+                    command.getCommandType().name());
         }
     }
 }

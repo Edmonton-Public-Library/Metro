@@ -20,7 +20,9 @@
  */
 package api;
 
-import mecard.Protocol;
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
 import mecard.ProtocolPayload;
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
@@ -61,10 +63,10 @@ public class Response extends ProtocolPayload
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(code);
-        sb.append(Protocol.DELIMITER);
-        sb.append(super.toString());
-        return sb.toString();
+        List<String> retList = new ArrayList<String>();
+        retList.add(code.toString());
+        retList.addAll(payload);
+        Gson gson = new Gson();
+        return gson.toJson(retList, List.class);
     }
 }

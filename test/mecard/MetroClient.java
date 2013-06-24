@@ -72,7 +72,8 @@ public class MetroClient
                     System.err.println("data received in unknown format");
                 }
             }
-            while (!message.equals("XX0|"));
+//            while (!message.equals("XX0|"));
+            while (!message.equals("[\"XX0\"]"));
         }
         catch (UnknownHostException unknownHost)
         {
