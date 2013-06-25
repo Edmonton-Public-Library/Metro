@@ -45,6 +45,7 @@ public class SIP2Responder extends Responder
 {
     public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     private static SIPConnector sipServer;
+    private static Object NULL_QUERY_RESPONSE_MSG = "SIP2 responder answers ok";
     
     /**
      *
@@ -83,16 +84,24 @@ public class SIP2Responder extends Responder
         {
             case GET_CUSTOMER:
                 this.response.setCode(getCustomer(responseBuffer));
-                this.response.addResponse(responseBuffer.toString());
                 break;
             case GET_STATUS:
                 this.response.setCode(getILSStatus(responseBuffer));
-                this.response.addResponse(responseBuffer.toString());
                 break; // is SIP2 the best way to get the ILS status, it is one way.
+            case NULL:
+                this.response.setCode(ResponseTypes.OK);
+                responseBuffer.append(SIP2Responder.NULL_QUERY_RESPONSE_MSG);
+                break;
             default:
                 this.response.setCode(ResponseTypes.ERROR);
-                this.response.addResponse(SIP2Responder.class.getName()
-                        + " cannot perform operation: " + request.getCommandType().toString());
+                responseBuffer.append(SIP2Responder.class.getName());
+                responseBuffer.append(" cannot ");
+                responseBuffer.append(request.toString());
+        }
+        // appending empty buffer puts an empty string on the end of the response.
+        if (responseBuffer.length() > 0)
+        {
+            this.response.addResponse(responseBuffer.toString());
         }
         return this.response.toString();
     }

@@ -51,6 +51,7 @@ public class BImportResponder extends Responder
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
     public final static String DATA_FILE = "-data.txt";
+    private static Object NULL_QUERY_RESPONSE_MSG = "BImport responder null request answered";
     private String bimportDir;
     private String serverName;
     private String password;
@@ -116,16 +117,24 @@ public class BImportResponder extends Responder
         {
             case CREATE_CUSTOMER:
                 this.response.setCode(updateCustomer(responseBuffer));
-                this.response.addResponse(responseBuffer.toString());
                 break;
             case UPDATE_CUSTOMER:
                 this.response.setCode(createCustomer(responseBuffer));
-                this.response.addResponse(responseBuffer.toString());
+                break;
+            case NULL:
+                this.response.setCode(ResponseTypes.OK);
+                responseBuffer.append(BImportResponder.NULL_QUERY_RESPONSE_MSG);
                 break;
             default:
                 this.response.setCode(ResponseTypes.ERROR);
-                this.response.addResponse(BImportResponder.class.getName()
-                        + " cannot " + request.toString());
+                responseBuffer.append(BImportResponder.class.getName());
+                responseBuffer.append(" cannot ");
+                responseBuffer.append(request.toString());
+        }
+        // appending empty buffer puts an empty string on the end of the response.
+        if (responseBuffer.length() > 0)
+        {
+            this.response.addResponse(responseBuffer.toString());
         }
         return response.toString();
     }

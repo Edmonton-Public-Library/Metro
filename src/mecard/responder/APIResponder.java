@@ -66,28 +66,30 @@ public class APIResponder extends Responder
         {
             case GET_STATUS:
                 this.response.setCode(getILSStatus(responseBuffer));
-                this.response.setResponse(responseBuffer.toString());
                 break;
             case GET_CUSTOMER:
                 this.response.setCode(getCustomer(responseBuffer));
-                this.response.setResponse(responseBuffer.toString());
                 break;
             case CREATE_CUSTOMER:
                 this.response.setCode(createCustomer(responseBuffer));
-                this.response.addResponse(responseBuffer.toString());
                 break;
             case UPDATE_CUSTOMER:
                 this.response.setCode(updateCustomer(responseBuffer));
-                this.response.addResponse(responseBuffer.toString());
                 break;
             case NULL:
                 this.response.setCode(ResponseTypes.OK);
-                this.response.addResponse(APIResponder.NULL_QUERY_RESPONSE_MSG);
+                responseBuffer.append(APIResponder.NULL_QUERY_RESPONSE_MSG);
                 break;
             default:
                 this.response.setCode(ResponseTypes.ERROR);
-                this.response.addResponse(BImportResponder.class.getName()
-                        + " cannot " + request.toString());
+                responseBuffer.append(APIResponder.class.getName());
+                responseBuffer.append(" cannot ");
+                responseBuffer.append(request.toString());
+        }
+        // appending empty buffer puts an empty string on the end of the response.
+        if (responseBuffer.length() > 0)
+        {
+            this.response.addResponse(responseBuffer.toString());
         }
         return response.toString();
     }

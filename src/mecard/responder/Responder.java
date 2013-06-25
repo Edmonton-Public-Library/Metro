@@ -49,7 +49,7 @@ public abstract class Responder
     {
         this.debug = debugMode;
         this.request = cmd;
-        this.response = new Response(ResponseTypes.INIT);
+        this.response = new Response();
         if (debug)
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");

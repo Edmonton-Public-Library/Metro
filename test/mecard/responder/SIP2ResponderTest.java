@@ -5,6 +5,7 @@
 package mecard.responder;
 
 import api.Request;
+import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -88,5 +89,37 @@ public class SIP2ResponderTest {
         boolean result = instance.meetsMeCardRequirements(customer, additionalData);
 //        System.out.println(">>>"+customer.toString());
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getCustomer method, of class SIP2Responder.
+     */
+    @Test
+    public void testGetCustomer()
+    {
+        System.out.println("getCustomer");
+        StringBuffer responseBuffer = null;
+        SIP2Responder instance = null;
+        ResponseTypes expResult = null;
+        ResponseTypes result = instance.getCustomer(responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getILSStatus method, of class SIP2Responder.
+     */
+    @Test
+    public void testGetILSStatus()
+    {
+        System.out.println("getILSStatus");
+        StringBuffer responseBuffer = null;
+        SIP2Responder instance = null;
+        ResponseTypes expResult = null;
+        ResponseTypes result = instance.getILSStatus(responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

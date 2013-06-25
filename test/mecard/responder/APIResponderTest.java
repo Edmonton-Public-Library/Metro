@@ -151,4 +151,36 @@ public class APIResponderTest
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
+
+    /**
+     * Test of getCustomer method, of class APIResponder.
+     */
+    @Test
+    public void testGetCustomer()
+    {
+        System.out.println("getCustomer");
+        StringBuffer responseBuffer = null;
+        APIResponder instance = null;
+        ResponseTypes expResult = null;
+        ResponseTypes result = instance.getCustomer(responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getILSStatus method, of class APIResponder.
+     */
+    @Test
+    public void testGetILSStatus()
+    {
+        System.out.println("getILSStatus");
+        StringBuffer responseBuffer = null;
+        APIResponder instance = null;
+        ResponseTypes expResult = null;
+        ResponseTypes result = instance.getILSStatus(responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 }

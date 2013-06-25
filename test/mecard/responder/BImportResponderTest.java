@@ -6,6 +6,8 @@ package mecard.responder;
 
 import api.Request;
 import java.io.File;
+import java.util.List;
+import mecard.ResponseTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -93,5 +95,53 @@ public class BImportResponderTest
         String expResult = "ilsteam";
         String result = instance.computeEmailName(email);
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of createCustomer method, of class BImportResponder.
+     */
+    @Test
+    public void testCreateCustomer()
+    {
+        System.out.println("createCustomer");
+        StringBuffer responseBuffer = null;
+        BImportResponder instance = null;
+        ResponseTypes expResult = null;
+        ResponseTypes result = instance.createCustomer(responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of convert method, of class BImportResponder.
+     */
+    @Test
+    public void testConvert()
+    {
+        System.out.println("convert");
+        List<String> customerCommands = null;
+        BImportResponder instance = null;
+        boolean expResult = false;
+        boolean result = instance.convert(customerCommands);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of updateCustomer method, of class BImportResponder.
+     */
+    @Test
+    public void testUpdateCustomer()
+    {
+        System.out.println("updateCustomer");
+        StringBuffer responseBuffer = null;
+        BImportResponder instance = null;
+        ResponseTypes expResult = null;
+        ResponseTypes result = instance.updateCustomer(responseBuffer);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

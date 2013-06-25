@@ -55,15 +55,37 @@ public class MetroClient
             out.flush();
             in = new ObjectInputStream(requestSocket.getInputStream());
             //3: Communicating with the server
+            String custCreateReq =
+            "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+            + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
+            
+            String custUpdateReq =
+            "[\"QD0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+            + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
             do
             {
                 try
                 {
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
-                    sendMessage("[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2\"]"); // getstatus
+                    sendMessage("[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]"); // getstatus
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
+                    
+                    sendMessage("[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221015133926\",\"6666\"]"); // getstatus
+                    message = (String) in.readObject();
+                    System.out.println("server said>" + message);
+                    
+                    sendMessage(custCreateReq); // getstatus
+                    message = (String) in.readObject();
+                    System.out.println("server said>" + message);
+                    
+                    sendMessage(custUpdateReq); // getstatus
+                    message = (String) in.readObject();
+                    System.out.println("server said>" + message);
+                    
                     message = "[\"XX0\"]";
                     sendMessage(message);
                 }
