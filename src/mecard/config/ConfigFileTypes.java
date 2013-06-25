@@ -31,5 +31,6 @@ public enum ConfigFileTypes
     SIP2,
     BIMPORT,
     API,
-    BIMPORT_CITY_MAPPING;
+    BIMPORT_CITY_MAPPING,
+    DEBUG; // used with DummyResponder, this file contains canned results to return to client.
 }

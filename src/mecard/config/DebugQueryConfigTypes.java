@@ -18,26 +18,25 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.responder;
+package mecard.config;
 
 /**
- * Every command that Metro executes must have a strategy defined for how it will
- * execute that command. There are just four strategies for satisfying requests 
- * from the metro server. These values have to be entered in the environment configuration XML file
- * @author andrew
+ *
+ * @author metro
  */
-public enum ResponderMethodTypes
+public enum DebugQueryConfigTypes
 {
-    LOCAL_CALL("api"), // SQL or API  
-    SIP2("sip2"),
-    BIMPORT("bimport"), 
-    DEBUG("dummy");
+    GET_STATUS("status-result"),
+    GET_CUSTOMER("get-customer-result"),
+    CREATE_CUSTOMER("create-customer-result"),
+    UPDATE_CUSTOMER("update-customer-result"), 
+    NULL("null-result");
     
     private String type;
     
-    private ResponderMethodTypes(String t)
+    private DebugQueryConfigTypes(String s)
     {
-        this.type = t;
+        this.type = s;
     }
     
     @Override

@@ -20,8 +20,11 @@
 */
 package mecard.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -58,5 +61,31 @@ public class PropertyReaderTest
         
         Properties cityProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
         cityProps.list(System.out);
+        
+        Properties debugProps = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
+        debugProps.list(System.out);
+    }
+
+    /**
+     * Test of augmentProperties method, of class PropertyReader.
+     */
+    @Test
+    public void testAugmentProperties()
+    {
+        System.out.println("==augmentProperties==");
+//        Properties debugProps = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
+//        debugProps.list(System.out);
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("value_A", "A");
+        props.put("value_B", "B");
+        ConfigFileTypes type = ConfigFileTypes.DEBUG;
+        PropertyReader.augmentProperties(props, type);
+        int count = 1;
+        for (String s: props.keySet())
+        {
+            System.out.println(count + ") " + s + " == " + props.get(s));
+            count++;
+        }
+        assertTrue(props.size() == 7);
     }
 }

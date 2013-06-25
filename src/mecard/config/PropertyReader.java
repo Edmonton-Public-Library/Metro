@@ -43,12 +43,14 @@ public class PropertyReader
     public final static String SIP2_FILE = "sip2.properties";
     public final static String API_FILE = "api.properties";
     public final static String BIMPORT_CITY_MAPPING = "city_st.properties";
+    public final static String DEBUG_SETTINGS_FILE = "debug.properties";
     private static Properties defaultPolicies = PropertyReader.getProperties(ConfigFileTypes.DEFAULT_CREATE);
     private static Properties bimport; // don't read by default since this is optional.
     private static Properties environment = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
     private static Properties sip2; // Optional config file.
     private static Properties api; // Optional config file.
     private static Properties city; // Optional config file, required for Horizon users.
+    private static Properties debugProperties; // Optional config file for providing canned debugging behaviours.
 
     private PropertyReader()
     {
@@ -65,14 +67,12 @@ public class PropertyReader
                     try
                     {
                         defaultPolicies = readProperties(PropertyReader.DEFAULT_CREATE_PROPERTY_FILE);
-                    }
-                    catch (FileNotFoundException ex)
+                    } catch (FileNotFoundException ex)
                     {
                         String msg = "Failed to find '" + PropertyReader.DEFAULT_CREATE_PROPERTY_FILE
                                 + "'. It is required to message customers of important events.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    }
-                    catch (NullPointerException npe)
+                    } catch (NullPointerException npe)
                     {
                         String msg = "Failed to read customer creation default config file. One must be defined.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
@@ -85,14 +85,12 @@ public class PropertyReader
                     try
                     {
                         environment = readProperties(PropertyReader.ENVIRONMENT_FILE);
-                    }
-                    catch (FileNotFoundException ex)
+                    } catch (FileNotFoundException ex)
                     {
                         String msg = "Failed to find '" + PropertyReader.ENVIRONMENT_FILE
                                 + "'. It may be empty but one must be defined to continue.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    }
-                    catch (NullPointerException npe)
+                    } catch (NullPointerException npe)
                     {
                         String msg = "Failed to read environment config file. One must be defined.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
@@ -114,14 +112,12 @@ public class PropertyReader
                     try
                     {
                         sip2 = readProperties(PropertyReader.SIP2_FILE);
-                    }
-                    catch (FileNotFoundException ex)
+                    } catch (FileNotFoundException ex)
                     {
                         String msg = "Failed to find '" + PropertyReader.SIP2_FILE
                                 + "'. It may be empty but one must be defined to continue.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    }
-                    catch (NullPointerException npe)
+                    } catch (NullPointerException npe)
                     {
                         String msg = "Failed to read environment config file. One must be defined.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
@@ -143,14 +139,12 @@ public class PropertyReader
                     try
                     {
                         bimport = readProperties(PropertyReader.BIMPORT_PROPERTY_FILE);
-                    }
-                    catch (FileNotFoundException ex)
+                    } catch (FileNotFoundException ex)
                     {
                         String msg = "Failed to find '" + PropertyReader.BIMPORT_PROPERTY_FILE
                                 + "'. It may be empty but one must be defined to continue.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    }
-                    catch (NullPointerException npe)
+                    } catch (NullPointerException npe)
                     {
                         String msg = "Failed to read bimport config file. One must be defined.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
@@ -172,14 +166,12 @@ public class PropertyReader
                     try
                     {
                         api = readProperties(PropertyReader.API_FILE);
-                    }
-                    catch (FileNotFoundException ex)
+                    } catch (FileNotFoundException ex)
                     {
                         String msg = "Failed to find '" + PropertyReader.API_FILE
                                 + "'. It may be empty but one must be defined to continue.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    }
-                    catch (NullPointerException npe)
+                    } catch (NullPointerException npe)
                     {
                         String msg = "Failed to read api config file. One must be defined.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
@@ -195,21 +187,19 @@ public class PropertyReader
                     }
                 }
                 return api;
-            
+
             case BIMPORT_CITY_MAPPING:
                 if (city == null)
                 {
                     try
                     {
                         city = readProperties(PropertyReader.BIMPORT_CITY_MAPPING);
-                    }
-                    catch (FileNotFoundException ex)
+                    } catch (FileNotFoundException ex)
                     {
                         String msg = "Failed to find '" + PropertyReader.BIMPORT_CITY_MAPPING
                                 + "'. It may be empty but one must be defined to continue.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    }
-                    catch (NullPointerException npe)
+                    } catch (NullPointerException npe)
                     {
                         String msg = "Failed to read bimport config file. One must be defined.";
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
@@ -225,12 +215,40 @@ public class PropertyReader
                     }
                 }
                 return city;
-            
+
+            case DEBUG:
+                if (debugProperties == null)
+                {
+                    try
+                    {
+                        debugProperties = readProperties(PropertyReader.DEBUG_SETTINGS_FILE);
+                    } catch (FileNotFoundException ex)
+                    {
+                        String msg = "Failed to find '" + PropertyReader.DEBUG_SETTINGS_FILE + "'";
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
+                    } catch (NullPointerException npe)
+                    {
+                        String msg = "Failed to read debug config file. One must be defined.";
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
+                    }
+                    // now check that all mandetory values are here.
+                    for (DebugQueryConfigTypes dType : DebugQueryConfigTypes.values())
+                    {
+                        if (debugProperties.get(dType.toString()) == null)
+                        {
+                            String msg = "'" + dType + "' unset in " + PropertyReader.DEBUG_SETTINGS_FILE;
+                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        }
+                    }
+                }
+                return debugProperties;
+
+
             default:
                 throw new UnsupportedOperationException("unsupported property file");
         }
     }
-    
+
     /**
      * Loads properties from the a given config file and updating an existing
      * property Map or inserts if the values don't exist.
@@ -255,7 +273,6 @@ public class PropertyReader
         }
     }
 
-
     private static Properties readProperties(String whichFile)
             throws FileNotFoundException
     {
@@ -265,8 +282,7 @@ public class PropertyReader
         {
             FileInputStream fis = new FileInputStream(whichFile);
             properties.loadFromXML(fis);
-        }
-        // TODO fix so a useful diagnostic message is returned.
+        } // TODO fix so a useful diagnostic message is returned.
         catch (IOException ioe)
         {
             String msg = "Failed to read '" + whichFile + "'. One must be defined.";
