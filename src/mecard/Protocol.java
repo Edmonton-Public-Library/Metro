@@ -39,24 +39,23 @@ import mecard.security.SecurityManager;
 /**
  * Responsible for interpreting incoming MeCard requests.
  *
- * The language is loosely based on SIP but it IS NOT SIP in any way. The
- * command structure has pipe-delimited fields. Typically:
- * <code>QA0|dfae434324354asdfa344|</code><br/>
- * The second field is a MD5 computed hash of the command, salted with a shared
- * secret, to ensure the authenticity of the request.
+ * Requests are sent as JSON strings. All requests must include the API key or a 
+ * MetroSecurityException is thrown.
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class Protocol
 {
     public final static String DEFAULT_FIELD = "X";
     public final static String TRUE        = "Y";
     public final static String FALSE       = "N";
-    public final static String TERMINATE   = "XX0"; // + DELIMITER;
-    public final static String ACKNOWLEDGE = "XK0"; // + DELIMITER;
-    public final static String ERROR       = "XE0"; // + DELIMITER;
+    public final static String TERMINATE   = "XX0";
+    public final static String ACKNOWLEDGE = "XK0";
+    public final static String ERROR       = "XE0";
     
     private boolean debugMode;
+    
+    
     public Protocol()
     { 
         String debug = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
@@ -96,9 +95,11 @@ public class Protocol
     }
 
     /**
-     *
-     *
+     * Gets the responder based on the argument request.
      * @param command the value of command
+     * @return Responder appropriate for answering the request as outlined in 
+     * the environment.properties file.
+     * @see Request
      */
     protected Responder getResponder(Request command)
             throws UnsupportedCommandException, UnsupportedResponderException, MalformedCommandException
@@ -136,10 +137,13 @@ public class Protocol
      * Creates the appropriate responder based on what string value was entered
      * in the environment configuration file.
      *
-     * @param configRequestedService
-     * @param command
-     * @return
-     * @throws UnsupportedCommandException 
+     * @param configRequestedService service requested in environment.properties file.
+     * @param command the request sent by the metro web site - a JSON string.
+     * @return Responder requested in environment.properties files.
+     * @throws UnsupportedCommandException if the requested responder is not available
+     * because it hasn't been implemented yet, or just because there is a spelling
+     * mistake in the environment.properties file wrt the Responder method types.
+     * @see ResponderMethodTypes
      */
     
     private Responder mapResponderType(

@@ -27,14 +27,15 @@ import mecard.customer.CustomerFieldTypes;
 import site.mecard.MeCardPolicy;
 
 /**
- *
+ * Implementation of MeCard's restriction policies as interpreted by the 
+ * Edmonton Public Library. Every library translates their customer account information
+ * into responses to the basic MeCard restriction policies:
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class EPLPolicy extends MeCardPolicy
 {
     public final static String EPL_RECIPROCAL = "EPL-RECIP";
     public final static String EPL_VISITOR    = "EPL-VISITR"; // Non resident
-    // TODO: Fix to read from a unstructured config file.
     public final static String[] JUV_PROFILE  = {"EPL-JUV","EPL-JUV01","EPL-JUV05","EPL-JUV10","EPL-JUVNR","EPL-JUVGR","EPL-JUVIND"};
     public final static String INVALID_CONDITION = "BLOCKED";
     private final boolean debug;

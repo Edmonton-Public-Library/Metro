@@ -38,7 +38,7 @@ import java.util.Date;
  * the machine where you will run the server.
  * <code>http://zerioh.tripod.com/ressources/sockets.html</code>
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SocketThread extends Thread
 {

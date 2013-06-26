@@ -45,11 +45,13 @@ public class MetroClient
 
     void run()
     {
+        String server = "ilsdev1";
+        int port = 2004;
         try
         {
             //1. creating a socket to connect to the server
-            requestSocket = new Socket("localhost", 2004);
-            System.out.println("Connected to localhost in port 2004");
+            requestSocket = new Socket(server, port);
+            System.out.println("Connected to '"+server+"' in port: "+port);
             //2. get Input and Output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             out.flush();

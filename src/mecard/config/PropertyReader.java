@@ -36,7 +36,6 @@ import site.mecard.MemberTypes;
  */
 public class PropertyReader
 {
-
     public final static String BIMPORT_PROPERTY_FILE = "bimport.properties";
     public final static String DEFAULT_CREATE_PROPERTY_FILE = "default.properties";
     public final static String ENVIRONMENT_FILE = "environment.properties";

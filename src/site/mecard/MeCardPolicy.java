@@ -33,7 +33,11 @@ import mecard.customer.CustomerFieldTypes;
 import mecard.util.DateComparer;
 
 /**
- *
+ * This class needs to be sub-classed by all libraries. All customer's must meet 
+ * the defined MeCard policy rules. They must be resident, not reciprocal, must
+ * be of minimum age of 18, must have an email address, must be in good standing
+ * with their home library, must have all mandatory account information present
+ * and valid (within reason), and all must have a valid membership expiry date.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public abstract class MeCardPolicy
@@ -247,6 +251,7 @@ public abstract class MeCardPolicy
     public boolean isValidExpiryDate(Customer customer, String meta)
     {
         String expiryDate = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
+        // TODO set Max expiry, no greater than 365 days.
         try
         {
             int expiryDays = DateComparer.getDaysUntilExpiry(expiryDate);
@@ -261,5 +266,16 @@ public abstract class MeCardPolicy
         return false;
     }
     
+    /**
+     * When a customer reports a lost card, the home library should set this flag
+     * on the customer's account. The MeCard web site can also tell if a previously
+     * registered customer is returning to register a lost card. If so, the customer's
+     * lost card flag should be set and it is upto the library what they do with it.
+     * @param customer The customer information as will be inserted into the guest ILS.
+     * @param meta additional information from the ILS that is not sent to the guest
+     * library, stuff like their profile and number of holds etc.
+     * @return true if this account is a lost card.
+     * @see mecard.customer.Customer
+     */
     public abstract boolean isLostCard(Customer customer, String meta);
 }

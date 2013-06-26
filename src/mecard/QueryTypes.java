@@ -21,8 +21,8 @@
 package mecard;
 
 /**
- *
- * @author metro
+ * They types of queries MeCard understands and their codes.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public enum QueryTypes
 {

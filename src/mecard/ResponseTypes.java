@@ -21,8 +21,8 @@
 package mecard;
 
 /**
- *
- * @author metro
+ * The types of responses MeCard server is capable of producing.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public enum ResponseTypes
 {

@@ -30,7 +30,10 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
 
 import org.apache.commons.daemon.*;
-
+/**
+ * This is the entry point of the MeCard server application.
+ * @author Andrew Nisbet <anisbet@epl.ca>
+ */
 public class MetroService implements Daemon
 {
     private static ServerSocket serverSocket = null;
