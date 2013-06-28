@@ -30,7 +30,8 @@ public enum DebugQueryConfigTypes
     GET_CUSTOMER("get-customer-result"),
     CREATE_CUSTOMER("create-customer-result"),
     UPDATE_CUSTOMER("update-customer-result"), 
-    NULL("null-result");
+    NULL("null-result"), 
+    ALT_DATA_CUSTOMER("alt-get-customer-result"); // Additional ILS data for customer.
     
     private String type;
     

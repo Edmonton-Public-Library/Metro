@@ -1,15 +1,15 @@
 package mecard.responder;
 
 import api.Request;
-import api.Response;
 import com.google.gson.Gson;
 import java.util.List;
 import java.util.Properties;
-import mecard.ProtocolPayload;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import mecard.config.DebugQueryConfigTypes;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFieldTypes;
 
 /**
  * DummyResponder is used to test round trip connections. It returns hard coded
@@ -17,8 +17,8 @@ import mecard.config.DebugQueryConfigTypes;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class DummyRepsonder extends Responder
-        implements StatusQueryable, CustomerQueryable, Updateable, Createable
+public class DummyRepsonder extends CustomerQueryable
+        implements StatusQueryable, Updateable, Createable
 {
     private static Object NULL_QUERY_RESPONSE_MSG = "debug responder reporting";
 
@@ -26,6 +26,7 @@ public class DummyRepsonder extends Responder
     private final String gsonGetCustomer;
     private final String gsonCreateCustomer;
     private final String gsonUpdateCustomer;
+    private final String altData;
 
     public DummyRepsonder(Request command, boolean debugMode)
     {
@@ -35,6 +36,7 @@ public class DummyRepsonder extends Responder
         gsonGetCustomer = props.getProperty(DebugQueryConfigTypes.GET_CUSTOMER.toString());
         gsonCreateCustomer = props.getProperty(DebugQueryConfigTypes.CREATE_CUSTOMER.toString());
         gsonUpdateCustomer = props.getProperty(DebugQueryConfigTypes.UPDATE_CUSTOMER.toString());
+        altData = props.getProperty(DebugQueryConfigTypes.ALT_DATA_CUSTOMER.toString());
     }
 
     @Override
@@ -86,6 +88,17 @@ public class DummyRepsonder extends Responder
     {
         Gson gson = new Gson();
         List<String> gsonResponse = gson.fromJson(this.gsonGetCustomer, List.class);
+        Customer customer = new Customer(this.gsonGetCustomer);
+        // the 3rd field of this request is the pin.
+        System.out.println("PIN:"+this.request.get(3)+customer);
+        if (isAuthorized(this.request.get(3), customer))
+        {
+            if (meetsMeCardRequirements(customer, this.altData))
+            {
+                this.response.setCustomer(customer);
+                return ResponseTypes.OK;
+            }
+        }
         return setMessages(gsonResponse, responseBuffer);
     }
     
@@ -142,5 +155,11 @@ public class DummyRepsonder extends Responder
             }
         }
         return ResponseTypes.UNKNOWN;
+    }
+
+    @Override
+    public boolean isAuthorized(String suppliedPin, Customer customer)
+    {
+        return (customer.get(CustomerFieldTypes.PIN).compareTo(suppliedPin) == 0);
     }
 }

@@ -28,7 +28,7 @@ import java.net.UnknownHostException;
  */
 public class MetroClient
 {
-    private static int MAX_CLIENTS = 9;
+    private static int MAX_CLIENTS = 1;
 
     Socket requestSocket;
     ObjectOutputStream out;
@@ -76,17 +76,17 @@ public class MetroClient
                     message = (String) in.readObject();
                     System.out.println("server said>" + message);
                     
-                    sendMessage("[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221015133926\",\"6666\"]"); // getstatus
-                    message = (String) in.readObject();
-                    System.out.println("server said>" + message);
-                    
-                    sendMessage(custCreateReq); // getstatus
-                    message = (String) in.readObject();
-                    System.out.println("server said>" + message);
-                    
-                    sendMessage(custUpdateReq); // getstatus
-                    message = (String) in.readObject();
-                    System.out.println("server said>" + message);
+//                    sendMessage("[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221015133926\",\"6666\"]"); // getstatus
+//                    message = (String) in.readObject();
+//                    System.out.println("server said>" + message);
+//                    
+//                    sendMessage(custCreateReq); // getstatus
+//                    message = (String) in.readObject();
+//                    System.out.println("server said>" + message);
+//                    
+//                    sendMessage(custUpdateReq); // getstatus
+//                    message = (String) in.readObject();
+//                    System.out.println("server said>" + message);
                     
                     message = "[\"XX0\"]";
                     sendMessage(message);

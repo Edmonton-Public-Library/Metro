@@ -96,28 +96,6 @@ public class Customer extends ProtocolPayload
         {
             throw new MalformedCommandException("queries must include an API key.");
         }
-//        String[] cmdLine = cmd.split("\\" + Protocol.DELIMITER);
-//        List<String> cmdList = new ArrayList<String>();
-//        for (int i = 2; i < cmdLine.length; i++)
-//        {
-//            cmdList.add(cmdLine[i]);
-//        }
-//        // test if we have all the fields. they are supposed to be either
-//        // initialized with a default value (See Protocol) or have a value in them.
-//        if (cmdList.size() != CustomerFieldTypes.size())
-//        {
-//            throw new InvalidCustomerException("expected " 
-//                    + CustomerFieldTypes.size() 
-//                    + " but got " 
-//                    + cmdList.size());
-//        }
-//
-//        // 1 for command, 1 for authority token. All commands
-//        // TODO: Fix this. it doesn't work
-//        for (int i = 0; i < cmdList.size(); i++)
-//        {
-//            this.payload.set(i, cmdList.get(i));
-//        }
     }
 
     /**

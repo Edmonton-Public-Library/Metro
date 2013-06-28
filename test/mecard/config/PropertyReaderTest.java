@@ -86,6 +86,6 @@ public class PropertyReaderTest
             System.out.println(count + ") " + s + " == " + props.get(s));
             count++;
         }
-        assertTrue(props.size() == 7);
+        assertTrue(props.size() == 8);
     }
 }

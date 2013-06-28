@@ -38,8 +38,8 @@ import api.Request;
  *
  * @author andrew
  */
-public class APIResponder extends Responder
-    implements StatusQueryable, CustomerQueryable, Createable, Updateable
+public class APIResponder extends CustomerQueryable
+    implements StatusQueryable, Createable, Updateable
 {
     private static String NULL_QUERY_RESPONSE_MSG = "API says hello.";
     private final ILSRequestBuilder api;
@@ -141,6 +141,7 @@ public class APIResponder extends Responder
             CustomerFormatter formatter = api.getFormatter();
             System.out.println("STDOUT"+commandRun.getStdout());
             Customer customer = formatter.getCustomer(commandRun.getStdout());
+            // Now we have a customer we need to set their 
             responseBuffer.append(customer.toString());
         }
         return commandRun.getStatus();
@@ -160,6 +161,12 @@ public class APIResponder extends Responder
             responseBuffer.append("status: down");
         }
         return commandRun.getStatus();
+    }
+
+    @Override
+    public boolean isAuthorized(String suppliedPin, Customer customer)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

@@ -40,8 +40,8 @@ import api.SIPRequest;
  * answers to questions like is this customer a reciprocal customer?
  * @author andrew
  */
-public class SIP2Responder extends Responder 
-    implements StatusQueryable, CustomerQueryable
+public class SIP2Responder extends CustomerQueryable 
+    implements StatusQueryable 
 {
     public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     private static SIPConnector sipServer;
@@ -129,7 +129,7 @@ public class SIP2Responder extends Responder
             responseBuffer.append("service is currently unavailable");
             return ResponseTypes.UNAVAILABLE;
         }
-        if (isAuthorized(sipResponse) == false)
+        if (isAuthorized(sipResponse, null) == false)
         {
             responseBuffer.append("invalid PIN");
             return ResponseTypes.UNAUTHORIZED;
@@ -196,13 +196,16 @@ public class SIP2Responder extends Responder
 
     /**
      * Tests if the request was valid or not based on whether the supplied PIN
-     * matched the user name.
-     * @param sipResponse
+     * matched the user's pin.
+     *
+     * @param suppliedPin
+     * @param customer the value of customer
      * @return true if the user is authorized and false otherwise.
      */
-    private boolean isAuthorized(String sipResponse)
+    @Override
+    public boolean isAuthorized(String suppliedPin, Customer customer)
     {
-        if (sipResponse.contains(SIP2Responder.SIP_AUTHORIZATION_FAILURE))
+        if (suppliedPin.contains(SIP2Responder.SIP_AUTHORIZATION_FAILURE))
         {
             return false;
         }
