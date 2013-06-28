@@ -16,9 +16,10 @@
  */
 package mecard;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -31,8 +32,8 @@ public class MetroClient
     private static int MAX_CLIENTS = 1;
 
     Socket requestSocket;
-    ObjectOutputStream out;
-    ObjectInputStream in;
+    PrintWriter out;
+    BufferedReader in;
     String message;
     public static int HIGHEST;
     int myNumber;
@@ -46,6 +47,7 @@ public class MetroClient
     void run()
     {
         String server = "ilsdev1";
+//        String server = "localhost";
         int port = 2004;
         try
         {
@@ -53,9 +55,8 @@ public class MetroClient
             requestSocket = new Socket(server, port);
             System.out.println("Connected to '"+server+"' in port: "+port);
             //2. get Input and Output streams
-            out = new ObjectOutputStream(requestSocket.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(requestSocket.getInputStream());
+            out = new PrintWriter(requestSocket.getOutputStream(),true);
+            in = new BufferedReader(new InputStreamReader(requestSocket.getInputStream()));
             //3: Communicating with the server
             String custCreateReq =
             "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
@@ -68,36 +69,36 @@ public class MetroClient
             + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
             do
             {
-                try
-                {
-                    message = (String) in.readObject();
-                    System.out.println("server said>" + message);
-                    sendMessage("[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]"); // getstatus
-                    message = (String) in.readObject();
-                    System.out.println("server said>" + message);
-                    
-//                    sendMessage("[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221015133926\",\"6666\"]"); // getstatus
-//                    message = (String) in.readObject();
-//                    System.out.println("server said>" + message);
-//                    
-//                    sendMessage(custCreateReq); // getstatus
-//                    message = (String) in.readObject();
-//                    System.out.println("server said>" + message);
-//                    
-//                    sendMessage(custUpdateReq); // getstatus
-//                    message = (String) in.readObject();
-//                    System.out.println("server said>" + message);
-                    
-                    message = "[\"XX0\"]";
-                    sendMessage(message);
-                }
-                catch (ClassNotFoundException classNot)
-                {
-                    System.err.println("data received in unknown format");
-                }
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
+                System.out.println("requesting status");
+                out.println("[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]"); // getstatus
+//
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
+//
+                System.out.println("requesting customer");
+                out.println("[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221015133926\",\"6666\"]"); // getstatus
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
+
+                System.out.println("requesting "+custCreateReq);
+                out.println(custCreateReq);
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
+
+                System.out.println("requesting "+custUpdateReq);
+                out.println(custUpdateReq);
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
+                
+                message = "XX0";
+                out.println(message);
+                if (message.equals("XX0"))
+                    break;
             }
 //            while (!message.equals("XX0|"));
-            while (!message.equals("[\"XX0\"]"));
+            while ((message = in.readLine()) != null);
         }
         catch (UnknownHostException unknownHost)
         {
@@ -120,20 +121,6 @@ public class MetroClient
             {
                 ioException.printStackTrace();
             }
-        }
-    }
-
-    void sendMessage(String msg)
-    {
-        try
-        {
-            out.writeObject(msg);
-            out.flush();
-            System.out.println("client>" + msg);
-        }
-        catch (IOException ioException)
-        {
-            ioException.printStackTrace();
         }
     }
 

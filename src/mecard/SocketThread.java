@@ -20,9 +20,10 @@
  */
 package mecard;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
 
@@ -44,8 +45,8 @@ public class SocketThread extends Thread
 {
 
     private Socket connection = null;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private PrintWriter out;
+    private BufferedReader in;
     private String message;
     private final Protocol protocol;
 
@@ -65,34 +66,28 @@ public class SocketThread extends Thread
             System.out.println(new Date() + " Waiting for connection");
             System.out.println(new Date() + " Connection received from " + connection.getInetAddress().getHostName());
             //3. get Input and Output streams
-            out = new ObjectOutputStream(connection.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(connection.getInputStream());
-            sendMessage(Protocol.ACKNOWLEDGE);
+            out = new PrintWriter(connection.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            out.println(Protocol.ACKNOWLEDGE);
+//            message = new String();
             //4. The two parts communicate via the input and output streams
-            do
+            while ((message = in.readLine()) != null)
             {
-                try
-                {
-                    message = (String) in.readObject();
-                }
-                catch (ClassNotFoundException ex)
-                {
-                    System.err.println(new Date() + " received unknown object "
-                            + ex.getMessage());
-                }
+
+//                message = (String) in.readLine();
+
                 // Catch any protocol related strings, the rest are commands.
                 if (message.equals(Protocol.TERMINATE))
                 {
-                    sendMessage(Protocol.TERMINATE);
+                    out.println(Protocol.TERMINATE);
+                    break;
                 }
                 else
                 {
                     String response = protocol.processInput(message);
-                    sendMessage(response);
+                    out.println(response);
                 }
             }
-            while (!message.equals(Protocol.TERMINATE));
         }
         catch (IOException ex)
         {
@@ -117,25 +112,6 @@ public class SocketThread extends Thread
                 System.err.println(new Date() + " can't close the server's "
                         + "listening socket, was it ever open? " + ex.getMessage());
             }
-        }
-    }
-
-    /**
-     * Helper method to handle writing to stream and any exceptions that may
-     * have been generated.
-     * @param msg 
-     */
-    private void sendMessage(String msg)
-    {
-        try
-        {
-            out.writeObject(msg);
-            out.flush();
-        }
-        catch (IOException ex)
-        {
-            System.err.println(new Date() + " IO error while sending message '"
-                   + msg + "' " + ex.getMessage());
         }
     }
 }

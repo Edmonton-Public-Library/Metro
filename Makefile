@@ -21,13 +21,13 @@ clean:
 	-rm ${OUT}.out
 	-rm ${OUT}.err
 test_it: client
-	#./${SERVICE} start
+	./${SERVICE} start
 #	-tail ${OUT}.out
 	sleep 3
 	java ${FLAGS} ${C_PATH} ${CLIENT}
 	sleep 2
-	#./${SERVICE} stop
+	./${SERVICE} stop
 #	tail ${OUT}.out
 #	echo "==="
 #	tail ${OUT}.err
-	#-netstat -an | grep 2004
+	-netstat -an | grep 2004
