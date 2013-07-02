@@ -34,11 +34,16 @@ import mecard.customer.CustomerFieldTypes;
 public class Request //extends ProtocolPayload
 {
 
-    protected QueryTypes code;
-    protected String authorityToken;
-    protected Customer customer;
-    protected String pin;
-    protected String userId;
+    private QueryTypes code;
+    private String authorityToken;
+    private Customer customer;
+    private String pin;
+    private String userId;
+    
+    public Request()
+    {
+        code = QueryTypes.NULL;
+    }
 
     public Request(String request)
     {
@@ -129,5 +134,30 @@ public class Request //extends ProtocolPayload
     public Customer getCustomer()
     {
         return this.customer;
+    }
+
+    public void setCode(QueryTypes code)
+    {
+        this.code = code;
+    }
+
+    public void setAuthorityToken(String authorityToken)
+    {
+        this.authorityToken = authorityToken;
+    }
+
+    public void setCustomer(Customer customer)
+    {
+        this.customer = customer;
+    }
+
+    public void setPin(String pin)
+    {
+        this.pin = pin;
+    }
+
+    public void setUserId(String userId)
+    {
+        this.userId = userId;
     }
 }

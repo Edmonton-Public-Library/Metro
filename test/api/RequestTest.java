@@ -14,9 +14,13 @@ import static org.junit.Assert.*;
  */
 public class RequestTest
 {
+    private final String testCustomer;
+    private final String testBlankCustomer;
     
     public RequestTest()
     {
+        this.testBlankCustomer = "{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\"X\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"X\",\"LASTNAME\":\"X\"}";
+        this.testCustomer = "{\"ID\":\"21221012345678\",\"PIN\":\"6058\",\"NAME\":\"Billy, Balzac\",\"STREET\":\"12345 123 St.\",\"CITY\":\"Edmonton\",\"PROVINCE\":\"Alberta\",\"POSTALCODE\":\"H0H0H0\",\"GENDER\":\"M\",\"EMAIL\":\"ilsteam@epl.ca\",\"PHONE\":\"7804964058\",\"DOB\":\"19750822\",\"PRIVILEGE_EXPIRES\":\"20140602\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"Y\",\"ISMINAGE\":\"Y\",\"ISRECIPROCAL\":\"N\",\"ISRESIDENT\":\"Y\",\"ISGOODSTANDING\":\"Y\",\"ISLOSTCARD\":\"N\",\"FIRSTNAME\":\"Balzac\",\"LASTNAME\":\"Billy\"}";
     }
 
     /**
@@ -27,34 +31,44 @@ public class RequestTest
     {
         System.out.println("==getCommandType==");
         String cmd = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
-        Request instance = new Request(cmd);
+        Request request = new Request();
+        request.setCode(QueryTypes.GET_STATUS);
+        request.setAuthorityToken("55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d");
+        System.out.println("REQ:"+request);
+        
         QueryTypes expResult = QueryTypes.GET_STATUS;
-        QueryTypes result = instance.getCommandType();
+        QueryTypes result = request.getCommandType();
         assertEquals(expResult, result);
         
         cmd = "[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
-        instance = new Request(cmd);
+        request = new Request(cmd);
+        request.setCode(QueryTypes.GET_CUSTOMER);
+        request.setAuthorityToken("55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d");
+        request.setUserId("21221");
+        request.setPin("64058");
+        System.out.println("REQ:"+request);
+        
         expResult = QueryTypes.GET_CUSTOMER;
-        result = instance.getCommandType();
+        result = request.getCommandType();
         assertEquals(expResult, result);
         
         cmd = "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"Blah blah blah\",\"something_else\"]";
-        instance = new Request(cmd);
+        request = new Request(cmd);
         expResult = QueryTypes.CREATE_CUSTOMER;
-        result = instance.getCommandType();
+        result = request.getCommandType();
         assertEquals(expResult, result);
         
         cmd = "[\"QD0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
-        instance = new Request(cmd);
+        request = new Request(cmd);
         expResult = QueryTypes.UPDATE_CUSTOMER;
-        result = instance.getCommandType();
+        result = request.getCommandType();
         assertEquals(expResult, result);
         
         cmd = "[\"QD\"]";
         try
         {
-            instance = new Request(cmd);
-            result = instance.getCommandType();
+            request = new Request(cmd);
+            result = request.getCommandType();
         }
         catch (MalformedCommandException ex)
         {
@@ -64,8 +78,8 @@ public class RequestTest
         cmd = "";
         try
         {
-            instance = new Request(cmd);
-            result = instance.getCommandType();
+            request = new Request(cmd);
+            result = request.getCommandType();
         }
         catch (MalformedCommandException ex)
         {
@@ -75,8 +89,8 @@ public class RequestTest
         cmd = null;
         try
         {
-            instance = new Request(cmd);
-            result = instance.getCommandType();
+            request = new Request(cmd);
+            result = request.getCommandType();
         }
         catch (MalformedCommandException ex)
         {
