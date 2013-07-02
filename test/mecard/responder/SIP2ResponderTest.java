@@ -5,6 +5,7 @@
 package mecard.responder;
 
 import api.Request;
+import api.Response;
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import org.junit.Test;
@@ -98,10 +99,11 @@ public class SIP2ResponderTest {
     public void testGetCustomer()
     {
         System.out.println("getCustomer");
-        StringBuffer responseBuffer = null;
+        Response responseBuffer = null;
         SIP2Responder instance = null;
         ResponseTypes expResult = null;
-        ResponseTypes result = instance.getCustomer(responseBuffer);
+        instance.getCustomer(responseBuffer);
+        ResponseTypes result = responseBuffer.getCode();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -114,10 +116,11 @@ public class SIP2ResponderTest {
     public void testGetILSStatus()
     {
         System.out.println("getILSStatus");
-        StringBuffer responseBuffer = null;
+        Response responseBuffer = null;
         SIP2Responder instance = null;
         ResponseTypes expResult = null;
-        ResponseTypes result = instance.getILSStatus(responseBuffer);
+        instance.getCustomer(responseBuffer);
+        ResponseTypes result = responseBuffer.getCode();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

@@ -21,7 +21,7 @@
 package mecard.responder;
 
 import api.Request;
-import mecard.ResponseTypes;
+import api.Response;
 import mecard.customer.Customer;
 import site.mecard.MeCardPolicy;
 
@@ -38,10 +38,10 @@ public abstract class CustomerQueryable extends Responder
     
     /**
      * Gets the customer account information.
-     * @param responseBuffer
+     *
      * @return ResponseType result of the query.
      */
-    public abstract ResponseTypes getCustomer(StringBuffer responseBuffer);
+    public abstract void getCustomer(Response response);
     
     /**
      * Tests if the pin supplied from the web site matches the user's account pin.

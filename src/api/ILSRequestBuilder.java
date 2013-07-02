@@ -38,11 +38,13 @@ public interface ILSRequestBuilder
     /**
      * Implementers promise to return a Command that, when run, will return the
      * customer's information.
+     *
      * @param userId the value of userId
      * @param userPin the value of userPin
-     * @param responseBuffer Buffer to contain useful response information.
+     * @param response Buffer to contain useful response information.
      */ 
-    public Command getCustomer(String userId, String userPin, StringBuffer responseBuffer);
+     
+    public Command getCustomer(String userId, String userPin, Response response);
     
     /**
      * Gets the CustomerFormatter related to the implementer of the subclass.
@@ -52,11 +54,14 @@ public interface ILSRequestBuilder
 
     /**
      * Creates a user based on the supplied customer, which must not be null.
+     *
      * @param customer
-     * @param responseBuffer
+     * @param response
      * @return command that can be executed on the ILS to create a customer.
      */
-    public Command createUser(Customer customer, StringBuffer responseBuffer);
+    
+    
+    public Command createUser(Customer customer, Response response);
 
     /**
      * Updates a user based on the supplied customer, which must not be null.
@@ -64,12 +69,18 @@ public interface ILSRequestBuilder
      * @param responseBuffer
      * @return command that can be executed on the ILS to update a customer.
      */
-    public Command updateUser(Customer customer, StringBuffer responseBuffer);
+    /**
+     *
+     * @param customer the value of customer
+     * @param responseBuffer the value of responseBuffer
+     */
+    
+    public Command updateUser(Customer customer, Response response);
 
     /**
      * Gets the status of the ILS.
-     * @param responseBuffer
+     * @param response
      * @return Command necessary to test the ILS status.
      */
-    public Command getStatus(StringBuffer responseBuffer);
+    public Command getStatus(Response response);
 }

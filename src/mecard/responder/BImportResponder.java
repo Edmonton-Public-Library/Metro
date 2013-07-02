@@ -34,6 +34,7 @@ import mecard.customer.BImportFormatter;
 import api.Command;
 import api.ProcessWatcherHandler;
 import api.Request;
+import api.Response;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -51,7 +52,7 @@ public class BImportResponder extends Responder
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
     public final static String DATA_FILE = "-data.txt";
-    private static Object NULL_QUERY_RESPONSE_MSG = "BImport responder null request answered";
+    private static String NULL_QUERY_RESPONSE_MSG = "BImport responder null request answered";
     private String bimportDir;
     private String serverName;
     private String password;
@@ -75,7 +76,6 @@ public class BImportResponder extends Responder
     public BImportResponder(Request cmd, boolean debugMode)
     {
         super(cmd, debugMode);
-        this.response.setCode(ResponseTypes.BUSY);
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
@@ -101,7 +101,7 @@ public class BImportResponder extends Responder
             pathSep = File.pathSeparator;
         }
 //        String transactionId = this.request.getTransactionId();
-        String transactionId = this.request.get(CustomerFieldTypes.ID.ordinal());
+        String transactionId = this.request.getCustomerField(CustomerFieldTypes.ID);
         batFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + BAT_FILE;
         headerFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
         dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + DATA_FILE;
@@ -112,29 +112,22 @@ public class BImportResponder extends Responder
     {
         // test for the operations that this responder is capable of performing
         // SIP can't create customers, BImport can't query customers.
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         switch (request.getCommandType())
         {
             case CREATE_CUSTOMER:
-                this.response.setCode(updateCustomer(responseBuffer));
+                createCustomer(response);
                 break;
             case UPDATE_CUSTOMER:
-                this.response.setCode(createCustomer(responseBuffer));
+                updateCustomer(response);
                 break;
             case NULL:
-                this.response.setCode(ResponseTypes.OK);
-                responseBuffer.append(BImportResponder.NULL_QUERY_RESPONSE_MSG);
+                response.setCode(ResponseTypes.OK);
+                response.setResponse(NULL_QUERY_RESPONSE_MSG);
                 break;
             default:
-                this.response.setCode(ResponseTypes.ERROR);
-                responseBuffer.append(BImportResponder.class.getName());
-                responseBuffer.append(" cannot ");
-                responseBuffer.append(request.toString());
-        }
-        // appending empty buffer puts an empty string on the end of the response.
-        if (responseBuffer.length() > 0)
-        {
-            this.response.addResponse(responseBuffer.toString());
+                response.setCode(ResponseTypes.ERROR);
+                response.setResponse(BImportResponder.class.getName() + " cannot " + request.toString());
         }
         return response.toString();
     }
@@ -146,8 +139,13 @@ public class BImportResponder extends Responder
      * @param responseBuffer
      * @return 
      */
+    /**
+     *
+     * @param responseBuffer the value of responseBuffer
+     */
+    
     @Override
-    public ResponseTypes createCustomer(StringBuffer responseBuffer)
+    public void createCustomer(Response response)
 //    protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
     {
         // take the commandArguments, format them to bimport files, execute
@@ -160,16 +158,13 @@ public class BImportResponder extends Responder
             ProcessWatcherHandler status = command.execute();
             if (status.getStatus() == ResponseTypes.OK)
             {
-                responseBuffer.append(status.getStdout());
-                return ResponseTypes.SUCCESS;
-            }
-            else
-            {
-                responseBuffer.append(status.getStderr());
-                return ResponseTypes.FAIL;
+                response.setResponse(status.getStdout());
+                response.setCode(ResponseTypes.SUCCESS);
+                return;
             }
         }
-        return ResponseTypes.FAIL;
+        response.setResponse("Customer conversion failed because the BImport files could not be created.");
+        response.setCode(ResponseTypes.FAIL);
     }
     
     /**
@@ -184,16 +179,16 @@ public class BImportResponder extends Responder
         // here we have to match up the CustomerFields with variable values.
         // the constructor will then make the header and data files.
         new BImportFormatter.Builder(headerFile, dataFile)
-                .barcode(request.get(CustomerFieldTypes.ID.ordinal()))
-                .pin(request.get(CustomerFieldTypes.PIN.ordinal()))
-                .name(request.get(CustomerFieldTypes.NAME.ordinal()))
-                .address1(request.get(CustomerFieldTypes.STREET.ordinal()))
-                .city(request.get(CustomerFieldTypes.CITY.ordinal()))
-                .postalCode(request.get(CustomerFieldTypes.POSTALCODE.ordinal()))
-                .emailName(computeEmailName(request.get(CustomerFieldTypes.EMAIL.ordinal())))
-                .email(request.get(CustomerFieldTypes.EMAIL.ordinal()))
-                .expire(request.get(CustomerFieldTypes.PRIVILEGE_EXPIRES.ordinal()))
-                .pNumber(request.get(CustomerFieldTypes.PHONE.ordinal()))
+                .barcode(request.getCustomerField(CustomerFieldTypes.ID))
+                .pin(request.getCustomerField(CustomerFieldTypes.PIN))
+                .name(request.getCustomerField(CustomerFieldTypes.NAME))
+                .address1(request.getCustomerField(CustomerFieldTypes.STREET))
+                .city(request.getCustomerField(CustomerFieldTypes.CITY))
+                .postalCode(request.getCustomerField(CustomerFieldTypes.POSTALCODE))
+                .emailName(computeEmailName(request.getCustomerField(CustomerFieldTypes.EMAIL)))
+                .email(request.getCustomerField(CustomerFieldTypes.EMAIL))
+                .expire(request.getCustomerField(CustomerFieldTypes.PRIVILEGE_EXPIRES))
+                .pNumber(request.getCustomerField(CustomerFieldTypes.PHONE))
                 .build();
         File fTest = new File(headerFile);
         if (fTest.exists() == false)
@@ -234,8 +229,8 @@ public class BImportResponder extends Responder
     }
 
     @Override
-    public ResponseTypes updateCustomer(StringBuffer responseBuffer)
+    public void updateCustomer(Response response)
     {
-        return createCustomer(responseBuffer);
+        createCustomer(response);
     }
 }

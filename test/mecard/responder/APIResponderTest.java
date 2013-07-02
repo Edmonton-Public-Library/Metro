@@ -21,6 +21,7 @@
 package mecard.responder;
 
 import api.Request;
+import api.Response;
 import mecard.ResponseTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -84,103 +85,25 @@ public class APIResponderTest
     }
 
     /**
-     * Test of updateCustomer method, of class APIResponder.
-     */
-    @Test
-    public void testUpdateCustomer()
-    {
-        System.out.println("updateCustomer");
-        StringBuffer responseBuffer = null;
-        APIResponder instance = null;
-        ResponseTypes expResult = null;
-        ResponseTypes result = instance.updateCustomer(responseBuffer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of createCustomer method, of class APIResponder.
-     */
-    @Test
-    public void testCreateCustomer()
-    {
-        System.out.println("createCustomer");
-        StringBuffer responseBuffer = null;
-        APIResponder instance = null;
-        ResponseTypes expResult = null;
-        ResponseTypes result = instance.createCustomer(responseBuffer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of getCustomer method, of class APIResponder.
      */
     @Test
     public void testGetUser()
     {
         System.out.println("==getUser==");
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         String command = "[\"QB0\",\"12345678abcdef\",\"21221015133926\",\"64058\"]";
         Request r = new Request(command);
         APIResponder instance = new APIResponder(r, true);
 //      63                               AO|AA21221015133926|AD64058|AY0AZF37A
 //      recv:64              00020130610    095814000000000000000000000000AO|AA21221015133926|AEBalzac, William (Dr)|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 0.00|BD11811 72 Ave. Edmonton, AB T6G 2B2|BEilsteam@epl.ca|BHUSD|PA20140514    235900|PD|PCEPL-ADULT|DB$0.00|DM$0.00|AFOK|AY0AZBA2C
         String expResult = "[\"RA1\",\"21221015133926\",\"64058\",\"Balzac, William (Dr)\",\"11811 72 Ave.\",\"Edmonton\",\"AB\",\"T6G2B2\",\"X\",\"ilsteam@epl.ca\",\"X\",\"X\",\"20140514\",\"X\",\"X\",\"X\",\"Y\",\"N\",\"Y\",\"Y\",\"X\",\"William (Dr)\",\"Balzac\",\"\"]";
-        ResponseTypes result = instance.getCustomer(responseBuffer);
+        instance.getCustomer(response);
+
+        String result = response.toString();
         System.out.println("RESULT:"+result);
-        String response = instance.getResponse();
-        System.out.println("RESPONSE:"+response);
-        assertEquals(expResult, response);
-    }
-
-    /**
-     * Test of getServerStatus method, of class APIResponder.
-     */
-    @Test
-    public void testGetServerStatus()
-    {
-        System.out.println("getServerStatus");
-        StringBuffer responseBuffer = null;
-        APIResponder instance = null;
-        ResponseTypes expResult = null;
-        ResponseTypes result = instance.getILSStatus(responseBuffer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getCustomer method, of class APIResponder.
-     */
-    @Test
-    public void testGetCustomer()
-    {
-        System.out.println("getCustomer");
-        StringBuffer responseBuffer = null;
-        APIResponder instance = null;
-        ResponseTypes expResult = null;
-        ResponseTypes result = instance.getCustomer(responseBuffer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getILSStatus method, of class APIResponder.
-     */
-    @Test
-    public void testGetILSStatus()
-    {
-        System.out.println("getILSStatus");
-        StringBuffer responseBuffer = null;
-        APIResponder instance = null;
-        ResponseTypes expResult = null;
-        ResponseTypes result = instance.getILSStatus(responseBuffer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String responseString = instance.getResponse();
+        System.out.println("RESPONSE:"+responseString);
+        assertEquals(expResult, responseString);
     }
 }

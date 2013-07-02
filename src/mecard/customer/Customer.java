@@ -20,26 +20,27 @@
  */
 package mecard.customer;
 
-import java.util.List;
 import mecard.Protocol;
-import mecard.ProtocolPayload;
 import com.google.gson.Gson;
-import mecard.Exception.MalformedCommandException;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.EnumMap;
+import mecard.Exception.InvalidCustomerException;
 
 /**
  * 
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Customer extends ProtocolPayload
+public class Customer //extends ProtocolPayload
 {
-    private String firstName;
-    private String lastName;
-
+    private EnumMap<CustomerFieldTypes, String> customerFields;
+    
     public Customer()
     {
-        super(CustomerFieldTypes.size());
-        firstName = "";
-        lastName = "";
+        customerFields = new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
+        normalizeFields();
     }
 
     /**
@@ -51,21 +52,19 @@ public class Customer extends ProtocolPayload
      *
      * @param c
      */
-    public Customer(String c)
+    public Customer(String c) throws InvalidCustomerException
     {
-        super(CustomerFieldTypes.size());
-        firstName = "";
-        lastName = "";
-        this.splitCustomerFields(c);
-    }
-    
-    private void insertResponse(String s)
-    {
-        if (payload.size() > 0)
+        this.customerFields = new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
+        try
         {
-            this.payload.remove(0);
+            this.splitCustomerFields(c);
         }
-        this.addResponse(s);
+        catch (RuntimeException ex)
+        {
+            String msg = "The supplied JSON does not represent a valid customer's data.";
+            throw new InvalidCustomerException(msg);
+        }
+        normalizeFields();
     }
 
     /**
@@ -81,21 +80,13 @@ public class Customer extends ProtocolPayload
      */
     private void splitCustomerFields(String cmd)
     {
-        Gson gson = new Gson();
-        try
-        {
-            List<String> cmdLine = gson.fromJson(cmd, List.class);
-            // ignore the command code and authority (API) token.
-            for (int i = 2; i < cmdLine.size(); i++)
-            {
-//                this.addResponse(cmdLine.get(i));
-                this.insertResponse(cmdLine.get(i));
-            }
-        }
-        catch (IndexOutOfBoundsException ex)
-        {
-            throw new MalformedCommandException("queries must include an API key.");
-        }
+//        Gson gson = new Gson();
+//        Customer c = gson.fromJson(cmd, Customer.class);
+//        this.customerFields = c.customerFields;
+        
+        Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<EnumMap<CustomerFieldTypes, String>>(){ }.getType(),
+            new EnumMapInstanceCreator<CustomerFieldTypes, String>(CustomerFieldTypes.class)).create();
+        this.customerFields = gson.fromJson(cmd, new TypeToken<EnumMap<CustomerFieldTypes, String>>(){ }.getType());
     }
 
     /**
@@ -109,7 +100,7 @@ public class Customer extends ProtocolPayload
         {
             return;
         }
-        this.setPayloadSlot(CustomerFieldTypes.NAME.ordinal(), name);
+        this.customerFields.put(CustomerFieldTypes.NAME, name);
         // Sometimes services return names that are the 'lastName, firstName'.
         // we always assume the last name is first. If only one name is supplied
         // we assume it the last name and set the content string to that, other-
@@ -123,10 +114,9 @@ public class Customer extends ProtocolPayload
         // Do first name 
         if (cName.length > 1)
         {
-            this.set(CustomerFieldTypes.FIRSTNAME, cName[1].trim());
+            this.customerFields.put(CustomerFieldTypes.FIRSTNAME, cName[1].trim());
         }
-        this.set(CustomerFieldTypes.LASTNAME, cName[0].trim());
-        
+        this.customerFields.put(CustomerFieldTypes.LASTNAME, cName[0].trim());
     }
     
     /**
@@ -136,16 +126,14 @@ public class Customer extends ProtocolPayload
      */
     public void set(CustomerFieldTypes ft, String value)
     {
-//        System.out.println("CustomerFieldType ordinal:"+ft.toString());
-        if (ft == CustomerFieldTypes.FIRSTNAME)
+        if (ft.equals(CustomerFieldTypes.NAME))
         {
-            firstName = value;
+            this.setName(value);
         }
-        if (ft == CustomerFieldTypes.LASTNAME)
+        else
         {
-            lastName = value;
+            this.customerFields.put(ft, value);
         }
-        this.setPayloadSlot(ft.ordinal(), value);
     }
 
     /**
@@ -155,7 +143,7 @@ public class Customer extends ProtocolPayload
      */
     public String get(CustomerFieldTypes t)
     {
-        return this.payload.get(t.ordinal());
+        return this.customerFields.get(t);
     }
 
     /**
@@ -165,17 +153,11 @@ public class Customer extends ProtocolPayload
     private void normalizeFields()
     {
         // set name field if empty
-        
-        if (! firstName.isEmpty() && ! lastName.isEmpty())
+        for (CustomerFieldTypes cType: CustomerFieldTypes.values())
         {
-            this.set(CustomerFieldTypes.NAME, 
-               get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME));
-        }
-        for (int i = 0; i < payload.size(); i++)
-        {
-            if (this.payload.get(i).trim().isEmpty())
+            if (this.customerFields.get(cType) == null || this.customerFields.get(cType).isEmpty())
             {
-                this.payload.set(i, Protocol.DEFAULT_FIELD);
+                this.customerFields.put(cType, Protocol.DEFAULT_FIELD);
             }
         }
     }
@@ -183,14 +165,22 @@ public class Customer extends ProtocolPayload
     @Override
     public String toString()
     {
-        if (firstName.isEmpty() == false && lastName.isEmpty() == false)
-        {
-            this.set(CustomerFieldTypes.NAME, (get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME)));
-        }
+//        if ((get(CustomerFieldTypes.FIRSTNAME).compareTo(Protocol.DEFAULT_FIELD) != 0) 
+//                && (get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD) != 0)
+//                && (get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD) == 0))
+//        {
+//            this.set(CustomerFieldTypes.NAME, 
+//              (get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME)));
+//        }
         normalizeFields();
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        return sb.toString();
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(super.toString());
+//        return sb.toString();
+        Gson gson = new Gson();
+//        return gson.toJson(this);
+//        Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<EnumMap<CustomerFieldTypes, String>>(){ }.getType(),
+//            new EnumMapInstanceCreator<CustomerFieldTypes, String>(CustomerFieldTypes.class)).create();
+        return gson.toJson(this.customerFields);
     }
     
     @Override
@@ -207,5 +197,24 @@ public class Customer extends ProtocolPayload
         }
         
         return true;
+    }
+    
+    
+    private class EnumMapInstanceCreator<K extends Enum<K>, V> implements
+        InstanceCreator<EnumMap<K, V>> 
+    {
+        private final Class<K> enumClazz;
+
+        public EnumMapInstanceCreator(final Class<K> enumClazz) 
+        {
+        super();
+        this.enumClazz = enumClazz;
+        }
+
+        @Override
+        public EnumMap<K, V> createInstance(Type type) 
+        {
+            return new EnumMap<K, V>(enumClazz);
+        }
     }
 }

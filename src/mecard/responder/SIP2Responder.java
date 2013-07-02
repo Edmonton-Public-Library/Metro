@@ -21,6 +21,7 @@
 package mecard.responder;
 
 import api.Request;
+import api.Response;
 import mecard.customer.SIPFormatter;
 import java.util.Properties;
 import mecard.Exception.SIPException;
@@ -45,7 +46,7 @@ public class SIP2Responder extends CustomerQueryable
 {
     public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     private static SIPConnector sipServer;
-    private static Object NULL_QUERY_RESPONSE_MSG = "SIP2 responder answers ok";
+    private static String NULL_QUERY_RESPONSE_MSG = "SIP2 responder answers ok";
     
     /**
      *
@@ -54,9 +55,7 @@ public class SIP2Responder extends CustomerQueryable
      */
     public SIP2Responder(Request command, boolean debugMode)
     {
-        super(command, debugMode);
-        this.response.setCode(ResponseTypes.BUSY);
-        
+        super(command, debugMode);        
         Properties sipProps = PropertyReader.getProperties(ConfigFileTypes.SIP2);
         String host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
         String port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001"); // port optional in config.
@@ -79,31 +78,24 @@ public class SIP2Responder extends CustomerQueryable
     {
         // test for the operations that this responder is capable of performing
         // SIP can't create customers, BImport can't query customers.
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         switch (request.getCommandType())
         {
             case GET_CUSTOMER:
-                this.response.setCode(getCustomer(responseBuffer));
+                getCustomer(response);
                 break;
             case GET_STATUS:
-                this.response.setCode(getILSStatus(responseBuffer));
-                break; // is SIP2 the best way to get the ILS status, it is one way.
+                getILSStatus(response);
+                break; // is SIP2 the best way to getCustomerField the ILS status, it is one way.
             case NULL:
-                this.response.setCode(ResponseTypes.OK);
-                responseBuffer.append(SIP2Responder.NULL_QUERY_RESPONSE_MSG);
+                response.setCode(ResponseTypes.OK);
+                response.setResponse(NULL_QUERY_RESPONSE_MSG);
                 break;
             default:
-                this.response.setCode(ResponseTypes.ERROR);
-                responseBuffer.append(SIP2Responder.class.getName());
-                responseBuffer.append(" cannot ");
-                responseBuffer.append(request.toString());
+                response.setCode(ResponseTypes.ERROR);
+                response.setResponse(SIP2Responder.class.getName() + " cannot " + request.toString());
         }
-        // appending empty buffer puts an empty string on the end of the response.
-        if (responseBuffer.length() > 0)
-        {
-            this.response.addResponse(responseBuffer.toString());
-        }
-        return this.response.toString();
+        return response.toString();
     }
 
     /**
@@ -111,13 +103,18 @@ public class SIP2Responder extends CustomerQueryable
      * @param responseBuffer
      * @return the ResponseTypes from the execution of the query.
      */
+    /**
+     *
+     * @param responseBuffer the value of responseBuffer
+     */
+    
     @Override
-    public ResponseTypes getCustomer(StringBuffer responseBuffer)
+    public void getCustomer(Response response)
     {
         SIPRequest sipCustomerRequest = new SIPRequest();
-        String userId  = this.request.get(0);
-        String userPin = this.request.get(1);
-        String sipResponse;
+        String userId  = this.request.getCustomerField(CustomerFieldTypes.ID);
+        String userPin = this.request.getCustomerField(CustomerFieldTypes.PIN);
+        String sipResponse = "";
         try
         {
             sipResponse = sipServer.send(sipCustomerRequest.patronInfoRequest(userId, userPin));
@@ -126,13 +123,13 @@ public class SIP2Responder extends CustomerQueryable
         {
             // Can happen if the server is down, server not listening on port, login failed
             // or request timedout.
-            responseBuffer.append("service is currently unavailable");
-            return ResponseTypes.UNAVAILABLE;
+            response.setResponse("service is currently unavailable");
+            response.setCode(ResponseTypes.UNAVAILABLE);
         }
         if (isAuthorized(sipResponse, null) == false)
         {
-            responseBuffer.append("invalid PIN");
-            return ResponseTypes.UNAUTHORIZED;
+            response.setResponse("invalid PIN");
+            response.setCode(ResponseTypes.UNAUTHORIZED);
         }
         CustomerFormatter sipFormatter = new SIPFormatter();
         Customer customer = sipFormatter.getCustomer(sipResponse);
@@ -140,37 +137,40 @@ public class SIP2Responder extends CustomerQueryable
         customer.set(CustomerFieldTypes.PIN, userPin);
         if (meetsMeCardRequirements(customer, sipResponse))
         {
-            this.response.setCustomer(customer);
-            return ResponseTypes.OK;
+            response.setCustomer(customer);
+            response.setCode(ResponseTypes.OK);
         }
         // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
-        responseBuffer.append("there is a problem with your account, please contact your home library for assistance");
-        return ResponseTypes.FAIL;
+        response.setResponse("there is a problem with your account, please contact your home library for assistance");
+        response.setCode(ResponseTypes.FAIL);
     }
 
     /**
      * Gets the status of the server.
-     * @param responseBuffer
+     * @param response
      * @return the ResponseTypes from the execution of the query.
      */
     @Override
-    public ResponseTypes getILSStatus(StringBuffer responseBuffer)
+    public void getILSStatus(Response response)
     {
         SIPRequest sipStatusRequest = new SIPRequest();
-        String sipResponse;
+        String sipResponse = "";
         try
         {
             sipResponse = sipServer.send(sipStatusRequest.getILSStatus());
         }
         catch(SIPException e)
         {
-            return ResponseTypes.UNAVAILABLE;
+            response.setCode(ResponseTypes.UNAVAILABLE);
         }
         if (isSuccessful(sipResponse) == false)
         {
-            return ResponseTypes.FAIL;
+            response.setCode(ResponseTypes.FAIL);
         }
-        return ResponseTypes.OK;
+        else
+        {
+            response.setCode(ResponseTypes.OK);
+        }
     }
 
     /** 

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class ProtocolPayloadTest {
     

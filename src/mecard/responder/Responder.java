@@ -21,14 +21,12 @@
 package mecard.responder;
 
 import mecard.ResponseTypes;
-import mecard.customer.Customer;
 import api.Request;
 import api.Response;
 import mecard.Exception.MalformedCommandException;
 import mecard.Exception.MetroSecurityException;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.UnsupportedResponderException;
-import site.mecard.MeCardPolicy;
 
 /**
  *
@@ -37,7 +35,6 @@ import site.mecard.MeCardPolicy;
 public abstract class Responder
 {
     protected Request request;
-    protected Response response;
     protected final boolean debug;
     
     /**
@@ -49,7 +46,6 @@ public abstract class Responder
     {
         this.debug = debugMode;
         this.request = cmd;
-        this.response = new Response();
         if (debug)
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
@@ -76,14 +72,14 @@ public abstract class Responder
         else if (ex instanceof UnsupportedCommandException)
         {
             r = new Response(ResponseTypes.UNKNOWN);
-            r.addResponse("Command not implemented, make sure your server is up to date.");
+            r.setResponse("Command not implemented, make sure your server is up to date.");
         }
         else if (ex instanceof UnsupportedResponderException)
         {
             r = new Response(ResponseTypes.CONFIG_ERROR);
-            r.addResponse("The server doesn't seem to be configured correctly.");
+            r.setResponse("The server doesn't seem to be configured correctly.");
         }
-        r.addResponse(ex.getMessage());
+        r.setResponse(ex.getMessage());
         return r.toString();
     }
     

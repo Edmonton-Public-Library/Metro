@@ -1,6 +1,7 @@
 package mecard.responder;
 
 import api.Request;
+import api.Response;
 import com.google.gson.Gson;
 import java.util.List;
 import java.util.Properties;
@@ -17,10 +18,10 @@ import mecard.customer.CustomerFieldTypes;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class DummyRepsonder extends CustomerQueryable
+public class DummyResponder extends CustomerQueryable
         implements StatusQueryable, Updateable, Createable
 {
-    private static Object NULL_QUERY_RESPONSE_MSG = "debug responder reporting";
+    private static String NULL_QUERY_RESPONSE_MSG = "debug responder reporting";
 
     private final String gsonStatus;
     private final String gsonGetCustomer;
@@ -28,7 +29,7 @@ public class DummyRepsonder extends CustomerQueryable
     private final String gsonUpdateCustomer;
     private final String altData;
 
-    public DummyRepsonder(Request command, boolean debugMode)
+    public DummyResponder(Request command, boolean debugMode)
     {
         super(command, debugMode);
         Properties props = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
@@ -42,106 +43,111 @@ public class DummyRepsonder extends CustomerQueryable
     @Override
     public String getResponse()
     {
-        this.response.setCode(ResponseTypes.BUSY);
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         switch (request.getCommandType())
         {
             case GET_STATUS:
-                this.response.setCode(getILSStatus(responseBuffer));
+                getILSStatus(response);
                 break;
             case GET_CUSTOMER:
-                this.response.setCode(getCustomer(responseBuffer));
+                getCustomer(response);
                 break;
             case CREATE_CUSTOMER:
-                this.response.setCode(updateCustomer(responseBuffer));
+                updateCustomer(response);
                 break;
             case UPDATE_CUSTOMER:
-                this.response.setCode(createCustomer(responseBuffer));
+                createCustomer(response);
                 break;
             case NULL:
-                this.response.setCode(ResponseTypes.OK);
-                responseBuffer.append(DummyRepsonder.NULL_QUERY_RESPONSE_MSG);
+                response.setCode(ResponseTypes.OK);
+                response.setResponse(DummyResponder.NULL_QUERY_RESPONSE_MSG);
                 break;
             default:
-                this.response.setCode(ResponseTypes.ERROR);
-                responseBuffer.append(BImportResponder.class.getName());
-                responseBuffer.append(" cannot ");
-                responseBuffer.append(request.toString());
-        }
-        if (responseBuffer.length() > 0)
-        {
-            this.response.addResponse(responseBuffer.toString());
+                response.setCode(ResponseTypes.ERROR);
+                response.setResponse(BImportResponder.class.getName() + " cannot " + request.toString());
         }
         return response.toString();
     }
 
     @Override
-    public ResponseTypes getILSStatus(StringBuffer responseBuffer)
+    public void getILSStatus(Response response)
     {
         Gson gson = new Gson();
         List<String> gsonResponse = gson.fromJson(this.gsonStatus, List.class);
-        return setMessages(gsonResponse, responseBuffer);
+        setMessages(gsonResponse, response);
     }
 
+
     @Override
-    public ResponseTypes getCustomer(StringBuffer responseBuffer)
+    public void getCustomer(Response response)
     {
         Gson gson = new Gson();
         List<String> gsonResponse = gson.fromJson(this.gsonGetCustomer, List.class);
         Customer customer = new Customer(this.gsonGetCustomer);
         // the 3rd field of this request is the pin.
-        System.out.println("PIN:"+this.request.get(3)+customer);
-        if (isAuthorized(this.request.get(3), customer))
+        System.out.println("PIN:"+this.request.getCustomerField(CustomerFieldTypes.PIN)+customer);
+        if (isAuthorized(this.request.getCustomerField(CustomerFieldTypes.PIN), customer))
         {
             if (meetsMeCardRequirements(customer, this.altData))
             {
-                this.response.setCustomer(customer);
-                return ResponseTypes.OK;
+                response.setCode(ResponseTypes.OK);
+                response.setCustomer(customer);
             }
         }
-        return setMessages(gsonResponse, responseBuffer);
+        setMessages(gsonResponse, response);
     }
     
     
+    /**
+     *
+     *
+     */
+    
     @Override
-    public ResponseTypes updateCustomer(StringBuffer responseBuffer)
+    public void updateCustomer(Response response)
     {
         Gson gson = new Gson();
         List<String> gsonResponse = gson.fromJson(this.gsonUpdateCustomer, List.class);
-        return setMessages(gsonResponse, responseBuffer);
+        setMessages(gsonResponse, response);
     }
 
+    /**
+     *
+     * @param responseBuffer the value of responseBuffer
+     */
     @Override
-    public ResponseTypes createCustomer(StringBuffer responseBuffer)
+    public void createCustomer(Response response)
     {
         Gson gson = new Gson();
         List<String> gsonResponse = gson.fromJson(this.gsonCreateCustomer, List.class);
-        return setMessages(gsonResponse, responseBuffer);
+        setMessages(gsonResponse, response);
     }
     
-    protected ResponseTypes setMessages(List<String> gsonResponse, StringBuffer responseBuffer)
-    {  
-        ResponseTypes rType = ResponseTypes.UNKNOWN;
+    /**
+     *
+     * @param gsonResponse the value of gsonResponse
+     * @param response the value of responseBuffer
+     */
+    protected void setMessages(List<String> gsonResponse, Response response)
+    {
         try
         {
-            rType = convertToResponseType(gsonResponse.get(0));
+            response.setCode(convertToResponseType(gsonResponse.get(0)));
+            StringBuilder sb = new StringBuilder();
             for (int pos = 1; pos < gsonResponse.size(); pos++)
             {
                 if (debug)
                 {
                     System.out.println(pos+") '" + gsonResponse.get(pos) + "'");
                 }
-                this.response.setResponse(gsonResponse.get(pos));
+                sb.append(gsonResponse.get(pos));
             }
-            
+            response.setResponse(sb.toString());
         } 
         catch (Exception ex)
         {
-            responseBuffer.append("Exception occured in ");
-            responseBuffer.append(DummyRepsonder.class.getName());
-            responseBuffer.append(ex.getMessage());
+            response.setResponse("Exception occured in " + DummyResponder.class.getName() + ex.getMessage());
         }
-        return rType;
     }
 
 

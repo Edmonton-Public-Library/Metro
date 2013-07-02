@@ -3,6 +3,8 @@ package api;
 
 import mecard.Exception.MalformedCommandException;
 import mecard.QueryTypes;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFieldTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -24,7 +26,7 @@ public class RequestTest
     public void testGetCommandType()
     {
         System.out.println("==getCommandType==");
-        String cmd = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"Blah blah blah\",\"something_else\"]";
+        String cmd = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]";
         Request instance = new Request(cmd);
         QueryTypes expResult = QueryTypes.GET_STATUS;
         QueryTypes result = instance.getCommandType();
@@ -128,29 +130,83 @@ public class RequestTest
     }
 
     /**
-     * Test of get method, of class Request.
+     * Test of getCustomerField method, of class Request.
      */
     @Test
     public void testGet()
     {
         System.out.println("==get==");
-        int ordinal = 0;
+        
         String cmd = "[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221\",\"12345\"]";
         Request instance = new Request(cmd);
         String expResult = "21221";
-        String result = instance.get(ordinal);
+        String result = instance.getUserId();
         assertEquals(expResult, result);
         
-        ordinal = 1;
         instance = new Request(cmd);
         expResult = "12345";
-        result = instance.get(ordinal);
+        result = instance.getUserPin();
         assertEquals(expResult, result);
-        
-        ordinal = 2;
-        instance = new Request(cmd);
-        expResult = "";
-        result = instance.get(ordinal);
+    }
+
+    /**
+     * Test of getCustomerField method, of class Request.
+     */
+    @Test
+    public void testGetCustomerField()
+    {
+        System.out.println("getCustomerField");
+        CustomerFieldTypes cField = null;
+        Request instance = null;
+        String expResult = "";
+        String result = instance.getCustomerField(cField);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getUserId method, of class Request.
+     */
+    @Test
+    public void testGetUserId()
+    {
+        System.out.println("getUserId");
+        Request instance = null;
+        String expResult = "";
+        String result = instance.getUserId();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getUserPin method, of class Request.
+     */
+    @Test
+    public void testGetUserPin()
+    {
+        System.out.println("getUserPin");
+        Request instance = null;
+        String expResult = "";
+        String result = instance.getUserPin();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getCustomer method, of class Request.
+     */
+    @Test
+    public void testGetCustomer()
+    {
+        System.out.println("getCustomer");
+        Request instance = null;
+        Customer expResult = null;
+        Customer result = instance.getCustomer();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

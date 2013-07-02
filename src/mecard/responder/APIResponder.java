@@ -33,6 +33,8 @@ import mecard.customer.CustomerFormatter;
 import api.Command;
 import api.ProcessWatcherHandler;
 import api.Request;
+import api.Response;
+import mecard.customer.CustomerFieldTypes;
 
 /**
  *
@@ -52,7 +54,7 @@ public class APIResponder extends CustomerQueryable
     public APIResponder(Request command, boolean debugMode)
     {
         super(command, debugMode);
-        this.response.setCode(ResponseTypes.BUSY);
+        
         Properties apiProps = PropertyReader.getProperties(ConfigFileTypes.API);
         String ils = apiProps.getProperty(APIPropertyTypes.ILS_TYPE.toString());
         api = APIRequest.getInstanceOf(ils, debug);
@@ -61,79 +63,80 @@ public class APIResponder extends CustomerQueryable
     @Override
     public String getResponse()
     {
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         switch (request.getCommandType())
         {
             case GET_STATUS:
-                this.response.setCode(getILSStatus(responseBuffer));
+                getILSStatus(response);
                 break;
             case GET_CUSTOMER:
-                this.response.setCode(getCustomer(responseBuffer));
+                getCustomer(response);
                 break;
             case CREATE_CUSTOMER:
-                this.response.setCode(createCustomer(responseBuffer));
+                createCustomer(response);
                 break;
             case UPDATE_CUSTOMER:
-                this.response.setCode(updateCustomer(responseBuffer));
+                updateCustomer(response);
                 break;
             case NULL:
-                this.response.setCode(ResponseTypes.OK);
-                responseBuffer.append(APIResponder.NULL_QUERY_RESPONSE_MSG);
+                response.setCode(ResponseTypes.OK);
+                response.setResponse(NULL_QUERY_RESPONSE_MSG);
                 break;
             default:
-                this.response.setCode(ResponseTypes.ERROR);
-                responseBuffer.append(APIResponder.class.getName());
-                responseBuffer.append(" cannot ");
-                responseBuffer.append(request.toString());
-        }
-        // appending empty buffer puts an empty string on the end of the response.
-        if (responseBuffer.length() > 0)
-        {
-            this.response.addResponse(responseBuffer.toString());
+                response.setCode(ResponseTypes.ERROR);
+                response.setResponse(APIResponder.class.getName() + " cannot " + request.toString());
         }
         return response.toString();
     }
 
     @Override
-    public ResponseTypes updateCustomer(StringBuffer responseBuffer)
+    public void updateCustomer(Response response)
     {
         // I have a customer, I need to reload them into the ils
         Customer customer = new Customer(request.toString());
-        Command apiCommand = api.updateUser(customer, responseBuffer);
+        Command apiCommand = api.updateUser(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
         if (status.getStatus() == ResponseTypes.OK)
         {
             // alls good so add a nice message.
-            responseBuffer.append("Thank you.");
+            response.setResponse("Thank you.");
         }
-        return status.getStatus(); 
+        response.setCode(status.getStatus()); 
     }
 
+    /**
+     *
+     * @param responseBuffer the value of responseBuffer
+     */
     @Override
-    public ResponseTypes createCustomer(StringBuffer responseBuffer)
+    public void createCustomer(Response response)
     {
         // I have a customer, I need to load them into the ils
         Customer customer = new Customer(request.toString());
-        Command apiCommand = api.createUser(customer, responseBuffer);
+        Command apiCommand = api.createUser(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
         if (status.getStatus() == ResponseTypes.OK)
         {
             // alls good so add a nice message.
-            responseBuffer.append("Thank you for using the MeCard.");
+            response.setResponse("Thank you for using the MeCard.");
         }
-        return status.getStatus();
+        response.setCode(status.getStatus());
     }
     
+    /**
+     *
+     * @param responseBuffer the value of responseBuffer
+     */
     @Override
-    public ResponseTypes getCustomer(StringBuffer responseBuffer)
+    public void getCustomer(Response response)
     {
         // creates using a generic api command.
-        // get the user's code from the request object.
-        String userId  = this.request.get(0);
-        String userPin = this.request.get(1);
+        // getCustomerField the user's code from the request object.
+        String userId  = this.request.getCustomerField(CustomerFieldTypes.ID);
+        String userPin = this.request.getCustomerField(CustomerFieldTypes.PIN);
         // the response buffer is in case the command fails, we can populate
         // it with a meaningful error message(s).
-        Command getUserAPI = api.getCustomer(userId, userPin, responseBuffer);
+        Command getUserAPI = api.getCustomer(userId, userPin, response);
         ProcessWatcherHandler commandRun = getUserAPI.execute();
         if (commandRun.getStatus() == ResponseTypes.OK)
         {
@@ -142,25 +145,29 @@ public class APIResponder extends CustomerQueryable
             System.out.println("STDOUT"+commandRun.getStdout());
             Customer customer = formatter.getCustomer(commandRun.getStdout());
             // Now we have a customer we need to set their 
-            responseBuffer.append(customer.toString());
+            response.setCustomer(customer);
         }
-        return commandRun.getStatus();
+        response.setCode(commandRun.getStatus());
     }
 
+    /**
+     *
+     * @param response the value of responseBuffer
+     */
     @Override
-    public ResponseTypes getILSStatus(StringBuffer responseBuffer)
+    public void getILSStatus(Response response)
     {
-        Command getUserAPI = api.getStatus(responseBuffer);
+        Command getUserAPI = api.getStatus(response);
         ProcessWatcherHandler commandRun = getUserAPI.execute();
         if (commandRun.getStatus() == ResponseTypes.OK)
         {
-            responseBuffer.append("status: up");
+            response.setResponse("status: up");
         }
         else
         {  
-            responseBuffer.append("status: down");
+            response.setResponse("status: down");
         }
-        return commandRun.getStatus();
+        response.setCode(commandRun.getStatus());
     }
 
     @Override

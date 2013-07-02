@@ -20,7 +20,7 @@
  */
 package mecard.responder;
 
-import mecard.ResponseTypes;
+import api.Response;
 
 /**
  * Indicates that the implementer can update users.
@@ -28,5 +28,9 @@ import mecard.ResponseTypes;
  */
 public interface Updateable
 {
-    public ResponseTypes updateCustomer(StringBuffer responseBuffer);
+    /**
+     * 
+     * @param response 
+     */
+    public void updateCustomer(Response response);
 }

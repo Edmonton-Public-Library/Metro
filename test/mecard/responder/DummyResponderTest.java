@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class DummyRepsonderTest
+public class DummyResponderTest
 {
     
     private Request statusRequest;
@@ -24,7 +24,7 @@ public class DummyRepsonderTest
     private Request updateRequest;
     private String jsonCustomer;
     
-    public DummyRepsonderTest()
+    public DummyResponderTest()
     {
         jsonCustomer = "[\"RA1\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\"Edmonton\","
                 + "\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\","
@@ -47,35 +47,35 @@ public class DummyRepsonderTest
     }
 
     /**
-     * Test of getResponse method, of class DummyRepsonder.
+     * Test of getResponse method, of class DummyResponder.
      */
     @Test
     public void testGetResponse()
     {
         System.out.println("==getResponse==");
-        DummyRepsonder responder = new DummyRepsonder(statusRequest, true);
+        DummyResponder responder = new DummyResponder(statusRequest, true);
         String expResult = "[\"RA1\"]";
         String result = responder.getResponse();
         assertEquals(expResult, result);
         
-        responder = new DummyRepsonder(createRequest, true);
+        responder = new DummyResponder(createRequest, true);
         expResult = "[\"RA1\"]";
         result = responder.getResponse();
         assertEquals(expResult, result);
         
-        responder = new DummyRepsonder(updateRequest, true);
+        responder = new DummyResponder(updateRequest, true);
         expResult = "[\"RA1\"]";
         result = responder.getResponse();
         assertEquals(expResult, result);
         
-        responder = new DummyRepsonder(customerRequest, true);
+        responder = new DummyResponder(customerRequest, true);
         expResult = jsonCustomer;
         result = responder.getResponse();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of convertToResponseType method, of class DummyRepsonder.
+     * Test of convertToResponseType method, of class DummyResponder.
      */
     @Test
     public void testConvertToResponseType()
@@ -84,11 +84,11 @@ public class DummyRepsonderTest
         for (ResponseTypes rType: ResponseTypes.values())
         {
             ResponseTypes expResult = rType;
-            ResponseTypes result = DummyRepsonder.convertToResponseType(rType.toString());
+            ResponseTypes result = DummyResponder.convertToResponseType(rType.toString());
             assertEquals(expResult, result);
         }
         ResponseTypes expResult = ResponseTypes.UNKNOWN;
-        ResponseTypes result = DummyRepsonder.convertToResponseType("totally off the mark");
+        ResponseTypes result = DummyResponder.convertToResponseType("totally off the mark");
         assertEquals(expResult, result);
     }
 }

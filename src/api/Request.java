@@ -21,21 +21,24 @@
 package api;
 
 import com.google.gson.Gson;
-import java.util.ArrayList;
-import java.util.List;
 import mecard.Exception.MalformedCommandException;
 import mecard.ProtocolPayload;
 import mecard.QueryTypes;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFieldTypes;
 
 /**
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Request extends ProtocolPayload
+public class Request //extends ProtocolPayload
 {
 
     protected QueryTypes code;
     protected String authorityToken;
+    protected Customer customer;
+    protected String pin;
+    protected String userId;
 
     public Request(String request)
     {
@@ -59,26 +62,13 @@ public class Request extends ProtocolPayload
     private void splitCommand(String cmd)
             throws MalformedCommandException
     {
-        if (cmd == null || cmd.isEmpty())
-        {
-            String msg = "Request is null or empty.";
-            throw new MalformedCommandException(msg);
-        }
         Gson gson = new Gson();
-        try
-        {
-            List<String> cmdLine = gson.fromJson(cmd, List.class);
-            this.code = this.getQueryType(cmdLine.get(0));
-            this.authorityToken = cmdLine.get(1);
-            for (int i = 2; i < cmdLine.size(); i++)
-            {
-                this.addResponse(cmdLine.get(i));
-            }
-        }
-        catch (IndexOutOfBoundsException ex)
-        {
-            throw new MalformedCommandException("queries must include an API key.");
-        }
+        Request r = gson.fromJson(cmd, Request.class);
+        this.authorityToken = r.authorityToken;
+        this.code = r.code;
+        this.customer = r.customer;
+        this.pin = r.pin;
+        this.userId = r.userId;
     }
 
     /**
@@ -87,7 +77,7 @@ public class Request extends ProtocolPayload
      */
     public QueryTypes getCommandType()
     {
-        return code;
+        return this.code;
     }
 
     /**
@@ -104,12 +94,8 @@ public class Request extends ProtocolPayload
     @Override
     public String toString()
     {
-        List<String> retList = new ArrayList<String>();
-        retList.add(code.toString());
-        retList.add(authorityToken);
-        retList.addAll(payload);
         Gson gson = new Gson();
-        return gson.toJson(retList, List.class);
+        return gson.toJson(this, Request.class);
     }
 
     public String getTransactionId()
@@ -117,32 +103,31 @@ public class Request extends ProtocolPayload
         return this.authorityToken;
     }
 
-    public String get(int ordinal)
+    /**
+     *
+     *
+     */
+    public String getCustomerField(CustomerFieldTypes cField)
     {
-        try
+        if (this.customer == null)
         {
-            return payload.get(ordinal);
-        }
-        catch (IndexOutOfBoundsException e)
-        {
-            System.out.println(e.getMessage());
             return "";
         }
+        return this.customer.get(cField);
     }
 
-    private QueryTypes getQueryType(String string)
-            throws UnsupportedOperationException
+    String getUserId()
     {
-        QueryTypes type;
-        for (QueryTypes q : QueryTypes.values())
-        {
-            if (q.toString().compareTo(string) == 0)
-            {
-                return q;
-            }
-        }
-        String msg = "The requested command '" + string 
-                + "' is unsupported. Is there a mistake in your request?";
-        throw new MalformedCommandException(msg);
+        return this.userId;
+    }
+
+    String getUserPin()
+    {
+        return this.pin;
+    }
+    
+    public Customer getCustomer()
+    {
+        return this.customer;
     }
 }

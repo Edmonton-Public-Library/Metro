@@ -20,7 +20,7 @@
  */
 package mecard.responder;
 
-import mecard.ResponseTypes;
+import api.Response;
 
 /**
  * Indicates that the implementer can create users.
@@ -28,5 +28,9 @@ import mecard.ResponseTypes;
  */
 public interface Createable
 {
-    public ResponseTypes createCustomer(StringBuffer responseBuffer);
+    /**
+     *
+     * @param responseBuffer the value of responseBuffer
+     */
+    public void createCustomer(Response response);
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
+import mecard.responder.Responder;
 
 /**
  * SymphonyAPIBuilder creates the commands used to perform the MeCard request
@@ -80,8 +81,9 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
      * @param userId the value of userId
      * @param userPin the value of userPin
      */
+    
     @Override
-    public Command getCustomer(String userId, String userPin, StringBuffer responseBuffer)
+    public Command getCustomer(String userId, String userPin, Response response)
     {
         // for Symphony, this is a two stage process.
         // 1) call seluser to get the user key. If that fails append message to reponsebuffer.
@@ -92,21 +94,21 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
         switch(commandRun.getStatus())
         {
             case UNAVAILABLE:
-                responseBuffer.append("I'm sorry the system is currently unavailable.");
+                response.setResponse("I'm sorry the system is currently unavailable.");
                 break;
             case FAIL:
-                responseBuffer.append("I can't find your account. "
-                        + "Pleae check your library card and try again.");
-                responseBuffer.append(commandRun.getStderr());
+                response.setResponse("I can't find your account. "
+                        + "Pleae check your library card and try again."
+                        + commandRun.getStderr());
                 break;
             case OK:
                 String customerKey = commandRun.getStdout();
                 command = new Command.Builder().echo(customerKey).args(dumpflatuser).build();
                 break;
             default:
-                responseBuffer.append("an error occured while searching for "
-                        + "your account, please contact the system's administrator.");
-                responseBuffer.append(commandRun.getStderr());
+                response.setResponse("an error occured while searching for "
+                        + "your account, please contact the system's administrator."
+                        + commandRun.getStderr());
                 break;
         }
         return command;
@@ -119,7 +121,7 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
     }
 
     @Override
-    public Command createUser(Customer customer, StringBuffer responseBuffer)
+    public Command createUser(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
         List<String> flatUser = getFormatter().setCustomer(customer);
@@ -127,8 +129,13 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
         return command;
     }
 
+    /**
+     *
+     * @param customer the value of customer
+     * @param response the value of responseBuffer
+     */
     @Override
-    public Command updateUser(Customer customer, StringBuffer responseBuffer)
+    public Command updateUser(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
         List<String> flatUser = getFormatter().setCustomer(customer);

@@ -21,19 +21,18 @@
 package api;
 
 import com.google.gson.Gson;
-import java.util.ArrayList;
-import java.util.List;
-import mecard.ProtocolPayload;
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
 
 /**
  * Simple object to order responses.
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Response extends ProtocolPayload
+public class Response //extends ProtocolPayload
 {
     protected ResponseTypes code;
+    protected String responseMessage;
+    protected Customer customer;
     
     public Response()
     {
@@ -47,7 +46,12 @@ public class Response extends ProtocolPayload
     
     public void setResponse(String s)
     {
-        this.addResponse(s);
+        this.responseMessage = s;
+    }
+    
+    public void setCustomer(Customer c)
+    {
+        this.customer = c;
     }
 
     public void setCode(ResponseTypes code) 
@@ -55,18 +59,15 @@ public class Response extends ProtocolPayload
         this.code = code;
     }
     
-    public void setCustomer(Customer c)
-    {
-        this.payload = c.getPayload();
-    }
-    
     @Override
     public String toString()
     {
-        List<String> retList = new ArrayList<String>();
-        retList.add(code.toString());
-        retList.addAll(payload);
         Gson gson = new Gson();
-        return gson.toJson(retList, List.class);
+        return gson.toJson(this, Response.class);
+    }
+
+    public ResponseTypes getCode()
+    {
+        return this.code;
     }
 }

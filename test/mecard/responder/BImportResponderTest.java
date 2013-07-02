@@ -5,6 +5,7 @@
 package mecard.responder;
 
 import api.Request;
+import api.Response;
 import java.io.File;
 import java.util.List;
 import mecard.ResponseTypes;
@@ -104,10 +105,11 @@ public class BImportResponderTest
     public void testCreateCustomer()
     {
         System.out.println("createCustomer");
-        StringBuffer responseBuffer = null;
+        Response responseBuffer = null;
         BImportResponder instance = null;
         ResponseTypes expResult = null;
-        ResponseTypes result = instance.createCustomer(responseBuffer);
+        instance.updateCustomer(responseBuffer);
+        ResponseTypes result = responseBuffer.getCode();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -136,10 +138,11 @@ public class BImportResponderTest
     public void testUpdateCustomer()
     {
         System.out.println("updateCustomer");
-        StringBuffer responseBuffer = null;
+        Response responseBuffer = null;
         BImportResponder instance = null;
         ResponseTypes expResult = null;
-        ResponseTypes result = instance.updateCustomer(responseBuffer);
+        instance.updateCustomer(responseBuffer);
+        ResponseTypes result = responseBuffer.getCode();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

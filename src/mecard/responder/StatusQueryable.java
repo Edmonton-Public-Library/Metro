@@ -20,7 +20,7 @@
  */
 package mecard.responder;
 
-import mecard.ResponseTypes;
+import api.Response;
 
 /**
  * Indicates that the implementer can query the status of the ils.
@@ -30,8 +30,8 @@ public interface StatusQueryable
 {
     /**
      * Gets the status of the ILS.
-     * @param responseBuffer
+     * @param response the value of responseBuffer
      * @return ResponseType result.
      */
-    public ResponseTypes getILSStatus(StringBuffer responseBuffer);
+    public void getILSStatus(Response response);
 }

@@ -20,7 +20,7 @@
  */
 package mecard;
 
-import mecard.responder.DummyRepsonder;
+import mecard.responder.DummyResponder;
 import api.Request;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
@@ -164,7 +164,7 @@ public class Protocol
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.DEBUG.toString()))
         {
-            return new DummyRepsonder(command, debugMode);
+            return new DummyResponder(command, debugMode);
         }
         else
         {

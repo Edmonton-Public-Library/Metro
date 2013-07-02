@@ -1,6 +1,7 @@
 package api;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
+import mecard.responder.Responder;
 
 
 
@@ -16,7 +17,7 @@ public class ILSRequestAdaptor implements ILSRequestBuilder
 {
 
     @Override
-    public Command getCustomer(String userId, String userPin, StringBuffer responseBuffer)
+    public Command getCustomer(String userId, String userPin, Response response)
     {
         throw new UnsupportedOperationException("Not supported."); 
     }
@@ -28,19 +29,24 @@ public class ILSRequestAdaptor implements ILSRequestBuilder
     }
 
     @Override
-    public Command createUser(Customer customer, StringBuffer responseBuffer)
+    public Command createUser(Customer customer, Response response)
+    {
+        throw new UnsupportedOperationException("Not supported."); 
+    }
+
+    /**
+     *
+     * @param customer the value of customer
+     * @param responseBuffer the value of responseBuffer
+     */
+    @Override
+    public Command updateUser(Customer customer, Response response)
     {
         throw new UnsupportedOperationException("Not supported."); 
     }
 
     @Override
-    public Command updateUser(Customer customer, StringBuffer responseBuffer)
-    {
-        throw new UnsupportedOperationException("Not supported."); 
-    }
-
-    @Override
-    public Command getStatus(StringBuffer responseBuffer)
+    public Command getStatus(Response response)
     {
         throw new UnsupportedOperationException("Not supported."); 
     }

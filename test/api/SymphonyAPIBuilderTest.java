@@ -25,9 +25,9 @@ public class SymphonyAPIBuilderTest
         System.out.println("==getUser==");
         String userId = "21221012345678";
         String userPin = "64058";
-        StringBuffer responseBuffer = new StringBuffer();
         SymphonyAPIBuilder api = new SymphonyAPIBuilder();
-        Command command = api.getCustomer(userId, userPin, responseBuffer);
+        Response responder = new Response();
+        Command command = api.getCustomer(userId, userPin, responder);
         System.out.println("CMD:" + command.toString());
     }
 
@@ -51,10 +51,10 @@ public class SymphonyAPIBuilderTest
         System.out.println("===getCustomer===");
         String userId = "21221012345678";
         String userPin = "64058";
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
         String expResult = "/home/metro/bimport/dumpflatuser ";
-        Command result = instance.getCustomer(userId, userPin, responseBuffer);
+        Command result = instance.getCustomer(userId, userPin, response);
         assertEquals(expResult, result.toString());
     }
 
@@ -69,10 +69,10 @@ public class SymphonyAPIBuilderTest
                 "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
                 + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\"20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
         Customer customer = new Customer(custReq);
-        StringBuffer responseBuffer = new StringBuffer();
+        Response response = new Response();
         SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
         String expResult = ""; //"echo <flatuser> /home/metro/bimport/loadflatuser -aR -bR -l\"ADMIN|PCGUI-DISP\" -mu -n ";
-        Command result = instance.createUser(customer, responseBuffer);
+        Command result = instance.createUser(customer, response);
         assertEquals(expResult, result.toString());
     }
 
@@ -84,10 +84,10 @@ public class SymphonyAPIBuilderTest
     {
         System.out.println("updateUser");
         Customer customer = null;
-        StringBuffer responseBuffer = null;
+        Response response = new Response();
         SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
         Command expResult = null;
-        Command result = instance.updateUser(customer, responseBuffer);
+        Command result = instance.updateUser(customer, response);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
