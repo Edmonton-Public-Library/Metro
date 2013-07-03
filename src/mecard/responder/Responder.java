@@ -55,33 +55,40 @@ public abstract class Responder
     }
     
     /**
+     *
+     *
      * @param ex the exception thrown
      * @return String value of the response with code.
      */
-    public static String getExceptionResponse(RuntimeException ex)
+    
+    public static Response getExceptionResponse(RuntimeException ex)
     {
-        Response r = new Response(ResponseTypes.UNKNOWN);
+        Response response = new Response(ResponseTypes.UNKNOWN);
         if (ex instanceof MetroSecurityException)
         {
-            r = new Response(ResponseTypes.UNAUTHORIZED);
+            response = new Response(ResponseTypes.UNAUTHORIZED);
         }
         else if (ex instanceof MalformedCommandException)
         {
-            r = new Response(ResponseTypes.ERROR);
+            response = new Response(ResponseTypes.ERROR);
         }
         else if (ex instanceof UnsupportedCommandException)
         {
-            r = new Response(ResponseTypes.UNKNOWN);
-            r.setResponse("Command not implemented, make sure your server is up to date.");
+            response = new Response(ResponseTypes.UNKNOWN);
+            response.setResponse("Command not implemented, make sure your server is up to date.");
         }
         else if (ex instanceof UnsupportedResponderException)
         {
-            r = new Response(ResponseTypes.CONFIG_ERROR);
-            r.setResponse("The server doesn't seem to be configured correctly.");
+            response = new Response(ResponseTypes.CONFIG_ERROR);
+            response.setResponse("The server doesn't seem to be configured correctly.");
         }
-        r.setResponse(ex.getMessage());
-        return r.toString();
+        response.setResponse(ex.getMessage());
+        return response;
     }
     
-    public abstract String getResponse();
+    /**
+     *
+     * @return the api.Response
+     */
+    public abstract Response getResponse();
 }

@@ -1,10 +1,7 @@
 
 package mecard.responder;
 import api.Request;
-import java.util.List;
-import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import org.junit.Test;
 
 
 
@@ -55,22 +52,22 @@ public class DummyResponderTest
         System.out.println("==getResponse==");
         DummyResponder responder = new DummyResponder(statusRequest, true);
         String expResult = "[\"RA1\"]";
-        String result = responder.getResponse();
+        String result = responder.getResponse().toString();
         assertEquals(expResult, result);
         
         responder = new DummyResponder(createRequest, true);
         expResult = "[\"RA1\"]";
-        result = responder.getResponse();
+        result = responder.getResponse().toString();
         assertEquals(expResult, result);
         
         responder = new DummyResponder(updateRequest, true);
         expResult = "[\"RA1\"]";
-        result = responder.getResponse();
+        result = responder.getResponse().toString();
         assertEquals(expResult, result);
         
         responder = new DummyResponder(customerRequest, true);
         expResult = jsonCustomer;
-        result = responder.getResponse();
+        result = responder.getResponse().toString();
         assertEquals(expResult, result);
     }
 

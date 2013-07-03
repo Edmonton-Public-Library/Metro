@@ -73,8 +73,12 @@ public class SIP2Responder extends CustomerQueryable
                 .build();
     }
 
+    /**
+     *
+     * @return the api.Response
+     */
     @Override
-    public String getResponse()
+    public Response getResponse()
     {
         // test for the operations that this responder is capable of performing
         // SIP can't create customers, BImport can't query customers.
@@ -95,7 +99,7 @@ public class SIP2Responder extends CustomerQueryable
                 response.setCode(ResponseTypes.ERROR);
                 response.setResponse(SIP2Responder.class.getName() + " cannot " + request.toString());
         }
-        return response.toString();
+        return response;
     }
 
     /**

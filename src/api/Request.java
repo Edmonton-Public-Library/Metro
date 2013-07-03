@@ -43,6 +43,10 @@ public class Request //extends ProtocolPayload
     public Request()
     {
         code = QueryTypes.NULL;
+        authorityToken = "";
+        customer = null;
+        pin = "";
+        userId = "";
     }
 
     public Request(String request)
@@ -121,12 +125,12 @@ public class Request //extends ProtocolPayload
         return this.customer.get(cField);
     }
 
-    String getUserId()
+    public String getUserId()
     {
         return this.userId;
     }
 
-    String getUserPin()
+    public String getUserPin()
     {
         return this.pin;
     }

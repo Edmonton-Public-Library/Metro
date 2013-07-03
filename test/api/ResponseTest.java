@@ -1,5 +1,5 @@
 package api;
-import mecard.ResponseTypes;
+import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -24,9 +24,13 @@ public class ResponseTest
         System.out.println("==toString==");
         Response response = new Response();
         response.setResponse("Test string.");
-        String expResult = "{\"code\":\"INIT\",\"responseMessage\":\"Test string.\"}";
-        String result = response.toString();
+        String expResult = "[INIT, \"Test string.\"]";
         System.out.println("RESPONSE:"+response);
-        assertEquals(expResult, result);
+        assertTrue(expResult.compareTo(response.toString()) == 0);
+        
+        expResult = "[INIT, \"Test string.\", \"\"]";
+        response.setCustomer(new Customer());
+        System.out.println("RESPONSE:"+response);
+        assertTrue(expResult.compareTo(response.toString()) == 0);
     }
 }

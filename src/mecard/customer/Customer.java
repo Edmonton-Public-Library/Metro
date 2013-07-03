@@ -23,10 +23,10 @@ package mecard.customer;
 import mecard.Protocol;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.EnumMap;
+import json.CustomerDeserializer;
 import mecard.Exception.InvalidCustomerException;
 
 /**
@@ -51,6 +51,7 @@ public class Customer //extends ProtocolPayload
      * field.
      *
      * @param c
+     * @deprecated 
      */
     public Customer(String c) throws InvalidCustomerException
     {
@@ -75,18 +76,18 @@ public class Customer //extends ProtocolPayload
      * query salted with the senders shared secret. The rest of the elements (if
      * any) are arguments to the commandArguments.
      *
-     * @param cmd
+     * @param customerData
      * @return
+     * @deprecated 
      */
-    private void splitCustomerFields(String cmd)
+    private void splitCustomerFields(String customerData)
     {
-//        Gson gson = new Gson();
-//        Customer c = gson.fromJson(cmd, Customer.class);
-//        this.customerFields = c.customerFields;
-        
-        Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<EnumMap<CustomerFieldTypes, String>>(){ }.getType(),
-            new EnumMapInstanceCreator<CustomerFieldTypes, String>(CustomerFieldTypes.class)).create();
-        this.customerFields = gson.fromJson(cmd, new TypeToken<EnumMap<CustomerFieldTypes, String>>(){ }.getType());
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
+        Gson gson = gsonBuilder.create();
+        Reader data = new StringReader(customerData);
+        Customer c = gson.fromJson(data, Customer.class);
+        this.customerFields = c.customerFields;
     }
 
     /**
@@ -165,56 +166,14 @@ public class Customer //extends ProtocolPayload
     @Override
     public String toString()
     {
-//        if ((get(CustomerFieldTypes.FIRSTNAME).compareTo(Protocol.DEFAULT_FIELD) != 0) 
-//                && (get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD) != 0)
-//                && (get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD) == 0))
-//        {
-//            this.set(CustomerFieldTypes.NAME, 
-//              (get(CustomerFieldTypes.LASTNAME) + ", " + get(CustomerFieldTypes.FIRSTNAME)));
-//        }
-        normalizeFields();
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(super.toString());
-//        return sb.toString();
-        Gson gson = new Gson();
-//        return gson.toJson(this);
-//        Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<EnumMap<CustomerFieldTypes, String>>(){ }.getType(),
-//            new EnumMapInstanceCreator<CustomerFieldTypes, String>(CustomerFieldTypes.class)).create();
-        return gson.toJson(this.customerFields);
-    }
-    
-    @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof Customer))
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (CustomerFieldTypes cType: CustomerFieldTypes.values())
         {
-            return false;
+            sb.append(customerFields.get(cType));
+            sb.append(", ");
         }
-        
-        if (this.toString().compareTo(o.toString()) != 0)
-        {
-            return false;
-        }
-        
-        return true;
-    }
-    
-    
-    private class EnumMapInstanceCreator<K extends Enum<K>, V> implements
-        InstanceCreator<EnumMap<K, V>> 
-    {
-        private final Class<K> enumClazz;
-
-        public EnumMapInstanceCreator(final Class<K> enumClazz) 
-        {
-        super();
-        this.enumClazz = enumClazz;
-        }
-
-        @Override
-        public EnumMap<K, V> createInstance(Type type) 
-        {
-            return new EnumMap<K, V>(enumClazz);
-        }
+        sb.append("]");
+        return sb.toString();
     }
 }

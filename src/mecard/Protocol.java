@@ -22,6 +22,9 @@ package mecard;
 
 import mecard.responder.DummyResponder;
 import api.Request;
+import api.Response;
+import json.RequestDeserializer;
+import json.ResponseSerializer;
 import mecard.Exception.UnsupportedCommandException;
 import mecard.Exception.MalformedCommandException;
 import mecard.Exception.MetroSecurityException;
@@ -72,11 +75,12 @@ public class Protocol
      */
     public String processInput(String cmd)
     {
-        String response = TERMINATE; // initialize response.
+        Response response = new Response();
         try
         {
             String jsonCommand = SecurityManager.unEncrypt(cmd);
-            Request request = new Request(jsonCommand);
+            RequestDeserializer deserializer = new RequestDeserializer();
+            Request request = deserializer.getDeserializedRequest(jsonCommand);
             if (! SecurityManager.isAuthorized(request.getTransactionId()))
             {
                 throw new MetroSecurityException("Unrecognized security token");
@@ -90,7 +94,9 @@ public class Protocol
         }
         finally
         {
-            return SecurityManager.encrypt(response);
+            ResponseSerializer responseSerializer = new ResponseSerializer();
+            String serializedResponse = responseSerializer.getSerializedResponse(response);
+            return SecurityManager.encrypt(serializedResponse);
         }
     }
 

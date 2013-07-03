@@ -107,8 +107,12 @@ public class BImportResponder extends Responder
         dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + DATA_FILE;
     }
 
+    /**
+     *
+     * @return the api.Response
+     */
     @Override
-    public String getResponse()
+    public Response getResponse()
     {
         // test for the operations that this responder is capable of performing
         // SIP can't create customers, BImport can't query customers.
@@ -129,7 +133,7 @@ public class BImportResponder extends Responder
                 response.setCode(ResponseTypes.ERROR);
                 response.setResponse(BImportResponder.class.getName() + " cannot " + request.toString());
         }
-        return response.toString();
+        return response;
     }
 
     /**

@@ -32,7 +32,7 @@ public class SIP2ResponderTest {
         Request r = new Request(command);
         SIP2Responder instance = new SIP2Responder(r, false);
         String expResult = "[\"RA1\",\"\"]";
-        String result = instance.getResponse();
+        String result = instance.getResponse().toString();
 //        System.out.println("RESULT:"+result);
         assertEquals(expResult.compareTo(result.toString()), 0);
         // to test failure you have to edit the sip2_config.xml file.
@@ -43,7 +43,7 @@ public class SIP2ResponderTest {
         instance = new SIP2Responder(r, false);
         expResult = "[\"RA5\",\"there is a problem with your account, please contact your home library for assistance\"]";
 //        expResult = "[\"RA1\",\"21221012345678\",\"64058\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\"Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\",\"\"]";
-        result = instance.getResponse();
+        result = instance.getResponse().toString();
 //        System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());
         
@@ -58,7 +58,7 @@ public class SIP2ResponderTest {
                 + "\"ilsteam@epl.ca\",\"7803409998\",\"X\",\"20140514\",\"X\","
                 + "\"X\",\"X\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"William (Dr)\","
                 + "\"Balzac\"]";
-        result = instance.getResponse();
+        result = instance.getResponse().toString();
         System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());
         
@@ -67,7 +67,7 @@ public class SIP2ResponderTest {
         r = new Request(command);
         instance = new SIP2Responder(r, false);
         expResult = "[\"RA6\",\"invalid PIN\"]";
-        result = instance.getResponse();
+        result = instance.getResponse().toString();
 //        System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());
     }

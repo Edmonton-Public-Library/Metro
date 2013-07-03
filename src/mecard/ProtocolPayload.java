@@ -29,11 +29,14 @@ import java.util.List;
  * include the command/response code or API key. Underneath this class is a simple 
  * list object with correct formatting for the MeCard protocol.
  * @author Andrew Nisbet <anisbet@epl.ca>
+ * @deprecated 
  */
 public class ProtocolPayload 
 {
     protected List<String> payload;
-    
+    /**
+     * @deprecated 
+     */
     public ProtocolPayload()
     {
         payload = new ArrayList<String>();
@@ -44,6 +47,7 @@ public class ProtocolPayload
      * not known at the time of construction. 
      * @see mecard.customer.Customer
      * @param expectedSize 
+     * @deprecated 
      */
     public ProtocolPayload(int expectedSize) 
     {

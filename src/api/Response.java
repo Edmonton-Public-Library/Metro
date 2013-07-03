@@ -20,7 +20,6 @@
  */
 package api;
 
-import com.google.gson.Gson;
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
 
@@ -28,7 +27,7 @@ import mecard.customer.Customer;
  * Simple object to order responses.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Response //extends ProtocolPayload
+public class Response
 {
     protected ResponseTypes code;
     protected String responseMessage;
@@ -62,12 +61,36 @@ public class Response //extends ProtocolPayload
     @Override
     public String toString()
     {
-        Gson gson = new Gson();
-        return gson.toJson(this, Response.class);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(this.code.name());
+        sb.append(", \"");
+        sb.append(this.responseMessage);
+        if (customer != null)
+        {
+            sb.append("\", ");
+            sb.append(this.customer.toString());
+        }
+        else
+        {
+            sb.append("\"");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     public ResponseTypes getCode()
     {
-        return this.code;
+        return code;
+    }
+
+    public Customer getCustomer()
+    {
+        return customer;
+    }
+
+    public String getMessage()
+    {
+        return responseMessage;
     }
 }

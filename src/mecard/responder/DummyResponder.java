@@ -3,8 +3,13 @@ package mecard.responder;
 import api.Request;
 import api.Response;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import json.CustomerDeserializer;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
@@ -40,8 +45,12 @@ public class DummyResponder extends CustomerQueryable
         altData = props.getProperty(DebugQueryConfigTypes.ALT_DATA_CUSTOMER.toString());
     }
 
+    /**
+     *
+     * @return the api.Response
+     */
     @Override
-    public String getResponse()
+    public Response getResponse()
     {
         Response response = new Response();
         switch (request.getCommandType())
@@ -66,7 +75,7 @@ public class DummyResponder extends CustomerQueryable
                 response.setCode(ResponseTypes.ERROR);
                 response.setResponse(BImportResponder.class.getName() + " cannot " + request.toString());
         }
-        return response.toString();
+        return response;
     }
 
     @Override
@@ -81,9 +90,11 @@ public class DummyResponder extends CustomerQueryable
     @Override
     public void getCustomer(Response response)
     {
-        Gson gson = new Gson();
-        List<String> gsonResponse = gson.fromJson(this.gsonGetCustomer, List.class);
-        Customer customer = new Customer(this.gsonGetCustomer);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
+        Gson gson = gsonBuilder.create();
+        Reader data = new StringReader(this.gsonGetCustomer);
+        Customer customer = gson.fromJson(data, Customer.class);
         // the 3rd field of this request is the pin.
         System.out.println("PIN:"+this.request.getCustomerField(CustomerFieldTypes.PIN)+customer);
         if (isAuthorized(this.request.getCustomerField(CustomerFieldTypes.PIN), customer))
@@ -94,7 +105,8 @@ public class DummyResponder extends CustomerQueryable
                 response.setCustomer(customer);
             }
         }
-        setMessages(gsonResponse, response);
+        // TODO fix me
+        setMessages(new ArrayList<String>(), response);
     }
     
     

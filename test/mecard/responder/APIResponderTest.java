@@ -49,7 +49,7 @@ public class APIResponderTest
         Request r = new Request(command);
         APIResponder instance = new APIResponder(r, false);
         String expResult = "[\"RA1\",\"\"]";
-        String result = instance.getResponse();
+        String result = instance.getResponse().toString();
 //        System.out.println("RESULT:"+result);
         assertEquals(expResult.compareTo(result.toString()), 0);
         // to test failure you have to edit the sip2_config.xml file.
@@ -59,7 +59,7 @@ public class APIResponderTest
         instance = new APIResponder(r, false);
         expResult = "[\"RA5\",\"there is a problem with your account, please contact your home library for assistance\"]";
 //        expResult = "RA1\",\"21221012345678\",\"64058\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\"Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\",\"\"]";
-        result = instance.getResponse();
+        result = instance.getResponse().toString();
 //        System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());
         
@@ -70,7 +70,7 @@ public class APIResponderTest
 //      63                               AO|AA21221015133926|AD64058|AY0AZF37A
 //      recv:64              00020130610    095814000000000000000000000000AO|AA21221015133926|AEBalzac, William (Dr)|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 0.00|BD11811 72 Ave. Edmonton, AB T6G 2B2|BEilsteam@epl.ca|BHUSD|PA20140514    235900|PD|PCEPL-ADULT|DB$0.00|DM$0.00|AFOK|AY0AZBA2C
         expResult = "[\"RA1\",\"21221015133926\",\"64058\",\"Balzac, William (Dr)\",\"11811 72 Ave.\",\"Edmonton\",\"AB\",\"T6G2B2\",\"X\",\"ilsteam@epl.ca\",\"X\",\"X\",\"20140514\",\"X\",\"X\",\"X\",\"Y\",\"N\",\"Y\",\"Y\",\"X\",\"William (Dr)\",\"Balzac\",\"\"]";
-        result = instance.getResponse();
+        result = instance.getResponse().toString();
         System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());
         
@@ -79,7 +79,7 @@ public class APIResponderTest
         r = new Request(command);
         instance = new APIResponder(r, false);
         expResult = "[\"RA6\",\"invalid PIN\"]";
-        result = instance.getResponse();
+        result = instance.getResponse().toString();
 //        System.out.println("RESULT:"+result);
         assertEquals(expResult, result.toString());
     }
@@ -102,7 +102,7 @@ public class APIResponderTest
 
         String result = response.toString();
         System.out.println("RESULT:"+result);
-        String responseString = instance.getResponse();
+        String responseString = instance.getResponse().toString();
         System.out.println("RESPONSE:"+responseString);
         assertEquals(expResult, responseString);
     }

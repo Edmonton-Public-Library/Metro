@@ -60,8 +60,12 @@ public class APIResponder extends CustomerQueryable
         api = APIRequest.getInstanceOf(ils, debug);
     }
 
+    /**
+     *
+     * @return the api.Response
+     */
     @Override
-    public String getResponse()
+    public Response getResponse()
     {
         Response response = new Response();
         switch (request.getCommandType())
@@ -86,14 +90,14 @@ public class APIResponder extends CustomerQueryable
                 response.setCode(ResponseTypes.ERROR);
                 response.setResponse(APIResponder.class.getName() + " cannot " + request.toString());
         }
-        return response.toString();
+        return response;
     }
 
     @Override
     public void updateCustomer(Response response)
     {
         // I have a customer, I need to reload them into the ils
-        Customer customer = new Customer(request.toString());
+        Customer customer = request.getCustomer();
         Command apiCommand = api.updateUser(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
         if (status.getStatus() == ResponseTypes.OK)
@@ -112,7 +116,7 @@ public class APIResponder extends CustomerQueryable
     public void createCustomer(Response response)
     {
         // I have a customer, I need to load them into the ils
-        Customer customer = new Customer(request.toString());
+        Customer customer = request.getCustomer();
         Command apiCommand = api.createUser(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
         if (status.getStatus() == ResponseTypes.OK)

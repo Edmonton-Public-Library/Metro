@@ -27,7 +27,7 @@ public class CustomerTest {
         this.expectedEmpty = "{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\"X\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"X\",\"LASTNAME\":\"X\"}";
         this.expectedName = "{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\"Billy, Balzac\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"Balzac\",\"LASTNAME\":\"Billy\"}";
         this.expectedLastName = "{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\"Billy,\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"X\",\"LASTNAME\":\"Billy\"}";
-        this.expectedFirstName = "{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\", Balzac\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"Balzac\",\"LASTNAME\":\"X\"}";
+        this.expectedFirstName = "{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\", Balzac\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"Balzac\",\"LASTNAME\":\"\"}";
                 
         this.expectedCustomerFull = //"{\"ID\":\"X\",\"PIN\":\"X\",\"NAME\":\"X\",\"STREET\":\"X\",\"CITY\":\"X\",\"PROVINCE\":\"X\",\"POSTALCODE\":\"X\",\"GENDER\":\"X\",\"EMAIL\":\"X\",\"PHONE\":\"X\",\"DOB\":\"X\",\"PRIVILEGE_EXPIRES\":\"X\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"X\",\"ISMINAGE\":\"X\",\"ISRECIPROCAL\":\"X\",\"ISRESIDENT\":\"X\",\"ISGOODSTANDING\":\"X\",\"ISLOSTCARD\":\"X\",\"FIRSTNAME\":\"X\",\"LASTNAME\":\"X\"}";
                 "{\"ID\":\"21221012345678\",\"PIN\":\"6058\",\"NAME\":\"Billy, Balzac\",\"STREET\":\"12345 123 St.\",\"CITY\":\"Edmonton\",\"PROVINCE\":\"Alberta\",\"POSTALCODE\":\"H0H0H0\",\"GENDER\":\"M\",\"EMAIL\":\"ilsteam@epl.ca\",\"PHONE\":\"7804964058\",\"DOB\":\"19750822\",\"PRIVILEGE_EXPIRES\":\"20140602\",\"RESERVED\":\"X\",\"DEFAULT\":\"X\",\"ISVALID\":\"Y\",\"ISMINAGE\":\"Y\",\"ISRECIPROCAL\":\"N\",\"ISRESIDENT\":\"Y\",\"ISGOODSTANDING\":\"Y\",\"ISLOSTCARD\":\"N\",\"FIRSTNAME\":\"Balzac\",\"LASTNAME\":\"Billy\"}";
@@ -108,7 +108,7 @@ public class CustomerTest {
         value = ", Balzac";
         c2 = new Customer();
         c2.setName(value);
-//        System.out.println("RESP:" + c2);
+        System.out.println("RESP:" + c2);
         assertTrue(c2.toString().compareTo(this.expectedFirstName) == 0);
     }
 
@@ -342,7 +342,7 @@ public class CustomerTest {
         System.out.println("==toString==");
         Customer instance = new Customer();
         String result = instance.toString();
-        System.out.println("RESULT:"+instance.toString());
+//        System.out.println("RESULT:"+instance.toString());
         assertEquals(this.expectedEmpty, result);
     }
 
