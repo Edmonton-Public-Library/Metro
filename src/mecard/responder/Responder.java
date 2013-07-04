@@ -50,7 +50,7 @@ public abstract class Responder
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
             System.out.println("ELE:");
-            System.out.println("  S:" + request.getArgs() + ",");
+            System.out.println("  S:" + request.toString()+ ",");
         }
     }
     

@@ -36,11 +36,15 @@ public class Response
     public Response()
     {
         code = ResponseTypes.INIT;
+        responseMessage = "";
+        customer = null;
     }
     
     public Response(ResponseTypes rt)
     {
         code = rt;
+        responseMessage = "";
+        customer = null;
     }
     
     public void setResponse(String s)

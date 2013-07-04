@@ -62,4 +62,13 @@ public class ResponseDeserializer implements JsonDeserializer<Response>
         return request;
     }
 
+    public Response getDeserializedResponse(String requestString)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Response.class, new ResponseDeserializer());
+        Gson gson = gsonBuilder.create();
+        Reader data = new StringReader(requestString);
+        return gson.fromJson(data, Response.class);
+    }
+
 }

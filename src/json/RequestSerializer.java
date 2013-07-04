@@ -58,5 +58,13 @@ public class RequestSerializer implements JsonSerializer<Request>
 //        System.out.println(">>>"+gson.toJson(request.getCustomer()));
         return json;
     }
+    
+    public String getSerializedRequest(Request request)
+    {
+        final GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Request.class, new RequestSerializer());
+        Gson gson = gsonBuilder.create();
+        return gson.toJson(request);
+    }
 
 }

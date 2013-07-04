@@ -68,17 +68,17 @@ public class BImportResponderTest
 //        ISRESIDENT(17),
 //        ISGOODSTANDING(18),
 //        ISLOSTCARD(19);
-        String custReq = 
-                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
-                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\"20140602\",\"\",\"\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\"]";
-        
-        BImportResponder br = new BImportResponder(new Request(custReq), true);
-        System.out.println("RESPONSE: '"+br.getResponse()+"'");
-        
-        File f = new File(hName);
-        assertTrue(f.exists());
-        f = new File(dName);
-        assertTrue(f.exists());
+//        String custReq = 
+//                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+//                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\"20140602\",\"\",\"\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\"]";
+//        
+//        BImportResponder br = new BImportResponder(new Request(custReq), true);
+//        System.out.println("RESPONSE: '"+br.getResponse()+"'");
+//        
+//        File f = new File(hName);
+//        assertTrue(f.exists());
+//        f = new File(dName);
+//        assertTrue(f.exists());
         
     }
 
@@ -88,63 +88,13 @@ public class BImportResponderTest
     @Test
     public void testComputeEmailName() {
         System.out.println("===computeEmailName===");
-        String email = "ilsteam@epl.ca";
-        // QueryTypes.CREATE_CUSTOMER;
-        String cmd = "[\"QC0\",\"123456789abcdef\"]";
-        Request r = new Request(cmd);
-        BImportResponder instance = new BImportResponder(r, true);
-        String expResult = "ilsteam";
-        String result = instance.computeEmailName(email);
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of createCustomer method, of class BImportResponder.
-     */
-    @Test
-    public void testCreateCustomer()
-    {
-        System.out.println("createCustomer");
-        Response responseBuffer = null;
-        BImportResponder instance = null;
-        ResponseTypes expResult = null;
-        instance.updateCustomer(responseBuffer);
-        ResponseTypes result = responseBuffer.getCode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of convert method, of class BImportResponder.
-     */
-    @Test
-    public void testConvert()
-    {
-        System.out.println("convert");
-        List<String> customerCommands = null;
-        BImportResponder instance = null;
-        boolean expResult = false;
-        boolean result = instance.convert(customerCommands);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of updateCustomer method, of class BImportResponder.
-     */
-    @Test
-    public void testUpdateCustomer()
-    {
-        System.out.println("updateCustomer");
-        Response responseBuffer = null;
-        BImportResponder instance = null;
-        ResponseTypes expResult = null;
-        instance.updateCustomer(responseBuffer);
-        ResponseTypes result = responseBuffer.getCode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+//        String email = "ilsteam@epl.ca";
+//        // QueryTypes.CREATE_CUSTOMER;
+//        String cmd = "[\"QC0\",\"123456789abcdef\"]";
+//        Request r = new Request(cmd);
+//        BImportResponder instance = new BImportResponder(r, true);
+//        String expResult = "ilsteam";
+//        String result = instance.computeEmailName(email);
+//        assertEquals(expResult, result);
     }
 }

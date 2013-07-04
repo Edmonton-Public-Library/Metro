@@ -26,22 +26,22 @@ package mecard;
  */
 public enum QueryTypes
 {
-    GET_STATUS("QA0"),
-    GET_CUSTOMER("QB0"),
-    CREATE_CUSTOMER("QC0"),
-    UPDATE_CUSTOMER("QD0"), 
-    NULL("QN0");
+    GET_STATUS,//("QA0"),
+    GET_CUSTOMER,//("QB0"),
+    CREATE_CUSTOMER,//("QC0"),
+    UPDATE_CUSTOMER,//("QD0"), 
+    NULL;//("QN0");
     
-    private String type;
-    
-    private QueryTypes(String s)
-    {
-        this.type = s;
-    }
-    
-    @Override
-    public String toString()
-    {
-        return this.type;
-    }
+//    private String type;
+//    
+//    private QueryTypes(String s)
+//    {
+//        this.type = s;
+//    }
+//    
+//    @Override
+//    public String toString()
+//    {
+//        return this.type;
+//    }
 }

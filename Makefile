@@ -24,7 +24,7 @@ test_it: client
 	./${SERVICE} start
 #	-tail ${OUT}.out
 	sleep 3
-	java ${FLAGS} ${C_PATH} ${CLIENT}
+	java ${FLAGS} ${C_PATH} ${CLIENT} 
 	sleep 2
 	./${SERVICE} stop
 #	tail ${OUT}.out

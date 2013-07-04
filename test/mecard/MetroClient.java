@@ -58,35 +58,81 @@ public class MetroClient
             out = new PrintWriter(requestSocket.getOutputStream(),true);
             in = new BufferedReader(new InputStreamReader(requestSocket.getInputStream()));
             //3: Communicating with the server
-            String custCreateReq =
-            "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
-            + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
-            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
+            String getStatusString = "{\"code\":\"GET_STATUS\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"null\"}";
+            String getCustomerString = "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"null\"}";
+            String createCustomer = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
+                    + "\"userId\":\"\",\"pin\":\"\","
+                    + "\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\","
+                    + "\\\"PIN\\\":\\\"6058\\\","
+                    + "\\\"NAME\\\":\\\"Billy, Balzac\\\","
+                    + "\\\"STREET\\\":\\\"12345 123 St.\\\","
+                    + "\\\"CITY\\\":\\\"Edmonton\\\","
+                    + "\\\"PROVINCE\\\":\\\"Alberta\\\","
+                    + "\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
+                    + "\\\"GENDER\\\":\\\"M\\\","
+                    + "\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
+                    + "\\\"PHONE\\\":\\\"7804964058\\\","
+                    + "\\\"DOB\\\":\\\"19750822\\\","
+                    + "\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\","
+                    + "\\\"RESERVED\\\":\\\"X\\\","
+                    + "\\\"DEFAULT\\\":\\\"X\\\","
+                    + "\\\"ISVALID\\\":\\\"Y\\\","
+                    + "\\\"ISMINAGE\\\":\\\"Y\\\","
+                    + "\\\"ISRECIPROCAL\\\":\\\"N\\\","
+                    + "\\\"ISRESIDENT\\\":\\\"Y\\\","
+                    + "\\\"ISGOODSTANDING\\\":\\\"Y\\\","
+                    + "\\\"ISLOSTCARD\\\":\\\"N\\\","
+                    + "\\\"FIRSTNAME\\\":\\\"Balzac\\\","
+                    + "\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+//            "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
+//            + "Edmonton\",\"Alberta\",\"H0H0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
+//            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
             
             String custUpdateReq =
-            "[\"QD0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
-            + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
-            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
+            "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\","
+                    + "\\\"PIN\\\":\\\"6058\\\","
+                    + "\\\"NAME\\\":\\\"Billy, Balzac\\\","
+                    + "\\\"STREET\\\":\\\"12345 123 St.\\\","
+                    + "\\\"CITY\\\":\\\"Edmonton\\\","
+                    + "\\\"PROVINCE\\\":\\\"Alberta\\\","
+                    + "\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
+                    + "\\\"GENDER\\\":\\\"M\\\","
+                    + "\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
+                    + "\\\"PHONE\\\":\\\"7804964058\\\","
+                    + "\\\"DOB\\\":\\\"19750822\\\","
+                    + "\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\","
+                    + "\\\"RESERVED\\\":\\\"X\\\","
+                    + "\\\"DEFAULT\\\":\\\"X\\\","
+                    + "\\\"ISVALID\\\":\\\"Y\\\","
+                    + "\\\"ISMINAGE\\\":\\\"Y\\\","
+                    + "\\\"ISRECIPROCAL\\\":\\\"N\\\","
+                    + "\\\"ISRESIDENT\\\":\\\"Y\\\","
+                    + "\\\"ISGOODSTANDING\\\":\\\"Y\\\","
+                    + "\\\"ISLOSTCARD\\\":\\\"N\\\","
+                    + "\\\"FIRSTNAME\\\":\\\"Balzac\\\","
+                    + "\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+            
+           
             do
             {
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
                 System.out.println("requesting status");
-                out.println("[\"QA0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\"]"); // getstatus
+                out.println(getStatusString); // getstatus
 //
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
 //
                 System.out.println("requesting customer");
-                out.println("[\"QB0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221015133926\",\"6666\"]"); // getstatus
+                out.println(getCustomerString); 
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
-
-                System.out.println("requesting "+custCreateReq);
-                out.println(custCreateReq);
+//
+                System.out.println("requesting "+createCustomer);
+                out.println(createCustomer);
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
-
+//
                 System.out.println("requesting "+custUpdateReq);
                 out.println(custUpdateReq);
                 message = (String) in.readLine();
