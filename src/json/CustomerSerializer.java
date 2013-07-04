@@ -41,7 +41,6 @@ public class CustomerSerializer implements JsonSerializer<Customer>
         final JsonObject json = new JsonObject();
         for (CustomerFieldTypes cType: CustomerFieldTypes.values())
         {
-//            json.addProperty(cType.name(), customer.get(cType));
             json.addProperty(cType.toString(), customer.get(cType));
         }
         return json;

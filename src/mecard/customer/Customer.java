@@ -21,12 +21,7 @@
 package mecard.customer;
 
 import mecard.Protocol;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.EnumMap;
-import json.CustomerDeserializer;
 import mecard.Exception.InvalidCustomerException;
 
 /**
@@ -82,12 +77,12 @@ public class Customer //extends ProtocolPayload
      */
     private void splitCustomerFields(String customerData)
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
-        Gson gson = gsonBuilder.create();
-        Reader data = new StringReader(customerData);
-        Customer c = gson.fromJson(data, Customer.class);
-        this.customerFields = c.customerFields;
+//        GsonBuilder gsonBuilder = new GsonBuilder();
+//        gsonBuilder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
+//        Gson gson = gsonBuilder.create();
+//        Reader data = new StringReader(customerData);
+//        Customer c = gson.fromJson(data, Customer.class);
+//        this.customerFields = c.customerFields;
     }
 
     /**
@@ -173,6 +168,8 @@ public class Customer //extends ProtocolPayload
             sb.append(customerFields.get(cType));
             sb.append(", ");
         }
+        // remove the last ', '.
+        sb.delete(sb.length()-2, sb.length());
         sb.append("]");
         return sb.toString();
     }

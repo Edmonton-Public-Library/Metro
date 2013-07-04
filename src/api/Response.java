@@ -62,20 +62,16 @@ public class Response
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append("[\"");
         sb.append(this.code.name());
-        sb.append(", \"");
+        sb.append("\", \"");
         sb.append(this.responseMessage);
         if (customer != null)
         {
-            sb.append("\", ");
+            sb.append("\", \"");
             sb.append(this.customer.toString());
         }
-        else
-        {
-            sb.append("\"");
-        }
-        sb.append("]");
+        sb.append("\"]");
         return sb.toString();
     }
 

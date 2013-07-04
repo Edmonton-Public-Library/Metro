@@ -48,7 +48,11 @@ public class Request //extends ProtocolPayload
         pin = "";
         userId = "";
     }
-
+    /**
+     * 
+     * @param request 
+     * @deprecated 
+     */
     public Request(String request)
     {
         // Instantiate query type ot NULL.
@@ -67,6 +71,7 @@ public class Request //extends ProtocolPayload
      *
      * @param cmd
      * @return
+     * @deprecated 
      */
     private void splitCommand(String cmd)
             throws MalformedCommandException
@@ -103,8 +108,21 @@ public class Request //extends ProtocolPayload
     @Override
     public String toString()
     {
-        Gson gson = new Gson();
-        return gson.toJson(this, Request.class);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[\"");
+        sb.append(this.code.name());
+        sb.append("\", \"");
+        sb.append(this.userId);
+        sb.append("\", \"");
+        sb.append(this.pin);
+        if (customer != null)
+        {
+            sb.append("\", \"");
+            sb.append(this.customer.toString());
+        }
+        sb.append("\"");
+        sb.append("]");
+        return sb.toString();
     }
 
     public String getTransactionId()
