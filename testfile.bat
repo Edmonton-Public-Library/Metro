@@ -1,0 +1,1 @@
+/home/metro/bimport/bimport/sserver/ppassword/uuser/ddatabase/hheaderFileName.txt/idataFileName/ksecond_id/fm41/bawb/lalap/y
