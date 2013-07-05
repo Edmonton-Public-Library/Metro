@@ -156,23 +156,23 @@ public class BImportFormatter
         headerContent.append(BImportDBFields.SECOND_ID + "; ");
         headerContent.append(BImportDBFields.NAME + "; ");
         headerContent.append(BImportDBFields.EXPIRY + "; ");
-        headerContent.append(BImportDBFields.PIN + "\n\r");
+        headerContent.append(BImportDBFields.PIN + "\r\n");
             
         dataContent.append("M- "); // add or modify if exists
         dataContent.append(BORROWER_TABLE + ": "); // add or modify if exists
         dataContent.append(b.barcode + "; ");
         dataContent.append(b.name + "; ");
         dataContent.append(expiryDate + "; ");    // see above for computation
-        dataContent.append(b.pin + "\n\r");
+        dataContent.append(b.pin + "\r\n");
         
         // Table borrower_phone
         headerContent.append(BORROWER_PHONE_TABLE + ": "); // add or modify if exists
         headerContent.append(BImportDBFields.PHONE_TYPE + "; ");
-        headerContent.append(BImportDBFields.PHONE_NUMBER + "\n\r");
+        headerContent.append(BImportDBFields.PHONE_NUMBER + "\r\n");
         
         dataContent.append(BORROWER_PHONE_TABLE + ": "); // add or modify if exists
         dataContent.append(b.phoneType + "; ");
-        dataContent.append(phone + "\n\r"); // see computation above.
+        dataContent.append(phone + "\r\n"); // see computation above.
         
         // Table borrower_address
         headerContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
@@ -181,7 +181,7 @@ public class BImportFormatter
         headerContent.append(BImportDBFields.CITY + "; ");
         headerContent.append(BImportDBFields.POSTAL_CODE + "; ");
         headerContent.append(BImportDBFields.EMAIL_NAME + "; ");
-        headerContent.append(BImportDBFields.EMAIL_ADDRESS + "\n\r");
+        headerContent.append(BImportDBFields.EMAIL_ADDRESS + "\r\n");
         
         dataContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
         dataContent.append(b.address1 + "; ");
@@ -189,14 +189,14 @@ public class BImportFormatter
         dataContent.append(cityCode + "; ");
         dataContent.append(b.postalCode + "; ");
         dataContent.append(b.emailName + "; ");
-        dataContent.append(b.email + "\n\r");
+        dataContent.append(b.email + "\r\n");
         
         // Table borrower_barcode
         headerContent.append(BORROWER_BARCODE_TABLE + ": "); // add or modify if exists
-        headerContent.append(BImportDBFields.BARCODE + "\n\r");
+        headerContent.append(BImportDBFields.BARCODE + "\r\n");
         
         dataContent.append(BORROWER_BARCODE_TABLE + ": "); // add or modify if exists
-        dataContent.append(b.barcode + "\n\r");
+        dataContent.append(b.barcode + "\r\n");
         
         writeContent(headerContent, header);
         writeContent(dataContent, data);     
