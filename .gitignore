@@ -1,3 +1,11 @@
 /dist/
 /nbproject/private/
 /build/
+build.xml
+metro-21221012345678-data.txt
+metro-21221012345678-header.txt
+nbproject/
+testfile.bat
+test/mecard/MetroClient.class
+manifest.mf
+test/mecard/MetroClient.class
