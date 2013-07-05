@@ -1,10 +1,10 @@
-/dist/
 /nbproject/private/
 /build/
 build.xml
 metro-21221012345678-data.txt
 metro-21221012345678-header.txt
 nbproject/
-testfile.bat
 test/mecard/MetroClient.class
-manifest.mf
+commons-daemon-1.0.15.jar
+gson-2.2.4.jar
+junit-4.10.jar
