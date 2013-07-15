@@ -25,7 +25,6 @@ import java.util.Properties;
 import mecard.ResponseTypes;
 import mecard.config.APIPropertyTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
 import api.ILSRequestBuilder;
 import mecard.Exception.UnsupportedAPIException;
 import mecard.customer.Customer;
@@ -34,6 +33,7 @@ import api.Command;
 import api.ProcessWatcherHandler;
 import api.Request;
 import api.Response;
+import mecard.MetroService;
 import mecard.customer.CustomerFieldTypes;
 
 /**
@@ -55,7 +55,7 @@ public class APIResponder extends CustomerQueryable
     {
         super(command, debugMode);
         
-        Properties apiProps = PropertyReader.getProperties(ConfigFileTypes.API);
+        Properties apiProps = MetroService.getProperties(ConfigFileTypes.API);
         String ils = apiProps.getProperty(APIPropertyTypes.ILS_TYPE.toString());
         api = APIRequest.getInstanceOf(ils, debug);
     }

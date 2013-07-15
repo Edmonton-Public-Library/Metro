@@ -23,6 +23,7 @@ package mecard.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import mecard.MetroService;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -38,48 +39,48 @@ public class PropertyReaderTest
     }
 
     /**
-     * Test of getProperties method, of class PropertyReader.
+     * Test of getProperties method, of class MetroService.
      */
     @Test
     public void testGetProperties() throws Exception
     {
         System.out.println("===getProperties===");
-        Properties envProps = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        Properties envProps = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
         envProps.list(System.out);
         
-        Properties createProps = PropertyReader.getProperties(ConfigFileTypes.DEFAULT_CREATE);
+        Properties createProps = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);
         createProps.list(System.out);
 
-        Properties sip2Props = PropertyReader.getProperties(ConfigFileTypes.SIP2);
+        Properties sip2Props = MetroService.getProperties(ConfigFileTypes.SIP2);
         sip2Props.list(System.out);
         
-        Properties bimportProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
+        Properties bimportProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
         bimportProps.list(System.out);
         
-        Properties apiProps = PropertyReader.getProperties(ConfigFileTypes.API);
+        Properties apiProps = MetroService.getProperties(ConfigFileTypes.API);
         apiProps.list(System.out);
         
-        Properties cityProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
+        Properties cityProps = MetroService.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
         cityProps.list(System.out);
         
-        Properties debugProps = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
+        Properties debugProps = MetroService.getProperties(ConfigFileTypes.DEBUG);
         debugProps.list(System.out);
     }
 
     /**
-     * Test of augmentProperties method, of class PropertyReader.
+     * Test of augmentProperties method, of class MetroService.
      */
     @Test
     public void testAugmentProperties()
     {
         System.out.println("==augmentProperties==");
-//        Properties debugProps = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
+//        Properties debugProps = MetroService.getProperties(ConfigFileTypes.DEBUG);
 //        debugProps.list(System.out);
         Map<String, String> props = new HashMap<String, String>();
         props.put("value_A", "A");
         props.put("value_B", "B");
         ConfigFileTypes type = ConfigFileTypes.DEBUG;
-        PropertyReader.augmentProperties(props, type);
+        MetroService.augmentProperties(props, type);
         int count = 1;
         for (String s: props.keySet())
         {

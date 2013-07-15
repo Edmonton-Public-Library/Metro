@@ -4,9 +4,9 @@ import api.Request;
 import api.Response;
 import java.util.Properties;
 import json.ResponseDeserializer;
+import mecard.MetroService;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFieldTypes;
@@ -31,7 +31,7 @@ public class DummyResponder extends CustomerQueryable
     public DummyResponder(Request command, boolean debugMode)
     {
         super(command, debugMode);
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
+        Properties props = MetroService.getProperties(ConfigFileTypes.DEBUG);
         gsonStatus = props.getProperty(DebugQueryConfigTypes.GET_STATUS.toString());
         gsonGetCustomer = props.getProperty(DebugQueryConfigTypes.GET_CUSTOMER.toString());
         gsonCreateCustomer = props.getProperty(DebugQueryConfigTypes.CREATE_CUSTOMER.toString());

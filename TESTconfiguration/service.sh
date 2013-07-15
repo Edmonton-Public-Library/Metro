@@ -5,6 +5,7 @@ EXEC=/usr/bin/jsvc
 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
 CLASS_PATH="/home/metro/Dropbox/development/MeCard/commons-daemon-1.0.15.jar":"/home/metro/Dropbox/development/MeCard/dist/MeCard.jar"
 CLASS=mecard.MetroService
+ARGS="-c ../"
 USER=metro
 PID=/tmp/metro.pid
 LOG_OUT=/tmp/metro.out
@@ -12,7 +13,7 @@ LOG_ERR=/tmp/metro.err
 
 do_exec()
 {
-    $EXEC -home "$JAVA_HOME" -cp $CLASS_PATH -user $USER -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS
+    $EXEC -home "$JAVA_HOME" -cp $CLASS_PATH -user $USER -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
 }
 
 case "$1" in

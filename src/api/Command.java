@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
 
 /**
  * Builds commands ready for execution.
@@ -217,7 +217,7 @@ public class Command
     private void setEnvironment(ProcessBuilder processBuilder)
     {
         Map<String, String> env = processBuilder.environment();
-        PropertyReader.augmentProperties(env, ConfigFileTypes.ENVIRONMENT);
+        MetroService.augmentProperties(env, ConfigFileTypes.ENVIRONMENT);
         if (env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME) != null &&
             env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME).isEmpty() == false)
             processBuilder.directory(new File(env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME)));

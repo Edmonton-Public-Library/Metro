@@ -26,8 +26,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
 
 /**
  * This class represents a helper class for the customer represented as a flat
@@ -202,7 +202,7 @@ public class FlatUser
      */
     public void setDefaultProperties()
     {
-        Properties defaultCreateProperties = PropertyReader.getProperties(
+        Properties defaultCreateProperties = MetroService.getProperties(
                 ConfigFileTypes.DEFAULT_CREATE);
         Enumeration defaultProperties = defaultCreateProperties.propertyNames();
         FlatUserFieldTypes[] flatUserFieldKeys = FlatUserFieldTypes.values();

@@ -27,7 +27,6 @@ import java.util.Properties;
 import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
 import mecard.customer.CustomerFieldTypes;
 import mecard.util.BImportBat;
 import mecard.customer.BImportFormatter;
@@ -35,6 +34,7 @@ import api.Command;
 import api.ProcessWatcherHandler;
 import api.Request;
 import api.Response;
+import mecard.MetroService;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -76,7 +76,7 @@ public class BImportResponder extends Responder
     public BImportResponder(Request cmd, boolean debugMode)
     {
         super(cmd, debugMode);
-        Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
+        Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
         bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
         password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());

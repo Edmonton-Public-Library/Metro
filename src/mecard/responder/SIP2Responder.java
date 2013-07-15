@@ -27,13 +27,13 @@ import java.util.Properties;
 import mecard.Exception.SIPException;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
 import mecard.util.SIPConnector;
 import api.SIPRequest;
+import mecard.MetroService;
 
 /**
  * The SIP2 strategy is meant to retrieve initial information about customers.
@@ -56,7 +56,7 @@ public class SIP2Responder extends CustomerQueryable
     public SIP2Responder(Request command, boolean debugMode)
     {
         super(command, debugMode);        
-        Properties sipProps = PropertyReader.getProperties(ConfigFileTypes.SIP2);
+        Properties sipProps = MetroService.getProperties(ConfigFileTypes.SIP2);
         String host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
         String port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001"); // port optional in config.
         String user = sipProps.getProperty(SipPropertyTypes.USER.toString(), "");

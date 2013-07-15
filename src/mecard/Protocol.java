@@ -31,7 +31,6 @@ import mecard.Exception.MetroSecurityException;
 import mecard.Exception.UnsupportedResponderException;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
-import mecard.config.PropertyReader;
 import mecard.responder.BImportResponder;
 import mecard.responder.ResponderMethodTypes;
 import mecard.responder.Responder;
@@ -61,7 +60,7 @@ public class Protocol
     
     public Protocol()
     { 
-        String debug = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
+        String debug = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT)
                 .getProperty(LibraryPropertyTypes.DEBUG.toString());
         debugMode = Boolean.valueOf(debug);
     }
@@ -115,22 +114,22 @@ public class Protocol
         switch (queryType)
         {
             case CREATE_CUSTOMER:
-                serviceType = PropertyReader.
+                serviceType = MetroService.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
                 return mapResponderType(serviceType, command);
             case UPDATE_CUSTOMER:
-                serviceType = PropertyReader.
+                serviceType = MetroService.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
                 return mapResponderType(serviceType, command);
             case GET_STATUS:
-                serviceType = PropertyReader.
+                serviceType = MetroService.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
                 return mapResponderType(serviceType, command);
             case GET_CUSTOMER:
-                serviceType = PropertyReader.
+                serviceType = MetroService.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
                 return mapResponderType(serviceType, command);
