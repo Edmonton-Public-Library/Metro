@@ -1,33 +1,22 @@
-SERVICE=service.sh
-C_PATH=test
-CLIENT=mecard.MetroClient
-OUT=/tmp/metro
-FLAGS=-cp
+########################################################################
+# This make file is meant as a helper to rebuild the metro server for 
+# distribution to each participating library.
+########################################################################
 
-stop:
-	./${SERVICE} stop
-	netstat -an | grep 2004
-restart:
-	./${SERVICE} restart
-start:
-	./${SERVCIE} start
-client:
-	javac test/mecard/MetroClient.java
-check: error
-	tail ${OUT}.out
-error:
-	tail ${OUT}.err
-clean:
-	-rm ${OUT}.out
-	-rm ${OUT}.err
-test_it: client
-	./${SERVICE} start
-#	-tail ${OUT}.out
-	sleep 3
-	java ${FLAGS} ${C_PATH} ${CLIENT} 
-	sleep 2
-	./${SERVICE} stop
-#	tail ${OUT}.out
-#	echo "==="
-#	tail ${OUT}.err
-	-netstat -an | grep 2004
+VERSION=0.1
+ARCHIVE=MeCard_${VERSION}
+
+EPL_DIR=EPLconfiguration
+STR_DIR=STRconfiguration
+STA_DIR=STAconfiguration
+
+diststrathcona_ftsask:
+	zip -r ${ARCHIVE}.zip ${STR_DIR} dist/*
+	
+distepl:
+	tar cvf ${ARCHIVE}.tar ${EPL_DIR} dist/
+	
+diststalbert:
+	zip -r ${ARCHIVE}.zip ${STA_DIR} dist/*
+	
+all: distepl diststrathcona_ftsask diststalbert

@@ -20,9 +20,6 @@
  */
 package api;
 
-import com.google.gson.Gson;
-import mecard.Exception.MalformedCommandException;
-import mecard.ProtocolPayload;
 import mecard.QueryTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFieldTypes;
@@ -48,42 +45,6 @@ public class Request //extends ProtocolPayload
         pin = "";
         userId = "";
     }
-//    /**
-//     * 
-//     * @param request 
-//     * @deprecated 
-//     */
-//    public Request(String request)
-//    {
-//        // Instantiate query type ot NULL.
-//        code = QueryTypes.NULL;
-//        // split to command into it's parts
-//        this.splitCommand(request);
-//    }
-
-//    /**
-//     * Split the commandArguments on the Protocol's delimiter breaking the
-//     * commandArguments into chunks. The first element on the list is the
-//     * commandArguments itself which can be ignored since it was already dealt
-//     * with when this object was created. The second is the MD5 hash of the
-//     * query salted with the senders shared secret. The rest of the elements (if
-//     * any) are arguments to the commandArguments.
-//     *
-//     * @param cmd
-//     * @return
-//     * @deprecated 
-//     */
-//    private void splitCommand(String cmd)
-//            throws MalformedCommandException
-//    {
-//        Gson gson = new Gson();
-//        Request r = gson.fromJson(cmd, Request.class);
-//        this.authorityToken = r.authorityToken;
-//        this.code = r.code;
-//        this.customer = r.customer;
-//        this.pin = r.pin;
-//        this.userId = r.userId;
-//    }
 
     /**
      *
@@ -114,14 +75,19 @@ public class Request //extends ProtocolPayload
         return sb.toString();
     }
 
+    /**
+     * 
+     * @return authority token, the API key of the requester.
+     */
     public String getTransactionId()
     {
         return this.authorityToken;
     }
 
     /**
-     *
-     *
+     * 
+     * @param cField - the customer field type you want.
+     * @return the contents of the field or null if the field is not set.
      */
     public String getCustomerField(CustomerFieldTypes cField)
     {
