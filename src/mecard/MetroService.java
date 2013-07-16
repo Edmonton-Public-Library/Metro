@@ -47,7 +47,6 @@ import mecard.config.SipPropertyTypes;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -79,6 +78,7 @@ public class MetroService implements Daemon
     private static ServerSocket serverSocket = null;
     private static boolean listening = true;
     private static String defaultPort = "2004";
+    private static String[] ARGS;
 
     public static void main(String[] args)
     {
@@ -95,9 +95,10 @@ public class MetroService implements Daemon
             cmd = parser.parse(options, args);
              // get c option value
             String configDirectory = cmd.getOptionValue("c");
-            if(configDirectory == null) 
+            if(configDirectory != null) 
             {
                 CONFIG_DIR = configDirectory;
+                System.out.println(new Date() + "CONFIG: dir set to "+CONFIG_DIR);
             }
             BIMPORT_PROPERTY_FILE = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
             DEFAULT_CREATE_PROPERTY_FILE = CONFIG_DIR + DEFAULT_CREATE_PROPERTY_FILE;
@@ -110,10 +111,10 @@ public class MetroService implements Daemon
         catch (ParseException ex)
         {
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println(new Date() + "Unable to parse command line option.");
+            System.out.println(new Date() + "Unable to parse command line option. Please check your service configuration.");
+            System.exit(799);
         }
         
-       
         Properties properties = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
         String portString = properties.getProperty(LibraryPropertyTypes.METRO_PORT.toString(), defaultPort);
         
@@ -164,14 +165,14 @@ public class MetroService implements Daemon
     public void init(DaemonContext dc) throws DaemonInitException, Exception
     {
         System.out.println(new Date() + " initializing service...");
+        ARGS = dc.getArguments();
     }
 
     @Override
     public void start() throws Exception
     {
         System.out.println(new Date() + " starting service...");
-//        environment = MetroService.readProperties(ConfigFileTypes.ENVIRONMENT);
-        main(null);
+        main(ARGS);
     }
 
     @Override
@@ -187,6 +188,11 @@ public class MetroService implements Daemon
         System.out.println(new Date() + " done.");
     }
     
+    /**
+     * Gets specific properties from a configuration file.
+     * @param type of configuration file to read, ie environment or bimport etc.
+     * @return Java properties object filled with values read from the property file.
+     */
     public static Properties getProperties(ConfigFileTypes type)
     {
 
@@ -413,7 +419,7 @@ public class MetroService implements Daemon
         {
             FileInputStream fis = new FileInputStream(whichFile);
             properties.loadFromXML(fis);
-        } // TODO fix so a useful diagnostic message is returned.
+        }
         catch (IOException ioe)
         {
             String msg = "Failed to read '" + whichFile + "'. One must be defined.";
