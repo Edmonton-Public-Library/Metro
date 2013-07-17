@@ -56,8 +56,6 @@ public class Command
         /**
          * Constructor that insists that the command gets at least a status
          * object and a command.
-         *
-         * @param format the command to execute.
          */
         public Builder()
         {
@@ -82,7 +80,7 @@ public class Command
          * Works like the 'cat' command in Unix, that is, will cats lines of
          * data to the stdin of this command.
          *
-         * @param stringIn String that you want to echo into this command.
+         * @param data List of Strings for input like what you would cat from a file.
          * @return Builder.
          */
         public Builder cat(List<String> data)

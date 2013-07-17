@@ -108,10 +108,6 @@ public class APIResponder extends CustomerQueryable
         response.setCode(status.getStatus()); 
     }
 
-    /**
-     *
-     * @param responseBuffer the value of responseBuffer
-     */
     @Override
     public void createCustomer(Response response)
     {
@@ -127,10 +123,6 @@ public class APIResponder extends CustomerQueryable
         response.setCode(status.getStatus());
     }
     
-    /**
-     *
-     * @param responseBuffer the value of responseBuffer
-     */
     @Override
     public void getCustomer(Response response)
     {

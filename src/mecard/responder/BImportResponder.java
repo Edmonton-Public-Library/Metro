@@ -140,14 +140,9 @@ public class BImportResponder extends Responder
      * Looks confusing but merely converts the customer into a ILS meaningful
      * expression of some sort (for BImport that's a command line expression or
      * bat file name), then executes the command.
-     * @param responseBuffer
-     * @return 
+     * 
+     * @param response object
      */
-    /**
-     *
-     * @param responseBuffer the value of responseBuffer
-     */
-    
     @Override
     public void createCustomer(Response response)
 //    protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
@@ -225,7 +220,7 @@ public class BImportResponder extends Responder
      * Horizon has an additional required field, email name, which is just the 
      * user's email name (without the domain). We compute that here.
      * @param email
-     * @return 
+     * @return String value of email account name (without the domain).
      */
     protected String computeEmailName(String email) 
     {

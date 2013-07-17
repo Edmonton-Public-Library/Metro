@@ -66,15 +66,9 @@ public interface ILSRequestBuilder
     /**
      * Updates a user based on the supplied customer, which must not be null.
      * @param customer
-     * @param responseBuffer
+     * @param response
      * @return command that can be executed on the ILS to update a customer.
      */
-    /**
-     *
-     * @param customer the value of customer
-     * @param responseBuffer the value of responseBuffer
-     */
-    
     public Command updateUser(Customer customer, Response response);
 
     /**

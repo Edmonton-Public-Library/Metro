@@ -104,14 +104,8 @@ public class SIP2Responder extends CustomerQueryable
 
     /**
      * Gets the customer information.
-     * @param responseBuffer
-     * @return the ResponseTypes from the execution of the query.
+     * @param response object as a container for the results.
      */
-    /**
-     *
-     * @param responseBuffer the value of responseBuffer
-     */
-    
     @Override
     public void getCustomer(Response response)
     {
@@ -152,7 +146,6 @@ public class SIP2Responder extends CustomerQueryable
     /**
      * Gets the status of the server.
      * @param response
-     * @return the ResponseTypes from the execution of the query.
      */
     @Override
     public void getILSStatus(Response response)

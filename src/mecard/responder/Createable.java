@@ -29,8 +29,9 @@ import api.Response;
 public interface Createable
 {
     /**
-     *
-     * @param responseBuffer the value of responseBuffer
+     * Populates the response object with the results from the createCustomer
+     * command. The side effect is the customer is created on the ILS.
+     * @param response the value of responseBuffer
      */
     public void createCustomer(Response response);
 }

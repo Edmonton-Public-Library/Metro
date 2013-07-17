@@ -70,20 +70,5 @@ public class FlatUserFormatterTest
         fail("Not implemented yet.");
     }
 
-    /**
-     * Test of getCustomer method, of class FlatUserFormatter.
-     */
-    @Test
-    public void testGetCustomer_String()
-    {
-        System.out.println("==getCustomer String==");
-        FlatUserFormatter formatter = new FlatUserFormatter();
-        String cString = "[\"RA1\",\"232132132132\",\"21221015133926\",\"64058\",\"Balzac, William (Dr)\",\"11811 72 Ave.\",\"Edmonton\",\"AB\",\"T6G2B2\",\"X\",\"ilsteam@epl.ca\",\"7803409998\",\"X\",\"20140514\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"William (Dr)\",\"Balzac\"]";
-        Customer expResult = new Customer(cString);
-//        System.out.println("EXP_CUST_STRING:"+expResult.toString());
-        Customer customer = formatter.getCustomer(dumpFlatOutput.toString());
-        System.out.println("EXP_CUST_RESULT:"+expResult);
-        System.out.println("       CUSTOMER:"+customer);
-        assertTrue(expResult.toString().compareTo(customer.toString()) == 0);
-    }
+    
 }

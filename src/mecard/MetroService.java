@@ -390,7 +390,7 @@ public class MetroService implements Daemon
      * Loads properties from the a given config file and updating an existing
      * property Map or inserts if the values don't exist.
      *
-     * @see Command
+     * @see api.Command
      * @param props
      * @param type
      */

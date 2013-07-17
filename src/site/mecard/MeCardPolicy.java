@@ -66,10 +66,11 @@ public abstract class MeCardPolicy
      * Each library must decide how they compute if a customer is a resident
      * customer. Usually this is done by comparing the btype of profile of the
      * customer.
-     *
-     * @param customerData the value of customerData
-     * @param status the value of status
-     * @return the boolean
+     * 
+     * @param customer
+     * @param meta
+     * @return true if the customer is resident to their home library
+     * and false otherwise.
      */
     public abstract boolean isResident(Customer customer, String meta);
 
@@ -77,17 +78,22 @@ public abstract class MeCardPolicy
      * Each library must decide how they compute if a customer is a reciprocal
      * customer. Usually this is done by comparing the btype of profile of the
      * customer.
-     *
-     * @param status the value of status
-     * @return the boolean
+     * 
+     * @param customer
+     * @param meta
+     * @return true if the customer is a reciprocal member at their home library 
+     * and false otherwise.
      */
     public abstract boolean isReciprocal(Customer customer, String meta);
 
     /**
-     *
-     * @param customerFormatter the value of customerFormatter
-     * @param status the value of status
-     * @return the boolean
+     * Tests if the customer is in good standing at their home library. The 
+     * definition of good standing is not restricted by Metro federation.
+     * 
+     * @param customer
+     * @param meta
+     * @return true if the customer is in good standing at home library and
+     * false otherwise.
      */
     public abstract boolean isInGoodStanding(Customer customer, String meta);
 
@@ -175,11 +181,14 @@ public abstract class MeCardPolicy
     }
 
     /**
-     * Tests and sets customer is valid flag.
-     *
+     * Tests and sets customer is valid flag. Fro a customer to be valid they 
+     * must have all the mandatory fields filled with valid information. Mandatory
+     * fields are ID, PIN, Name, Street, City, Province, Postal code, Email, 
+     * and valid expiry date. A valid expiry date is some date in the future not
+     * less than tomorrow.
+     * 
      * @param customer
-     * @param status
-     * @return true if the customer is
+     * @return true if the customer is valid and false otherwise.
      */
     public boolean isValidCustomerData(Customer customer)
     {
@@ -243,10 +252,10 @@ public abstract class MeCardPolicy
 
     /**
      * Tests if the customer has a valid expiry time limit.
-     *
      * @param customer
-     * @param status
-     * @return true if customer has at least 1 day expiry and false otherwise.
+     * @param meta
+     * @return true if customer's expiry is at least tomorrow and at most 365
+     * days from now.
      */
     public boolean isValidExpiryDate(Customer customer, String meta)
     {

@@ -33,10 +33,9 @@ public class PostalCode
     private final boolean isValid;
     
     /**
-     * Forces the class to validate a region's postal codes as part of its
-     * tests.s
+     * Tests and sets the customer's postal code.
      *
-     * @param isRequired
+     * @param postalCode the customer's postal code.
      */
     public PostalCode(String postalCode)
     {

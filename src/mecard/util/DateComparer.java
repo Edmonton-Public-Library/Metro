@@ -47,14 +47,12 @@ public class DateComparer
     public final static long MILLISECONDS_PER_DAY = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY;
 
     /**
-     * Returns the absolute difference between date one (d1) and date two (d2).
-     *
-     * @param d1
-     * @param d2
+     * Returns the absolute difference between date one (d1) and date two (d2)
+     * in years.
+     * @param date
      * @return a positive integer of the number of years
      * @throws ParseException if the supplied date doesn't match the ValidDate
      * date format which is yyyy-mm-dd.
-     * @see me.card.ValidDate
      */
     public static int getYearsOld(String date) throws ParseException
     {

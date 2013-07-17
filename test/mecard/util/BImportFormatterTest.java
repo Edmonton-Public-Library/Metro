@@ -1,6 +1,10 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Notes on running this test:
+ * The project has been refactored so each library will have its own configuration 
+ * directory. When this test runs it will not find the config files in the default 
+ * project directory. All you need do is copy the environment.properties, 
+ * bimport.properties and city_st.properties files to the project's root directory,
+ * test, then remove them after testing so GIT doesn't find them.
  */
 package mecard.util;
 

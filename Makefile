@@ -10,13 +10,14 @@ EPL_DIR=EPLconfiguration
 STR_DIR=STRconfiguration
 STA_DIR=STAconfiguration
 
+all: distepl diststrathcona_ftsask diststalbert
+
 diststrathcona_ftsask:
-	zip -r ${ARCHIVE}.zip ${STR_DIR} dist/*
+	zip -r ${ARCHIVE}_STR.zip ${STR_DIR}/* dist/*
 	
 distepl:
-	tar cvf ${ARCHIVE}.tar ${EPL_DIR} dist/
+	tar cvf ${ARCHIVE}_EPL.tar ${EPL_DIR}/* dist/*
 	
 diststalbert:
-	zip -r ${ARCHIVE}.zip ${STA_DIR} dist/*
+	zip -r ${ARCHIVE}_STA.zip ${STA_DIR}/* dist/*
 	
-all: distepl diststrathcona_ftsask diststalbert

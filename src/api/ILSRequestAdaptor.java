@@ -33,12 +33,7 @@ public class ILSRequestAdaptor implements ILSRequestBuilder
     {
         throw new UnsupportedOperationException("Not supported."); 
     }
-
-    /**
-     *
-     * @param customer the value of customer
-     * @param responseBuffer the value of responseBuffer
-     */
+    
     @Override
     public Command updateUser(Customer customer, Response response)
     {

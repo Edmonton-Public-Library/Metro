@@ -22,7 +22,6 @@ package mecard.customer;
 
 import mecard.Protocol;
 import java.util.EnumMap;
-import mecard.Exception.InvalidCustomerException;
 
 /**
  * 
@@ -39,56 +38,10 @@ public class Customer //extends ProtocolPayload
     }
 
     /**
-     * Takes a string representation of a customer and parses it into the
-     * correct fields. Note that this object does not enforce the order of entries
-     * since it assumes that the initial customer data was well formed, and there
-     * is no way to determine if the content of a field matches the appropriate 
-     * field.
+     * Used when the name passed is in the form of 'last, first' name, this 
+     * method parses and populates LASTNAME and FIRSTNAME fields. 
      *
-     * @param c
-     * @deprecated 
-     */
-    public Customer(String c) throws InvalidCustomerException
-    {
-        this.customerFields = new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
-        try
-        {
-            this.splitCustomerFields(c);
-        }
-        catch (RuntimeException ex)
-        {
-            String msg = "The supplied JSON does not represent a valid customer's data.";
-            throw new InvalidCustomerException(msg);
-        }
-        normalizeFields();
-    }
-
-    /**
-     * Split the commandArguments on the Protocol's delimiter breaking the
-     * commandArguments into chunks. The first element on the list is the
-     * commandArguments itself which can be ignored since it was already dealt
-     * with when this object was created. The second is the MD5 hash of the
-     * query salted with the senders shared secret. The rest of the elements (if
-     * any) are arguments to the commandArguments.
-     *
-     * @param customerData
-     * @return
-     * @deprecated 
-     */
-    private void splitCustomerFields(String customerData)
-    {
-//        GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
-//        Gson gson = gsonBuilder.create();
-//        Reader data = new StringReader(customerData);
-//        Customer c = gson.fromJson(data, Customer.class);
-//        this.customerFields = c.customerFields;
-    }
-
-    /**
-     * Used when the name passed is in the form of 'last, first' name.
-     *
-     * @param "lastname, firstname"
+     * @param name like "lastname, firstname"
      */
     public void setName(String name)
     {

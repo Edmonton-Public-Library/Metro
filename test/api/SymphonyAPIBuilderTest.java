@@ -57,39 +57,4 @@ public class SymphonyAPIBuilderTest
         Command result = instance.getCustomer(userId, userPin, response);
         assertEquals(expResult, result.toString());
     }
-
-    /**
-     * Test of createUser method, of class SymphonyAPIBuilder.
-     */
-    @Test
-    public void testCreateUser()
-    {
-        System.out.println("===createUser===");
-        String custReq =
-                "[\"QC0\",\"342abf3cb129ffccb74\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
-                + "Edmonton\",\"Alberta\",\"H0H 0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\"20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
-        Customer customer = new Customer(custReq);
-        Response response = new Response();
-        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
-        String expResult = ""; //"echo <flatuser> /home/metro/bimport/loadflatuser -aR -bR -l\"ADMIN|PCGUI-DISP\" -mu -n ";
-        Command result = instance.createUser(customer, response);
-        assertEquals(expResult, result.toString());
-    }
-
-    /**
-     * Test of updateUser method, of class SymphonyAPIBuilder.
-     */
-    @Test
-    public void testUpdateUser()
-    {
-        System.out.println("updateUser");
-        Customer customer = null;
-        Response response = new Response();
-        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
-        Command expResult = null;
-        Command result = instance.updateUser(customer, response);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 }

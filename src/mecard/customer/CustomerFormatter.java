@@ -34,10 +34,10 @@ public interface CustomerFormatter
      * been received from the ILS.
      * @return true if the conversion was successful and false otherwise.
      */
-    public Customer getCustomer(List<String> s);
+    public Customer getCustomer(List<String> list);
     /**
      * Converts a string from ILS or SIP into a Customer object.
-     * @param string that represent the customer as it would have 
+     * @param s the string that represent the customer as it would have 
      * been received from the ILS.
      * @return true if the conversion was successful and false otherwise.
      */

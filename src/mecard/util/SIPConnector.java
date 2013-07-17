@@ -92,7 +92,7 @@ public class SIPConnector
         /**
          * Sets the socket timeout.
          *
-         * @param timeout a number in milliseconds.
+         * @param time a number in milliseconds.
          * @return Connection builder
          */
         public Builder timeout(String time)

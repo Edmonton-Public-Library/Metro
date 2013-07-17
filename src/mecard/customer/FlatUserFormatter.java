@@ -42,38 +42,32 @@ public class FlatUserFormatter implements CustomerFormatter
      * Converts a customer into a flatUser that can be loaded by Symphony's
      * loadflatuser.
      * @param customer
-     * @return true if the conversion could be made and false otherwise.
+     * @return Flat user data as a List of Strings.
      */
-    /**
-     *
-     * @param customer the value of customer
-     * @return the List<String>
-     */
-    
     @Override
-    public List<String> setCustomer(Customer c)
+    public List<String> setCustomer(Customer customer)
     {
-        if (c == null)
+        if (customer == null)
         {
             return new ArrayList<String>();
         }
         FlatUser flatUser = new FlatUser();
-        flatUser.add(FlatUserFieldTypes.USER_ID, c.get(CustomerFieldTypes.ID));
-        flatUser.add(FlatUserFieldTypes.USER_PIN, c.get(CustomerFieldTypes.PIN));
-        flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, c.get(CustomerFieldTypes.FIRSTNAME));
-        flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, c.get(CustomerFieldTypes.LASTNAME));
-        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, c.get(CustomerFieldTypes.NAME));
+        flatUser.add(FlatUserFieldTypes.USER_ID, customer.get(CustomerFieldTypes.ID));
+        flatUser.add(FlatUserFieldTypes.USER_PIN, customer.get(CustomerFieldTypes.PIN));
+        flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, customer.get(CustomerFieldTypes.FIRSTNAME));
+        flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, customer.get(CustomerFieldTypes.LASTNAME));
+        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, customer.get(CustomerFieldTypes.NAME));
         // Dates
-        flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, c.get(CustomerFieldTypes.DOB));
-        flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+        flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, customer.get(CustomerFieldTypes.DOB));
+        flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         // Address
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.STREET, 
-                c.get(CustomerFieldTypes.STREET));
+                customer.get(CustomerFieldTypes.STREET));
         // Symphony uses CITY/STATE as a field (sigh)
-        String city     = c.get(CustomerFieldTypes.CITY);
-        String province = c.get(CustomerFieldTypes.PROVINCE);
+        String city     = customer.get(CustomerFieldTypes.CITY);
+        String province = customer.get(CustomerFieldTypes.PROVINCE);
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.CITY_STATE, 
@@ -81,17 +75,17 @@ public class FlatUserFormatter implements CustomerFormatter
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.POSTALCODE, 
-                c.get(CustomerFieldTypes.POSTALCODE));
+                customer.get(CustomerFieldTypes.POSTALCODE));
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.EMAIL, 
-                c.get(CustomerFieldTypes.EMAIL));
+                customer.get(CustomerFieldTypes.EMAIL));
         // Load optional fields.
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.PHONE, 
-                c.get(CustomerFieldTypes.PHONE));
-        String gender = c.get(CustomerFieldTypes.GENDER);
+                customer.get(CustomerFieldTypes.PHONE));
+        String gender = customer.get(CustomerFieldTypes.GENDER);
         if (gender.contains(Protocol.DEFAULT_FIELD) == false)
         {
             // we will have to revisit this since I don't know how Horizon 

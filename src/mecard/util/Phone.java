@@ -38,7 +38,6 @@ public class Phone
      * Formats a phone number from 7804366077 to 780[delim]436[delim]6077.
      *
      * @param p
-     * @param debug the value of debug
      * @return formatted phone number (area code)-(exchange)-(phone).
      */
     

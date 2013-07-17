@@ -156,19 +156,24 @@ public class SIPFormatter implements CustomerFormatter
         if (userFieldValue.equals("AA"))
         {
             return CustomerFieldTypes.ID;
-        } else if (userFieldValue.equals("AE"))
+        } 
+        else if (userFieldValue.equals("AE"))
         {
             return CustomerFieldTypes.NAME; // last name, first name.
-        } else if (userFieldValue.equals("BD"))
-        { // TODO Phone.
+        } 
+        else if (userFieldValue.equals("BD"))
+        {
             return CustomerFieldTypes.STREET; // Complete address break it up.
-        } else if (userFieldValue.equals("BE"))
+        } 
+        else if (userFieldValue.equals("BE"))
         {
             return CustomerFieldTypes.EMAIL;
-        } else if (userFieldValue.equals("PA"))
+        } 
+        else if (userFieldValue.equals("PA"))
         {
             return CustomerFieldTypes.PRIVILEGE_EXPIRES;
-        } else if (userFieldValue.equals("PD"))
+        } 
+        else if (userFieldValue.equals("PD"))
         {
             return CustomerFieldTypes.DOB;
         } // PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|

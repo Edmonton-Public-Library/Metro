@@ -38,8 +38,6 @@ public abstract class CustomerQueryable extends Responder
     
     /**
      * Gets the customer account information.
-     *
-     * @return ResponseType result of the query.
      */
     public abstract void getCustomer(Response response);
     
@@ -63,8 +61,9 @@ public abstract class CustomerQueryable extends Responder
      * <li>Must have mandatory account fields filled with valid data.</li>
      * </ul>
      * @param customer
-     * @param altData
-     * @return 
+     * @param additionalData
+     * @return true if the customer meets the MeCard participation requirements
+     * and false otherwise.
      */
     protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
     {

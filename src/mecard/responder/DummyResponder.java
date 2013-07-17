@@ -108,10 +108,6 @@ public class DummyResponder extends CustomerQueryable
         response.setCustomer(r.getCustomer());
     }
 
-    /**
-     *
-     * @param responseBuffer the value of responseBuffer
-     */
     @Override
     public void createCustomer(Response response)
     {

@@ -20,6 +20,8 @@
  */
 package site.mecard;
 
+import api.Request;
+import json.RequestDeserializer;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFieldTypes;
 import org.junit.Test;
@@ -33,10 +35,16 @@ import static org.junit.Assert.*;
 public class MeCardPolicyTest
 {
     private final String meta;
+    private final Customer c;
     
     public MeCardPolicyTest()
     {
         this.meta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
+        String custReq =
+                "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"NAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"GENDER\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"DEFAULT\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+        RequestDeserializer deserializer = new RequestDeserializer();
+        Request request = deserializer.getDeserializedRequest(custReq);
+        this.c = request.getCustomer();
     }
 
     /**
@@ -46,33 +54,25 @@ public class MeCardPolicyTest
     public void testIsMinimumAgeByDate()
     {
         System.out.println("==isMinimumAge by Date String==");
-        String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        Customer c = new Customer(custReq);
+        
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isMinimumAgeByDate(c, meta);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         boolean expected= true;
         assertTrue(expected == result);
-        
-        custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|20050101|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
+       
         String modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
                 + "CB0040|BLY|CQY|BV 12.00|"
                 + "BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|"
                 + "BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|" // DOB
                 + "PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
-        c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf(false);
+        
+        c.set(CustomerFieldTypes.DOB, "20050101");
         result = p.isMinimumAgeByDate(c, modeMeta);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
-        expected= false;
-        assertTrue(expected == result);
+        
+        assertTrue(false == result);
     }
     
 /**
@@ -82,25 +82,16 @@ public class MeCardPolicyTest
     public void testIsEmailable()
     {
         System.out.println("==isEmailable==");
-        String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        Customer c = new Customer(custReq);
+
+        
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isEmailable(c, meta);
-        boolean expected= true;
-        assertTrue(expected == result);
+        assertTrue(true == result);
         
-        custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf(false);
+        c.set(CustomerFieldTypes.EMAIL, "X");
         result = p.isEmailable(c, meta);
-        expected= false;
-        assertTrue(expected == result);
+        
+        assertTrue(false == result);
     }
 
     /**
@@ -110,24 +101,15 @@ public class MeCardPolicyTest
     public void testIsValidCustomerData()
     {
         System.out.println("==isValidCustomerData==");
-        String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        Customer c = new Customer(custReq);
+
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isValidCustomerData(c);
         boolean expected= true;
         assertTrue(expected == result);
-        
-        custReq =
-                "QC0|342abf3cb129ffccb74|X|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        c = new Customer(custReq);
+
+        c.set(CustomerFieldTypes.POSTALCODE, "X");
         result = p.isValidCustomerData(c);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(result == false);
     }
 
     /**
@@ -137,68 +119,15 @@ public class MeCardPolicyTest
     public void testIsValidExpiryDate()
     {
         System.out.println("==isValidExpiryDate==");
-        String custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|ilsteam@epl.ca|7804964058|19750822|"
-                + "20140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        Customer c = new Customer(custReq);
+        
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         boolean result = p.isValidExpiryDate(c, meta);
         boolean expected= true;
         assertTrue(expected == result);
-        
-        custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
-                + "19140602|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf(false);
-        result = p.isValidExpiryDate(c, meta);
-        expected= false;
-        assertTrue(expected == result);
-        
-        custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
-                + "x|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf(false);
-        result = p.isValidExpiryDate(c, meta);
-        expected= false;
-        assertTrue(expected == result);
-        
-        custReq =
-                "QC0|342abf3cb129ffccb74|21221012345678|6058|Billy, Balzac|12345 123 St.|"
-                + "Edmonton|Alberta|H0H 0H0|M|X|7804964058|19750822|"
-                + "0|Balzac|Billy|Y|Y|N|Y|Y|N|Balzac|Billy|";
-        c = new Customer(custReq);
-        p = MeCardPolicy.getInstanceOf(false);
+
+        c.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, "20120602");
         result = p.isValidExpiryDate(c, meta);
         expected= false;
         assertTrue(expected == result);
     }
-
-//    public class MeCardPolicyImpl extends MeCardPolicy
-//    {
-//
-//        public boolean isResident(Customer customer, String meta)
-//        {
-//            return false;
-//        }
-//
-//        public boolean isReciprocal(Customer customer, String meta)
-//        {
-//            return false;
-//        }
-//
-//        public boolean isInGoodStanding(Customer customer, String meta)
-//        {
-//            return false;
-//        }
-//
-//        public boolean isMinimumAge(Customer customer, String meta)
-//        {
-//            return false;
-//        }
-//    }
 }

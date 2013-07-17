@@ -30,8 +30,7 @@ public interface StatusQueryable
 {
     /**
      * Gets the status of the ILS.
-     * @param response the value of responseBuffer
-     * @return ResponseType result.
+     * @param response object that is the container for the results.
      */
     public void getILSStatus(Response response);
 }
