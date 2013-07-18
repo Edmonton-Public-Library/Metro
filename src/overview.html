@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Metro (MeCard) Server Documentation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <div>
+            <h3>MeCard</h3>
+            <p>
+                The MeCard allows customers from one library to join, participate, and borrow
+                resources at another library. Think of it like the TAL (The Library of Alberta)
+                but without having to fill out cumbersome paperwork or getting a new library card
+                number. You submit your home library card number and pin, which is then registered
+                at any other affiliated library.</p>
+            <p>
+                For this to occur a significant amount of cooperation has to take place
+                behind the scenes. The two libraries must agree to the terms of MeCard policies,
+                on a political level, then both ILSs must cooperate to produce and consume
+                information about customers in an ILS agnostic way.
+            </p>
+            <p>
+                Enter project Metro. Metro is the service that runs on the ILS server and performs
+                the function of negotiating and translating communications between different ILSs.
+                The design is centered around a few simple requests that are initiated by the 
+                customer on a website, then translated and sent to the home (host) library, a 
+                response is generated, sent back to the website. The website then confirms the 
+                transaction is a way that ensures that no identifiable customer information is 
+                stored then passes the response on again as another request to the guest library.
+                The guest then creates a new user record in their ILS.
+            </p>
+        </div>
+    </body>
+</html>
