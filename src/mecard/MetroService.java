@@ -34,13 +34,6 @@ import java.util.logging.Logger;
 import mecard.config.APIPropertyTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
-import static mecard.config.ConfigFileTypes.API;
-import static mecard.config.ConfigFileTypes.BIMPORT;
-import static mecard.config.ConfigFileTypes.BIMPORT_CITY_MAPPING;
-import static mecard.config.ConfigFileTypes.DEBUG;
-import static mecard.config.ConfigFileTypes.DEFAULT_CREATE;
-import static mecard.config.ConfigFileTypes.ENVIRONMENT;
-import static mecard.config.ConfigFileTypes.SIP2;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.SipPropertyTypes;
@@ -58,6 +51,7 @@ import site.mecard.MemberTypes;
  */
 public class MetroService implements Daemon
 {
+    public static String VERSION = "0.1"; // server version.
     private static String CONFIG_DIR = "";
     private static String BIMPORT_PROPERTY_FILE = "bimport.properties";
     private static String DEFAULT_CREATE_PROPERTY_FILE = "default.properties";
@@ -67,13 +61,13 @@ public class MetroService implements Daemon
     private static String BIMPORT_CITY_MAPPING = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE = "debug.properties";
     
-    private static Properties defaultPolicies; // = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);
-    private static Properties bimport; // don't read by default since this is optional.
-    private static Properties environment; // = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
-    private static Properties sip2; // Optional config file.
-    private static Properties api; // Optional config file.
-    private static Properties city; // Optional config file, required for Horizon users.
-    private static Properties debugProperties; // Optional config file for providing canned debugging behaviours.
+    private static Properties defaultPolicies; // Default properties need to create a user.
+    private static Properties bimport; // Properties Metro needs to operate BImport.
+    private static Properties environment; // Basic envrionment values.
+    private static Properties sip2; // Variables used to talk to SIP2.
+    private static Properties api; // Optional config file for those using API.
+    private static Properties city; // Required for Horizon users to translate site specific city codes.
+    private static Properties debugProperties; // Optional config for debugging.
     
     private static ServerSocket serverSocket = null;
     private static boolean listening = true;
@@ -86,13 +80,18 @@ public class MetroService implements Daemon
         Options options = new Options();
         // add t option c to config directory true=arg required.
         options.addOption("c", true, "configuration file directory path, include all sys dependant dir seperators like '/'.");
-        
+        // add t option c to config directory true=arg required.
+        options.addOption("v", false, "Metro server version information.");
         try
         {
             // parse the command line.
             CommandLineParser parser = new BasicParser();
             CommandLine cmd;
             cmd = parser.parse(options, args);
+            if (cmd.hasOption("v"))
+            {
+                System.out.println("Metro (MeCard) server version " + VERSION);
+            }
              // get c option value
             String configDirectory = cmd.getOptionValue("c");
             if(configDirectory != null) 

@@ -8,3 +8,4 @@ test/mecard/MetroClient.class
 *.zip
 *.tar
 *.jar
+dist

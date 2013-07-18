@@ -31,8 +31,6 @@ import site.mecard.MemberTypes;
  */
 public class City 
 {
-    public final static CharSequence DEFAULT_PHONE_DELIMITER = "-";
-    
     /**
      * Does a lookup for city code in the city_st.properties file. The city code
      * is required and the codes are defined by each library that uses Horizon.
