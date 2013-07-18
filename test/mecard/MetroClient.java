@@ -47,7 +47,8 @@ public class MetroClient
     void run()
     {
 //        String server = "ilsdev1";
-        String server = "localhost";
+//        String server = "localhost";
+        String server = "edpl-t.library.ualberta.ca";
         int port = 2004;
         try
         {

@@ -6,8 +6,7 @@ JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
 CLASS_PATH="/home/metro/Dropbox/development/MeCard/commons-daemon-1.0.15.jar":"/home/metro/Dropbox/development/MeCard/dist/MeCard.jar"
 CLASS=mecard.MetroService
 # -c tells the service where the config files are located. Valid values are "" or "-c <path>".
-#ARGS="-c ../"
-ARGS=""
+ARGS="-c /home/metro/Dropbox/development/MeCard/TESTconfiguration/"
 USER=metro
 PID=/tmp/metro.pid
 LOG_OUT=/tmp/metro.out

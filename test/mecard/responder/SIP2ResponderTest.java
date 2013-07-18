@@ -6,6 +6,7 @@ package mecard.responder;
 
 import api.Request;
 import api.Response;
+import json.RequestDeserializer;
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import org.junit.Test;
@@ -17,9 +18,17 @@ import static org.junit.Assert.*;
  */
 public class SIP2ResponderTest {
     private String customerString = "[\"QA0\",\"afsfdasfdsafds\",\"21221012345678\",\"64058\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\"Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"7804309998\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
+    private final String meta;
+    private final Customer c;
+    private Request request;
     public SIP2ResponderTest() 
     {
-        
+        this.meta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
+        String statusRequest =
+                "{\"code\":\"GET_STATUS\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"null\"}";
+        RequestDeserializer deserializer = new RequestDeserializer();
+        this.request = deserializer.getDeserializedRequest(statusRequest);
+        this.c = request.getCustomer();
     }
 
     /**
@@ -30,7 +39,10 @@ public class SIP2ResponderTest {
         System.out.println("===getResponse===");
 //        String command = "[\"QA0\",\"abcdef88374667623243\"]";
 //        Request r = new Request(command);
-//        SIP2Responder instance = new SIP2Responder(r, false);
+        SIP2Responder instance = new SIP2Responder(request, false);
+        Response response = new Response();
+        instance.getILSStatus(response);
+        System.out.println("RESPONSE:"+response.toString());
 //        String expResult = "[\"RA1\",\"\"]";
 //        String result = instance.getResponse().toString();
 ////        System.out.println("RESULT:"+result);
@@ -121,6 +133,23 @@ public class SIP2ResponderTest {
         ResponseTypes expResult = null;
         instance.getCustomer(responseBuffer);
         ResponseTypes result = responseBuffer.getCode();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of isAuthorized method, of class SIP2Responder.
+     */
+    @Test
+    public void testIsAuthorized()
+    {
+        System.out.println("isAuthorized");
+        String suppliedPin = "";
+        Customer customer = null;
+        SIP2Responder instance = null;
+        boolean expResult = false;
+        boolean result = instance.isAuthorized(suppliedPin, customer);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
