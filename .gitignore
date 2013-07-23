@@ -10,3 +10,4 @@ test/mecard/MetroClient.class
 *.jar
 dist
 *.properties
+TESTconfiguration/sip2cemu.pl

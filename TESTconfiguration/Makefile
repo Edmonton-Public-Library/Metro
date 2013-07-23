@@ -29,7 +29,7 @@ test_it: client ${SERVICE}
 	sleep 3
 	java ${FLAGS} ${C_PATH} ${CLIENT} 
 	sleep 2
-	./${SERVICE} stop
+#	./${SERVICE} stop
 #	tail ${OUT}.out
 #	echo "==="
 #	tail ${OUT}.err

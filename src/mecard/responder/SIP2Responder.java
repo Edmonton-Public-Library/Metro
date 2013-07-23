@@ -110,8 +110,12 @@ public class SIP2Responder extends CustomerQueryable
     public void getCustomer(Response response)
     {
         SIPRequest sipCustomerRequest = new SIPRequest();
-        String userId  = this.request.getCustomerField(CustomerFieldTypes.ID);
-        String userPin = this.request.getCustomerField(CustomerFieldTypes.PIN);
+        String userId  = this.request.getUserId();
+        String userPin = this.request.getUserPin();
+        if (userId.isEmpty() || userPin.isEmpty())
+        {
+            throw new SIPException("Supplied user id or pin (or both) were empty.");
+        }
         String sipResponse = "";
         try
         {
@@ -138,9 +142,12 @@ public class SIP2Responder extends CustomerQueryable
             response.setCustomer(customer);
             response.setCode(ResponseTypes.OK);
         }
-        // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
-        response.setResponse("there is a problem with your account, please contact your home library for assistance");
-        response.setCode(ResponseTypes.FAIL);
+        else
+        {
+            // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
+            response.setResponse("there is a problem with your account, please contact your home library for assistance");
+            response.setCode(ResponseTypes.FAIL);
+        }
     }
 
     /**
