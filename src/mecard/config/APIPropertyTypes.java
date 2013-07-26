@@ -26,7 +26,8 @@ package mecard.config;
  */
 public enum APIPropertyTypes
 {
-    ILS_TYPE("ils-type");
+    ILS_TYPE("ils-type"),
+    UPATH("path");
     
     private String type;
 

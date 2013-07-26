@@ -41,6 +41,11 @@ public class PostalCode
     {
         this.isValid = this.setContent(postalCode);
     }
+    
+    public static String formatPostalCode(String postalCode)
+    {
+        return postalCode.substring(0, 3) + " " + postalCode.substring(3);
+    }
 
     /**
      * Cleans extra characters from the pCode number string and tests the

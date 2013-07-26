@@ -20,6 +20,7 @@
  */
 package api;
 
+import mecard.QueryTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 
@@ -31,7 +32,6 @@ import mecard.customer.CustomerFormatter;
  * sure you don't specify that method of response in the environment.properties
  * file.
  * @author andrew
- * @see ILSRequestAdaptor
  */
 public interface ILSRequestBuilder
 {
@@ -44,7 +44,7 @@ public interface ILSRequestBuilder
      * @param response Buffer to contain useful response information.
      */ 
      
-    public Command getCustomer(String userId, String userPin, Response response);
+    public Command getCustomerCommand(String userId, String userPin, Response response);
     
     /**
      * Gets the CustomerFormatter related to the implementer of the subclass.
@@ -61,7 +61,7 @@ public interface ILSRequestBuilder
      */
     
     
-    public Command createUser(Customer customer, Response response);
+    public Command getCreateUserCommand(Customer customer, Response response);
 
     /**
      * Updates a user based on the supplied customer, which must not be null.
@@ -69,12 +69,22 @@ public interface ILSRequestBuilder
      * @param response
      * @return command that can be executed on the ILS to update a customer.
      */
-    public Command updateUser(Customer customer, Response response);
+    public Command getUpdateUserCommand(Customer customer, Response response);
 
     /**
      * Gets the status of the ILS.
      * @param response
      * @return Command necessary to test the ILS status.
      */
-    public Command getStatus(Response response);
+    public Command getStatusCommand(Response response);
+    
+    /**
+     * Interprets the results of the ILS command into a meaningful message for
+     * the customer.
+     *
+     * @param commandType the value of commandType
+     * @param status the status of the command that ran on the ILS.
+     * @param response the object to be returned to melibraries.ca.
+     */
+    public void interpretResults(QueryTypes commandType, ProcessWatcherHandler status, Response response);
 }

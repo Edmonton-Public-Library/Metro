@@ -19,7 +19,7 @@ public class PostalCodeTest
     @Test
     public void testSetPostalCode()
     {
-        System.out.println("setPostalCode");
+        System.out.println("==setPostalCode==");
         String postalCode = "T6G-0G4";
         PostalCode instance = new PostalCode(postalCode);
         boolean result = instance.isValid();
@@ -64,5 +64,23 @@ public class PostalCodeTest
         instance = new PostalCode(null);
         result = instance.isValid();
         assertEquals(false, result);
+    }
+
+    /**
+     * Test of formatPostalCode method, of class PostalCode.
+     */
+    @Test
+    public void testFormatPostalCode()
+    {
+        System.out.println("==formatPostalCode==");
+        String postalCode = "H0H0H0";
+        String expResult = "H0H 0H0";
+        String result = PostalCode.formatPostalCode(postalCode);
+        assertEquals(expResult, result);
+        
+        postalCode = "H0H0H0bima";
+        expResult = "H0H 0H0bima";
+        result = PostalCode.formatPostalCode(postalCode);
+        assertEquals(expResult, result);
     }
 }

@@ -75,7 +75,7 @@ public class FlatUserFormatter implements CustomerFormatter
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.POSTALCODE, 
-                customer.get(CustomerFieldTypes.POSTALCODE));
+                PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.EMAIL, 
@@ -84,7 +84,7 @@ public class FlatUserFormatter implements CustomerFormatter
         flatUser.add(
                 FlatUserExtendedFields.USER_ADDR1, 
                 FlatUserFieldTypes.PHONE, 
-                customer.get(CustomerFieldTypes.PHONE));
+                mecard.util.Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
         String gender = customer.get(CustomerFieldTypes.GENDER);
         if (gender.contains(Protocol.DEFAULT_FIELD) == false)
         {

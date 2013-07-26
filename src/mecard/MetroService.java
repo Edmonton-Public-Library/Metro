@@ -60,6 +60,8 @@ public class MetroService implements Daemon
     private static String API_FILE = "api.properties";
     private static String BIMPORT_CITY_MAPPING = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE = "debug.properties";
+    private static String VARIABLES_FILE = "sysvar.properties"; // these are system specifi variables, like PATH.
+        // There are no mandatory variables, so no checking is done.
     
     private static Properties defaultPolicies; // Default properties need to create a user.
     private static Properties bimport; // Properties Metro needs to operate BImport.
@@ -68,6 +70,7 @@ public class MetroService implements Daemon
     private static Properties api; // Optional config file for those using API.
     private static Properties city; // Required for Horizon users to translate site specific city codes.
     private static Properties debugProperties; // Optional config for debugging.
+    private static Properties systemVariables; // Optional no mandatory fields.
     
     private static ServerSocket serverSocket = null;
     private static boolean listening = true;
@@ -106,6 +109,7 @@ public class MetroService implements Daemon
             API_FILE = CONFIG_DIR + API_FILE;
             BIMPORT_CITY_MAPPING = CONFIG_DIR + BIMPORT_CITY_MAPPING;
             DEBUG_SETTINGS_FILE = CONFIG_DIR + DEBUG_SETTINGS_FILE;
+            VARIABLES_FILE = CONFIG_DIR + VARIABLES_FILE;
         } 
         catch (ParseException ex)
         {
@@ -379,7 +383,25 @@ public class MetroService implements Daemon
                 }
                 return debugProperties;
 
-
+            case VARS: // Additional variables used by this application as a user on a system like PATH.
+                if (systemVariables == null)
+                {
+                    try
+                    {
+                        systemVariables = readProperties(MetroService.VARIABLES_FILE);
+                    } catch (FileNotFoundException ex)
+                    {
+                        String msg = "Failed to find '" + MetroService.VARIABLES_FILE
+                                + "'. It is required for Metro run run services on the ILS.";
+                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+                    } catch (NullPointerException npe)
+                    {
+                        String msg = "Failed to read system variable config file. One has been requested by Command.";
+                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, npe);
+                    }
+                }
+                return systemVariables;
+                
             default:
                 throw new UnsupportedOperationException("unsupported property file");
         }
@@ -404,7 +426,7 @@ public class MetroService implements Daemon
         while (em.hasMoreElements())
         {
             String key = (String) em.nextElement();
-//            System.out.println("Key:" + key + " value:" + localProps.getProperty(key, ""));
+            System.out.println("VAR:'" + key + "'='" + localProps.getProperty(key, "") + "'");
             props.put(key, (String) localProps.getProperty(key, ""));
         }
     }

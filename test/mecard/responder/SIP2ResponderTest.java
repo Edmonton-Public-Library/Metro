@@ -7,7 +7,6 @@ package mecard.responder;
 import api.Request;
 import api.Response;
 import json.RequestDeserializer;
-import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;

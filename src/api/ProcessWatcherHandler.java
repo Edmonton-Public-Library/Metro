@@ -44,22 +44,22 @@ public class ProcessWatcherHandler
     void setStdout(String line)
     {
         this.stdout.append(line);
-        this.stdout.append("|");
+        this.stdout.append("\n");
     }
 
     void setStderr(String line)
     {
         this.stderr.append(line);
-        this.stderr.append("|");
+        this.stderr.append("\n");
     }
 
     void setEnded(int value)
     {
         this.stdout.append(value);
-        this.stdout.append("|");
+        this.stdout.append("\n");
         this.stderr.append(value);
-        this.stderr.append("|");
-        status = ResponseTypes.OK;
+        this.stderr.append("\n");
+        status = ResponseTypes.COMMAND_COMPLETED;
     }
 
     void setError(Throwable th)

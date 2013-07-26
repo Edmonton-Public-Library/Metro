@@ -32,5 +32,6 @@ public enum ConfigFileTypes
     BIMPORT,
     API,
     BIMPORT_CITY_MAPPING,
-    DEBUG; // used with DummyResponder, this file contains canned results to return to client.
+    DEBUG, // used with DummyResponder, this file contains canned results to return to client.
+    VARS;  // System variables like PATH, UPATH, etc.
 }

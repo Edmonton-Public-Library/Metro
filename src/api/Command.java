@@ -215,7 +215,7 @@ public class Command
     private void setEnvironment(ProcessBuilder processBuilder)
     {
         Map<String, String> env = processBuilder.environment();
-        MetroService.augmentProperties(env, ConfigFileTypes.ENVIRONMENT);
+        MetroService.augmentProperties(env, ConfigFileTypes.VARS);
         if (env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME) != null &&
             env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME).isEmpty() == false)
             processBuilder.directory(new File(env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME)));
@@ -241,7 +241,16 @@ public class Command
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("'");
+        if (stdinData.size() > 0)
+        {
+            sb.append("cat '");
+            for (String s : stdinData)
+            {
+                sb.append(s);
+            }
+            sb.append("' | ");
+        }
+
         for (String s : cmdArgs)
         {
             sb.append(s);

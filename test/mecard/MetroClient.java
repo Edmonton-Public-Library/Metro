@@ -63,9 +63,9 @@ public class MetroClient
             String getCustomerString = "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"null\"}";
             String createCustomer = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
                     + "\"userId\":\"\",\"pin\":\"\","
-                    + "\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\","
-                    + "\\\"PIN\\\":\\\"6058\\\","
-                    + "\\\"NAME\\\":\\\"Billy, Balzac\\\","
+                    + "\"customer\":\"{\\\"ID\\\":\\\"21221020458300\\\","
+                    + "\\\"PIN\\\":\\\"64058\\\","
+                    + "\\\"NAME\\\":\\\"Man, Red\\\","
                     + "\\\"STREET\\\":\\\"12345 123 St.\\\","
                     + "\\\"CITY\\\":\\\"Edmonton\\\","
                     + "\\\"PROVINCE\\\":\\\"Alberta\\\","
@@ -73,7 +73,7 @@ public class MetroClient
                     + "\\\"GENDER\\\":\\\"M\\\","
                     + "\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
                     + "\\\"PHONE\\\":\\\"7804964058\\\","
-                    + "\\\"DOB\\\":\\\"19750822\\\","
+                    + "\\\"DOB\\\":\\\"19630822\\\","
                     + "\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\","
                     + "\\\"RESERVED\\\":\\\"X\\\","
                     + "\\\"DEFAULT\\\":\\\"X\\\","
@@ -83,21 +83,21 @@ public class MetroClient
                     + "\\\"ISRESIDENT\\\":\\\"Y\\\","
                     + "\\\"ISGOODSTANDING\\\":\\\"Y\\\","
                     + "\\\"ISLOSTCARD\\\":\\\"N\\\","
-                    + "\\\"FIRSTNAME\\\":\\\"Balzac\\\","
-                    + "\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+                    + "\\\"FIRSTNAME\\\":\\\"Red\\\","
+                    + "\\\"LASTNAME\\\":\\\"Man\\\"}\"}";
 //            "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
 //            + "Edmonton\",\"Alberta\",\"H0H0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
 //            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
             
             String custUpdateReq =
             "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\","
-                    + "\\\"PIN\\\":\\\"6058\\\","
+                    + "\\\"PIN\\\":\\\"64058\\\","
                     + "\\\"NAME\\\":\\\"Billy, Balzac\\\","
                     + "\\\"STREET\\\":\\\"12345 123 St.\\\","
                     + "\\\"CITY\\\":\\\"Edmonton\\\","
                     + "\\\"PROVINCE\\\":\\\"Alberta\\\","
                     + "\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
-                    + "\\\"GENDER\\\":\\\"M\\\","
+                    + "\\\"GENDER\\\":\\\"F\\\","
                     + "\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
                     + "\\\"PHONE\\\":\\\"7804964058\\\","
                     + "\\\"DOB\\\":\\\"19750822\\\","
@@ -124,15 +124,15 @@ public class MetroClient
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
 //
-                System.out.println("requesting customer");
-                out.println(getCustomerString); 
-                message = (String) in.readLine();
-                System.out.println("server said>" + message);
+//                System.out.println("requesting customer");
+//                out.println(getCustomerString); 
+//                message = (String) in.readLine();
+//                System.out.println("server said>" + message);
 //
-                System.out.println("requesting "+createCustomer);
-                out.println(createCustomer);
-                message = (String) in.readLine();
-                System.out.println("server said>" + message);
+//                System.out.println("requesting "+createCustomer);
+//                out.println(createCustomer);
+//                message = (String) in.readLine();
+//                System.out.println("server said>" + message);
 //
                 System.out.println("requesting "+custUpdateReq);
                 out.println(custUpdateReq);

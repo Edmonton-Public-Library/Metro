@@ -98,13 +98,19 @@ public class APIResponder extends CustomerQueryable
     {
         // I have a customer, I need to reload them into the ils
         Customer customer = request.getCustomer();
-        Command apiCommand = api.updateUser(customer, response);
+        Command apiCommand = api.getUpdateUserCommand(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
-        if (status.getStatus() == ResponseTypes.OK)
+        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
         {
             // alls good so add a nice message.
             response.setResponse("Thank you.");
         }
+        // The command thread will block until it gets a message from running process
+        // once received, interpret the results for a meaningful message back to 
+        // melibraries.ca
+        api.interpretResults(null, status, response);
+        System.out.println("UPDT_STDOUT:"+status.getStdout());
+        System.out.println("UPDT_STDERR:"+status.getStderr());
         response.setCode(status.getStatus()); 
     }
 
@@ -113,13 +119,15 @@ public class APIResponder extends CustomerQueryable
     {
         // I have a customer, I need to load them into the ils
         Customer customer = request.getCustomer();
-        Command apiCommand = api.createUser(customer, response);
+        Command apiCommand = api.getCreateUserCommand(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
-        if (status.getStatus() == ResponseTypes.OK)
+        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
         {
             // alls good so add a nice message.
             response.setResponse("Thank you for using the MeCard.");
         }
+        System.out.println("CRAT_STDOUT:"+status.getStdout());
+        System.out.println("CRAT_STDERR:"+status.getStderr());
         response.setCode(status.getStatus());
     }
     
@@ -132,18 +140,19 @@ public class APIResponder extends CustomerQueryable
         String userPin = this.request.getCustomerField(CustomerFieldTypes.PIN);
         // the response buffer is in case the command fails, we can populate
         // it with a meaningful error message(s).
-        Command getUserAPI = api.getCustomer(userId, userPin, response);
-        ProcessWatcherHandler commandRun = getUserAPI.execute();
-        if (commandRun.getStatus() == ResponseTypes.OK)
+        Command getUserAPI = api.getCustomerCommand(userId, userPin, response);
+        ProcessWatcherHandler status = getUserAPI.execute();
+        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
         {
             // need to create a customer object from the response.
             CustomerFormatter formatter = api.getFormatter();
-            System.out.println("STDOUT"+commandRun.getStdout());
-            Customer customer = formatter.getCustomer(commandRun.getStdout());
+            Customer customer = formatter.getCustomer(status.getStdout());
             // Now we have a customer we need to set their 
             response.setCustomer(customer);
         }
-        response.setCode(commandRun.getStatus());
+        System.out.println("CRAT_STDOUT:"+status.getStdout());
+        System.out.println("CRAT_STDERR:"+status.getStderr());
+        response.setCode(status.getStatus());
     }
 
     /**
@@ -153,9 +162,9 @@ public class APIResponder extends CustomerQueryable
     @Override
     public void getILSStatus(Response response)
     {
-        Command getUserAPI = api.getStatus(response);
-        ProcessWatcherHandler commandRun = getUserAPI.execute();
-        if (commandRun.getStatus() == ResponseTypes.OK)
+        Command getUserAPI = api.getStatusCommand(response);
+        ProcessWatcherHandler status = getUserAPI.execute();
+        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
         {
             response.setResponse("status: up");
         }
@@ -163,7 +172,9 @@ public class APIResponder extends CustomerQueryable
         {  
             response.setResponse("status: down");
         }
-        response.setCode(commandRun.getStatus());
+        System.out.println("CHK_STDOUT:"+status.getStdout());
+        System.out.println("CHK_STDERR:"+status.getStderr());
+        response.setCode(status.getStatus());
     }
 
     @Override
@@ -183,6 +194,10 @@ public class APIResponder extends CustomerQueryable
         private static ILSRequestBuilder getInstanceOf(String whichAPI, boolean b)
         {
             debug = b;
+            if (debug)
+            {
+                System.out.println("REQ_INSTANCE:" + whichAPI);
+            }
             if (whichAPI.equalsIgnoreCase("Symphony"))
             {
                 return new SymphonyAPIBuilder();

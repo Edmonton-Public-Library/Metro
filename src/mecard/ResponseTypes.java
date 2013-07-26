@@ -26,38 +26,16 @@ package mecard;
  */
 public enum ResponseTypes
 {
-    ERROR("RA9"), // Command was received but failed to execute
+    ERROR, // Command was received but failed to execute
     // either it was malformed, empty (null), or not supported.
-    INIT("RA0"),
-    OK("RA1"),
-    BUSY("RA2"),
-    UNAVAILABLE("RA3"),
-    SUCCESS("RA4"),
-    FAIL("RA5"),
-    UNAUTHORIZED("RA6"), 
-    UNKNOWN("RA7"), 
-    CONFIG_ERROR("RA8");
-    
-    private String type;
-    
-    private ResponseTypes(String s)
-    {
-        this.type = s;
-    }
-    
-    public static int size()
-    {
-        int count = 0;
-        for (ResponseTypes r: ResponseTypes.values())
-        {
-            count++;
-        }
-        return count;
-    }
-    
-    @Override
-    public String toString()
-    {
-        return this.type;
-    }
+    INIT,
+    OK,
+    BUSY,
+    UNAVAILABLE,
+    SUCCESS,
+    FAIL,
+    UNAUTHORIZED, 
+    UNKNOWN, 
+    CONFIG_ERROR,
+    COMMAND_COMPLETED;
 }

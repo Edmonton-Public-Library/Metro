@@ -21,10 +21,16 @@ package api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import mecard.Exception.MalformedCommandException;
+import mecard.MetroService;
+import mecard.QueryTypes;
+import mecard.ResponseTypes;
+import mecard.config.APIPropertyTypes;
+import mecard.config.ConfigFileTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
-import mecard.responder.Responder;
 
 /**
  * SymphonyAPIBuilder creates the commands used to perform the MeCard request
@@ -36,10 +42,9 @@ import mecard.responder.Responder;
  * the extends ILSRequestAdaptor to implements ILSRequestBuilder.
  * @author andrew
  * @see UnsupportedOperationException
- * @see ILSRequestAdaptor
  * @see ILSRequestBuilder
  */
-public class SymphonyAPIBuilder extends ILSRequestAdaptor
+public class SymphonyAPIBuilder implements ILSRequestBuilder
 {
     private static List<String> seluser;
     private static List<String> dumpflatuser;
@@ -48,31 +53,51 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
     
     public SymphonyAPIBuilder()
     {
+        // Lets get the properties from the properties file.
+//        Properties properties = MetroService.getProperties(ConfigFileTypes.API);
+//        String upath = properties.getProperty(APIPropertyTypes.UPATH.toString());
+        Properties defaultProperties = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);
+        String homeLibrary = defaultProperties.getProperty("USER_LIBRARY");
+        // The default values for creating a user vary from ILS to ILS so there
+        // is no error checking for mandatory values of the default.properties file.
+        // We do the checking here.
+        if (homeLibrary == null || homeLibrary.isEmpty())
+        {
+            String msg = "Symphony requires a user to be given a default home-library. "
+                    + "Please specify one in default.properties config file.";
+            throw new MalformedCommandException(msg);
+        }
         seluser = new ArrayList<String>();
-        seluser.add("/home/metro/bimport/seluser");
+//        seluser.add(upath + "seluser");
+        seluser.add("seluser");
         seluser.add("-iB"); // expects barcode.
         seluser.add("-oU"); // will output user key.
-//        seluser.add("wc");
-//        seluser.add("-l"); // expects barcode.
         // Dumpflatuser settings, ready for inclusion in the Command object.
         dumpflatuser = new ArrayList<String>();
-        dumpflatuser.add("/home/metro/bimport/dumpflatuser");
+//        dumpflatuser.add(upath + "dumpflatuser");
+        dumpflatuser.add("dumpflatuser");
         // loadflatuser settings, ready for inclusion in the Command object.
         loadFlatUserCreate = new ArrayList<String>();
-        loadFlatUserCreate.add("/home/metro/bimport/loadflatuser");
-        loadFlatUserCreate.add("-aR");
-        loadFlatUserCreate.add("-bR");
+        // /s/sirsi/Unicorn/Bin/loadflatuser -aA -bA -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
+//        loadFlatUserCreate.add(upath + "loadflatuser");
+        loadFlatUserCreate.add("loadflatuser");
+        loadFlatUserCreate.add("-aA"); // Add base.
+        loadFlatUserCreate.add("-bA"); // Add extended.
         loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
-        loadFlatUserCreate.add("-mu");
-        loadFlatUserCreate.add("-n");
+        loadFlatUserCreate.add("-mc"); // Create
+        loadFlatUserCreate.add("-n"); // Turn off BRS checking.
+        loadFlatUserCreate.add("-y\"" + homeLibrary + "\"");
+        loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
         loadFlatUserUpdate = new ArrayList<String>();
-        loadFlatUserUpdate.add("/home/metro/bimport/loadflatuser");
-        loadFlatUserUpdate.add("-aR");
-        loadFlatUserUpdate.add("-bR");
+//        loadFlatUserUpdate.add(upath + "loadflatuser");
+        loadFlatUserUpdate.add("loadflatuser");
+        loadFlatUserUpdate.add("-aR"); // replace base information
+        loadFlatUserUpdate.add("-bR"); // Replace extended information
         loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\"");
-        loadFlatUserUpdate.add("-mu");
-        loadFlatUserUpdate.add("-n");
+        loadFlatUserUpdate.add("-mu"); // update
+        loadFlatUserUpdate.add("-n"); // turn off BRS checking.
+        loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
     }
     
     /**
@@ -81,17 +106,16 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
      * @param userId the value of userId
      * @param userPin the value of userPin
      */
-    
     @Override
-    public Command getCustomer(String userId, String userPin, Response response)
+    public Command getCustomerCommand(String userId, String userPin, Response response)
     {
         // for Symphony, this is a two stage process.
         // 1) call seluser to get the user key. If that fails append message to reponsebuffer.
         // if succeeds
         // 2) create a command that will complete the transaction
         Command command = new Command.Builder().echo(userId).args(seluser).build();
-        ProcessWatcherHandler commandRun = command.execute();
-        switch(commandRun.getStatus())
+        ProcessWatcherHandler status = command.execute();
+        switch(status.getStatus())
         {
             case UNAVAILABLE:
                 response.setResponse("I'm sorry the system is currently unavailable.");
@@ -99,18 +123,19 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
             case FAIL:
                 response.setResponse("I can't find your account. "
                         + "Pleae check your library card and try again."
-                        + commandRun.getStderr());
+                        + status.getStderr());
                 break;
             case OK:
-                String customerKey = commandRun.getStdout();
+                String customerKey = status.getStdout();
                 command = new Command.Builder().echo(customerKey).args(dumpflatuser).build();
                 break;
             default:
                 response.setResponse("an error occured while searching for "
                         + "your account, please contact the system's administrator."
-                        + commandRun.getStderr());
+                        + status.getStderr());
                 break;
         }
+        System.out.println("COMMAND_GET_USER:" + command.toString());
         return command;
     }
 
@@ -121,11 +146,14 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
     }
 
     @Override
-    public Command createUser(Customer customer, Response response)
+    public Command getCreateUserCommand(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
-        List<String> flatUser = getFormatter().setCustomer(customer);
+        CustomerFormatter formatter = getFormatter();
+        // TODO Fix this it seems to be broken.
+        List<String> flatUser = formatter.setCustomer(customer);
         Command command = new Command.Builder().cat(flatUser).args(loadFlatUserCreate).build();
+        System.out.println("COMMAND_CREATE_USER:" + command.toString());
         return command;
     }
 
@@ -135,12 +163,77 @@ public class SymphonyAPIBuilder extends ILSRequestAdaptor
      * @param response the value of responseBuffer
      */
     @Override
-    public Command updateUser(Customer customer, Response response)
+    public Command getUpdateUserCommand(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
         List<String> flatUser = getFormatter().setCustomer(customer);
         Command command = new Command.Builder().cat(flatUser).args(loadFlatUserUpdate).build();
+        System.out.println("COMMAND_UPDATE_USER:" + command.toString());
         return command;
+    }
+
+    @Override
+    public Command getStatusCommand(Response response)
+    {
+        throw new UnsupportedOperationException("Not supported. Use SIP2 in configuration."); 
+    }
+
+    @Override
+    public void interpretResults(QueryTypes commandType, ProcessWatcherHandler status, Response response)
+    {
+        switch (commandType)
+        {
+//            case GET_STATUS: // currently handled by default case b/c there is no simple status for Symphony, and we use SIP2.
+//                break;
+            case NULL:
+                response.setCode(ResponseTypes.OK);
+                response.setResponse("Null command back at you...");
+                break;
+            case GET_CUSTOMER:    // see message below all can get an error 111.
+                if (status.getStderr().contains("**error number 111"))
+                {
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse("We're having trouble finding your account."
+                            + " Please contact us, and we'll find out what's going on.");
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse("Customer account retreived successfully.");
+                }
+                break;
+            case CREATE_CUSTOMER:
+                if (status.getStderr().contains("**error number 111"))
+                {
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse("There was a problem creating your account."
+                            + " Please contact us, and we will find out why.");
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse("Welcome aboard, and thanks for using our service and supporting your local libraries!");
+                }
+                break;
+            case UPDATE_CUSTOMER:
+                if (status.getStderr().contains("**error number 111"))
+                {
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse("There was a problem updating your account."
+                            + " Please contact us, and we will get to the bottom of this.");
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse("Thanks for keeping us up-to-date, and for supporting your local libraries!");
+                }
+                break;
+            default:
+                response.setCode(ResponseTypes.UNKNOWN);
+                response.setResponse(SymphonyAPIBuilder.class.getName() 
+                        + " doesn't know how to execute the query type: "
+                        + commandType.name());
+        }
     }
     
 }
