@@ -29,12 +29,6 @@ import mecard.util.SIPConnector;
  */
 public class SIPRequest
 {
-
-//    public SIPRequest()
-//    {
-//        super(ConnectorTypes.SIP2);
-//    }
-
     /**
      * Creates a SIP Patron Information request given a user id and pin.
      *

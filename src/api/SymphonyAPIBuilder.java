@@ -26,7 +26,6 @@ import mecard.Exception.MalformedCommandException;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import mecard.config.APIPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -150,7 +149,6 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     {
         // we have a customer let's convert them to a flat user.
         CustomerFormatter formatter = getFormatter();
-        // TODO Fix this it seems to be broken.
         List<String> flatUser = formatter.setCustomer(customer);
         Command command = new Command.Builder().cat(flatUser).args(loadFlatUserCreate).build();
         System.out.println("COMMAND_CREATE_USER:" + command.toString());

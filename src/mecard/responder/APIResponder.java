@@ -34,6 +34,7 @@ import api.ProcessWatcherHandler;
 import api.Request;
 import api.Response;
 import mecard.MetroService;
+import mecard.QueryTypes;
 import mecard.customer.CustomerFieldTypes;
 
 /**
@@ -100,18 +101,13 @@ public class APIResponder extends CustomerQueryable
         Customer customer = request.getCustomer();
         Command apiCommand = api.getUpdateUserCommand(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
-        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
-        {
-            // alls good so add a nice message.
-            response.setResponse("Thank you.");
-        }
         // The command thread will block until it gets a message from running process
         // once received, interpret the results for a meaningful message back to 
         // melibraries.ca
-        api.interpretResults(null, status, response);
+        System.out.println("CHK==>");
+        api.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
         System.out.println("UPDT_STDOUT:"+status.getStdout());
-        System.out.println("UPDT_STDERR:"+status.getStderr());
-        response.setCode(status.getStatus()); 
+        System.out.println("UPDT_STDERR:"+status.getStderr()); 
     }
 
     @Override
@@ -121,14 +117,9 @@ public class APIResponder extends CustomerQueryable
         Customer customer = request.getCustomer();
         Command apiCommand = api.getCreateUserCommand(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
-        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
-        {
-            // alls good so add a nice message.
-            response.setResponse("Thank you for using the MeCard.");
-        }
+        api.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
         System.out.println("CRAT_STDOUT:"+status.getStdout());
         System.out.println("CRAT_STDERR:"+status.getStderr());
-        response.setCode(status.getStatus());
     }
     
     @Override
@@ -142,17 +133,15 @@ public class APIResponder extends CustomerQueryable
         // it with a meaningful error message(s).
         Command getUserAPI = api.getCustomerCommand(userId, userPin, response);
         ProcessWatcherHandler status = getUserAPI.execute();
-        if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
-        {
-            // need to create a customer object from the response.
-            CustomerFormatter formatter = api.getFormatter();
-            Customer customer = formatter.getCustomer(status.getStdout());
-            // Now we have a customer we need to set their 
-            response.setCustomer(customer);
-        }
+        // If the process is taking a long time you could create a timed loop here to return info to waiting customer.
+        // need to create a customer object from the response.
+        CustomerFormatter formatter = api.getFormatter();
+        Customer customer = formatter.getCustomer(status.getStdout());
+        // Now we have a customer we need to set their 
+        response.setCustomer(customer);
+        api.interpretResults(QueryTypes.GET_CUSTOMER, status, response);
         System.out.println("CRAT_STDOUT:"+status.getStdout());
         System.out.println("CRAT_STDERR:"+status.getStderr());
-        response.setCode(status.getStatus());
     }
 
     /**
@@ -172,9 +161,9 @@ public class APIResponder extends CustomerQueryable
         {  
             response.setResponse("status: down");
         }
+        api.interpretResults(QueryTypes.GET_STATUS, status, response);
         System.out.println("CHK_STDOUT:"+status.getStdout());
         System.out.println("CHK_STDERR:"+status.getStderr());
-        response.setCode(status.getStatus());
     }
 
     @Override
