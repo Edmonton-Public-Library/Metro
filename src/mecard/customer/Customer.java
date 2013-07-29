@@ -20,6 +20,7 @@
  */
 package mecard.customer;
 
+import mecard.config.CustomerFieldTypes;
 import mecard.Protocol;
 import java.util.EnumMap;
 

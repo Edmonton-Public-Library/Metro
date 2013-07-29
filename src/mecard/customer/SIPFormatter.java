@@ -20,6 +20,7 @@
  */
 package mecard.customer;
 
+import mecard.config.CustomerFieldTypes;
 import java.util.List;
 import mecard.util.Address;
 

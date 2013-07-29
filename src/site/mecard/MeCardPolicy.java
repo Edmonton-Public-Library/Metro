@@ -29,7 +29,7 @@ import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.util.DateComparer;
 
 /**

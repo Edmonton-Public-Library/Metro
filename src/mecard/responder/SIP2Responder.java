@@ -29,9 +29,9 @@ import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
-import mecard.util.SIPConnector;
+import api.SIPConnector;
 import api.SIPRequest;
 import mecard.MetroService;
 

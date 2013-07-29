@@ -6,7 +6,7 @@ package mecard.util;
 
 import java.util.EnumMap;
 import java.util.HashMap;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

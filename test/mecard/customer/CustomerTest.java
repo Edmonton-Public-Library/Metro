@@ -1,4 +1,5 @@
 package mecard.customer;
+import mecard.config.CustomerFieldTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

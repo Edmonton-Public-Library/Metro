@@ -18,16 +18,38 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.config;
 
 /**
  *
  * @author metro
  */
-public enum FlatUserExtendedFields
+public enum BImportDBFieldTypes
 {
-    USER,
-    USER_ADDR1,
-    USER_ADDR2,
-    USER_XINFO;
+    SECOND_ID("second_id"),
+    NAME("name"),
+    EXPIRY("expiration_date"),
+    PIN("pin#"),
+    PHONE_TYPE("phone_type"),
+    PHONE_NUMBER("phone_no"),
+    ADDRESS_1("address1"),
+    ADDRESS_2("address2"),
+    CITY("city_st"),
+    POSTAL_CODE("postal_code"),
+    EMAIL_NAME("email_name"),
+    EMAIL_ADDRESS("email_address"),
+    BARCODE("bbarcode");
+    
+    private String type;
+
+    private BImportDBFieldTypes(String s)
+    {
+        this.type = s;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.type;
+    }
 }

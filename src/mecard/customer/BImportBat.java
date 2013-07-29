@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.util;
+package mecard.customer;
 
 import java.io.BufferedWriter;
 import java.io.File;

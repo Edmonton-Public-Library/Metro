@@ -35,7 +35,7 @@ import api.Request;
 import api.Response;
 import mecard.MetroService;
 import mecard.QueryTypes;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 
 /**
  *

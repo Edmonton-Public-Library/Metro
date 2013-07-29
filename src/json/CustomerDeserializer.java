@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 
 /**
  *

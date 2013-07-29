@@ -9,7 +9,7 @@ import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 
 /**
  * DummyResponder is used to test round trip connections. It returns hard coded

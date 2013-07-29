@@ -26,7 +26,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 
 /**
  *

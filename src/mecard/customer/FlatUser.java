@@ -20,6 +20,8 @@
  */
 package mecard.customer;
 
+import mecard.config.FlatUserFieldTypes;
+import mecard.config.FlatUserExtendedFieldTypes;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Enumeration;
@@ -68,7 +70,7 @@ public class FlatUser
     
     public void add(FlatUserFieldTypes whichField, String field)
     {
-        this.add(FlatUserExtendedFields.USER, whichField, field);
+        this.add(FlatUserExtendedFieldTypes.USER, whichField, field);
     }
 
     /**
@@ -82,7 +84,7 @@ public class FlatUser
      * @param field String you are adding as a value to the field.
      */
     
-    public void add(FlatUserExtendedFields extField, FlatUserFieldTypes whichField, String field)
+    public void add(FlatUserExtendedFieldTypes extField, FlatUserFieldTypes whichField, String field)
     {
         if (field.isEmpty())
         {

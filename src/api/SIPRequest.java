@@ -20,8 +20,6 @@
  */
 package api;
 
-import mecard.util.SIPConnector;
-
 /**
  * Helper class for formatting SIP requests.
  *

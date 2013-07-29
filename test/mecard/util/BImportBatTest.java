@@ -4,6 +4,7 @@
  */
 package mecard.util;
 
+import mecard.customer.BImportBat;
 import java.io.File;
 import org.junit.After;
 import org.junit.AfterClass;

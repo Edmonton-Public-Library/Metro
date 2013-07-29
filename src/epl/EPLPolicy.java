@@ -23,7 +23,7 @@ package epl;
 
 import mecard.Protocol;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 import site.mecard.MeCardPolicy;
 
 /**

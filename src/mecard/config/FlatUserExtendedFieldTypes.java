@@ -18,13 +18,13 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.util;
+package mecard.config;
 
 /**
  *
  * @author metro
  */
-public enum FlatUserExtendedFields
+public enum FlatUserExtendedFieldTypes
 {
     USER,
     USER_ADDR1,

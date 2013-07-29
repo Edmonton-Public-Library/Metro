@@ -20,13 +20,13 @@
  */
 package mecard.customer;
 
+import mecard.config.BImportDBFieldTypes;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mecard.util.BImportDBFields;
 import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
@@ -153,10 +153,10 @@ public class BImportFormatter
         // Table borrower
         headerContent.append("x- "); // add or modify if exists
         headerContent.append(BORROWER_TABLE + ": "); // add or modify if exists
-        headerContent.append(BImportDBFields.SECOND_ID + "; ");
-        headerContent.append(BImportDBFields.NAME + "; ");
-        headerContent.append(BImportDBFields.EXPIRY + "; ");
-        headerContent.append(BImportDBFields.PIN + "\r\n");
+        headerContent.append(BImportDBFieldTypes.SECOND_ID + "; ");
+        headerContent.append(BImportDBFieldTypes.NAME + "; ");
+        headerContent.append(BImportDBFieldTypes.EXPIRY + "; ");
+        headerContent.append(BImportDBFieldTypes.PIN + "\r\n");
             
         dataContent.append("M- "); // add or modify if exists
         dataContent.append(BORROWER_TABLE + ": "); // add or modify if exists
@@ -167,8 +167,8 @@ public class BImportFormatter
         
         // Table borrower_phone
         headerContent.append(BORROWER_PHONE_TABLE + ": "); // add or modify if exists
-        headerContent.append(BImportDBFields.PHONE_TYPE + "; ");
-        headerContent.append(BImportDBFields.PHONE_NUMBER + "\r\n");
+        headerContent.append(BImportDBFieldTypes.PHONE_TYPE + "; ");
+        headerContent.append(BImportDBFieldTypes.PHONE_NUMBER + "\r\n");
         
         dataContent.append(BORROWER_PHONE_TABLE + ": "); // add or modify if exists
         dataContent.append(b.phoneType + "; ");
@@ -176,12 +176,12 @@ public class BImportFormatter
         
         // Table borrower_address
         headerContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
-        headerContent.append(BImportDBFields.ADDRESS_1 + "; ");
-        headerContent.append(BImportDBFields.ADDRESS_2 + "; ");
-        headerContent.append(BImportDBFields.CITY + "; ");
-        headerContent.append(BImportDBFields.POSTAL_CODE + "; ");
-        headerContent.append(BImportDBFields.EMAIL_NAME + "; ");
-        headerContent.append(BImportDBFields.EMAIL_ADDRESS + "\r\n");
+        headerContent.append(BImportDBFieldTypes.ADDRESS_1 + "; ");
+        headerContent.append(BImportDBFieldTypes.ADDRESS_2 + "; ");
+        headerContent.append(BImportDBFieldTypes.CITY + "; ");
+        headerContent.append(BImportDBFieldTypes.POSTAL_CODE + "; ");
+        headerContent.append(BImportDBFieldTypes.EMAIL_NAME + "; ");
+        headerContent.append(BImportDBFieldTypes.EMAIL_ADDRESS + "\r\n");
         
         dataContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
         dataContent.append(b.address1 + "; ");
@@ -193,7 +193,7 @@ public class BImportFormatter
         
         // Table borrower_barcode
         headerContent.append(BORROWER_BARCODE_TABLE + ": "); // add or modify if exists
-        headerContent.append(BImportDBFields.BARCODE + "\r\n");
+        headerContent.append(BImportDBFieldTypes.BARCODE + "\r\n");
         
         dataContent.append(BORROWER_BARCODE_TABLE + ": "); // add or modify if exists
         dataContent.append(b.barcode + "\r\n");

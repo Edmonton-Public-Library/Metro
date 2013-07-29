@@ -22,7 +22,7 @@ package api;
 
 import mecard.QueryTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 
 /**
  *

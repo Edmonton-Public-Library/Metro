@@ -23,7 +23,7 @@ package site.mecard;
 import api.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFieldTypes;
+import mecard.config.CustomerFieldTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

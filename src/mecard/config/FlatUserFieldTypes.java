@@ -19,7 +19,7 @@
  *
  */
 
-package mecard.customer;
+package mecard.config;
 
 /**
  * All the fields related to Symphony's dumpflatuser.

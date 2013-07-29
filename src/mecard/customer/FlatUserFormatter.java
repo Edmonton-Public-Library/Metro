@@ -20,6 +20,9 @@
  */
 package mecard.customer;
 
+import mecard.config.FlatUserFieldTypes;
+import mecard.config.CustomerFieldTypes;
+import mecard.config.FlatUserExtendedFieldTypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,27 +65,27 @@ public class FlatUserFormatter implements CustomerFormatter
         flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         // Address
         flatUser.add(
-                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserExtendedFieldTypes.USER_ADDR1, 
                 FlatUserFieldTypes.STREET, 
                 customer.get(CustomerFieldTypes.STREET));
         // Symphony uses CITY/STATE as a field (sigh)
         String city     = customer.get(CustomerFieldTypes.CITY);
         String province = customer.get(CustomerFieldTypes.PROVINCE);
         flatUser.add(
-                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserExtendedFieldTypes.USER_ADDR1, 
                 FlatUserFieldTypes.CITY_STATE, 
                 city + ", " + province.toUpperCase());
         flatUser.add(
-                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserExtendedFieldTypes.USER_ADDR1, 
                 FlatUserFieldTypes.POSTALCODE, 
                 PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
         flatUser.add(
-                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserExtendedFieldTypes.USER_ADDR1, 
                 FlatUserFieldTypes.EMAIL, 
                 customer.get(CustomerFieldTypes.EMAIL));
         // Load optional fields.
         flatUser.add(
-                FlatUserExtendedFields.USER_ADDR1, 
+                FlatUserExtendedFieldTypes.USER_ADDR1, 
                 FlatUserFieldTypes.PHONE, 
                 mecard.util.Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
         String gender = customer.get(CustomerFieldTypes.GENDER);
