@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import mecard.Protocol;
 import mecard.util.DateComparer;
+import mecard.util.Phone;
 import mecard.util.PostalCode;
 
 /**
@@ -157,7 +158,8 @@ public class FlatUserFormatter implements CustomerFormatter
                 else if (fieldType == CustomerFieldTypes.PHONE)
                 {
                     Phone phone = new Phone(flatUserFieldValue);
-                    customerObject.set(fieldType, phone.toString());
+//                    customerObject.set(fieldType, phone.toString());
+                    customerObject.set(fieldType, phone.getUnformattedPhone());
                 }
                 else if (fieldType == CustomerFieldTypes.NAME)
                 {
@@ -267,26 +269,5 @@ public class FlatUserFormatter implements CustomerFormatter
             }
         }
         return returnStrings;
-    }
-
-    private static class Phone
-    {
-        private String phone;
-        public Phone(String p)
-        {
-            phone = new String();
-            if (p != null)
-            {
-                phone = p.replaceAll("-", "");
-                phone = phone.replaceAll("\\(", "");
-                phone = phone.replaceAll("\\)", "");
-            }
-        }
-        
-        @Override
-        public String toString()
-        {
-            return phone;
-        }
     }
 }
