@@ -104,7 +104,6 @@ public class APIResponder extends CustomerQueryable
         // The command thread will block until it gets a message from running process
         // once received, interpret the results for a meaningful message back to 
         // melibraries.ca
-        System.out.println("CHK==>");
         api.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
         System.out.println("UPDT_STDOUT:"+status.getStdout());
         System.out.println("UPDT_STDERR:"+status.getStderr()); 
