@@ -45,6 +45,7 @@ public class FlatUser
 {
 
     private final static String DOC_BOUNDARY = "*** DOCUMENT BOUNDARY ***";
+    private final static String FORM_TYPE    = "FORM=LDUSER";
     private EnumMap<FlatUserFieldTypes, String> address1;
     private EnumMap<FlatUserFieldTypes, String> address2;
     private EnumMap<FlatUserFieldTypes, String> xinfo;
@@ -143,6 +144,7 @@ public class FlatUser
     {
         List<String> flatData = new ArrayList<String>();
         flatData.add(FlatUser.DOC_BOUNDARY + "\n");
+        flatData.add(FlatUser.FORM_TYPE + "\n");
         Set<FlatUserFieldTypes> keys = this.customerFields.keySet();
         for (FlatUserFieldTypes key : keys)
         {

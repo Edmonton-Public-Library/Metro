@@ -93,7 +93,6 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         loadFlatUserUpdate.add("loadflatuser");
         loadFlatUserUpdate.add("-aR"); // replace base information
         loadFlatUserUpdate.add("-bR"); // Replace extended information
-        loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\"");
         loadFlatUserUpdate.add("-mu"); // update
         loadFlatUserUpdate.add("-n"); // turn off BRS checking.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
