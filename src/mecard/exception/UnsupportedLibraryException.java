@@ -19,24 +19,19 @@
  *
  */
 
-package mecard.Exception;
+package mecard.exception;
 
 /**
  *
  * @author metro
  */
-public class SIPException extends RuntimeException 
+public class UnsupportedLibraryException extends RuntimeException 
 {
-    private final static String initMessage = "SIP connection Error ";
-    private final static String postMessage = "Please refer to the documentation.";
+    private final static String initMessage = "The requested library '";
+    private final static String postMessage = "' is not supported yet. Please contact administrator.";
     
-    public SIPException()
+    public UnsupportedLibraryException(String library)
     {
-        super(initMessage + postMessage);
-    }
-    
-    public SIPException(String msg)
-    {
-        super(msg + " " + postMessage);
+        super(initMessage + library + " " + postMessage);
     }
 }

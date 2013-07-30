@@ -19,19 +19,23 @@
  *
  */
 
-package mecard.Exception;
+package mecard.exception;
 
 /**
  *
  * @author metro
  */
-public class UnsupportedAPIException extends RuntimeException 
+public class MetroSecurityException extends RuntimeException 
 {
-    private final static String initMessage = "The requested API '"; ;
-    private final static String postMessage = "' is currently unsupported. Please refer to the documentation.";
+    private final static String initMessage = "Received invalid security token.";
     
-    public UnsupportedAPIException(String msg)
+    public MetroSecurityException()
     {
-        super(initMessage + msg + postMessage);
+        super(initMessage);
+    }
+    
+    public MetroSecurityException(String msg)
+    {
+        super(msg);
     }
 }

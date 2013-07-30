@@ -24,7 +24,7 @@ import api.Request;
 import api.Response;
 import mecard.customer.SIPFormatter;
 import java.util.Properties;
-import mecard.Exception.SIPException;
+import mecard.exception.SIPException;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.SipPropertyTypes;

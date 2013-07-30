@@ -22,7 +22,7 @@ package api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import mecard.Exception.MalformedCommandException;
+import mecard.exception.MalformedCommandException;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;

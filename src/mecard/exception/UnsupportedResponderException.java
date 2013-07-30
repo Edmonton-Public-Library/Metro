@@ -19,19 +19,24 @@
  *
  */
 
-package mecard.Exception;
+package mecard.exception;
 
 /**
  *
  * @author metro
  */
-public class UnsupportedLibraryException extends RuntimeException 
+public class UnsupportedResponderException extends RuntimeException 
 {
-    private final static String initMessage = "The requested library '";
-    private final static String postMessage = "' is not supported yet. Please contact administrator.";
+    private final static String initMessage = "The requested responder type hasn't been defined yet: ";
+    private final static String postMessage = "Please refer to the documentation.";
     
-    public UnsupportedLibraryException(String library)
+    public UnsupportedResponderException()
     {
-        super(initMessage + library + " " + postMessage);
+        super(initMessage + postMessage);
+    }
+    
+    public UnsupportedResponderException(String msg)
+    {
+        super(initMessage + " " + msg + " " + postMessage);
     }
 }

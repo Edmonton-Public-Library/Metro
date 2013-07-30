@@ -23,7 +23,7 @@ package site.mecard;
 import epl.EPLPolicy;
 import java.text.ParseException;
 import java.util.Properties;
-import mecard.Exception.UnsupportedLibraryException;
+import mecard.exception.UnsupportedLibraryException;
 import mecard.MetroService;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;

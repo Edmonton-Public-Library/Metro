@@ -19,24 +19,24 @@
  *
  */
 
-package mecard.Exception;
+package mecard.exception;
 
 /**
  *
  * @author metro
  */
-public class UnsupportedResponderException extends RuntimeException 
+public class InvalidCustomerException extends RuntimeException 
 {
-    private final static String initMessage = "The requested responder type hasn't been defined yet: ";
+    private final static String initMessage = "The supplied customer data is malformed. ";
     private final static String postMessage = "Please refer to the documentation.";
     
-    public UnsupportedResponderException()
+    public InvalidCustomerException()
     {
         super(initMessage + postMessage);
     }
     
-    public UnsupportedResponderException(String msg)
+    public InvalidCustomerException(String msg)
     {
-        super(initMessage + " " + msg + " " + postMessage);
+        super(msg + " " + postMessage);
     }
 }

@@ -26,7 +26,7 @@ import mecard.ResponseTypes;
 import mecard.config.APIPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import api.ILSRequestBuilder;
-import mecard.Exception.UnsupportedAPIException;
+import mecard.exception.UnsupportedAPIException;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import api.Command;

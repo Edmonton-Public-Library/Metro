@@ -29,7 +29,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mecard.Exception.SIPException;
+import mecard.exception.SIPException;
 
 /**
  * SIP connection. Expects information to be formatted Usage:

@@ -23,10 +23,10 @@ package mecard.responder;
 import mecard.ResponseTypes;
 import api.Request;
 import api.Response;
-import mecard.Exception.MalformedCommandException;
-import mecard.Exception.MetroSecurityException;
-import mecard.Exception.UnsupportedCommandException;
-import mecard.Exception.UnsupportedResponderException;
+import mecard.exception.MalformedCommandException;
+import mecard.exception.MetroSecurityException;
+import mecard.exception.UnsupportedCommandException;
+import mecard.exception.UnsupportedResponderException;
 
 /**
  *

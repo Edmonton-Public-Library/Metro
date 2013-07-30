@@ -22,7 +22,7 @@
 package mecard.security;
 
 import java.util.Properties;
-import mecard.Exception.MetroSecurityException;
+import mecard.exception.MetroSecurityException;
 import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;

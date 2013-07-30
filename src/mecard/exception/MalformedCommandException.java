@@ -19,23 +19,23 @@
  *
  */
 
-package mecard.Exception;
+package mecard.exception;
 
 /**
  *
  * @author metro
  */
-public class UnsupportedCommandException extends RuntimeException 
+public class MalformedCommandException extends RuntimeException 
 {
-    private final static String initMessage = "The supplied command is not implemented yet. ";
+    private final static String initMessage = "The supplied command is malformed. ";
     private final static String postMessage = "Please refer to the documentation.";
     
-    public UnsupportedCommandException()
+    public MalformedCommandException()
     {
         super(initMessage + postMessage);
     }
     
-    public UnsupportedCommandException(String msg)
+    public MalformedCommandException(String msg)
     {
         super(msg + " " + postMessage);
     }

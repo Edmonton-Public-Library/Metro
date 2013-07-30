@@ -19,23 +19,23 @@
  *
  */
 
-package mecard.Exception;
+package mecard.exception;
 
 /**
  *
  * @author metro
  */
-public class InvalidCustomerException extends RuntimeException 
+public class SIPException extends RuntimeException 
 {
-    private final static String initMessage = "The supplied customer data is malformed. ";
+    private final static String initMessage = "SIP connection Error ";
     private final static String postMessage = "Please refer to the documentation.";
     
-    public InvalidCustomerException()
+    public SIPException()
     {
         super(initMessage + postMessage);
     }
     
-    public InvalidCustomerException(String msg)
+    public SIPException(String msg)
     {
         super(msg + " " + postMessage);
     }
