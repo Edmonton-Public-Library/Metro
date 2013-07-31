@@ -119,8 +119,11 @@ public class Customer //extends ProtocolPayload
         sb.append("[");
         for (CustomerFieldTypes cType: CustomerFieldTypes.values())
         {
-            sb.append(customerFields.get(cType));
-            sb.append(", ");
+            if (customerFields.get(cType) != null)
+            {
+                sb.append(customerFields.get(cType));
+                sb.append(", ");
+            }            
         }
         // remove the last ', '.
         sb.delete(sb.length()-2, sb.length());

@@ -27,8 +27,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
 
@@ -172,8 +170,9 @@ public class Command
         }
         catch (IOException ex)
         {
-            Logger.getLogger(Command.class.getName()).log(
-                    Level.SEVERE, "no such command", ex);
+            System.out.println("IOException no such command: " + toString() + "\n" + ex.getMessage());
+//            Logger.getLogger(Command.class.getName()).log(
+//                    Level.SEVERE, "no such command", ex);
         }
         return processHandler;
     }
@@ -196,6 +195,7 @@ public class Command
             {
                 // and send them to stdin
                 commandTwoInput.write(lineReadFromCommandOne);
+                System.out.println("LN:'" + lineReadFromCommandOne + "'");
                 commandTwoInput.newLine();
             }
             // send end-of-file signal to next process so it will terminate itself
@@ -206,8 +206,9 @@ public class Command
         }
         catch (IOException ex)
         {
-            Logger.getLogger(Command.class.getName()).log(
-                    Level.SEVERE, "no such command", ex);
+            System.out.println("IOException no such command: " + toString() + "\n" + ex.getMessage());
+//            Logger.getLogger(Command.class.getName()).log(
+//                    Level.SEVERE, "no such command", ex);
         }
         return processHandler;
     }
@@ -241,17 +242,21 @@ public class Command
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        if (stdinData.size() > 0)
+        if (stdinData != null && stdinData.size() > 0)
         {
-            sb.append("cat '");
+            sb.append("STDIN=>'");
             for (String s : stdinData)
             {
                 sb.append(s);
             }
             sb.append("' | ");
         }
+        else
+        {
+            sb.append("CMD:'");
+        }
 
-        for (String s : cmdArgs)
+        for (String s : getCmd())
         {
             sb.append(s);
             sb.append(" ");

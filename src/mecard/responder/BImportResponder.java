@@ -29,7 +29,7 @@ import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.BImportBat;
-import mecard.customer.BImportFormatter;
+import mecard.customer.BImportFile;
 import api.Command;
 import api.ProcessWatcherHandler;
 import api.Request;
@@ -177,7 +177,7 @@ public class BImportResponder extends Responder
     {
         // here we have to match up the CustomerFields with variable values.
         // the constructor will then make the header and data files.
-        new BImportFormatter.Builder(headerFile, dataFile)
+        new BImportFile.Builder(headerFile, dataFile)
                 .barcode(request.getCustomerField(CustomerFieldTypes.ID))
                 .pin(request.getCustomerField(CustomerFieldTypes.PIN))
                 .name(request.getCustomerField(CustomerFieldTypes.NAME))

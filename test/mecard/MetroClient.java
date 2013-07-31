@@ -63,9 +63,9 @@ public class MetroClient
             String getCustomerString = "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"null\"}";
             String createCustomer = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
                     + "\"userId\":\"\",\"pin\":\"\","
-                    + "\"customer\":\"{\\\"ID\\\":\\\"21221020458300\\\","
+                    + "\"customer\":\"{\\\"ID\\\":\\\"21221020516917\\\","
                     + "\\\"PIN\\\":\\\"64058\\\","
-                    + "\\\"NAME\\\":\\\"Man, Red\\\","
+                    + "\\\"NAME\\\":\\\"Smith, Roger\\\","
                     + "\\\"STREET\\\":\\\"12345 123 St.\\\","
                     + "\\\"CITY\\\":\\\"Edmonton\\\","
                     + "\\\"PROVINCE\\\":\\\"Alberta\\\","
@@ -83,8 +83,8 @@ public class MetroClient
                     + "\\\"ISRESIDENT\\\":\\\"Y\\\","
                     + "\\\"ISGOODSTANDING\\\":\\\"Y\\\","
                     + "\\\"ISLOSTCARD\\\":\\\"N\\\","
-                    + "\\\"FIRSTNAME\\\":\\\"Red\\\","
-                    + "\\\"LASTNAME\\\":\\\"Man\\\"}\"}";
+                    + "\\\"FIRSTNAME\\\":\\\"Roger\\\","
+                    + "\\\"LASTNAME\\\":\\\"Smith\\\"}\"}";
 //            "[\"QC0\",\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"21221012345678\",\"6058\",\"Billy, Balzac\",\"12345 123 St.\",\""
 //            + "Edmonton\",\"Alberta\",\"H0H0H0\",\"M\",\"ilsteam@epl.ca\",\"7804964058\",\"19750822\",\""
 //            + "20140602\",\"Balzac\",\"Billy\",\"Y\",\"Y\",\"N\",\"Y\",\"Y\",\"N\",\"Balzac\",\"Billy\"]";
@@ -97,7 +97,7 @@ public class MetroClient
                     + "\\\"CITY\\\":\\\"Edmonton\\\","
                     + "\\\"PROVINCE\\\":\\\"Alberta\\\","
                     + "\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
-                    + "\\\"GENDER\\\":\\\"F\\\","
+                    + "\\\"GENDER\\\":\\\"M\\\","
                     + "\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
                     + "\\\"PHONE\\\":\\\"7804964058\\\","
                     + "\\\"DOB\\\":\\\"19750822\\\","
@@ -129,15 +129,15 @@ public class MetroClient
 //                message = (String) in.readLine();
 //                System.out.println("server said>" + message);
 //
-//                System.out.println("requesting "+createCustomer);
-//                out.println(createCustomer);
-//                message = (String) in.readLine();
-//                System.out.println("server said>" + message);
-//
-                System.out.println("requesting "+custUpdateReq);
-                out.println(custUpdateReq);
+                System.out.println("requesting "+createCustomer);
+                out.println(createCustomer);
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
+//
+//                System.out.println("requesting "+custUpdateReq);
+//                out.println(custUpdateReq);
+//                message = (String) in.readLine();
+//                System.out.println("server said>" + message);
                 
                 message = "XX0";
                 out.println(message);

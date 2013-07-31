@@ -8,7 +8,7 @@
  */
 package mecard.util;
 
-import mecard.customer.BImportFormatter;
+import mecard.customer.BImportFile;
 import java.io.File;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -29,7 +29,7 @@ public class BImportFormatterTest
     {
         String hName = "header.txt";
         String dName = "data.txt";
-        new BImportFormatter.Builder(hName, dName)
+        new BImportFile.Builder(hName, dName)
                 .barcode("21221012345678")
                 .name("Billy, Balzac")
                 .expire("12-25-2014")

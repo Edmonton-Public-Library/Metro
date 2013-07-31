@@ -27,9 +27,12 @@ import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
+import mecard.customer.SymphonyLoadUserSh;
+import mecard.customer.UserFile;
 
 /**
  * SymphonyAPIBuilder creates the commands used to perform the MeCard request
@@ -49,6 +52,8 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     private static List<String> dumpflatuser;
     private static List<String> loadFlatUserCreate;
     private static List<String> loadFlatUserUpdate;
+    public final static String USER_FILE_NAME_PREFIX  = "metro_user_";
+    public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
     
     public SymphonyAPIBuilder()
     {
@@ -93,9 +98,11 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         loadFlatUserUpdate.add("loadflatuser");
         loadFlatUserUpdate.add("-aR"); // replace base information
         loadFlatUserUpdate.add("-bR"); // Replace extended information
+        loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\""); // User and station.
         loadFlatUserUpdate.add("-mu"); // update
         loadFlatUserUpdate.add("-n"); // turn off BRS checking.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
+//        loadFlatUserUpdate.add("/s/sirsi/mecard/load.sh");
     }
     
     /**
@@ -147,9 +154,38 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     public Command getCreateUserCommand(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
+//        CustomerFormatter formatter = getFormatter();
+//        List<String> flatUser = formatter.setCustomer(customer);
+//        Command command = new Command.Builder().cat(flatUser).args(loadFlatUserCreate).build();
+//        System.out.println("COMMAND_CREATE_USER:" + command.toString());
+//        return command;
+        // we have a customer let's convert them to a flat user.
         CustomerFormatter formatter = getFormatter();
         List<String> flatUser = formatter.setCustomer(customer);
-        Command command = new Command.Builder().cat(flatUser).args(loadFlatUserCreate).build();
+        // since printing Lists of strings to loadflatuser fail, we will do it the Sirsi-Dynix
+        // way: create a temp file of user data and cat the data to loadflatuser.
+        // Job 1: create user data file.
+        // 1a create file name
+        String userDataFileName = "/s/sirsi/mecard/"
+                + SymphonyAPIBuilder.USER_FILE_NAME_PREFIX 
+                + customer.get(CustomerFieldTypes.ID) 
+                + ".flat";
+        UserFile userFile = new UserFile(userDataFileName);
+        userFile.addUserData(flatUser);
+        // Now create the shell command to run
+        String shellFileName = "/s/sirsi/mecard/" 
+                + SymphonyAPIBuilder.SHELL_FILE_NAME_PREFIX 
+                + customer.get(CustomerFieldTypes.ID) 
+                + ".sh";
+        SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
+                .setDebug(true)
+                .setLogFile("/s/sirsi/mecard/load.log")
+                .setMagicNumber("#!/usr/bin/bash")
+                .setFlatUserFile(userDataFileName)
+                .setLoadFlatUserCommand(loadFlatUserCreate)
+                .build();
+        
+        Command command = new Command.Builder().args(loadUserFile.getCommandLine()).build();
         System.out.println("COMMAND_CREATE_USER:" + command.toString());
         return command;
     }
@@ -163,8 +199,32 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     public Command getUpdateUserCommand(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
-        List<String> flatUser = getFormatter().setCustomer(customer);
-        Command command = new Command.Builder().cat(flatUser).args(loadFlatUserUpdate).build();
+        CustomerFormatter formatter = getFormatter();
+        List<String> flatUser = formatter.setCustomer(customer);
+        // since printing Lists of strings to loadflatuser fail, we will do it the Sirsi-Dynix
+        // way: create a temp file of user data and cat the data to loadflatuser.
+        // Job 1: create user data file.
+        // 1a create file name
+        String userDataFileName = "/s/sirsi/mecard/"
+                + SymphonyAPIBuilder.USER_FILE_NAME_PREFIX 
+                + customer.get(CustomerFieldTypes.ID) 
+                + ".flat";
+        UserFile userFile = new UserFile(userDataFileName);
+        userFile.addUserData(flatUser);
+        // Now create the shell command to run
+        String shellFileName = "/s/sirsi/mecard/" 
+                + SymphonyAPIBuilder.SHELL_FILE_NAME_PREFIX 
+                + customer.get(CustomerFieldTypes.ID) 
+                + ".sh";
+        SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
+                .setDebug(true)
+                .setLogFile("/s/sirsi/mecard/load.log")
+                .setMagicNumber("#!/usr/bin/bash")
+                .setFlatUserFile(userDataFileName)
+                .setLoadFlatUserCommand(loadFlatUserUpdate)
+                .build();
+        
+        Command command = new Command.Builder().args(loadUserFile.getCommandLine()).build();
         System.out.println("COMMAND_UPDATE_USER:" + command.toString());
         return command;
     }

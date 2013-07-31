@@ -35,7 +35,7 @@ import mecard.util.Phone;
  * This class creates the data and header files.
  * @author metro
  */
-public class BImportFormatter
+public class BImportFile
 {
     public final static String BORROWER_TABLE = "borrower";
     public final static String BORROWER_PHONE_TABLE = "borrower_phone"; 
@@ -131,13 +131,13 @@ public class BImportFormatter
             return this;
         }
         
-        public BImportFormatter build()
+        public BImportFile build()
         {
-            return new BImportFormatter(this);
+            return new BImportFile(this);
         }
     }
     
-    private BImportFormatter(Builder b)
+    private BImportFile(Builder b)
     {
         StringBuilder headerContent = new StringBuilder();
         StringBuilder dataContent   = new StringBuilder();
@@ -215,7 +215,7 @@ public class BImportFormatter
         catch (IOException ex)
         {
             String msg = "unable to create '"+file.getName()+"' file.";
-            Logger.getLogger(BImportFormatter.class.getName()).log(Level.SEVERE, msg, ex);
+            Logger.getLogger(BImportFile.class.getName()).log(Level.SEVERE, msg, ex);
         }
     }
     

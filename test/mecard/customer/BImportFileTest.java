@@ -8,10 +8,10 @@ import static org.junit.Assert.*;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class BImportFormatterTest
+public class BImportFileTest
 {
     
-    public BImportFormatterTest()
+    public BImportFileTest()
     {
     }
 
