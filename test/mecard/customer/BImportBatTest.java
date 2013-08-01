@@ -2,16 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mecard.util;
+package mecard.customer;
 
 import mecard.customer.BImportBat;
 import java.io.File;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *

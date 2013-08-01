@@ -1,6 +1,7 @@
 
 package mecard.customer;
 
+import java.io.File;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -18,7 +19,24 @@ public class BImportFileTest
     @Test
     public void testSomeMethod()
     {
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String hName = "header.txt";
+        String dName = "data.txt";
+        new BImportFile.Builder(hName, dName)
+                .barcode("21221012345678")
+                .name("Billy, Balzac")
+                .expire("12-25-2014")
+                .pin("1234")
+                .pType("h-noTC")
+                .pNumber("7804964058")
+                .address1("12345 123 St.")
+                .city("Edmonton")
+                .postalCode("H0H 0H0")
+                .emailName("ilsteam")
+                .email("ilsteam@epl.ca")
+                .build();
+        File f = new File(hName);
+        assertTrue(f.exists());
+        f = new File(dName);
+        assertTrue(f.exists());
     }
 }

@@ -97,7 +97,7 @@ public class MetroClient
                     + "\\\"CITY\\\":\\\"Edmonton\\\","
                     + "\\\"PROVINCE\\\":\\\"Alberta\\\","
                     + "\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
-                    + "\\\"GENDER\\\":\\\"M\\\","
+                    + "\\\"GENDER\\\":\\\"F\\\","
                     + "\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
                     + "\\\"PHONE\\\":\\\"7804964058\\\","
                     + "\\\"DOB\\\":\\\"19750822\\\","
@@ -129,15 +129,15 @@ public class MetroClient
 //                message = (String) in.readLine();
 //                System.out.println("server said>" + message);
 //
-                System.out.println("requesting "+createCustomer);
-                out.println(createCustomer);
-                message = (String) in.readLine();
-                System.out.println("server said>" + message);
-//
-//                System.out.println("requesting "+custUpdateReq);
-//                out.println(custUpdateReq);
+//                System.out.println("requesting "+createCustomer);
+//                out.println(createCustomer);
 //                message = (String) in.readLine();
 //                System.out.println("server said>" + message);
+//
+                System.out.println("requesting "+custUpdateReq);
+                out.println(custUpdateReq);
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
                 
                 message = "XX0";
                 out.println(message);

@@ -426,7 +426,7 @@ public class MetroService implements Daemon
         while (em.hasMoreElements())
         {
             String key = (String) em.nextElement();
-            System.out.println("VAR:'" + key + "'='" + localProps.getProperty(key, "") + "'");
+//            System.out.println("VAR:'" + key + "'='" + localProps.getProperty(key, "") + "'");
             props.put(key, (String) localProps.getProperty(key, ""));
         }
     }

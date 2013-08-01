@@ -19,7 +19,9 @@
  */
 package api;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import mecard.exception.MalformedCommandException;
@@ -54,6 +56,8 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     private static List<String> loadFlatUserUpdate;
     public final static String USER_FILE_NAME_PREFIX  = "metro_user_";
     public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
+    private final String homeDirectory;
+    private final String shell;
     
     public SymphonyAPIBuilder()
     {
@@ -71,6 +75,30 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                     + "Please specify one in default.properties config file.";
             throw new MalformedCommandException(msg);
         }
+        
+        Properties sysProps = MetroService.getProperties(ConfigFileTypes.VARS);
+        this.homeDirectory = sysProps.getProperty("METRO_HOME");
+        // The default values for creating a user vary from ILS to ILS so there
+        // is no error checking for mandatory values of the default.properties file.
+        // We do the checking here.
+        if (homeDirectory == null || homeDirectory.isEmpty())
+        {
+            String msg = "Metro requires a METRO_HOME variable to be defined. "
+                    + "Please specify one in sysvar.properties config file.";
+            throw new MalformedCommandException(msg);
+        }
+        
+        this.shell = sysProps.getProperty("SHELL");
+        // The default values for creating a user vary from ILS to ILS so there
+        // is no error checking for mandatory values of the default.properties file.
+        // We do the checking here.
+        if (shell == null || shell.isEmpty())
+        {
+            String msg = "Metro requires a SHELL variable to be defined. "
+                    + "Please specify one in sysvar.properties config file.";
+            throw new MalformedCommandException(msg);
+        }
+        
         seluser = new ArrayList<String>();
 //        seluser.add(upath + "seluser");
         seluser.add("seluser");
@@ -140,7 +168,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                         + status.getStderr());
                 break;
         }
-        System.out.println("COMMAND_GET_USER:" + command.toString());
+//        System.out.println("COMMAND_GET_USER:" + command.toString());
         return command;
     }
 
@@ -154,39 +182,39 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     public Command getCreateUserCommand(Customer customer, Response response)
     {
         // we have a customer let's convert them to a flat user.
-//        CustomerFormatter formatter = getFormatter();
-//        List<String> flatUser = formatter.setCustomer(customer);
-//        Command command = new Command.Builder().cat(flatUser).args(loadFlatUserCreate).build();
-//        System.out.println("COMMAND_CREATE_USER:" + command.toString());
-//        return command;
-        // we have a customer let's convert them to a flat user.
         CustomerFormatter formatter = getFormatter();
         List<String> flatUser = formatter.setCustomer(customer);
         // since printing Lists of strings to loadflatuser fail, we will do it the Sirsi-Dynix
         // way: create a temp file of user data and cat the data to loadflatuser.
         // Job 1: create user data file.
         // 1a create file name
-        String userDataFileName = "/s/sirsi/mecard/"
+        String userDataFileName = this.homeDirectory 
+                + File.separator 
                 + SymphonyAPIBuilder.USER_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".flat";
         UserFile userFile = new UserFile(userDataFileName);
         userFile.addUserData(flatUser);
         // Now create the shell command to run
-        String shellFileName = "/s/sirsi/mecard/" 
+        String shellFileName = this.homeDirectory 
+                + File.separator  
                 + SymphonyAPIBuilder.SHELL_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".sh";
         SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
                 .setDebug(true)
-                .setLogFile("/s/sirsi/mecard/load.log")
-                .setMagicNumber("#!/usr/bin/bash")
+                // turning on the logging passes the stdout and err to a log file
+                // which is much harder to test for success or failure. To over come
+                // this we will not direct stdout or stderr, we will then test the 
+                // command status buffers.
+//                .setLogFile(this.homeDirectory + File.separator + "load.log")
+                .setMagicNumber("#!" + this.shell)
                 .setFlatUserFile(userDataFileName)
                 .setLoadFlatUserCommand(loadFlatUserCreate)
                 .build();
         
         Command command = new Command.Builder().args(loadUserFile.getCommandLine()).build();
-        System.out.println("COMMAND_CREATE_USER:" + command.toString());
+//        System.out.println("COMMAND_CREATE_USER:" + command.toString());
         return command;
     }
 
@@ -205,21 +233,27 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         // way: create a temp file of user data and cat the data to loadflatuser.
         // Job 1: create user data file.
         // 1a create file name
-        String userDataFileName = "/s/sirsi/mecard/"
+        String userDataFileName = this.homeDirectory 
+                + File.separator
                 + SymphonyAPIBuilder.USER_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".flat";
         UserFile userFile = new UserFile(userDataFileName);
         userFile.addUserData(flatUser);
         // Now create the shell command to run
-        String shellFileName = "/s/sirsi/mecard/" 
+        String shellFileName = this.homeDirectory 
+                + File.separator
                 + SymphonyAPIBuilder.SHELL_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".sh";
         SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
                 .setDebug(true)
-                .setLogFile("/s/sirsi/mecard/load.log")
-                .setMagicNumber("#!/usr/bin/bash")
+                // turning on the logging passes the stdout and err to a log file
+                // which is much harder to test for success or failure. To over come
+                // this we will not direct stdout or stderr, we will then test the 
+                // command status buffers.
+//                .setLogFile(this.homeDirectory + File.separator + "load.log")
+                .setMagicNumber("#!"+shell)
                 .setFlatUserFile(userDataFileName)
                 .setLoadFlatUserCommand(loadFlatUserUpdate)
                 .build();
@@ -292,5 +326,4 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                         + commandType.name());
         }
     }
-    
 }

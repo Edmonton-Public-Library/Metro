@@ -33,6 +33,7 @@ import api.Command;
 import api.ProcessWatcherHandler;
 import api.Request;
 import api.Response;
+import java.util.Date;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.config.CustomerFieldTypes;
@@ -105,8 +106,8 @@ public class APIResponder extends CustomerQueryable
         // once received, interpret the results for a meaningful message back to 
         // melibraries.ca
         api.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
-        System.out.println("UPDT_STDOUT:"+status.getStdout());
-        System.out.println("UPDT_STDERR:"+status.getStderr()); 
+        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr()); 
     }
 
     @Override
@@ -117,8 +118,8 @@ public class APIResponder extends CustomerQueryable
         Command apiCommand = api.getCreateUserCommand(customer, response);
         ProcessWatcherHandler status = apiCommand.execute();
         api.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
-        System.out.println("CRAT_STDOUT:"+status.getStdout());
-        System.out.println("CRAT_STDERR:"+status.getStderr());
+        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
     }
     
     @Override
@@ -139,8 +140,8 @@ public class APIResponder extends CustomerQueryable
         // Now we have a customer we need to set their 
         response.setCustomer(customer);
         api.interpretResults(QueryTypes.GET_CUSTOMER, status, response);
-        System.out.println("CRAT_STDOUT:"+status.getStdout());
-        System.out.println("CRAT_STDERR:"+status.getStderr());
+        System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
     }
 
     /**
@@ -161,8 +162,8 @@ public class APIResponder extends CustomerQueryable
             response.setResponse("status: down");
         }
         api.interpretResults(QueryTypes.GET_STATUS, status, response);
-        System.out.println("CHK_STDOUT:"+status.getStdout());
-        System.out.println("CHK_STDERR:"+status.getStderr());
+        System.out.println(new Date() + " CHK_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " CHK_STDERR:"+status.getStderr());
     }
 
     @Override
