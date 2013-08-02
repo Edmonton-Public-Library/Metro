@@ -59,8 +59,15 @@ public class MetroClient
             out = new PrintWriter(requestSocket.getOutputStream(),true);
             in = new BufferedReader(new InputStreamReader(requestSocket.getInputStream()));
             //3: Communicating with the server
-            String getStatusString = "{\"code\":\"GET_STATUS\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"null\"}";
-            String getCustomerString = "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"null\"}";
+            String getStatusString = "{\"code\":\"GET_STATUS\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
+                    + "\"userId\":\"\",\"pin\":\"\",\"customer\":\"null\"}";
+            String getCustomerString = "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
+                    + "\"userId\":\"21221020516917\","
+//                    + "\"userId\":\"21221012345678\","
+                    + "\"pin\":\"64058\","
+//                    + "\"pin\":\"640\","
+                    + "\"customer\":\"null\"}";
+            
             String createCustomer = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
                     + "\"userId\":\"\",\"pin\":\"\","
                     + "\"customer\":\"{\\\"ID\\\":\\\"21221020516917\\\","
@@ -120,24 +127,24 @@ public class MetroClient
                 System.out.println("server said>" + message);
                 System.out.println("requesting status");
                 out.println(getStatusString); // getstatus
-//
+
                 message = (String) in.readLine();
                 System.out.println("server said>" + message);
-//
-//                System.out.println("requesting customer");
-//                out.println(getCustomerString); 
-//                message = (String) in.readLine();
-//                System.out.println("server said>" + message);
-//
+
+                System.out.println("requesting customer");
+                out.println(getCustomerString); 
+                message = (String) in.readLine();
+                System.out.println("server said>" + message);
+
 //                System.out.println("requesting "+createCustomer);
 //                out.println(createCustomer);
 //                message = (String) in.readLine();
 //                System.out.println("server said>" + message);
 //
-                System.out.println("requesting "+custUpdateReq);
-                out.println(custUpdateReq);
-                message = (String) in.readLine();
-                System.out.println("server said>" + message);
+//                System.out.println("requesting "+custUpdateReq);
+//                out.println(custUpdateReq);
+//                message = (String) in.readLine();
+//                System.out.println("server said>" + message);
                 
                 message = "XX0";
                 out.println(message);

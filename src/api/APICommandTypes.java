@@ -24,7 +24,7 @@ package api;
  *
  * @author metro
  */
-public enum CommandTypes
+public enum APICommandTypes
 {
     CMD_LINE,
     CMD_PIPE;

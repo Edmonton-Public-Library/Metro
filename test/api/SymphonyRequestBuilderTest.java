@@ -13,15 +13,15 @@ import static org.junit.Assert.*;
  * ILS interaction methods.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class SymphonyAPIBuilderTest
+public class SymphonyRequestBuilderTest
 {
     
-    public SymphonyAPIBuilderTest()
+    public SymphonyRequestBuilderTest()
     {
     }
 
     /**
-     * Test of getCustomerCommand method, of class SymphonyAPIBuilder.
+     * Test of getCustomerCommand method, of class SymphonyRequestBuilder.
      */
     @Test
     public void testGetUser()
@@ -29,14 +29,14 @@ public class SymphonyAPIBuilderTest
         System.out.println("==getUser==");
         String userId = "21221012345678";
         String userPin = "64058";
-        SymphonyAPIBuilder api = new SymphonyAPIBuilder();
+        SymphonyRequestBuilder api = new SymphonyRequestBuilder();
         Response responder = new Response();
         Command command = api.getCustomerCommand(userId, userPin, responder);
         System.out.println("CMD:" + command.toString());
     }
     
     /**
-     * Test of getCreateUserCommand method, of class SymphonyAPIBuilder.
+     * Test of getCreateUserCommand method, of class SymphonyRequestBuilder.
      */
     @Test
     public void testCreateUser()
@@ -81,7 +81,7 @@ public class SymphonyAPIBuilderTest
             System.out.print("=>"+s);
         }
         
-        SymphonyAPIBuilder api = new SymphonyAPIBuilder();
+        SymphonyRequestBuilder api = new SymphonyRequestBuilder();
         Response response = new Response();
         Command command = api.getCreateUserCommand(customer, response);
         System.out.println("CMD:" + command.toString());
@@ -89,18 +89,18 @@ public class SymphonyAPIBuilderTest
     }
 
     /**
-     * Test of getFormatter method, of class SymphonyAPIBuilder.
+     * Test of getFormatter method, of class SymphonyRequestBuilder.
      */
     @Test
     public void testGetFormatter()
     {
         System.out.println("==getFormatter==");
-        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
+        SymphonyRequestBuilder instance = new SymphonyRequestBuilder();
         assertTrue(instance.getFormatter() != null);
     }
 
     /**
-     * Test of getCustomerCommand method, of class SymphonyAPIBuilder.
+     * Test of getCustomerCommand method, of class SymphonyRequestBuilder.
      */
     @Test
     public void testGetCustomer()
@@ -109,9 +109,9 @@ public class SymphonyAPIBuilderTest
 //        String userId = "21221012345678";
 //        String userPin = "64058";
 //        Response response = new Response();
-//        SymphonyAPIBuilder instance = new SymphonyAPIBuilder();
+//        SymphonyRequestBuilder instance = new SymphonyRequestBuilder();
 //        String expResult = "/home/metro/bimport/dumpflatuser ";
-//        Command result = instance.getCustomerCommand(userId, userPin, response);
+//        APICommand result = instance.getCustomerCommand(userId, userPin, response);
 //        assertEquals(expResult, result.toString());
     }
 }

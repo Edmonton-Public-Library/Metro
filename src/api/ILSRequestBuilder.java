@@ -36,13 +36,14 @@ import mecard.customer.CustomerFormatter;
 public interface ILSRequestBuilder
 {
     /**
-     * Implementers promise to return a Command that, when run, will return the
+     * Implementers promise to return a APICommand that, when run, will return the
      * customer's information.
      *
      * @param userId the value of userId
      * @param userPin the value of userPin
      * @param response Buffer to contain useful response information.
      */ 
+     
      
     public Command getCustomerCommand(String userId, String userPin, Response response);
     
@@ -65,17 +66,21 @@ public interface ILSRequestBuilder
 
     /**
      * Updates a user based on the supplied customer, which must not be null.
+     *
      * @param customer
      * @param response
      * @return command that can be executed on the ILS to update a customer.
      */
+    
     public Command getUpdateUserCommand(Customer customer, Response response);
 
     /**
      * Gets the status of the ILS.
+     *
      * @param response
-     * @return Command necessary to test the ILS status.
+     * @return APICommand necessary to test the ILS status.
      */
+    
     public Command getStatusCommand(Response response);
     
     /**
@@ -86,5 +91,5 @@ public interface ILSRequestBuilder
      * @param status the status of the command that ran on the ILS.
      * @param response the object to be returned to melibraries.ca.
      */
-    public void interpretResults(QueryTypes commandType, ProcessWatcherHandler status, Response response);
+    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response);
 }

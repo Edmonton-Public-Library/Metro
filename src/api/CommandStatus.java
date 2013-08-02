@@ -23,13 +23,13 @@ package api;
 import mecard.ResponseTypes;
 
 
-public class ProcessWatcherHandler
+public class CommandStatus
 {
     private ResponseTypes status;
     private StringBuffer stdout;
     private StringBuffer stderr;
     
-    ProcessWatcherHandler()
+    CommandStatus()
     { 
         stdout = new StringBuffer();
         stderr = new StringBuffer();

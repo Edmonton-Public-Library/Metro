@@ -49,7 +49,7 @@ public class Response
     
     public void setResponse(String s)
     {
-        this.responseMessage += s;
+        this.responseMessage += s + " ";
     }
     
     public void setCustomer(Customer c)

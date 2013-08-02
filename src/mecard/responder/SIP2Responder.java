@@ -20,8 +20,11 @@
  */
 package mecard.responder;
 
+import api.Command;
+import api.CommandStatus;
 import api.Request;
 import api.Response;
+import api.SIPCommand;
 import mecard.customer.SIPFormatter;
 import java.util.Properties;
 import mecard.exception.SIPException;
@@ -32,8 +35,12 @@ import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
 import api.SIPConnector;
-import api.SIPRequest;
+import api.SIPRequestBuilder;
+import java.util.Date;
 import mecard.MetroService;
+import mecard.Protocol;
+import mecard.QueryTypes;
+import mecard.exception.InvalidCustomerException;
 
 /**
  * The SIP2 strategy is meant to retrieve initial information about customers.
@@ -45,7 +52,6 @@ public class SIP2Responder extends CustomerQueryable
     implements StatusQueryable 
 {
     public final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
-    private static SIPConnector sipServer;
     private static String NULL_QUERY_RESPONSE_MSG = "SIP2 responder answers ok";
     
     /**
@@ -55,22 +61,7 @@ public class SIP2Responder extends CustomerQueryable
      */
     public SIP2Responder(Request command, boolean debugMode)
     {
-        super(command, debugMode);        
-        Properties sipProps = MetroService.getProperties(ConfigFileTypes.SIP2);
-        String host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
-        String port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001"); // port optional in config.
-        String user = sipProps.getProperty(SipPropertyTypes.USER.toString(), "");
-        String password = sipProps.getProperty(SipPropertyTypes.PASSWORD.toString(), "");
-        String timeout = sipProps.getProperty(SipPropertyTypes.TIMEOUT.toString());
-        String institutionId = sipProps.getProperty(SipPropertyTypes.INSTITUTION_ID.toString(), "");
-        sipServer = new SIPConnector
-                .Builder(host, port)
-                .sipUser(user)
-                .password(password)
-                .institution(institutionId)
-                .sipUser(user)
-                .timeout(timeout)
-                .build();
+        super(command, debugMode);
     }
 
     /**
@@ -109,37 +100,31 @@ public class SIP2Responder extends CustomerQueryable
     @Override
     public void getCustomer(Response response)
     {
-        SIPRequest sipCustomerRequest = new SIPRequest();
         String userId  = this.request.getUserId();
         String userPin = this.request.getUserPin();
-        if (userId.isEmpty() || userPin.isEmpty())
+        
+        // So all this stuff will be put to the SIPCommand
+        SIPRequestBuilder sipRequestBuilder = new SIPRequestBuilder();
+        Command sipCommand = sipRequestBuilder.getCustomerCommand(userId, userPin, response);
+        CommandStatus status = sipCommand.execute();
+        CustomerFormatter customerFormatter = sipRequestBuilder.getFormatter();
+        Customer customer = customerFormatter.getCustomer(status.getStdout());
+        response.setCustomer(customer);
+        sipRequestBuilder.interpretResults(QueryTypes.GET_CUSTOMER, status, response);
+        // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
+        // then interpretResults() further sets ISVALID to Protocol.FALSE.
+        if (customer.get(CustomerFieldTypes.ISVALID).compareTo(Protocol.FALSE) == 0)
         {
-            throw new SIPException("Supplied user id or pin (or both) were empty.");
+            response.setCustomer(null);
+            System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
+            System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
+            return;
         }
-        String sipResponse = "";
-        try
-        {
-            sipResponse = sipServer.send(sipCustomerRequest.patronInfoRequest(userId, userPin));
-        }
-        catch(SIPException e)
-        {
-            // Can happen if the server is down, server not listening on port, login failed
-            // or request timedout.
-            response.setResponse("service is currently unavailable");
-            response.setCode(ResponseTypes.UNAVAILABLE);
-        }
-        if (isAuthorized(sipResponse, null) == false)
-        {
-            response.setResponse("invalid PIN");
-            response.setCode(ResponseTypes.UNAUTHORIZED);
-        }
-        CustomerFormatter sipFormatter = new SIPFormatter();
-        Customer customer = sipFormatter.getCustomer(sipResponse);
         // You have this before the test metro requirements b/c it checks for PIN
+        // and SIP2 does not return the pin.
         customer.set(CustomerFieldTypes.PIN, userPin);
-        if (meetsMeCardRequirements(customer, sipResponse))
+        if (meetsMeCardRequirements(customer, status.getStdout()))
         {
-            response.setCustomer(customer);
             response.setCode(ResponseTypes.OK);
         }
         else
@@ -148,6 +133,8 @@ public class SIP2Responder extends CustomerQueryable
             response.setResponse("there is a problem with your account, please contact your home library for assistance");
             response.setCode(ResponseTypes.FAIL);
         }
+        System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
     }
 
     /**
@@ -157,45 +144,12 @@ public class SIP2Responder extends CustomerQueryable
     @Override
     public void getILSStatus(Response response)
     {
-        SIPRequest sipStatusRequest = new SIPRequest();
-        String sipResponse = "";
-        try
-        {
-            sipResponse = sipServer.send(sipStatusRequest.getILSStatus());
-        }
-        catch(SIPException e)
-        {
-            response.setCode(ResponseTypes.UNAVAILABLE);
-        }
-        if (isSuccessful(sipResponse) == false)
-        {
-            response.setCode(ResponseTypes.FAIL);
-        }
-        else
-        {
-            response.setCode(ResponseTypes.OK);
-        }
-    }
-
-    /** 
-     * Tests the response string from the sip server for success.
-     * @param sipResponse The response from the sip server.
-     * @return true if the command's return code was Ok, and false otherwise.
-     */
-    private boolean isSuccessful(String sipResponse)
-    {
-        // test the return codes, convert to a ResponseTypes and return true
-        if (sipResponse.length() > 64)
-        {
-            //recv:98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C
-            // We need to check that the values at position 2 (online status) 
-            // and 56 (Patron Information) are both 'Y'
-            if (sipResponse.charAt(2) == 'Y' && sipResponse.charAt(63) == 'Y') // zero indexed don't forget.
-            {
-                return true;
-            }
-        }
-        return false;
+        SIPRequestBuilder sipRequestBuilder = new SIPRequestBuilder();
+        Command sipCommand = sipRequestBuilder.getStatusCommand(response);
+        CommandStatus status = sipCommand.execute();
+        sipRequestBuilder.interpretResults(QueryTypes.GET_STATUS, status, response);
+        System.out.println(new Date() + " STAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " STAT_STDERR:"+status.getStderr());
     }
 
     /**

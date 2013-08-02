@@ -35,18 +35,18 @@ import mecard.config.ConfigFileTypes;
  *
  * @author metro
  */
-public class Command
+public class APICommand implements Command
 {
     public final static String WORKING_DIRECTORY_PROPERTY_NAME = "working-directory";
-    private CommandTypes cmdFormat;
-    //    private final Command command;
+    private APICommandTypes cmdFormat;
+    //    private final APICommand command;
     private final List<String> cmdArgs;
     private final List<String> stdinData;
 
     public static class Builder
     {
         // required
-        private CommandTypes cmdFormat;
+        private APICommandTypes cmdFormat;
         // optional
         private List<String> args;
         private List<String> stdinData;
@@ -57,15 +57,15 @@ public class Command
          */
         public Builder()
         {
-            this.cmdFormat = CommandTypes.CMD_LINE;
+            this.cmdFormat = APICommandTypes.CMD_LINE;
         }
 
         /**
          * Allows the inclusion of addition command-line arguments to a command.
          *
          * @param arguments
-         * @return Builder. Usage: Command cmd = new Command.Builder(status,
-         * CommandTypes.WC).args(new Sting[]{"a","b"}).build();
+         * @return Builder. Usage: APICommand cmd = new APICommand.Builder(status,
+         * APICommandTypes.WC).args(new Sting[]{"a","b"}).build();
          */
         public Builder args(List<String> arguments)
         {
@@ -83,7 +83,7 @@ public class Command
          */
         public Builder cat(List<String> data)
         {
-            this.cmdFormat = CommandTypes.CMD_PIPE;
+            this.cmdFormat = APICommandTypes.CMD_PIPE;
             this.stdinData = new ArrayList<String>();
             this.stdinData.addAll(data);
             return this;
@@ -98,7 +98,7 @@ public class Command
          */
         public Builder echo(String stringIn)
         {
-            this.cmdFormat = CommandTypes.CMD_PIPE;
+            this.cmdFormat = APICommandTypes.CMD_PIPE;
             this.stdinData = new ArrayList<String>();
             this.stdinData.add(stringIn);
             return this;
@@ -107,23 +107,23 @@ public class Command
         /**
          * Builds the command and returns a reference to it.
          *
-         * @return Command reference. Usage: Command cmd = new
-         * Command.Builder(status,
-         * CommandTypes.WC).echo("21221012345678").build();
+         * @return APICommand reference. Usage: APICommand cmd = new
+         * APICommand.Builder(status,
+         * APICommandTypes.WC).echo("21221012345678").build();
          */
-        public Command build()
+        public APICommand build()
         {
-            return new Command(this);
+            return new APICommand(this);
         }
     }
 
     /**
-     * Constructor, private to forbid Command instantiation directly (without
+     * Constructor, private to forbid APICommand instantiation directly (without
      * builder).
      *
      * @param b - Builder
      */
-    private Command(Builder b)
+    private APICommand(Builder b)
     {
         this.cmdFormat = b.cmdFormat;
         this.stdinData = b.stdinData;
@@ -134,9 +134,10 @@ public class Command
      * Wrapper that executes the command.
      *
      */
-    public ProcessWatcherHandler execute()
+    @Override
+    public CommandStatus execute()
     {
-        ProcessWatcherHandler status;
+        CommandStatus status;
         switch(this.cmdFormat)
         {
             case CMD_PIPE:
@@ -154,9 +155,9 @@ public class Command
      * and many Unix commands.
      *
      */
-    private ProcessWatcherHandler executeCmdLine()
+    private CommandStatus executeCmdLine()
     {
-        ProcessWatcherHandler processHandler = null;
+        CommandStatus processHandler = null;
         try
         {
             // http://stackoverflow.com/questions/10665104/executing-an-external-program-from-java-using-process-builder-or-apache-commons
@@ -164,14 +165,14 @@ public class Command
             // get properties and set them as necessary
             setEnvironment(processBuilder);
             Process process = processBuilder.start();
-            processHandler = new ProcessWatcherHandler();
-            ProcessWatcher watcher = new ProcessWatcher(process, processHandler);
+            processHandler = new CommandStatus();
+            CommandWatcher watcher = new CommandWatcher(process, processHandler);
             watcher.start();
         }
         catch (IOException ex)
         {
             System.out.println("IOException no such command: " + toString() + "\n" + ex.getMessage());
-//            Logger.getLogger(Command.class.getName()).log(
+//            Logger.getLogger(APICommand.class.getName()).log(
 //                    Level.SEVERE, "no such command", ex);
         }
         return processHandler;
@@ -181,9 +182,9 @@ public class Command
      * Executes a pipe command. This facility is not available on Windoz.
      *
      */
-    private ProcessWatcherHandler executePipe()
+    private CommandStatus executePipe()
     {
-        ProcessWatcherHandler processHandler = null;
+        CommandStatus processHandler = null;
         try
         {
             ProcessBuilder processBuilder = new ProcessBuilder(this.getCmd());
@@ -200,14 +201,14 @@ public class Command
             }
             // send end-of-file signal to next process so it will terminate itself
             commandTwoInput.close();
-            processHandler = new ProcessWatcherHandler();
-            ProcessWatcher commandWatcher = new ProcessWatcher(commandTwo, processHandler);
+            processHandler = new CommandStatus();
+            CommandWatcher commandWatcher = new CommandWatcher(commandTwo, processHandler);
             commandWatcher.start();
         }
         catch (IOException ex)
         {
             System.out.println("IOException no such command: " + toString() + "\n" + ex.getMessage());
-//            Logger.getLogger(Command.class.getName()).log(
+//            Logger.getLogger(APICommand.class.getName()).log(
 //                    Level.SEVERE, "no such command", ex);
         }
         return processHandler;
@@ -217,9 +218,9 @@ public class Command
     {
         Map<String, String> env = processBuilder.environment();
         MetroService.augmentProperties(env, ConfigFileTypes.VARS);
-        if (env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME) != null &&
-            env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME).isEmpty() == false)
-            processBuilder.directory(new File(env.get(Command.WORKING_DIRECTORY_PROPERTY_NAME)));
+        if (env.get(APICommand.WORKING_DIRECTORY_PROPERTY_NAME) != null &&
+            env.get(APICommand.WORKING_DIRECTORY_PROPERTY_NAME).isEmpty() == false)
+            processBuilder.directory(new File(env.get(APICommand.WORKING_DIRECTORY_PROPERTY_NAME)));
     }
 
     /**

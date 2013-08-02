@@ -37,7 +37,7 @@ import mecard.customer.SymphonyLoadUserSh;
 import mecard.customer.UserFile;
 
 /**
- * SymphonyAPIBuilder creates the commands used to perform the MeCard request
+ * SymphonyRequestBuilder creates the commands used to perform the MeCard request
  * contract. Symphony has excellent facilities for answering all requests except
  * getting the ILS status. For that reason if you set your request for ILS status
  * in your environment.properties file to 'Symphony' you will get a 
@@ -48,7 +48,7 @@ import mecard.customer.UserFile;
  * @see UnsupportedOperationException
  * @see ILSRequestBuilder
  */
-public class SymphonyAPIBuilder implements ILSRequestBuilder
+public class SymphonyRequestBuilder implements ILSRequestBuilder
 {
     private static List<String> seluser;
     private static List<String> dumpflatuser;
@@ -59,11 +59,9 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     private final String homeDirectory;
     private final String shell;
     
-    public SymphonyAPIBuilder()
+    public SymphonyRequestBuilder()
     {
         // Lets get the properties from the properties file.
-//        Properties properties = MetroService.getProperties(ConfigFileTypes.API);
-//        String upath = properties.getProperty(APIPropertyTypes.UPATH.toString());
         Properties defaultProperties = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);
         String homeLibrary = defaultProperties.getProperty("USER_LIBRARY");
         // The default values for creating a user vary from ILS to ILS so there
@@ -100,18 +98,15 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         }
         
         seluser = new ArrayList<String>();
-//        seluser.add(upath + "seluser");
         seluser.add("seluser");
         seluser.add("-iB"); // expects barcode.
         seluser.add("-oU"); // will output user key.
-        // Dumpflatuser settings, ready for inclusion in the Command object.
+        // Dumpflatuser settings, ready for inclusion in the APICommand object.
         dumpflatuser = new ArrayList<String>();
-//        dumpflatuser.add(upath + "dumpflatuser");
         dumpflatuser.add("dumpflatuser");
-        // loadflatuser settings, ready for inclusion in the Command object.
+        // loadflatuser settings, ready for inclusion in the APICommand object.
         loadFlatUserCreate = new ArrayList<String>();
         // /s/sirsi/Unicorn/Bin/loadflatuser -aA -bA -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
-//        loadFlatUserCreate.add(upath + "loadflatuser");
         loadFlatUserCreate.add("loadflatuser");
         loadFlatUserCreate.add("-aA"); // Add base.
         loadFlatUserCreate.add("-bA"); // Add extended.
@@ -122,7 +117,6 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
         loadFlatUserUpdate = new ArrayList<String>();
-//        loadFlatUserUpdate.add(upath + "loadflatuser");
         loadFlatUserUpdate.add("loadflatuser");
         loadFlatUserUpdate.add("-aR"); // replace base information
         loadFlatUserUpdate.add("-bR"); // Replace extended information
@@ -130,7 +124,6 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         loadFlatUserUpdate.add("-mu"); // update
         loadFlatUserUpdate.add("-n"); // turn off BRS checking.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
-//        loadFlatUserUpdate.add("/s/sirsi/mecard/load.sh");
     }
     
     /**
@@ -139,6 +132,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
      * @param userId the value of userId
      * @param userPin the value of userPin
      */
+    
     @Override
     public Command getCustomerCommand(String userId, String userPin, Response response)
     {
@@ -146,8 +140,8 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         // 1) call seluser to get the user key. If that fails append message to reponsebuffer.
         // if succeeds
         // 2) create a command that will complete the transaction
-        Command command = new Command.Builder().echo(userId).args(seluser).build();
-        ProcessWatcherHandler status = command.execute();
+        APICommand command = new APICommand.Builder().echo(userId).args(seluser).build();
+        CommandStatus status = command.execute();
         switch(status.getStatus())
         {
             case UNAVAILABLE:
@@ -160,7 +154,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                 break;
             case OK:
                 String customerKey = status.getStdout();
-                command = new Command.Builder().echo(customerKey).args(dumpflatuser).build();
+                command = new APICommand.Builder().echo(customerKey).args(dumpflatuser).build();
                 break;
             default:
                 response.setResponse("an error occured while searching for "
@@ -168,7 +162,6 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                         + status.getStderr());
                 break;
         }
-//        System.out.println("COMMAND_GET_USER:" + command.toString());
         return command;
     }
 
@@ -190,7 +183,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         // 1a create file name
         String userDataFileName = this.homeDirectory 
                 + File.separator 
-                + SymphonyAPIBuilder.USER_FILE_NAME_PREFIX 
+                + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".flat";
         UserFile userFile = new UserFile(userDataFileName);
@@ -198,7 +191,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         // Now create the shell command to run
         String shellFileName = this.homeDirectory 
                 + File.separator  
-                + SymphonyAPIBuilder.SHELL_FILE_NAME_PREFIX 
+                + SymphonyRequestBuilder.SHELL_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".sh";
         SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
@@ -207,22 +200,23 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                 // which is much harder to test for success or failure. To over come
                 // this we will not direct stdout or stderr, we will then test the 
                 // command status buffers.
-//                .setLogFile(this.homeDirectory + File.separator + "load.log")
+                //  .setLogFile(this.homeDirectory + File.separator + "load.log")
                 .setMagicNumber("#!" + this.shell)
                 .setFlatUserFile(userDataFileName)
                 .setLoadFlatUserCommand(loadFlatUserCreate)
                 .build();
         
-        Command command = new Command.Builder().args(loadUserFile.getCommandLine()).build();
-//        System.out.println("COMMAND_CREATE_USER:" + command.toString());
+        APICommand command = new APICommand.Builder().args(loadUserFile.getCommandLine()).build();
         return command;
     }
 
     /**
      *
+     *
      * @param customer the value of customer
      * @param response the value of responseBuffer
      */
+    
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response)
     {
@@ -235,7 +229,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         // 1a create file name
         String userDataFileName = this.homeDirectory 
                 + File.separator
-                + SymphonyAPIBuilder.USER_FILE_NAME_PREFIX 
+                + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".flat";
         UserFile userFile = new UserFile(userDataFileName);
@@ -243,7 +237,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
         // Now create the shell command to run
         String shellFileName = this.homeDirectory 
                 + File.separator
-                + SymphonyAPIBuilder.SHELL_FILE_NAME_PREFIX 
+                + SymphonyRequestBuilder.SHELL_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".sh";
         SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
@@ -252,14 +246,13 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                 // which is much harder to test for success or failure. To over come
                 // this we will not direct stdout or stderr, we will then test the 
                 // command status buffers.
-//                .setLogFile(this.homeDirectory + File.separator + "load.log")
+                //  .setLogFile(this.homeDirectory + File.separator + "load.log")
                 .setMagicNumber("#!"+shell)
                 .setFlatUserFile(userDataFileName)
                 .setLoadFlatUserCommand(loadFlatUserUpdate)
                 .build();
         
-        Command command = new Command.Builder().args(loadUserFile.getCommandLine()).build();
-        System.out.println("COMMAND_UPDATE_USER:" + command.toString());
+        APICommand command = new APICommand.Builder().args(loadUserFile.getCommandLine()).build();
         return command;
     }
 
@@ -270,7 +263,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
     }
 
     @Override
-    public void interpretResults(QueryTypes commandType, ProcessWatcherHandler status, Response response)
+    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
     {
         switch (commandType)
         {
@@ -321,7 +314,7 @@ public class SymphonyAPIBuilder implements ILSRequestBuilder
                 break;
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
-                response.setResponse(SymphonyAPIBuilder.class.getName() 
+                response.setResponse(SymphonyRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
         }

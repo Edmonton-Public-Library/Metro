@@ -30,8 +30,8 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.BImportBat;
 import mecard.customer.BImportFile;
-import api.Command;
-import api.ProcessWatcherHandler;
+import api.APICommand;
+import api.CommandStatus;
 import api.Request;
 import api.Response;
 import mecard.MetroService;
@@ -153,8 +153,8 @@ public class BImportResponder extends Responder
         // This test checks if the customer is complete.
         if (convert(submittableCustomer))
         {
-            Command command = new Command.Builder().args(submittableCustomer).build();
-            ProcessWatcherHandler status = command.execute();
+            APICommand command = new APICommand.Builder().args(submittableCustomer).build();
+            CommandStatus status = command.execute();
             if (status.getStatus() == ResponseTypes.OK)
             {
                 response.setResponse(status.getStdout());

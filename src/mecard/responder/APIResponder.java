@@ -20,7 +20,7 @@
  */
 package mecard.responder;
 
-import api.SymphonyAPIBuilder;
+import api.SymphonyRequestBuilder;
 import java.util.Properties;
 import mecard.ResponseTypes;
 import mecard.config.APIPropertyTypes;
@@ -30,7 +30,7 @@ import mecard.exception.UnsupportedAPIException;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import api.Command;
-import api.ProcessWatcherHandler;
+import api.CommandStatus;
 import api.Request;
 import api.Response;
 import java.util.Date;
@@ -101,7 +101,7 @@ public class APIResponder extends CustomerQueryable
         // I have a customer, I need to reload them into the ils
         Customer customer = request.getCustomer();
         Command apiCommand = api.getUpdateUserCommand(customer, response);
-        ProcessWatcherHandler status = apiCommand.execute();
+        CommandStatus status = apiCommand.execute();
         // The command thread will block until it gets a message from running process
         // once received, interpret the results for a meaningful message back to 
         // melibraries.ca
@@ -116,7 +116,7 @@ public class APIResponder extends CustomerQueryable
         // I have a customer, I need to load them into the ils
         Customer customer = request.getCustomer();
         Command apiCommand = api.getCreateUserCommand(customer, response);
-        ProcessWatcherHandler status = apiCommand.execute();
+        CommandStatus status = apiCommand.execute();
         api.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
         System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
@@ -132,7 +132,7 @@ public class APIResponder extends CustomerQueryable
         // the response buffer is in case the command fails, we can populate
         // it with a meaningful error message(s).
         Command getUserAPI = api.getCustomerCommand(userId, userPin, response);
-        ProcessWatcherHandler status = getUserAPI.execute();
+        CommandStatus status = getUserAPI.execute();
         // If the process is taking a long time you could create a timed loop here to return info to waiting customer.
         // need to create a customer object from the response.
         CustomerFormatter formatter = api.getFormatter();
@@ -152,7 +152,7 @@ public class APIResponder extends CustomerQueryable
     public void getILSStatus(Response response)
     {
         Command getUserAPI = api.getStatusCommand(response);
-        ProcessWatcherHandler status = getUserAPI.execute();
+        CommandStatus status = getUserAPI.execute();
         if (status.getStatus() == ResponseTypes.COMMAND_COMPLETED)
         {
             response.setResponse("status: up");
@@ -189,7 +189,7 @@ public class APIResponder extends CustomerQueryable
             }
             if (whichAPI.equalsIgnoreCase("Symphony"))
             {
-                return new SymphonyAPIBuilder();
+                return new SymphonyRequestBuilder();
             } // example of how to extend
 //            else if (apiName.equalsIgnoreCase("Horizon"))
 //            {

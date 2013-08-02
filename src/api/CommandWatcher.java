@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  *
  * <pre>
  *      Process process = Runtime.getRuntime().exec(new String[]{"/bin/java","-version"}, null, new File("."));
- *      ProcessWatcher w = new ProcessWatcher(process, new ProcessWatcherHandler() {
+ *      CommandWatcher w = new CommandWatcher(process, new CommandStatus() {
  *          public void setStarted(Process process) {
  *              System.out.println("Prcess setStarted");
  *          }
@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  *
  * @author Taha Ben Salah (taha.bensalah@gmail.com)
  */
-public class ProcessWatcher
+public class CommandWatcher
 {
 
     private Process process;
@@ -68,9 +68,9 @@ public class ProcessWatcher
     private Thread err;
     private int result;
     private boolean stopped = false;
-    private ProcessWatcherHandler handler;
+    private CommandStatus handler;
 
-    public ProcessWatcher(Process theProcess, ProcessWatcherHandler theHandler)
+    public CommandWatcher(Process theProcess, CommandStatus theHandler)
     {
         this.process = theProcess;
         this.handler = theHandler;
@@ -94,7 +94,7 @@ public class ProcessWatcher
         }
         catch (InterruptedException ex)
         {
-            Logger.getLogger(ProcessWatcher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CommandWatcher.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

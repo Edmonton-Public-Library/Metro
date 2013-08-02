@@ -4,8 +4,8 @@
  */
 package mecard.util;
 
-import api.Command;
-import api.ProcessWatcherHandler;
+import api.APICommand;
+import api.CommandStatus;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class CommandTest {
     }
 
     /**
-     * Test of execute method, of class Command.
+     * Test of execute method, of class APICommand.
      */
     @Test
     public void testExecute00()
@@ -38,15 +38,15 @@ public class CommandTest {
         
         List<String> cmdArgs = new ArrayList<String>();
         cmdArgs.add("ls");
-        Command cmd = new Command.Builder().args(cmdArgs).build();
-        ProcessWatcherHandler status = cmd.execute();
+        APICommand cmd = new APICommand.Builder().args(cmdArgs).build();
+        CommandStatus status = cmd.execute();
         String stdout = status.getStdout();
         assertTrue(stdout.length() > 0);
         System.out.println(">>"+stdout);
     }
     
     /**
-     * Test of execute method, of class Command.
+     * Test of execute method, of class APICommand.
      */
     @Test
     public void testExecute01()
@@ -66,8 +66,8 @@ public class CommandTest {
         List<String> cmdArgs = new ArrayList<String>();
         cmdArgs.add("ls");
         cmdArgs.add("-la");
-        Command cmd = new Command.Builder().args(cmdArgs).build();
-        ProcessWatcherHandler status = cmd.execute();
+        APICommand cmd = new APICommand.Builder().args(cmdArgs).build();
+        CommandStatus status = cmd.execute();
         String stdout = status.getStdout();
         assertTrue(stdout.length() > 0);
         System.out.println(">>"+stdout);
@@ -83,8 +83,8 @@ public class CommandTest {
         cmdArgs.add("ls");
         cmdArgs.add("-la");
         cmdArgs.add("foobar");
-        Command cmd = new Command.Builder().args(cmdArgs).build();
-        ProcessWatcherHandler status = cmd.execute();
+        APICommand cmd = new APICommand.Builder().args(cmdArgs).build();
+        CommandStatus status = cmd.execute();
         String out = status.getStderr();
         assertTrue(out.length() > 0);
         System.out.println(">>"+out);
@@ -99,15 +99,15 @@ public class CommandTest {
         List<String> cmdArgs = new ArrayList<String>();
         cmdArgs.add("wc");
         cmdArgs.add("-l");
-        Command cmd = new Command.Builder().echo("This and that").args(cmdArgs).build();
-        ProcessWatcherHandler status = cmd.execute();
+        APICommand cmd = new APICommand.Builder().echo("This and that").args(cmdArgs).build();
+        CommandStatus status = cmd.execute();
         String out = status.getStdout();
         assertTrue(out.length() > 0);
         System.out.println(">>"+out);
     }
         
     /**
-     * Test of hasExited method, of class Command.
+     * Test of hasExited method, of class APICommand.
      */
     @Test
     public void testHasExited()
@@ -121,8 +121,8 @@ public class CommandTest {
         data.add("-name");
         data.add("\"*.pdf\"");
 //        data.add("-print");
-        Command instance = new Command.Builder().args(data).build();
-        ProcessWatcherHandler status = instance.execute();
+        APICommand instance = new APICommand.Builder().args(data).build();
+        CommandStatus status = instance.execute();
         String out = status.getStdout();
         assertTrue(out.length() > 0);
         System.out.println(">>"+out);
