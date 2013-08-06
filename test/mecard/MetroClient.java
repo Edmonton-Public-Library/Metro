@@ -62,10 +62,11 @@ public class MetroClient
             String getStatusString = "{\"code\":\"GET_STATUS\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
                     + "\"userId\":\"\",\"pin\":\"\",\"customer\":\"null\"}";
             String getCustomerString = "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","
-                    + "\"userId\":\"21221020516917\","
+                    + "\"userId\":\"21221018983954\","
+//                    + "\"userId\":\"21221020516917\","
 //                    + "\"userId\":\"21221012345678\","
-                    + "\"pin\":\"64058\","
-//                    + "\"pin\":\"640\","
+//                    + "\"pin\":\"64058\","
+                    + "\"pin\":\"4285\","
                     + "\"customer\":\"null\"}";
             
             String createCustomer = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"55u1dqzu4tfSk2V4u5PW6VTMqi9bzt2d\","

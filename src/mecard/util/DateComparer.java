@@ -24,9 +24,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import mecard.MetroService;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
 
 /**
  *
@@ -34,9 +31,9 @@ import mecard.config.LibraryPropertyTypes;
  */
 public class DateComparer
 {
-    public final static String CUSTOMER_DATE_FORMAT = 
+    public final static String CUSTOMER_DATE_FORMAT = /*
             MetroService.getProperties(ConfigFileTypes.ENVIRONMENT)
-            .getProperty(LibraryPropertyTypes.DATE_FORMAT.toString());//"yyyy-MM-dd";
+            .getProperty(LibraryPropertyTypes.DATE_FORMAT.toString());*/ "yyyy-MM-dd";
     public final static String ANSI_DATE_FORMAT = "yyyyMMdd";
     public final static long MILLS_IN_SECOND = 1000L;
     public final static long SECONDS_IN_MINUTE = 60L;

@@ -85,7 +85,7 @@ public class DateComparerTest
         
         date = "2013-01-01";
         result = DateComparer.getDaysUntilExpiry(date);
-        System.out.println("days since "+date+": "+result);
+        System.out.println(">>>days since "+date+": "+result);
         
     }
 
@@ -95,10 +95,10 @@ public class DateComparerTest
     @Test
     public void testToday()
     {
-        System.out.println("today");
-        String expResult = "20130606";
+        System.out.println("===today===");
+        String expResult = "20130803";
         String result = DateComparer.today();
-//        System.out.println("RESULT:"+result);
+        System.out.println("RESULT:"+result);
         assertTrue(expResult.compareTo(result) == 0);
     }
 
@@ -108,7 +108,7 @@ public class DateComparerTest
     @Test
     public void testFormatDate()
     {
-        System.out.println("formatDate");
+        System.out.println("===formatDate===");
         String date = "2013-03-29";
         String expResult = "20130329";
         String result = DateComparer.formatDate(date);

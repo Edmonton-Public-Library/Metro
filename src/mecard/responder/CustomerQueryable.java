@@ -72,14 +72,47 @@ public abstract class CustomerQueryable extends Responder
             return false;
         }
         MeCardPolicy policy = MeCardPolicy.getInstanceOf(this.debug);
-        if (policy.isEmailable(customer, additionalData) == false) return false;
-        if (policy.isInGoodStanding(customer, additionalData) == false) return false;
-        if (policy.isMinimumAge(customer, additionalData) == false) return false;
-        if (policy.isReciprocal(customer, additionalData)) return false; // reciprocals not allowed.
-        if (policy.isResident(customer, additionalData) == false) return false;
-        if (policy.isValidCustomerData(customer) == false) return false;
-        if (policy.isValidExpiryDate(customer, additionalData) == false) return false;
-        if (policy.isLostCard(customer, additionalData)) return false;
+        if (policy.isEmailable(customer, additionalData) == false) 
+        {
+            System.out.println("Customer not emailable.");
+            return false;
+        }
+        if (policy.isInGoodStanding(customer, additionalData) == false)
+        {
+            System.out.println("Customer not in good standing.");
+            return false;
+        }
+        if (policy.isMinimumAge(customer, additionalData) == false)
+        {
+            System.out.println("Customer not minimum age.");
+            return false;
+        }
+        if (policy.isReciprocal(customer, additionalData))
+        {
+            System.out.println("Customer cannot join because they are a reciprocal customer.");
+            return false;
+        } // reciprocals not allowed.
+        if (policy.isResident(customer, additionalData) == false) 
+        {
+            System.out.println("Customer is not resident.");
+            return false;
+        }
+        if (policy.isValidCustomerData(customer) == false) 
+        {
+            System.out.println("Customer's data is not valid.");
+            return false;
+        }
+        if (policy.isValidExpiryDate(customer, additionalData) == false) 
+        {
+            System.out.println("Customer does not have a valid privilege date.");
+            return false;
+        }
+        if (policy.isLostCard(customer, additionalData)) 
+        {
+            System.out.println("Customer's card reported as lost.");
+            return false;
+        }
+        System.out.println("Customer cleared.");
         return true;
     }
 }
