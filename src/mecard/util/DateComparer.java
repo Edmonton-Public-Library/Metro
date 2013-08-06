@@ -24,16 +24,27 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import mecard.MetroService;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
 
 /**
- *
+ * Utility class used to help with date conversions. Serveral classes use these
+ * methods and there are some things to remember:
+ * <ol>
+ * <li> Metro server, SIP2, Symphony all use ANSI dates ('yyyyMMdd') by default.
+ * <li> Java uses 'yyyy-mm-dd' if you ask for today's date.
+ * <li> Horizon uses dates in BImport, but the format is set by the user's OS, that 
+ * is dates are inserted into Horizon based on what the user selected in their Windows 
+ * desktop.
+ * </ol>
  * @author andrew
  */
 public class DateComparer
 {
-    public final static String CUSTOMER_DATE_FORMAT = /*
+    public final static String CUSTOMER_DATE_FORMAT = 
             MetroService.getProperties(ConfigFileTypes.ENVIRONMENT)
-            .getProperty(LibraryPropertyTypes.DATE_FORMAT.toString());*/ "yyyy-MM-dd";
+            .getProperty(LibraryPropertyTypes.DATE_FORMAT.toString());
     public final static String ANSI_DATE_FORMAT = "yyyyMMdd";
     public final static long MILLS_IN_SECOND = 1000L;
     public final static long SECONDS_IN_MINUTE = 60L;
@@ -46,24 +57,15 @@ public class DateComparer
     /**
      * Returns the absolute difference between date one (d1) and date two (d2)
      * in years.
-     * @param date
-     * @return a positive integer of the number of years
-     * @throws ParseException if the supplied date doesn't match the ValidDate
-     * date format which is yyyy-mm-dd.
+     * @param ANSIDate Always an ANSI date argument.
+     * @return a positive integer of the number of years the customer has been alive.
+     * @throws ParseException if the supplied date is not in ANSI format.
      */
-    public static int getYearsOld(String date) throws ParseException
+    public static int getYearsOld(String ANSIDate)
+            throws ParseException
     {
-        if (date.length() == 0)
-        {
-            return -1;
-        }
-        String newDate = date;
-        if (newDate.contains("-") == false)
-        {
-            newDate = DateComparer.ANSIToHumanReadable(date);
-        }
-        DateFormat dateFormat = new SimpleDateFormat(DateComparer.CUSTOMER_DATE_FORMAT);
-        Date daysAgo = dateFormat.parse(newDate);
+        DateFormat ANSIDateFormatter = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
+        Date daysAgo = ANSIDateFormatter.parse(ANSIDate);
         Date today = new Date();
         // the delta is in milliseconds.
         long longYears = (today.getTime() - daysAgo.getTime()) / MILLISECONDS_PER_YEAR;
@@ -72,80 +74,51 @@ public class DateComparer
 
     /**
      * Computes the number of whole days until account expiry, that is, the
-     * hours left in today (if any) are not considered when computing expiry.
+     * hours left in ANSIToday (if any) are not considered when computing expiry.
      * The reason is dates are passed as pure dates, which by default have a
      * start time of midnight. But when we calculate the number of days
      * milliseconds as of now, so April 10 (midnight) - April 9 (10:15 AM) is
      * less than one day, so days until expiry will report 0.
      *
-     * @param date
+     * @param ANSIExpiryDate date of customer privilege expiry.
      * @return integer of number of dates until expiry. Could be negative.
      * @throws ParseException
      */
-    public static int getDaysUntilExpiry(String date) throws ParseException
+    public static int getDaysUntilExpiry(String ANSIExpiryDate)
+            throws ParseException
     {
-        DateFormat dateFormat = new SimpleDateFormat(DateComparer.CUSTOMER_DATE_FORMAT);
-        String newDate = date;
-        if (newDate.contains("-") == false)
-        {
-            newDate = DateComparer.ANSIToHumanReadable(date);
-        }
-        Date daysFromNow = dateFormat.parse(newDate);
+        DateFormat ANSIDateFormatter    = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
+        Date expiryDate  = ANSIDateFormatter.parse(ANSIExpiryDate);
         Date today = new Date();
         // the delta is in milliseconds.
-        long daysLeft = (daysFromNow.getTime() - today.getTime()) / MILLISECONDS_PER_DAY;
+        long daysLeft = (expiryDate.getTime() - today.getTime()) / MILLISECONDS_PER_DAY;
         return (int) daysLeft;
     }
 
     /**
-     * Returns today's date as an ANSI date ('yyyymmdd' String).
+     * Returns ANSIToday's date as an ANSI date ('yyyymmdd' String).
      *
      * @return String of 'yyyymmdd'.
      */
-    public final static String today()
+    public final static String ANSIToday()
     {
         Date today = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
         return dateFormat.format(today);
     }
     
-    public final static String convertToConfigDate(String ANSIDate)
-    {
-        try
-        {
-            SimpleDateFormat sdfSrc = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
-            Date myDate = sdfSrc.parse(ANSIDate);
-            SimpleDateFormat dateFormat = new SimpleDateFormat(CUSTOMER_DATE_FORMAT);
-            return dateFormat.format(myDate);
-        } catch (ParseException ex)
-        {
-            return ANSIDate;
-        }
-    }
-
     /**
-     * Removes '-' from 'yyyy-mm-dd' date strings.
-     *
-     * @param date in form of 'yyyy-mm-dd'
-     * @return Transforms to a yyyymmdd date, returning an ANSI date.
+     * Used by clients that need dates formatted for their clients.
+     * @param ANSIDate 'yyyymmdd'
+     * @return The date converted to the format specified in the environment.properties file.
+     * @throws ParseException if ANSI date not provided.
      */
-    public final static String formatDate(String date)
+    public final static String ANSIToConfigDate(String ANSIDate)
+            throws ParseException
     {
-        return date.replace("-", "");
-    }
-
-    public final static String ANSIToHumanReadable(String date)
-    {
-        StringBuilder sb = new StringBuilder();
-        if (date.matches("\\d{8}"))
-        {
-            // expectes '20130521' so will return
-            sb.append(date.substring(0, 4));
-            sb.append("-");
-            sb.append(date.substring(4, 6));
-            sb.append("-");
-            sb.append(date.substring(6, 8));
-        }
-        return sb.toString();
+        SimpleDateFormat sdfSrc = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
+        Date myDate = sdfSrc.parse(ANSIDate);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(CUSTOMER_DATE_FORMAT);
+        return dateFormat.format(myDate);
     }
 }

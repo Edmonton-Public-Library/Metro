@@ -42,23 +42,23 @@ public class DateComparerTest
     @Test
     public void testGetYearsOld() throws Exception
     {
-        System.out.println("getYearsOld");
-        String date = "1963-08-22"; // "08/22/1963"
+        System.out.println("==getYearsOld==");
+        String date = "19630822"; // "08/22/1963"
         int expResult = 49;
         int result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
-        date = "2013-04-08";
+        date = "20130408";
         expResult = 0;
         result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
-        date = "2014-04-08";
+        date = "20140408";
         expResult = 0;
         result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
-        date = "2012-04-08";
+        date = "20120408";
         expResult = 1;
         result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
@@ -72,69 +72,33 @@ public class DateComparerTest
     {
         System.out.println("=== getDaysUntilExpiry ===");
         ///////////// This test will fail tomorrow unless you change this test date!!!!
-        String date = DateComparer.ANSIToHumanReadable(DateComparer.today());
+        String date = DateComparer.ANSIToday();
         int expResult = 0;
         int result = DateComparer.getDaysUntilExpiry(date);
         assertEquals(expResult, result);
-        // take today's date and subtract a day.
-        int days = Integer.parseInt(DateComparer.today().substring(6, 8));
-        date = date.substring(0, 7) + "-"+String.valueOf(days - 1);
+        // take ANSIToday's date and subtract a day.
+        int days = Integer.parseInt(DateComparer.ANSIToday().substring(6, 8));
+        date = date.substring(0, 7) + String.valueOf(days - 1);
         expResult = -1;
         result = DateComparer.getDaysUntilExpiry(date);
         assertEquals(expResult, result);
         
-        date = "2013-01-01";
+        date = "20130101";
         result = DateComparer.getDaysUntilExpiry(date);
         System.out.println(">>>days since "+date+": "+result);
         
     }
 
     /**
-     * Test of today method, of class DateComparer.
+     * Test of ANSIToday method, of class DateComparer.
      */
     @Test
     public void testToday()
     {
         System.out.println("===today===");
-        String expResult = "20130803";
-        String result = DateComparer.today();
+        String expResult = "20130806";
+        String result = DateComparer.ANSIToday();
         System.out.println("RESULT:"+result);
-        assertTrue(expResult.compareTo(result) == 0);
-    }
-
-    /**
-     * Test of formatDate method, of class DateComparer.
-     */
-    @Test
-    public void testFormatDate()
-    {
-        System.out.println("===formatDate===");
-        String date = "2013-03-29";
-        String expResult = "20130329";
-        String result = DateComparer.formatDate(date);
-        assertTrue(expResult.compareTo(result) == 0);
-    }
-
-    /**
-     * Test of ANSIToHumanReadable method, of class DateComparer.
-     */
-    @Test
-    public void testANSIToHumanReadable()
-    {
-        System.out.println("=== ANSIToHumanReadable ===");
-        String date = "20000101";
-        String expResult = "2000-01-01";
-        String result = DateComparer.ANSIToHumanReadable(date);
-        assertTrue(expResult.compareTo(result) == 0);
-        
-        date = "andrew";
-        expResult = "";
-        result = DateComparer.ANSIToHumanReadable(date);
-        assertTrue(expResult.compareTo(result) == 0);
-        
-        date = "200001015";
-        expResult = "";
-        result = DateComparer.ANSIToHumanReadable(date);
         assertTrue(expResult.compareTo(result) == 0);
     }
 }

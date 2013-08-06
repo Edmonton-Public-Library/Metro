@@ -4,7 +4,6 @@
  */
 package mecard.customer;
 
-import mecard.customer.BImportBat;
 import java.io.File;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -24,7 +24,7 @@ public class BImportFileTest
         new BImportFile.Builder(hName, dName)
                 .barcode("21221012345678")
                 .name("Billy, Balzac")
-                .expire("12-25-2014")
+                .expire("20140822")
                 .pin("1234")
                 .pType("h-noTC")
                 .pNumber("7804964058")

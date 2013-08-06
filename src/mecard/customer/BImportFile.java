@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mecard.util.City;
@@ -144,7 +145,16 @@ public class BImportFile
         File header = createFile(b.headerName);
         File data   = createFile(b.dataName);
         // These fields need to be formatted
-        String expiryDate = DateComparer.convertToConfigDate(b.expiry);
+        String expiryDate = "";
+        try
+        {
+            expiryDate = DateComparer.ANSIToConfigDate(b.expiry);
+        }
+        catch (ParseException ex)
+        {
+            System.out.println(BImportFile.class.getName()
+                    + " the supplied date '" + b.expiry + "' failed to convert.");
+        }
         // Phone
         String phone = Phone.formatPhone(b.phone);
         // City needs to be mapped.

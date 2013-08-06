@@ -98,7 +98,7 @@ public class FlatUserFormatter implements CustomerFormatter
         }
         // There is not middle name field.
         // set todays date as the date privilege granted.
-        flatUser.add(FlatUserFieldTypes.USER_PRIV_GRANTED,  DateComparer.today());
+        flatUser.add(FlatUserFieldTypes.USER_PRIV_GRANTED,  DateComparer.ANSIToday());
         // Now load all the default values we need to set like PROFILE.
         flatUser.setDefaultProperties();
         return flatUser.toList(); 
