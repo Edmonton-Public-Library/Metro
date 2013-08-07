@@ -264,7 +264,7 @@ public abstract class MeCardPolicy
         try
         {
             int expiryDays = DateComparer.getDaysUntilExpiry(expiryDate);
-            System.out.println("Customer privilege date:"+expiryDate+", computed days: " + expiryDays);
+            if (DEBUG) System.out.println("Customer privilege date:"+expiryDate+", computed days: " + expiryDays);
             if (expiryDays >= MeCardPolicy.MINIMUM_EXPIRY_DAYS)
             {
                 return true;

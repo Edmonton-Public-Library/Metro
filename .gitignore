@@ -11,3 +11,4 @@ test/mecard/MetroClient.class
 dist
 *.properties
 TESTconfiguration/sip2cemu.pl
+test/mecard/MetroClient.java

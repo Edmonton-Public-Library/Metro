@@ -51,7 +51,7 @@ import site.mecard.MemberTypes;
  */
 public class MetroService implements Daemon
 {
-    public static String VERSION = "0.1"; // server version.
+    public final static String VERSION = "0.1"; // server version.
     private static String CONFIG_DIR = "";
     private static String BIMPORT_PROPERTY_FILE = "bimport.properties";
     private static String DEFAULT_CREATE_PROPERTY_FILE = "default.properties";
@@ -182,6 +182,8 @@ public class MetroService implements Daemon
     public void stop() throws Exception
     {
         System.out.println(new Date() + " stopping service...");
+        // Used by Windows to stop the service.
+        listening = false;
     }
 
     @Override

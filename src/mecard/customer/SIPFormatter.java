@@ -38,7 +38,7 @@ public class SIPFormatter implements CustomerFormatter
     @Override
     public Customer getCustomer(String s)
     {
-        System.out.println(">>>>> SIP_CUSTOMER:'"+s+"'");
+//        System.out.println(">>>>> SIP_CUSTOMER:'"+s+"'");
         Customer customer = new Customer();
         // parse the string appart.
 //        sent:63                               AO|AA21221012345678|AD64058|AY0AZF374
