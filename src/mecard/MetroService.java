@@ -21,6 +21,7 @@
 
 package mecard;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -99,6 +100,10 @@ public class MetroService implements Daemon
             String configDirectory = cmd.getOptionValue("c");
             if(configDirectory != null) 
             {
+                if (configDirectory.endsWith(File.separator) == false)
+                {
+                    configDirectory += File.separator;
+                }
                 CONFIG_DIR = configDirectory;
                 System.out.println(new Date() + "CONFIG: dir set to "+CONFIG_DIR);
             }
@@ -196,6 +201,18 @@ public class MetroService implements Daemon
         System.out.println(new Date() + " stopping service...");
         listening = false;
         System.exit(0);
+    }
+    
+    /** 
+     * Required when using prunsrv (AKA procrun) to start Metro service.
+     * @param args parameters to send to main method.
+     */
+    static void start(String[] args)
+    {
+        // Used by Windows to stop the service.
+        System.out.println(new Date() + " Starting service...");
+        listening = true;
+        main(args);
     }
 
     @Override
