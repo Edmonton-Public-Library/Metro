@@ -20,7 +20,6 @@
  */
 package api;
 
-import mecard.exception.MalformedCommandException;
 import mecard.exception.SIPException;
 
 /**

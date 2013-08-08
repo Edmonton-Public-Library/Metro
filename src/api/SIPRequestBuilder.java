@@ -31,7 +31,6 @@ import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.SIPFormatter;
-import mecard.exception.InvalidCustomerException;
 import mecard.exception.UnsupportedCommandException;
 
 /**

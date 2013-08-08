@@ -37,8 +37,8 @@ public enum BImportPropertyTypes
     DEFAULT_BTYPE("btype"), // like bawb
     MAIL_TYPE("mail-type"),
     LOCATION("location"), // Like lalap
-    IS_INDEXED("indexed"), // "y = NOT indexed"
-    DATE_FORMAT("date-format"); // the prefered date formatting. now in Environment file.
+    IS_INDEXED("indexed"); // "y = NOT indexed"
+//    DATE_FORMAT("date-format"); // the prefered date formatting. now in Environment file.
     
     private String type;
 
