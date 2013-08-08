@@ -13,3 +13,4 @@ dist
 TESTconfiguration/sip2cemu.pl
 test/mecard/MetroClient.java
 windows/*.exe
+EPLconfiguration/
