@@ -182,8 +182,20 @@ public class MetroService implements Daemon
     public void stop() throws Exception
     {
         System.out.println(new Date() + " stopping service...");
+        // Stubbed for future cleanup.
+    }
+    
+    /**
+     * Windows specific; included to accommodate prunsrv --StopMethod requirement
+     * of a method that takes an array of String args.
+     * @param args 
+     */
+    static void stop(String[] args)
+    {
         // Used by Windows to stop the service.
+        System.out.println(new Date() + " stopping service...");
         listening = false;
+        System.exit(0);
     }
 
     @Override
