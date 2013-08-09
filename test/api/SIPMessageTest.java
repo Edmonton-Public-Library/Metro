@@ -120,24 +120,32 @@ public class SIPMessageTest
     {
         System.out.println("== testGetOnlineStatus ==");
         
-        SIPMessage instance = new SIPMessage(responseOne);
+        SIPStatusMessage instance = new SIPStatusMessage(responseOne);
         String expResult = "Y";
         System.out.println("IS_ONLINE:"+instance.isOnline());
         String result = instance.isOnline();
         assertEquals(expResult.compareTo(result), 0);
         
-        instance = new SIPMessage(responseTwo);
+        instance = new SIPStatusMessage(responseTwo);
         expResult = "Y";
         System.out.println("IS_ONLINE:"+instance.isOnline());
         result = instance.isOnline();
         assertEquals(expResult.compareTo(result), 0);
         
-        instance = new SIPMessage("77PYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|ANSIPCHK|AY1AZE80C");
-        System.out.println("IS_ONLINE:"+instance.isOnline());
-        result = instance.isOnline();
-        assertTrue(result.isEmpty());
+        try
+        {
+            instance = new SIPStatusMessage("77PYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|ANSIPCHK|AY1AZE80C");
+            System.out.println("IS_ONLINE:"+instance.isOnline());
+            result = instance.isOnline();
+            assertTrue(result.isEmpty());
+        }
+        catch (Exception e)
+        {
+            // Should fail since this is not a status result message.
+            assertTrue(e instanceof SIPException);
+        }
         
-        instance = new SIPMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
+        instance = new SIPStatusMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
         expResult = "N";
         System.out.println("IS_ONLINE:"+instance.isOnline());
         result = instance.isOnline();

@@ -44,7 +44,7 @@ public class SIPCustomerMessage extends SIPMessage
      * @return String of the customer's profile field (PC). 
      * If the message doesn't represent a customer 
      */
-    public String getCustomerProfile()
+    public final String getCustomerProfile()
     {
         String profile = this.getField("PC");
         if (profile == null)
@@ -58,7 +58,7 @@ public class SIPCustomerMessage extends SIPMessage
      * 
      * @return String of the message field (AF).
      */
-    public String getMessage()
+    public final String getMessage()
     {
         String message = this.getField("AF");
         if (message == null)

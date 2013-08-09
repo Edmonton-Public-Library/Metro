@@ -88,39 +88,10 @@ public class SIPMessage
     }
     
     /**
-     * Gets the online status flag of either 'Y', 'N' or '' if this is not a
-     * status request message.
-     *
-     * @return String of the flag value of the message. If the message is not
-     * a status request the result will be an empty string, otherwise the 
-     * result could be either 'Y' or 'N'.
-     */
-    public String isOnline()
-    {
-        // We return a string instead of a boolean because we can have 3 results,
-        // "", "Y" or "N". Getting an empty string would have to be interpreted
-        // as false but doesn't mean the SIP server is offline.
-        StringBuilder result = new StringBuilder();
-        if (this.code.compareTo("98") != 0)
-        {
-            return result.toString();
-        }
-        try
-        {
-            result.append(this.codeBits.charAt(0));
-        }
-        catch (IndexOutOfBoundsException ex)
-        {
-            return result.toString();
-        }
-        return result.toString();
-    }
-    
-    /**
      * 
      * @return String version of the initial SIP2 code.
      */
-    public String getCode()
+    public final String getCode()
     {
         return this.code;
     }
@@ -129,7 +100,7 @@ public class SIPMessage
      * 
      * @return String of the bit field associated with the code field.
      */
-    public String getCodeMessage()
+    public final String getCodeMessage()
     {
         return this.codeBits;
     }
@@ -138,7 +109,7 @@ public class SIPMessage
      *
      * @return List of names of fields in the message.
      */
-    public List<String> getFieldNames()
+    public final List<String> getFieldNames()
     {
         List<String> myListOfKeys = new ArrayList<String>();
         Set<String> keySet = this.fields.keySet();
@@ -154,7 +125,7 @@ public class SIPMessage
      * @param which the code of the field you want.
      * @return the contents of that field
      */
-    public String getField(String which)
+    public final String getField(String which)
     {
         return this.fields.get(which.toUpperCase()); // which could return null
     }
