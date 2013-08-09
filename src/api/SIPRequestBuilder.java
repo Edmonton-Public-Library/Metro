@@ -31,6 +31,7 @@ import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.SIPFormatter;
+import mecard.exception.SIPException;
 import mecard.exception.UnsupportedCommandException;
 
 /**
@@ -152,21 +153,27 @@ public class SIPRequestBuilder implements ILSRequestBuilder
     
     /** 
      * Tests the response string from the sip server for success.
-     * @param sipResponse The response from the sip server.
+     * @param sipResponse The response String from the sip server.
      * @return true if the command's return code was Ok, and false otherwise.
      */
-    private boolean isSuccessful(String sipResponse)
+    protected boolean isSuccessful(String sipResponse)
     {
-        // test the return codes, convert to a ResponseTypes and return true
-        if (sipResponse.length() > 64)
+        try
         {
-            //recv:98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C
-            // We need to check that the values at position 2 (online status) 
-            // and 56 (Patron Information) are both 'Y'
-            if (sipResponse.charAt(2) == 'Y' && sipResponse.charAt(63) == 'Y') // zero indexed don't forget.
+            SIPMessage message = new SIPMessage(sipResponse);
+            if (message.isOnline().compareTo("Y") == 0)
             {
-                return true;
+                if (message.getPatronInfoPermitted().compareTo("Y") == 0)
+                {
+                    return true;
+                }
             }
+        }
+        catch (SIPException ex)
+        {
+            System.out.println(SIPRequestBuilder.class.getName() 
+                    + " Unexpected SIP2 message '" + sipResponse + "'.");
+            return false;
         }
         return false;
     }

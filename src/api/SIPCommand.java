@@ -74,6 +74,7 @@ public class SIPCommand implements Command
         this.sipConnector = b.connector;
         if (b.isStatusRequest)
         {
+            // St. Albert's    "990   2.00AY1AZFCD8";
             this.queryString = "990   2.00AY1AZFCD8";
         }
         else
