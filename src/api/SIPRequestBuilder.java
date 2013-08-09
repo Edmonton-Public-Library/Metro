@@ -160,7 +160,7 @@ public class SIPRequestBuilder implements ILSRequestBuilder
     {
         try
         {
-            SIPMessage message = new SIPMessage(sipResponse);
+            SIPStatusMessage message = new SIPStatusMessage(sipResponse);
             if (message.isOnline().compareTo("Y") == 0)
             {
                 if (message.getPatronInfoPermitted().compareTo("Y") == 0)

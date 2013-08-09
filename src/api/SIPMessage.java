@@ -37,11 +37,10 @@ import mecard.exception.SIPException;
  */
 public class SIPMessage
 {
-
-    private HashMap<String, String> fields;
-    private final String originalMessage;
-    private final String code;
-    private final String codeBits;
+    protected HashMap<String, String> fields;
+    protected final String originalMessage;
+    protected final String code;
+    protected final String codeBits;
 
     public SIPMessage(String sipMessage)
             throws SIPException
@@ -109,30 +108,6 @@ public class SIPMessage
         try
         {
             result.append(this.codeBits.charAt(0));
-        }
-        catch (IndexOutOfBoundsException ex)
-        {
-            return result.toString();
-        }
-        return result.toString();
-    }
-    
-    /**
-     * 
-     * @return String value of the patron info permitted flag or an empty string if
-     * the method is called on a message that doesn't contain such information.
-     */
-    public String getPatronInfoPermitted()
-    {
-        StringBuilder result = new StringBuilder();
-        String bitField = this.getField("BX");
-        if (bitField == null)
-        {
-            return result.toString();
-        }
-        try
-        {
-            result.append(bitField.charAt(7));
         }
         catch (IndexOutOfBoundsException ex)
         {

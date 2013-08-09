@@ -31,6 +31,7 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.DateComparer;
+import sta.STAPolicy;
 
 /**
  * This class needs to be sub-classed by all libraries. All customer's must meet 
@@ -48,7 +49,7 @@ public abstract class MeCardPolicy
     public final static int MAXIMUM_EXPIRY_DAYS = 365;
     protected static boolean DEBUG;
 
-    public static EPLPolicy getInstanceOf(boolean debug)
+    public static MeCardPolicy getInstanceOf(boolean debug)
     {
         DEBUG = debug;
         Properties props = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
@@ -57,6 +58,10 @@ public abstract class MeCardPolicy
         {
             return new EPLPolicy(DEBUG);
         } 
+        else if (libCode.equalsIgnoreCase(MemberTypes.STA.name()))
+        {
+            return new STAPolicy(DEBUG);
+        }
         else
         {
             throw new UnsupportedLibraryException(libCode);

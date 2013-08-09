@@ -88,24 +88,24 @@ public class SIPMessageTest
     {
         System.out.println("== testGetPatronInfoPermission ==");
         
-        SIPMessage instance = new SIPMessage(responseOne);
+        SIPStatusMessage instance = new SIPStatusMessage(responseOne);
         String expResult = "Y";
         System.out.println("PATRON_INFO:"+instance.getPatronInfoPermitted());
         String result = instance.getPatronInfoPermitted();
         assertEquals(expResult.compareTo(result), 0);
         
-        instance = new SIPMessage(responseTwo);
+        instance = new SIPStatusMessage(responseTwo);
         expResult = "Y";
         System.out.println("PATRON_INFO:"+instance.getPatronInfoPermitted());
         result = instance.getPatronInfoPermitted();
         assertEquals(expResult.compareTo(result), 0);
         
-        instance = new SIPMessage("98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|ANSIPCHK|AY1AZE80C");
+        instance = new SIPStatusMessage("98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|ANSIPCHK|AY1AZE80C");
         System.out.println("PATRON_INFO:"+instance.getPatronInfoPermitted());
         result = instance.getPatronInfoPermitted();
         assertTrue(result.isEmpty());
         
-        instance = new SIPMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
+        instance = new SIPStatusMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
         expResult = "N";
         System.out.println("PATRON_INFO:"+instance.getPatronInfoPermitted());
         result = instance.getPatronInfoPermitted();

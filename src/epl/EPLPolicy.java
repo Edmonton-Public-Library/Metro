@@ -34,12 +34,12 @@ import site.mecard.MeCardPolicy;
  */
 public class EPLPolicy extends MeCardPolicy
 {
-    public final static String EPL_RECIPROCAL = "EPL-RECIP";
-    public final static String EPL_VISITOR    = "EPL-VISITR"; // Non resident
-    public final static String[] JUV_PROFILE  = {"EPL-JUV","EPL-JUV01","EPL-JUV05","EPL-JUV10","EPL-JUVNR","EPL-JUVGR","EPL-JUVIND"};
-    public final static String INVALID_CONDITION = "BLOCKED";
+    private final static String EPL_RECIPROCAL = "EPL-RECIP";
+    private final static String EPL_VISITOR    = "EPL-VISITR"; // Non resident
+    private final static String[] JUV_PROFILE  = {"EPL-JUV","EPL-JUV01","EPL-JUV05","EPL-JUV10","EPL-JUVNR","EPL-JUVGR","EPL-JUVIND"};
+    private final static String INVALID_CONDITION = "BLOCKED";
     private final boolean debug;
-    public final static String LOST_CARD = "LOSTCARD";
+    private final static String LOST_CARD = "LOSTCARD";
     
     public EPLPolicy()
     {
