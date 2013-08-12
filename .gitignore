@@ -15,3 +15,8 @@ test/mecard/MetroClient.java
 windows/*.exe
 EPLconfiguration/
 TODO
+MeCard_0.1_STA.z_
+data.txt
+header.txt
+testfile.bat
+logs/
