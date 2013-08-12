@@ -19,15 +19,15 @@ updateepl:
 updatestr:
 	zip -r ${ARCHIVE}_STR.zip dist/* 
 updatesta:
-	zip -r ${ARCHIVE}_STA.zip dist/* 
+	zip -r ${ARCHIVE}_STA.z_ dist/* 
 
 diststr:
 	zip -r ${ARCHIVE}_STR.zip ${STR_DIR}/* dist/* ${WIN_DIR}/* logs/
 distepl:
 	tar cvf ${ARCHIVE}_EPL.tar ${EPL_DIR}/* dist/* logs/
 diststa:
-	zip -r ${ARCHIVE}_STA.zip ${STA_DIR}/* dist/* ${WIN_DIR}/* logs/
+	zip -r ${ARCHIVE}_STA.z_ ${STA_DIR}/* dist/* ${WIN_DIR}/* logs/
 clean:
 	-rm ${ARCHIVE}_EPL.tar 
 	-rm ${ARCHIVE}_STR.zip
-	-rm ${ARCHIVE}_STA.zip
+	-rm ${ARCHIVE}_STA.z_
