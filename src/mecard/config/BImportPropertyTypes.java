@@ -27,17 +27,17 @@ package mecard.config;
  */
 public enum BImportPropertyTypes
 {
-    BIMPORT_DIR("directory"),
-    SERVER("server"),
-    PASSWORD("password"),
-    USER("user"),
-    DATABASE("database"),
-    SERVER_ALIAS("server-alias"),
-    VERSION("version"), // like fm41 any other version is currently untested.
-    DEFAULT_BTYPE("btype"), // like bawb
-    MAIL_TYPE("mail-type"),
-    LOCATION("location"), // Like lalap
-    IS_INDEXED("indexed"); // "y = NOT indexed"
+    BIMPORT_DIR("directory"), // Directory where to find customer files to load.
+    SERVER("server"),         // '/s' switch the name of the server.
+    PASSWORD("password"),     // password for server function.
+    USER("user"),             // bimport user, should be admin privileges in Horizon.
+    DATABASE("database"),     // Name of the database.
+    SERVER_ALIAS("server-alias"), // This is identified as the server alias.
+    VERSION("version"),       // like fm41 any other version is currently untested.
+    DEFAULT_BTYPE("btype"),   // like bawb
+    MAIL_TYPE("mail-type"),   // dom seems to be the default type.
+    LOCATION("location"),     // Like lalap
+    IS_INDEXED("indexed");    // "y = NOT indexed"
 //    DATE_FORMAT("date-format"); // the prefered date formatting. now in Environment file.
     
     private String type;

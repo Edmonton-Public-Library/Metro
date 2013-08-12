@@ -45,7 +45,8 @@ public interface CustomerFormatter
     
     /**
      *
-     * @param c the value of c
+     * @param c the Customer object to convert into a list to be consumed by 
+     * a subtype.
      * @return the List<String>
      */
     public List<String> setCustomer(Customer c);

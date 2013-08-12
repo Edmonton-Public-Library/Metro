@@ -89,22 +89,15 @@ public class BImportResponder extends Responder
         mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
         location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
         isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
-        
-        // compute header and data file names.
-        String pathSep;
-        if (debug)
-        {
-            pathSep = "/";
-        }
-        else
-        {
-            pathSep = File.pathSeparator;
-        }
-//        String transactionId = this.request.getTransactionId();
         String transactionId = this.request.getCustomerField(CustomerFieldTypes.ID);
-        batFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + BAT_FILE;
-        headerFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
-        dataFile = bimportDir + pathSep + FILE_NAME_PREFIX + transactionId + DATA_FILE;
+        // compute header and data file names.
+        if (bimportDir.endsWith(File.separator) == false)
+        {
+            bimportDir += File.separator;
+        }
+        batFile = bimportDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
+        headerFile = bimportDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
+        dataFile = bimportDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
     }
 
     /**
@@ -145,7 +138,6 @@ public class BImportResponder extends Responder
      */
     @Override
     public void createCustomer(Response response)
-//    protected ResponseTypes submitCustomer(StringBuffer responseBuffer)
     {
         // take the commandArguments, format them to bimport files, execute
         // the batch file.

@@ -28,10 +28,10 @@ public class BImportBatTest
             f.delete();
         }
         BImportBat b = new BImportBat.Builder("testfile.bat")
-                .setBimportPath("/home/metro/bimport/bimport").server("server")
-                .password("password").user("user").database("database")
-                .header("headerFileName.txt").data("dataFileName").alias("second_id")
-                .format("m41").bType("awb").location("alap").setIndexed(true).build();
+                .setBimportPath("C:\\metro\\logs\\Customers\\bimport.exe").server("'Horizon MSSQL Server'")
+                .password("sql54200").user("sa").database("stalbert")
+                .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").alias("second_id")
+                .format("m41").bType("metro").mType("dom").location("st").setIndexed(true).build();
         f = new File("testfile.bat");
         assertTrue(f.exists());
         
@@ -44,10 +44,10 @@ public class BImportBatTest
     public void testGetCommandLine() {
         System.out.println("==getCommandLine==");
         BImportBat b = new BImportBat.Builder("testfile.bat")
-                .setBimportPath("/home/metro/bimport/bimport").server("server")
-                .password("password").user("user").database("database")
-                .header("headerFileName.txt").data("dataFileName").alias("second_id")
-                .format("m41").bType("awb").location("alap").setIndexed(true).build();
+                .setBimportPath("C:\\metro\\logs\\Customers\\bimport.exe").server("'Horizon MSSQL Server'")
+                .password("sql54200").user("sa").database("stalbert")
+                .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").alias("second_id")
+                .format("m41").bType("metro").mType("dom").location("st").setIndexed(true).build();
         System.out.println("cmd:'"+b.getCommandLine()+"'");
     }
 
