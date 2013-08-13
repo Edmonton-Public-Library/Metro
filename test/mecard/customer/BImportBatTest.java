@@ -57,16 +57,6 @@ public class BImportBatTest
         b.getCommandLine(resultArray);
         System.out.println("RSLT_ARRY:" + resultArray);
         
-        System.out.println("==TEST for substring. ==");
-        String pin = "64058";
-        int start = pin.length() - MeCardPolicy.MAXIMUM_PIN_WIDTH;
-        if (start >= 0)
-        {
-            String newPin = pin.substring(start);
-            System.out.println("NEW_PIN:"+ newPin);
-            System.out.println("Customer's PIN was too long trimmed to last "
-                + MeCardPolicy.MAXIMUM_PIN_WIDTH + " characters.");
-        }
     }
 
     /**
