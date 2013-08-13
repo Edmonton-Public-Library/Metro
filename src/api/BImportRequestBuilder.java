@@ -144,7 +144,7 @@ public class BImportRequestBuilder implements ILSRequestBuilder
                 .header(headerFile).data(dataFile)
                 .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
                 .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
-//                .setDebug(debug)
+//                .setDebug(debug) // not used in class yet.
                 .build();
         List<String> bimportBatExec = new ArrayList<String>();
         batch.getCommandLine(bimportBatExec);

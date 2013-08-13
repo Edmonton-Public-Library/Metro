@@ -5,6 +5,8 @@
 package mecard.customer;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -49,6 +51,9 @@ public class BImportBatTest
                 .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").alias("second_id")
                 .format("m41").bType("metro").mType("dom").location("st").setIndexed(true).build();
         System.out.println("cmd:'"+b.getCommandLine()+"'");
+        List<String> resultArray = new ArrayList<String>();
+        b.getCommandLine(resultArray);
+        System.out.println("RSLT_ARRY:" + resultArray);
     }
 
     /**

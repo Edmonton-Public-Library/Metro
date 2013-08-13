@@ -306,19 +306,11 @@ public class BImportBat
     /**
      * 
      * @param argList a List of Strings that the command line will be copied
-     * into. If the argList is null, a new one will be created, otherwise the
-     * List will be cleared.
+     * into. The argument List will be cleared.
      */
     public void getCommandLine(List<String> argList)
     {
-        if (argList == null)
-        {
-            argList = new ArrayList<String>();
-        }
-        else
-        {
-            argList.clear();
-        }
+        argList.clear();
         for (String s: fileContentList)
         {
             argList.add(s);
