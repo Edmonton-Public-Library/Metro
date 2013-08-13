@@ -42,9 +42,7 @@ public interface ILSRequestBuilder
      * @param userId the value of userId
      * @param userPin the value of userPin
      * @param response Buffer to contain useful response information.
-     */ 
-     
-     
+     */
     public Command getCustomerCommand(String userId, String userPin, Response response);
     
     /**

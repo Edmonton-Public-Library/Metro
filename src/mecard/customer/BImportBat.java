@@ -24,11 +24,17 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Creates a BImport batch file on the local file system. Note the two constructors;
+ * if Builder receives no file name, it is assumed that the user wants just the
+ * command line that would have been written to the batch file, otherwise if a
+ * String is passed it is assumed that the command line should be written to 
+ * the named batch file. This will help diagnose what command was run.
  * @author metro
  */
 public class BImportBat
@@ -37,6 +43,7 @@ public class BImportBat
     private final String fileName;
     private File file;
     private StringBuilder fileContent;
+    private List<String> fileContentList;
     private boolean isDebugMode;
 
     public static class Builder
@@ -169,65 +176,78 @@ public class BImportBat
     {
         isDebugMode = b.isDebugMode;
         fileContent = new StringBuilder();
+        fileContentList = new ArrayList<String>();
         fileContent.append(b.bimportPath);
         if (b.server != null)
         {
             fileContent.append("/s");
             fileContent.append(b.server);
+            fileContentList.add("/s" + b.server);
         }
         if (b.password != null)
         {
             fileContent.append("/p");
             fileContent.append(b.password);
+            fileContentList.add("/p" + b.password);
         }
         if (b.user != null)
         {
             fileContent.append("/u");
             fileContent.append(b.user);
+            fileContentList.add("/u" + b.user);
         }
         if (b.database != null)
         {
             fileContent.append("/d");
             fileContent.append(b.database);
+            fileContentList.add("/d" + b.database);
         }
         if (b.headerFileName != null)
         {
             fileContent.append("/h");
             fileContent.append(b.headerFileName);
+            fileContentList.add("/h" + b.headerFileName);
         }
         if (b.dataFileName != null)
         {
             fileContent.append("/i");
             fileContent.append(b.dataFileName);
+            fileContentList.add("/i" + b.dataFileName);
         }
         if (b.alias != null)
         {
             fileContent.append("/k");
             fileContent.append(b.alias);
+            fileContentList.add("/k" + b.alias);
         }
         if (b.format != null)
         {
             fileContent.append("/f");
             fileContent.append(b.format);
+            fileContentList.add("/f" + b.format);
         }
         if (b.bType != null)
         {
             fileContent.append("/b");
             fileContent.append(b.bType);
+            fileContentList.add("/b" + b.bType);
         }
         if (b.mType != null)
         {
             fileContent.append("/m");
             fileContent.append(b.mType); // mail type (default)
+            fileContentList.add("/m" + b.mType);
         }
         if (b.location != null)
         {
             fileContent.append("/l");
             fileContent.append(b.location);
+            fileContentList.add("/l" + b.location);
         }
         if (b.isIndexed())
         {
             fileContent.append("/y");
+            fileContentList.add("/y");
         }
         
         // do we need to output as a batch file or command line args?
@@ -281,5 +301,27 @@ public class BImportBat
 //            return "/home/metro/bimport/bimport";
 //        }
         return fileContent.toString();
+    }
+    
+    /**
+     * 
+     * @param argList a List of Strings that the command line will be copied
+     * into. If the argList is null, a new one will be created, otherwise the
+     * List will be cleared.
+     */
+    public void getCommandLine(List<String> argList)
+    {
+        if (argList == null)
+        {
+            argList = new ArrayList<String>();
+        }
+        else
+        {
+            argList.clear();
+        }
+        for (String s: fileContentList)
+        {
+            argList.add(s);
+        }
     }
 }

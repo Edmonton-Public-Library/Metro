@@ -24,23 +24,14 @@ import api.Command;
 import api.CommandStatus;
 import api.Request;
 import api.Response;
-import api.SIPCommand;
-import mecard.customer.SIPFormatter;
-import java.util.Properties;
-import mecard.exception.SIPException;
 import mecard.ResponseTypes;
-import mecard.config.ConfigFileTypes;
-import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.CustomerFormatter;
-import api.SIPConnector;
 import api.SIPRequestBuilder;
 import java.util.Date;
-import mecard.MetroService;
 import mecard.Protocol;
 import mecard.QueryTypes;
-import mecard.exception.InvalidCustomerException;
 
 /**
  * The SIP2 strategy is meant to retrieve initial information about customers.

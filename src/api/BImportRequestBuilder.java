@@ -1,0 +1,215 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
+package api;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import mecard.MetroService;
+import mecard.QueryTypes;
+import static mecard.QueryTypes.NULL;
+import mecard.ResponseTypes;
+import mecard.config.BImportPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.CustomerFieldTypes;
+import mecard.customer.BImportBat;
+import mecard.customer.BImportFile;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
+import mecard.exception.BImportException;
+import mecard.exception.UnsupportedCommandException;
+
+/**
+ *
+ * @author Andrew Nisbet <anisbet@epl.ca>
+ */
+public class BImportRequestBuilder implements ILSRequestBuilder
+{
+    // Use this to prefix all our files.
+    public final static String FILE_NAME_PREFIX = "metro-";
+    public final static String BAT_FILE = "-bimp.bat";
+    public final static String HEADER_FILE = "-header.txt";
+    public final static String DATA_FILE = "-data.txt";
+    private static final CharSequence SUCCESS_MARKER = "<ok>";
+    private String bimportDir;
+    private String serverName;
+    private String password;
+    private String userName;
+    private String database; // we may need another way to distinguish DBs on a server.
+    private String serverAlias;
+    private String bimportVersion; // like fm41
+    private String defaultBtype; // like bawb
+    private String mailType;
+    private String location; // branch? see 'lalap'
+    private String isIndexed; // "y = NOT indexed"
+    private String batFile;
+    private String headerFile;
+    private String dataFile;
+    
+    public BImportRequestBuilder()
+    {
+        Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
+        bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
+        serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
+        password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
+        userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
+        database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
+        serverAlias = bimpProps.getProperty(BImportPropertyTypes.SERVER_ALIAS.toString());
+        bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
+        // TODO these should come from the default.properties.
+        defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
+        mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
+        location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
+        isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
+    }
+
+    @Override
+    public Command getCustomerCommand(String userId, String userPin, Response response)
+    {
+        throw new UnsupportedOperationException(BImportRequestBuilder.class.getName()
+                + "Not supported with BImport.");
+    }
+
+    @Override
+    public CustomerFormatter getFormatter()
+    {
+        throw new UnsupportedCommandException(BImportRequestBuilder.class.getName()
+                + " BImport does not require a customer formatter.");
+    }
+
+    @Override
+    public Command getCreateUserCommand(Customer customer, Response response)
+    {
+        // In this method on this class we create the data file and optionally
+        // a batch file at the same time since all three files must have consistent
+        // nameing.
+        // First thing set up the file names for this customer.
+        String transactionId = customer.get(CustomerFieldTypes.ID);
+        // compute header and data file names.
+        if (bimportDir.endsWith(File.separator) == false)
+        {
+            bimportDir += File.separator;
+        }
+        batFile = bimportDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
+        headerFile = bimportDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
+        dataFile = bimportDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
+        new BImportFile.Builder(headerFile, dataFile)
+                .barcode(customer.get(CustomerFieldTypes.ID))
+                .pin(customer.get(CustomerFieldTypes.PIN))
+                .name(customer.get(CustomerFieldTypes.NAME))
+                .address1(customer.get(CustomerFieldTypes.STREET))
+                .city(customer.get(CustomerFieldTypes.CITY))
+                .postalCode(customer.get(CustomerFieldTypes.POSTALCODE))
+                .emailName(computeEmailName(customer.get(CustomerFieldTypes.EMAIL)))
+                .email(customer.get(CustomerFieldTypes.EMAIL))
+                .expire(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES))
+                .pNumber(customer.get(CustomerFieldTypes.PHONE))
+                .build();
+        File fTest = new File(headerFile);
+        if (fTest.exists() == false)
+        {
+            throw new BImportException(BImportRequestBuilder.class.getName()
+                    + " Could not create header file: '" + headerFile + "'.");
+        }
+        fTest = new File(dataFile);
+        if (fTest.exists() == false)
+        {
+            throw new BImportException(BImportRequestBuilder.class.getName()
+                    + " Could not create data file: '" + dataFile + "'.");
+        }
+        // Ok the goal is to get the path to the batch file here with the name.
+        // The batch file and name have to be built at this time just like SymphonyRequestBuilder.
+        BImportBat batch = new BImportBat.Builder(batFile).server(serverName).password(password)
+                .user(userName).database(database)
+                .header(headerFile).data(dataFile)
+                .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
+                .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
+//                .setDebug(debug)
+                .build();
+        List<String> bimportBatExec = new ArrayList<String>();
+        batch.getCommandLine(bimportBatExec);
+        APICommand command = new APICommand.Builder().args(bimportBatExec).build();
+        return command;
+    }
+
+    @Override
+    public Command getUpdateUserCommand(Customer customer, Response response)
+    {
+        // Since we use the same command for updating as creating we can do this:
+        return getCreateUserCommand(customer, response);
+    }
+
+    @Override
+    public Command getStatusCommand(Response response)
+    {
+        throw new UnsupportedOperationException("Not supported with BImport.");
+    }
+
+    @Override
+    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
+    {
+        switch (commandType)
+        {
+            case CREATE_CUSTOMER:
+            case UPDATE_CUSTOMER:
+                // both commands produce the same results from running the 
+                // so if the bimport command was successful it looks like this:
+                String result = status.getStdout();
+                if (result.contains(BImportRequestBuilder.SUCCESS_MARKER))
+                {
+                    response.setCode(ResponseTypes.OK);
+                    response.setResponse("Customer account successfully loaded.");
+                    System.out.println(new Date() + "Customer account successfully loaded.");
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse("Customer account failed to load."
+                            + " Please contact your home library for more information.");
+                    System.out.println(new Date() + "Customer account failed to load.");
+                }
+                break;
+            case NULL:
+                response.setCode(ResponseTypes.OK);
+                response.setResponse("Null BImport command back at you...");
+                break;
+            default:
+                response.setCode(ResponseTypes.UNKNOWN);
+                response.setResponse(BImportRequestBuilder.class.getName() 
+                        + " doesn't know how to execute the query type: "
+                        + commandType.name());
+        }
+    }
+    
+    /** 
+     * Horizon has an additional required field, email name, which is just the 
+     * user's email name (without the domain). We compute that here.
+     * @param email
+     * @return String value of email account name (without the domain).
+     */
+    protected String computeEmailName(String email) 
+    {
+        return email.split("@")[0];
+    }
+
+}

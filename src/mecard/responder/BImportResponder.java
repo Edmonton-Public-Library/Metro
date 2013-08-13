@@ -20,21 +20,15 @@
  */
 package mecard.responder;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 import mecard.ResponseTypes;
-import mecard.config.BImportPropertyTypes;
-import mecard.config.ConfigFileTypes;
-import mecard.config.CustomerFieldTypes;
-import mecard.customer.BImportBat;
-import mecard.customer.BImportFile;
-import api.APICommand;
+import api.BImportRequestBuilder;
+import api.Command;
 import api.CommandStatus;
 import api.Request;
 import api.Response;
-import mecard.MetroService;
+import java.util.Date;
+import mecard.QueryTypes;
+import mecard.customer.Customer;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -46,27 +40,7 @@ import mecard.MetroService;
 public class BImportResponder extends Responder
     implements Updateable, Createable
 {
-    // Use this to prefix all our files.
-
-    public final static String FILE_NAME_PREFIX = "metro-";
-    public final static String BAT_FILE = "-bimp.bat";
-    public final static String HEADER_FILE = "-header.txt";
-    public final static String DATA_FILE = "-data.txt";
     private static String NULL_QUERY_RESPONSE_MSG = "BImport responder null request answered";
-    private String bimportDir;
-    private String serverName;
-    private String password;
-    private String userName;
-    private String database; // we may need another way to distinguish DBs on a server.
-    private String serverAlias;
-    private String bimportVersion; // like fm41
-    private String defaultBtype; // like bawb
-    private String mailType;
-    private String location; // branch? see 'lalap'
-    private String isIndexed; // "y = NOT indexed"
-    private String batFile;
-    private String headerFile;
-    private String dataFile;
 
     /**
      *
@@ -76,28 +50,6 @@ public class BImportResponder extends Responder
     public BImportResponder(Request cmd, boolean debugMode)
     {
         super(cmd, debugMode);
-        Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
-        bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
-        serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
-        password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
-        userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
-        database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
-        serverAlias = bimpProps.getProperty(BImportPropertyTypes.SERVER_ALIAS.toString());
-        bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
-        // TODO these should come from the default.properties.
-        defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
-        mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
-        location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
-        isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
-        String transactionId = this.request.getCustomerField(CustomerFieldTypes.ID);
-        // compute header and data file names.
-        if (bimportDir.endsWith(File.separator) == false)
-        {
-            bimportDir += File.separator;
-        }
-        batFile = bimportDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
-        headerFile = bimportDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
-        dataFile = bimportDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
     }
 
     /**
@@ -139,89 +91,24 @@ public class BImportResponder extends Responder
     @Override
     public void createCustomer(Response response)
     {
-        // take the commandArguments, format them to bimport files, execute
-        // the batch file.
-        List<String> submittableCustomer = new ArrayList<String>();
-        // This test checks if the customer is complete.
-        if (convert(submittableCustomer))
-        {
-            APICommand command = new APICommand.Builder().args(submittableCustomer).build();
-            CommandStatus status = command.execute();
-            if (status.getStatus() == ResponseTypes.OK)
-            {
-                response.setResponse(status.getStdout());
-                response.setCode(ResponseTypes.SUCCESS);
-                return;
-            }
-        }
-        response.setResponse("Customer conversion failed because the BImport files could not be created.");
-        response.setCode(ResponseTypes.FAIL);
-    }
-    
-    /**
-     * Splits apart an in-coming request into it's command, authority token and customer
-     * then maps those fields from the string to tables and columns in Horizon.
-     * @param customerCommands
-     * @return true if the customer files (header and data) were created and 
-     * false otherwise.
-     */
-    protected boolean convert(List<String> customerCommands)
-    {
-        // here we have to match up the CustomerFields with variable values.
-        // the constructor will then make the header and data files.
-        new BImportFile.Builder(headerFile, dataFile)
-                .barcode(request.getCustomerField(CustomerFieldTypes.ID))
-                .pin(request.getCustomerField(CustomerFieldTypes.PIN))
-                .name(request.getCustomerField(CustomerFieldTypes.NAME))
-                .address1(request.getCustomerField(CustomerFieldTypes.STREET))
-                .city(request.getCustomerField(CustomerFieldTypes.CITY))
-                .postalCode(request.getCustomerField(CustomerFieldTypes.POSTALCODE))
-                .emailName(computeEmailName(request.getCustomerField(CustomerFieldTypes.EMAIL)))
-                .email(request.getCustomerField(CustomerFieldTypes.EMAIL))
-                .expire(request.getCustomerField(CustomerFieldTypes.PRIVILEGE_EXPIRES))
-                .pNumber(request.getCustomerField(CustomerFieldTypes.PHONE))
-                .build();
-        File fTest = new File(headerFile);
-        if (fTest.exists() == false)
-        {
-            return false;
-        }
-        fTest = new File(dataFile);
-        if (fTest.exists() == false)
-        {
-            return false;
-        }
-        // load the submittable customer with what you want executed. In bimport's 
-        // case it is the command and arguments for loading the customer or, even
-        // better the commandline itself.
-        // create the bat file.
-        BImportBat batch = new BImportBat.Builder(batFile).server(serverName).password(password)
-                .user(userName).database(database)
-                .header(headerFile).data(dataFile)
-                .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
-                .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
-                .setDebug(debug)
-                .build();
-        customerCommands.add(batch.getCommandLine());
-        // alternatively:
-        // sc.setCustomerRepresentation(batch.getBatchFileName());
-        return true;
-    }
-
-    /** 
-     * Horizon has an additional required field, email name, which is just the 
-     * user's email name (without the domain). We compute that here.
-     * @param email
-     * @return String value of email account name (without the domain).
-     */
-    protected String computeEmailName(String email) 
-    {
-        return email.split("@")[0];
+        Customer customer = request.getCustomer();
+        BImportRequestBuilder bimportRequestBuilder = new BImportRequestBuilder();
+        Command bimportCommand = bimportRequestBuilder.getCreateUserCommand(customer, response);
+        CommandStatus status = bimportCommand.execute();
+        bimportRequestBuilder.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
+        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
     }
 
     @Override
     public void updateCustomer(Response response)
     {
-        createCustomer(response);
+        Customer customer = request.getCustomer();
+        BImportRequestBuilder bimportRequestBuilder = new BImportRequestBuilder();
+        Command bimportCommand = bimportRequestBuilder.getUpdateUserCommand(customer, response);
+        CommandStatus status = bimportCommand.execute();
+        bimportRequestBuilder.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
+        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
     }
 }
