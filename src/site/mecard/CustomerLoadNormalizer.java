@@ -2,7 +2,6 @@
 package site.mecard;
 
 import epl.EPLCustomerNormalizer;
-import epl.EPLPolicy;
 import java.util.Properties;
 import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
@@ -11,7 +10,6 @@ import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import static site.mecard.MeCardPolicy.DEBUG;
 import sta.STACustomerNormalizer;
-import sta.STAPolicy;
 
 /**
  *
