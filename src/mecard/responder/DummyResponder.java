@@ -18,7 +18,7 @@ import mecard.config.CustomerFieldTypes;
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class DummyResponder extends CustomerQueryable
-        implements StatusQueryable, Updateable, Createable
+        implements StatusQueryable, Updateable
 {
     private static String NULL_QUERY_RESPONSE_MSG = "debug responder reporting";
 
@@ -128,5 +128,11 @@ public class DummyResponder extends CustomerQueryable
     public boolean isAuthorized(String suppliedPin, Customer customer)
     {
         return (customer.get(CustomerFieldTypes.PIN).compareTo(suppliedPin) == 0);
+    }
+
+    @Override
+    public void normalize(Response response, Customer customer)
+    {
+        return; // not required in dummy.
     }
 }

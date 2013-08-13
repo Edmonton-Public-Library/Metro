@@ -37,13 +37,14 @@ import java.util.Date;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.config.CustomerFieldTypes;
+import site.mecard.CustomerLoadNormalizer;
 
 /**
- *
+ * 
  * @author andrew
  */
 public class APIResponder extends CustomerQueryable
-    implements StatusQueryable, Createable, Updateable
+    implements StatusQueryable, Updateable
 {
     private static String NULL_QUERY_RESPONSE_MSG = "API says hello.";
     private final ILSRequestBuilder api;
@@ -64,7 +65,7 @@ public class APIResponder extends CustomerQueryable
 
     /**
      *
-     * @return the api.Response
+     * @return the Response
      */
     @Override
     public Response getResponse()
@@ -100,6 +101,7 @@ public class APIResponder extends CustomerQueryable
     {
         // I have a customer, I need to reload them into the ils
         Customer customer = request.getCustomer();
+        normalize(response, customer);
         Command apiCommand = api.getUpdateUserCommand(customer, response);
         CommandStatus status = apiCommand.execute();
         // The command thread will block until it gets a message from running process
@@ -115,6 +117,7 @@ public class APIResponder extends CustomerQueryable
     {
         // I have a customer, I need to load them into the ils
         Customer customer = request.getCustomer();
+        normalize(response, customer);
         Command apiCommand = api.getCreateUserCommand(customer, response);
         CommandStatus status = apiCommand.execute();
         api.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
@@ -170,6 +173,18 @@ public class APIResponder extends CustomerQueryable
     public boolean isAuthorized(String suppliedPin, Customer customer)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void normalize(Response response, Customer customer)
+    {
+        if (customer == null)
+        {
+            return;
+        }
+        CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(debug);
+        String changes = normalizer.normalize(customer);
+        response.setResponse(changes);
     }
 
     /**

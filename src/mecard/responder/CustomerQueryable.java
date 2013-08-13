@@ -22,6 +22,7 @@ package mecard.responder;
 
 import api.Request;
 import api.Response;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import site.mecard.MeCardPolicy;
 
@@ -112,6 +113,7 @@ public abstract class CustomerQueryable extends Responder
             System.out.println("Customer's card reported as lost.");
             return false;
         }
+   
         System.out.println("Customer cleared.");
         return true;
     }

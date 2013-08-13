@@ -51,7 +51,8 @@ public class BImportRequestBuilder implements ILSRequestBuilder
     public final static String HEADER_FILE = "-header.txt";
     public final static String DATA_FILE = "-data.txt";
     private static final CharSequence SUCCESS_MARKER = "<ok>";
-    private String bimportDir;
+    private String bimportDir;    // where bimport exe is located.
+    private String loadDir; // where to find the batch, header and data files.
     private String serverName;
     private String password;
     private String userName;
@@ -66,10 +67,12 @@ public class BImportRequestBuilder implements ILSRequestBuilder
     private String headerFile;
     private String dataFile;
     
+    
     public BImportRequestBuilder()
     {
         Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
         bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
+        loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
         serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
         password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
         userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
@@ -106,13 +109,19 @@ public class BImportRequestBuilder implements ILSRequestBuilder
         // First thing set up the file names for this customer.
         String transactionId = customer.get(CustomerFieldTypes.ID);
         // compute header and data file names.
+        if (loadDir.endsWith(File.separator) == false)
+        {
+            loadDir += File.separator;
+        }
         if (bimportDir.endsWith(File.separator) == false)
         {
             bimportDir += File.separator;
         }
-        batFile = bimportDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
-        headerFile = bimportDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
-        dataFile = bimportDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
+        // bat file name 
+        batFile = loadDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
+        // header and data file names.
+        headerFile = loadDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
+        dataFile = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
         new BImportFile.Builder(headerFile, dataFile)
                 .barcode(customer.get(CustomerFieldTypes.ID))
                 .pin(customer.get(CustomerFieldTypes.PIN))
@@ -139,7 +148,9 @@ public class BImportRequestBuilder implements ILSRequestBuilder
         }
         // Ok the goal is to get the path to the batch file here with the name.
         // The batch file and name have to be built at this time just like SymphonyRequestBuilder.
-        BImportBat batch = new BImportBat.Builder(batFile).server(serverName).password(password)
+        BImportBat batch = new BImportBat.Builder(batFile)
+                .setBimportPath(bimportDir)
+                .server(serverName).password(password)
                 .user(userName).database(database)
                 .header(headerFile).data(dataFile)
                 .alias(serverAlias).format(bimportVersion).bType(defaultBtype)

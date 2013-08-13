@@ -88,7 +88,7 @@ public abstract class Responder
     
     /**
      *
-     * @return the api.Response
+     * @return the Response
      */
     public abstract Response getResponse();
 }

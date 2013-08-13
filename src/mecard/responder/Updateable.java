@@ -21,6 +21,7 @@
 package mecard.responder;
 
 import api.Response;
+import mecard.customer.Customer;
 
 /**
  * Indicates that the implementer can update users.
@@ -33,4 +34,27 @@ public interface Updateable
      * @param response 
      */
     public void updateCustomer(Response response);
+    
+    /**
+     * Populates the response object with the results from the createCustomer
+     * command. The side effect is the customer is created on the ILS.
+     * @param response the value of responseBuffer
+     */
+    public void createCustomer(Response response);
+    
+    /**
+     * This method is meant to be used to normalize customer data before loading
+     * on a local ILS. The motivation for this is St. Albert's PIN requirement
+     * that the customer load will fail if the PIN is greater than 4 characters.
+     * There is no such restriction at other libraries. A library can implement
+     * a policy within the normalize method that massages customer data to ensure
+     * correct loading. The advantage is that because the argument response can
+     * take a message, we can signal the user of changes we had to make to their 
+     * account to make it work.
+     * 
+     * @param response
+     * @param customer the value of customer
+     */
+    
+    public void normalize(Response response, Customer customer);
 }

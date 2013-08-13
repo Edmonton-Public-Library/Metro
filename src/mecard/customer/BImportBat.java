@@ -62,7 +62,8 @@ public class BImportBat
         private String location;
         private boolean isIndexed;
         private boolean isRunAsBatchFile;
-        private String bimportPath = "bimport";
+        private String bimportPath = "";
+        private String bimportExe = "bimport";
         private boolean isDebugMode;
 
         public Builder()
@@ -79,7 +80,15 @@ public class BImportBat
         
         public Builder setBimportPath(String p)
         {
-            this.bimportPath = p;
+            if (p.endsWith(File.separator) == false)
+            {
+                this.bimportPath = p + File.separator + this.bimportExe;
+            }
+            else
+            {
+                this.bimportPath = p + this.bimportExe;
+            }
+            
             return this;
         }
         
@@ -178,6 +187,7 @@ public class BImportBat
         fileContent = new StringBuilder();
         fileContentList = new ArrayList<String>();
         fileContent.append(b.bimportPath);
+        fileContentList.add(b.bimportPath);
         if (b.server != null)
         {
             fileContent.append("/s");

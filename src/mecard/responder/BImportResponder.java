@@ -29,6 +29,7 @@ import api.Response;
 import java.util.Date;
 import mecard.QueryTypes;
 import mecard.customer.Customer;
+import site.mecard.CustomerLoadNormalizer;
 
 /**
  * BImport responder has special capabilities to write files to the local file
@@ -38,7 +39,7 @@ import mecard.customer.Customer;
  * @author metro
  */
 public class BImportResponder extends Responder
-    implements Updateable, Createable
+    implements Updateable
 {
     private static String NULL_QUERY_RESPONSE_MSG = "BImport responder null request answered";
 
@@ -92,6 +93,7 @@ public class BImportResponder extends Responder
     public void createCustomer(Response response)
     {
         Customer customer = request.getCustomer();
+        normalize(response, customer);
         BImportRequestBuilder bimportRequestBuilder = new BImportRequestBuilder();
         Command bimportCommand = bimportRequestBuilder.getCreateUserCommand(customer, response);
         CommandStatus status = bimportCommand.execute();
@@ -104,11 +106,24 @@ public class BImportResponder extends Responder
     public void updateCustomer(Response response)
     {
         Customer customer = request.getCustomer();
+        normalize(response, customer);
         BImportRequestBuilder bimportRequestBuilder = new BImportRequestBuilder();
         Command bimportCommand = bimportRequestBuilder.getUpdateUserCommand(customer, response);
         CommandStatus status = bimportCommand.execute();
         bimportRequestBuilder.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
         System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
+    }
+
+    @Override
+    public void normalize(Response response, Customer customer)
+    {
+        if (customer == null)
+        {
+            return;
+        }
+        CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(debug);
+        String changes = normalizer.normalize(customer);
+        response.setResponse(changes);
     }
 }

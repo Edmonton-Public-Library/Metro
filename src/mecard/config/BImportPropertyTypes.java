@@ -27,7 +27,8 @@ package mecard.config;
  */
 public enum BImportPropertyTypes
 {
-    BIMPORT_DIR("directory"), // Directory where to find customer files to load.
+    LOAD_DIR("load-dir"),     // Directory where to find customer files to load.
+    BIMPORT_DIR("bimport-dir"), // Directory where to find customer files to load.
     SERVER("server"),         // '/s' switch the name of the server.
     PASSWORD("password"),     // password for server function.
     USER("user"),             // bimport user, should be admin privileges in Horizon.
