@@ -18,8 +18,14 @@
  * MA 02110-1301, USA.
  *
  */
-package api;
+package mecard.requestbuilder;
 
+import api.Command;
+import api.CommandStatus;
+import mecard.Response;
+import api.SIPCommand;
+import api.SIPConnector;
+import api.SIPStatusMessage;
 import java.util.Properties;
 import mecard.MetroService;
 import mecard.Protocol;
@@ -32,17 +38,20 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.SIPException;
-import mecard.exception.UnsupportedCommandException;
 
 /**
  * Helper class for formatting SIP requests.
  *
  * @author metro
  */
-public class SIPRequestBuilder implements ILSRequestBuilder
+public class SIPRequestBuilder extends ILSRequestBuilder
 {
     private static SIPConnector sipServer;
-    public SIPRequestBuilder()
+    /**
+     *
+     * @param debug the value of debug
+     */
+    SIPRequestBuilder(boolean debug)
     {
         Properties sipProps = MetroService.getProperties(ConfigFileTypes.SIP2);
         String host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
@@ -74,18 +83,6 @@ public class SIPRequestBuilder implements ILSRequestBuilder
     public CustomerFormatter getFormatter()
     {
         return new SIPFormatter();
-    }
-
-    @Override
-    public Command getCreateUserCommand(Customer customer, Response response)
-    {
-        throw new UnsupportedCommandException("SIP2 does not support customer creation.");
-    }
-
-    @Override
-    public Command getUpdateUserCommand(Customer customer, Response response)
-    {
-        throw new UnsupportedCommandException("SIP2 does not support customer update operation.");
     }
 
     @Override

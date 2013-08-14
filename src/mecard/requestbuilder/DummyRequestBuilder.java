@@ -1,36 +1,49 @@
-package mecard.responder;
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
+package mecard.requestbuilder;
 
-import api.Request;
-import api.Response;
+import api.CommandStatus;
+import mecard.Response;
 import java.util.Properties;
 import json.ResponseDeserializer;
 import mecard.MetroService;
-import mecard.ResponseTypes;
+import mecard.QueryTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
-import mecard.customer.Customer;
-import mecard.config.CustomerFieldTypes;
+import mecard.customer.CustomerFormatter;
 
 /**
- * DummyResponder is used to test round trip connections. It returns hard coded
- * canned results for connection testing.
  *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet
  */
-public class DummyResponder extends CustomerQueryable
-        implements StatusQueryable, Updateable
+public class DummyRequestBuilder extends ILSRequestBuilder
 {
-    private static String NULL_QUERY_RESPONSE_MSG = "debug responder reporting";
-
     private final String gsonStatus;
     private final String gsonGetCustomer;
     private final String gsonCreateCustomer;
     private final String gsonUpdateCustomer;
     private final String altData;
-
-    public DummyResponder(Request command, boolean debugMode)
+    
+    DummyRequestBuilder(boolean debug)
     {
-        super(command, debugMode);
         Properties props = MetroService.getProperties(ConfigFileTypes.DEBUG);
         gsonStatus = props.getProperty(DebugQueryConfigTypes.GET_STATUS.toString());
         gsonGetCustomer = props.getProperty(DebugQueryConfigTypes.GET_CUSTOMER.toString());
@@ -39,40 +52,20 @@ public class DummyResponder extends CustomerQueryable
         altData = props.getProperty(DebugQueryConfigTypes.ALT_DATA_CUSTOMER.toString());
     }
 
-    /**
-     *
-     * @return the api.Response
-     */
     @Override
-    public Response getResponse()
+    public CustomerFormatter getFormatter()
     {
-        Response response = new Response();
-        switch (request.getCommandType())
-        {
-            case GET_STATUS:
-                getILSStatus(response);
-                break;
-            case GET_CUSTOMER:
-                getCustomer(response);
-                break;
-            case CREATE_CUSTOMER:
-                createCustomer(response);
-                break;
-            case UPDATE_CUSTOMER:
-                updateCustomer(response);
-                break;
-            case NULL:
-                response.setCode(ResponseTypes.OK);
-                response.setResponse(DummyResponder.NULL_QUERY_RESPONSE_MSG);
-                break;
-            default:
-                response.setCode(ResponseTypes.ERROR);
-                response.setResponse(BImportResponder.class.getName() + " cannot " + request.toString());
-        }
-        return response;
+        throw new UnsupportedOperationException(DummyRequestBuilder.class.getName() 
+                + " does not require formatter.");
     }
 
     @Override
+    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
+    {
+        throw new UnsupportedOperationException(DummyRequestBuilder.class.getName() 
+                + " does not require results to be interpreted.");
+    }
+    
     public void getILSStatus(Response response)
     {
         ResponseDeserializer deserializer = new ResponseDeserializer();
@@ -82,8 +75,6 @@ public class DummyResponder extends CustomerQueryable
         response.setCustomer(r.getCustomer());
     }
 
-
-    @Override
     public void getCustomer(Response response)
     {
         ResponseDeserializer deserializer = new ResponseDeserializer();
@@ -93,12 +84,6 @@ public class DummyResponder extends CustomerQueryable
         response.setCustomer(r.getCustomer());
     }
     
-    
-    /**
-     *
-     *
-     */
-    @Override
     public void updateCustomer(Response response)
     {
         ResponseDeserializer deserializer = new ResponseDeserializer();
@@ -108,7 +93,6 @@ public class DummyResponder extends CustomerQueryable
         response.setCustomer(r.getCustomer());
     }
 
-    @Override
     public void createCustomer(Response response)
     {
         ResponseDeserializer deserializer = new ResponseDeserializer();
@@ -116,23 +100,5 @@ public class DummyResponder extends CustomerQueryable
         response.setCode(r.getCode());
         response.setResponse(r.getMessage());
         response.setCustomer(r.getCustomer());
-    }
-    
-    protected static ResponseTypes convertToResponseType(String sType)
-    {
-        ResponseTypes r = ResponseTypes.valueOf(sType);
-        return r;
-    }
-
-    @Override
-    public boolean isAuthorized(String suppliedPin, Customer customer)
-    {
-        return (customer.get(CustomerFieldTypes.PIN).compareTo(suppliedPin) == 0);
-    }
-
-    @Override
-    public void normalize(Response response, Customer customer)
-    {
-        return; // not required in dummy.
     }
 }

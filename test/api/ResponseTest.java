@@ -1,4 +1,5 @@
 package api;
+import mecard.Response;
 import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;

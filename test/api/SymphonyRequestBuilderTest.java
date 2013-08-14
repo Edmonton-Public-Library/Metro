@@ -1,10 +1,14 @@
 package api;
 
+import mecard.Response;
+import mecard.Request;
 import java.util.ArrayList;
 import java.util.List;
 import json.RequestDeserializer;
+import mecard.QueryTypes;
 import mecard.customer.Customer;
 import mecard.customer.FlatUserFormatter;
+import mecard.requestbuilder.ILSRequestBuilder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -29,7 +33,9 @@ public class SymphonyRequestBuilderTest
         System.out.println("==getUser==");
         String userId = "21221012345678";
         String userPin = "64058";
-        SymphonyRequestBuilder api = new SymphonyRequestBuilder();
+        // This method has been refactored to be controlled from the config files. You
+        // need to specify symphony in properties file.
+        ILSRequestBuilder api = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, true);
         Response responder = new Response();
         Command command = api.getCustomerCommand(userId, userPin, responder);
         System.out.println("CMD:" + command.toString());
@@ -81,7 +87,7 @@ public class SymphonyRequestBuilderTest
             System.out.print("=>"+s);
         }
         
-        SymphonyRequestBuilder api = new SymphonyRequestBuilder();
+        ILSRequestBuilder api = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, true);
         Response response = new Response();
         Command command = api.getCreateUserCommand(customer, response);
         System.out.println("CMD:" + command.toString());
@@ -95,7 +101,7 @@ public class SymphonyRequestBuilderTest
     public void testGetFormatter()
     {
         System.out.println("==getFormatter==");
-        SymphonyRequestBuilder instance = new SymphonyRequestBuilder();
+        ILSRequestBuilder instance = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, true);
         assertTrue(instance.getFormatter() != null);
     }
 

@@ -17,8 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package api;
+package mecard.requestbuilder;
 
+import api.APICommand;
+import api.Command;
+import api.CommandStatus;
+import mecard.Response;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +52,7 @@ import mecard.customer.UserFile;
  * @see UnsupportedOperationException
  * @see ILSRequestBuilder
  */
-public class SymphonyRequestBuilder implements ILSRequestBuilder
+public class SymphonyRequestBuilder extends ILSRequestBuilder
 {
     private static List<String> seluser;
     private static List<String> dumpflatuser;
@@ -59,7 +63,7 @@ public class SymphonyRequestBuilder implements ILSRequestBuilder
     private final String homeDirectory;
     private final String shell;
     
-    public SymphonyRequestBuilder()
+    public SymphonyRequestBuilder(boolean debug)
     {
         // Lets get the properties from the properties file.
         Properties defaultProperties = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);

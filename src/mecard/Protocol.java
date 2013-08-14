@@ -20,22 +20,11 @@
  */
 package mecard;
 
-import mecard.responder.DummyResponder;
-import api.Request;
-import api.Response;
 import json.RequestDeserializer;
 import json.ResponseSerializer;
-import mecard.exception.UnsupportedCommandException;
-import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
-import mecard.exception.UnsupportedResponderException;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
-import mecard.responder.BImportResponder;
-import mecard.responder.ResponderMethodTypes;
-import mecard.responder.Responder;
-import mecard.responder.SIP2Responder;
-import mecard.responder.APIResponder;
 import mecard.security.SecurityManager;
 
 /**
@@ -84,7 +73,8 @@ public class Protocol
             {
                 throw new MetroSecurityException("Unrecognized security token");
             }
-            Responder responder = getResponder(request);
+//            Responder responder = getResponder(request);
+            Responder responder = new Responder(request, this.debugMode);
             response = responder.getResponse();
         }
         catch (RuntimeException ex)
@@ -106,37 +96,37 @@ public class Protocol
      * the environment.properties file.
      * @see Request
      */
-    protected Responder getResponder(Request command)
-            throws UnsupportedCommandException, UnsupportedResponderException, MalformedCommandException
-    {
-        QueryTypes queryType = command.getCommandType();
-        String serviceType;
-        switch (queryType)
-        {
-            case CREATE_CUSTOMER:
-                serviceType = MetroService.
-                    getProperties(ConfigFileTypes.ENVIRONMENT).
-                    getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
-                return mapResponderType(serviceType, command);
-            case UPDATE_CUSTOMER:
-                serviceType = MetroService.
-                    getProperties(ConfigFileTypes.ENVIRONMENT).
-                    getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
-                return mapResponderType(serviceType, command);
-            case GET_STATUS:
-                serviceType = MetroService.
-                    getProperties(ConfigFileTypes.ENVIRONMENT).
-                    getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
-                return mapResponderType(serviceType, command);
-            case GET_CUSTOMER:
-                serviceType = MetroService.
-                    getProperties(ConfigFileTypes.ENVIRONMENT).
-                    getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
-                return mapResponderType(serviceType, command);
-            default:
-                throw new UnsupportedCommandException(); 
-        }
-    }
+//    protected Responder getResponder(Request command)
+//            throws UnsupportedCommandException, UnsupportedResponderException, MalformedCommandException
+//    {
+//        QueryTypes queryType = command.getCommandType();
+//        String serviceType;
+//        switch (queryType)
+//        {
+//            case CREATE_CUSTOMER:
+//                serviceType = MetroService.
+//                    getProperties(ConfigFileTypes.ENVIRONMENT).
+//                    getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
+//                return mapResponderType(serviceType, command);
+//            case UPDATE_CUSTOMER:
+//                serviceType = MetroService.
+//                    getProperties(ConfigFileTypes.ENVIRONMENT).
+//                    getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
+//                return mapResponderType(serviceType, command);
+//            case GET_STATUS:
+//                serviceType = MetroService.
+//                    getProperties(ConfigFileTypes.ENVIRONMENT).
+//                    getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
+//                return mapResponderType(serviceType, command);
+//            case GET_CUSTOMER:
+//                serviceType = MetroService.
+//                    getProperties(ConfigFileTypes.ENVIRONMENT).
+//                    getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
+//                return mapResponderType(serviceType, command);
+//            default:
+//                throw new UnsupportedCommandException(); 
+//        }
+//    }
     
     /**
      * Creates the appropriate responder based on what string value was entered
@@ -151,31 +141,31 @@ public class Protocol
      * @see ResponderMethodTypes
      */
     
-    private Responder mapResponderType(
-            String configRequestedService, Request command)
-        throws UnsupportedCommandException
-    {
-        if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
-        {
-            return new BImportResponder(command, debugMode);
-        }
-        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
-        {
-            return new SIP2Responder(command, debugMode);
-        }
-        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.LOCAL_CALL.toString()))
-        {
-            return new APIResponder(command, debugMode);
-        }
-        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.DEBUG.toString()))
-        {
-            return new DummyResponder(command, debugMode);
-        }
-        else
-        {
-            throw new UnsupportedResponderException(configRequestedService + 
-                    " can't respond to request " + 
-                    command.getCommandType().name());
-        }
-    }
+//    private Responder mapResponderType(
+//            String configRequestedService, Request command)
+//        throws UnsupportedCommandException
+//    {
+//        if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
+//        {
+//            return new BImportResponder(command, debugMode);
+//        }
+//        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
+//        {
+//            return new SIP2Responder(command, debugMode);
+//        }
+//        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.LOCAL_CALL.toString()))
+//        {
+//            return new APIResponder(command, debugMode);
+//        }
+//        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.DEBUG.toString()))
+//        {
+//            return new DummyResponder(command, debugMode);
+//        }
+//        else
+//        {
+//            throw new UnsupportedResponderException(configRequestedService + 
+//                    " can't respond to request " + 
+//                    command.getCommandType().name());
+//        }
+//    }
 }

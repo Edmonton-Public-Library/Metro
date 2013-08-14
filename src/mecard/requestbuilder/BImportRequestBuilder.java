@@ -18,8 +18,12 @@
  * MA 02110-1301, USA.
  *
  */
-package api;
+package mecard.requestbuilder;
 
+import api.APICommand;
+import api.Command;
+import api.CommandStatus;
+import mecard.Response;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +31,6 @@ import java.util.List;
 import java.util.Properties;
 import mecard.MetroService;
 import mecard.QueryTypes;
-import static mecard.QueryTypes.NULL;
 import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
@@ -43,7 +46,7 @@ import mecard.exception.UnsupportedCommandException;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class BImportRequestBuilder implements ILSRequestBuilder
+public class BImportRequestBuilder extends ILSRequestBuilder
 {
     // Use this to prefix all our files.
     public final static String FILE_NAME_PREFIX = "metro-";
@@ -66,31 +69,25 @@ public class BImportRequestBuilder implements ILSRequestBuilder
     private String batFile;
     private String headerFile;
     private String dataFile;
+    private final boolean debug;
     
-    
-    public BImportRequestBuilder()
+    BImportRequestBuilder(boolean debug)
     {
+        this.debug = debug;
         Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
-        bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
-        loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
-        serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
-        password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
-        userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
-        database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
-        serverAlias = bimpProps.getProperty(BImportPropertyTypes.SERVER_ALIAS.toString());
-        bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
+        this.bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
+        this.loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
+        this.serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
+        this.password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
+        this.userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
+        this.database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
+        this.serverAlias = bimpProps.getProperty(BImportPropertyTypes.SERVER_ALIAS.toString());
+        this.bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
         // TODO these should come from the default.properties.
-        defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
-        mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
-        location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
-        isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
-    }
-
-    @Override
-    public Command getCustomerCommand(String userId, String userPin, Response response)
-    {
-        throw new UnsupportedOperationException(BImportRequestBuilder.class.getName()
-                + "Not supported with BImport.");
+        this.defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
+        this.mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
+        this.location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
+        this.isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
     }
 
     @Override
@@ -168,12 +165,6 @@ public class BImportRequestBuilder implements ILSRequestBuilder
     {
         // Since we use the same command for updating as creating we can do this:
         return getCreateUserCommand(customer, response);
-    }
-
-    @Override
-    public Command getStatusCommand(Response response)
-    {
-        throw new UnsupportedOperationException("Not supported with BImport.");
     }
 
     @Override

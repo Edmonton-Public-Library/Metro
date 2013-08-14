@@ -20,7 +20,7 @@
  */
 package epl;
 
-import api.Request;
+import mecard.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;
 import org.junit.Test;

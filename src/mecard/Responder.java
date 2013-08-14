@@ -1,0 +1,316 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
+package mecard;
+
+import api.Command;
+import api.CommandStatus;
+import mecard.requestbuilder.ILSRequestBuilder;
+import mecard.ResponseTypes;
+import java.util.Date;
+import mecard.Protocol;
+import mecard.QueryTypes;
+import mecard.config.CustomerFieldTypes;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
+import mecard.exception.MalformedCommandException;
+import mecard.exception.MetroSecurityException;
+import mecard.exception.UnsupportedCommandException;
+import mecard.exception.UnsupportedResponderException;
+import site.mecard.CustomerLoadNormalizer;
+import site.mecard.MeCardPolicy;
+
+/**
+ *
+ * @author Andrew Nisbet
+ */
+public class Responder
+{
+    private final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
+    protected Request request;
+    protected final boolean debug;
+    
+    /**
+     *
+     * @param cmd the value of cmd
+     * @param debugMode the value of debugMode
+     */
+    public Responder(Request cmd, boolean debugMode)
+    {
+        this.debug = debugMode;
+        this.request = cmd;
+        if (debug)
+        {
+            System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
+            System.out.println("ELE:");
+            System.out.println("  S:" + request.toString()+ ",");
+        }
+    }
+    
+    /**
+     * Creates canned exception responses if something goes wrong.
+     *
+     * @param ex the exception thrown
+     * @return String value of the response with code.
+     */
+    public static Response getExceptionResponse(RuntimeException ex)
+    {
+        Response response = new Response(ResponseTypes.UNKNOWN);
+        if (ex instanceof MetroSecurityException)
+        {
+            response = new Response(ResponseTypes.UNAUTHORIZED);
+        }
+        else if (ex instanceof MalformedCommandException)
+        {
+            response = new Response(ResponseTypes.ERROR);
+        }
+        else if (ex instanceof UnsupportedCommandException)
+        {
+            response = new Response(ResponseTypes.UNKNOWN);
+            response.setResponse("Command not implemented, make sure your server is up to date.");
+        }
+        else if (ex instanceof UnsupportedResponderException)
+        {
+            response = new Response(ResponseTypes.CONFIG_ERROR);
+            response.setResponse("The server doesn't seem to be configured correctly.");
+        }
+        response.setResponse(ex.getMessage());
+        return response;
+    }
+    
+    /**
+     * 
+     * @return the Response of the command.
+     */
+    public Response getResponse()
+    {
+        // test for the operations that this responder is capable of performing
+        // SIP can't create customers, BImport can't query customers.
+        Response response = new Response();
+        switch (request.getCommandType())
+        {
+            case CREATE_CUSTOMER:
+                createCustomer(response);
+                break;
+            case UPDATE_CUSTOMER:
+                updateCustomer(response);
+                break;
+            case GET_CUSTOMER:
+                getCustomer(response);
+                break;
+            case GET_STATUS:
+                getILSStatus(response);
+                break;
+            case NULL:
+                response.setCode(ResponseTypes.OK);
+                response.setResponse("null query back at you.");
+                break;
+            default:
+                response.setCode(ResponseTypes.ERROR);
+                response.setResponse(Responder.class.getName() + " cannot " + request.toString());
+        }
+        return response;
+    }
+    
+    /**
+     * Gets the customer information.
+     * @param response object as a container for the results.
+     */
+    public void getCustomer(Response response)
+    {
+        String userId  = this.request.getUserId();
+        String userPin = this.request.getUserPin();
+        
+        // So all this stuff will be put to the SIPCommand
+        ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_CUSTOMER, debug);
+        Command command = requestBuilder.getCustomerCommand(userId, userPin, response);
+        CommandStatus status = command.execute();
+        CustomerFormatter customerFormatter = requestBuilder.getFormatter();
+        Customer customer = customerFormatter.getCustomer(status.getStdout());
+        response.setCustomer(customer);
+        requestBuilder.interpretResults(QueryTypes.GET_CUSTOMER, status, response);
+        // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
+        // then interpretResults() further sets ISVALID to Protocol.FALSE.
+        if (customer.get(CustomerFieldTypes.ISVALID).compareTo(Protocol.FALSE) == 0)
+        {
+            response.setCustomer(null);
+            System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
+            System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
+            return;
+        }
+        // You have this before the test metro requirements b/c it checks for PIN
+        // and SIP2 does not return the pin.
+        customer.set(CustomerFieldTypes.PIN, userPin);
+        if (meetsMeCardRequirements(customer, status.getStdout()))
+        {
+            response.setCode(ResponseTypes.OK);
+        }
+        else
+        {
+            // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
+            response.setResponse("there is a problem with your account, please contact your home library for assistance");
+            response.setCode(ResponseTypes.FAIL);
+        }
+        System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
+    }
+    
+    /**
+     * Gets the status of the server.
+     * @param response
+     */
+    public void getILSStatus(Response response)
+    {
+        ILSRequestBuilder sipRequestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_STATUS, debug);
+        Command sipCommand = sipRequestBuilder.getStatusCommand(response);
+        CommandStatus status = sipCommand.execute();
+        sipRequestBuilder.interpretResults(QueryTypes.GET_STATUS, status, response);
+        System.out.println(new Date() + " STAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " STAT_STDERR:"+status.getStderr());
+    }
+    
+    /**
+     * Looks confusing but merely converts the customer into a ILS meaningful
+     * expression of some sort (for BImport that's a command line expression or
+     * bat file name), then executes the command.
+     * 
+     * @param response object
+     */
+    public void createCustomer(Response response)
+    {
+        Customer customer = request.getCustomer();
+        normalize(response, customer);
+        ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
+        Command command = requestBuilder.getCreateUserCommand(customer, response);
+        CommandStatus status = command.execute();
+        requestBuilder.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
+        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
+    }
+
+    public void updateCustomer(Response response)
+    {
+        Customer customer = request.getCustomer();
+        normalize(response, customer);
+        ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
+        Command command = requestBuilder.getUpdateUserCommand(customer, response);
+        CommandStatus status = command.execute();
+        requestBuilder.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
+        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
+    }
+
+    public void normalize(Response response, Customer customer)
+    {
+        if (customer == null)
+        {
+            return;
+        }
+        CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(debug);
+        String changes = normalizer.normalize(customer);
+        response.setResponse(changes);
+    }
+    
+    /**
+     * Tests if the customer meets the required MeCard requirements. MeCard 
+     * users must be:
+     * <ul>
+     * <li>Over the age of 18</li>
+     * <li>Must to be a reciprocal customer at the home library.</li>
+     * <li>Must be in good standing at their home library.</li>
+     * <li>Must be a resident of the home library's service area.</li>
+     * <li>Must have a valid expiry date.</li>
+     * <li>Must have mandatory account fields filled with valid data.</li>
+     * </ul>
+     * @param customer
+     * @param additionalData
+     * @return true if the customer meets the MeCard participation requirements
+     * and false otherwise.
+     */
+    protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
+    {
+        if (customer == null || additionalData == null)
+        {
+            return false;
+        }
+        MeCardPolicy policy = MeCardPolicy.getInstanceOf(this.debug);
+        if (policy.isEmailable(customer, additionalData) == false) 
+        {
+            System.out.println("Customer not emailable.");
+            return false;
+        }
+        if (policy.isInGoodStanding(customer, additionalData) == false)
+        {
+            System.out.println("Customer not in good standing.");
+            return false;
+        }
+        if (policy.isMinimumAge(customer, additionalData) == false)
+        {
+            System.out.println("Customer not minimum age.");
+            return false;
+        }
+        if (policy.isReciprocal(customer, additionalData))
+        {
+            System.out.println("Customer cannot join because they are a reciprocal customer.");
+            return false;
+        } // reciprocals not allowed.
+        if (policy.isResident(customer, additionalData) == false) 
+        {
+            System.out.println("Customer is not resident.");
+            return false;
+        }
+        if (policy.isValidCustomerData(customer) == false) 
+        {
+            System.out.println("Customer's data is not valid.");
+            return false;
+        }
+        if (policy.isValidExpiryDate(customer, additionalData) == false) 
+        {
+            System.out.println("Customer does not have a valid privilege date.");
+            return false;
+        }
+        if (policy.isLostCard(customer, additionalData)) 
+        {
+            System.out.println("Customer's card reported as lost.");
+            return false;
+        }
+   
+        System.out.println("Customer cleared.");
+        return true;
+    }
+    
+    /**
+     * Tests if the request was valid or not based on whether the supplied PIN
+     * matched the user's pin.
+     *
+     * @param suppliedPin
+     * @param customer the value of customer
+     * @return true if the user is authorized and false otherwise.
+     */
+    public boolean isAuthorized(String suppliedPin, Customer customer)
+    {
+        // TODO this should be moved to the appropriate RequestBuilder.
+        if (suppliedPin.contains(SIP_AUTHORIZATION_FAILURE))
+        {
+            return false;
+        }
+        return true;
+    }
+}

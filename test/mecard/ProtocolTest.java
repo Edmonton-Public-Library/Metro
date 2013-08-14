@@ -4,11 +4,6 @@
  */
 package mecard;
 
-import api.Request;
-import mecard.responder.APIResponder;
-import mecard.responder.BImportResponder;
-import mecard.responder.Responder;
-import mecard.responder.SIP2Responder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

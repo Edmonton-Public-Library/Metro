@@ -20,7 +20,7 @@
  */
 package site.mecard;
 
-import api.Request;
+import mecard.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;

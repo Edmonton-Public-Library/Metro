@@ -1,5 +1,5 @@
 package mecard.customer;
-import api.Request;
+import mecard.Request;
 import java.util.ArrayList;
 import java.util.List;
 import json.RequestDeserializer;

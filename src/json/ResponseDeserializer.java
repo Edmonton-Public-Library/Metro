@@ -20,8 +20,8 @@
  */
 package json;
 
-import api.Request;
-import api.Response;
+import mecard.Request;
+import mecard.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;

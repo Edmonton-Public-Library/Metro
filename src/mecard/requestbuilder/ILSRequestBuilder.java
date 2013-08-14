@@ -1,0 +1,228 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Andrew Nisbet
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
+package mecard.requestbuilder;
+
+import api.Command;
+import api.CommandStatus;
+import mecard.Response;
+import java.util.Properties;
+import mecard.MetroService;
+import mecard.QueryTypes;
+import static mecard.QueryTypes.CREATE_CUSTOMER;
+import mecard.config.APIPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
+import mecard.exception.UnsupportedAPIException;
+import mecard.exception.UnsupportedCommandException;
+import mecard.requestbuilder.ResponderMethodTypes;
+
+/**
+ * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.
+ * Note: Programmers implementing a new builder will probably not be able to 
+ * use all these methods. Symphony for instance, does not have a good facility 
+ * to get the ILS status. In that case sub-class the ILSRequestAdaptor, and make 
+ * sure you don't specify that method of response in the environment.properties
+ * file.
+ * @author andrew
+ */
+public abstract class ILSRequestBuilder
+{
+    /**
+     *
+     *
+     * @param queryType the value of queryType
+     * @param debug the value of debug
+     */
+    public static ILSRequestBuilder getInstanceOf(QueryTypes queryType, boolean debug)
+    {
+        // Here we read the properties file to determine what type of request
+        // builder we need. It will be based on what type of request we have.
+        String serviceType = "";
+        switch (queryType)
+        {
+            case CREATE_CUSTOMER:
+                serviceType = MetroService.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
+                break;
+            case GET_CUSTOMER:
+                serviceType = MetroService.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
+                break;
+            case GET_STATUS:
+                serviceType = MetroService.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
+                break;
+            case UPDATE_CUSTOMER:
+                serviceType = MetroService.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
+                break;
+            default:
+                throw new UnsupportedCommandException( 
+                    " can't respond to request '" + queryType.name() + "'");
+        }
+        return mapBuilderType(serviceType, debug);
+    }
+    
+    /**
+     * Creates the appropriate responder based on what string value was entered
+     * in the environment configuration file.
+     *
+     * @param debug the value of debug
+     * @return RequestBuilder requested in environment.properties files.
+     * @throws UnsupportedCommandException if the requested responder is not available
+     * because it hasn't been implemented yet, or just because there is a spelling
+     * mistake in the environment.properties file wrt the Responder method types.
+     * @see ResponderMethodTypes
+     */
+    
+    
+    private static ILSRequestBuilder mapBuilderType(
+            String configRequestedService, boolean debug)
+        throws UnsupportedCommandException
+    {
+        if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
+        {
+            return new BImportRequestBuilder(debug);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
+        {
+            return new SIPRequestBuilder(debug);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.LOCAL_CALL.toString()))
+        {
+            Properties apiProps = MetroService.getProperties(ConfigFileTypes.API);
+            String ils = apiProps.getProperty(APIPropertyTypes.ILS_TYPE.toString());
+            return APIRequest.getInstanceOf(ils, debug);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.DEBUG.toString()))
+        {
+            return new DummyRequestBuilder(debug);
+        }
+        else
+        {
+            throw new UnsupportedCommandException(configRequestedService + 
+                    " can't respond to request ");
+        }
+    }
+    
+    /**
+     * Gets the CustomerFormatter related to the implementer of the subclass.
+     * @return CustomerFormatter.
+     */
+    public abstract CustomerFormatter getFormatter();
+
+    /**
+     * Implementers promise to return a APICommand that, when run, will return the
+     * customer's information.
+     *
+     * @param userId the value of userId
+     * @param userPin the value of userPin
+     * @param response Buffer to contain useful response information.
+     */
+    public Command getCustomerCommand(String userId, String userPin, Response response)
+    {
+        throw new UnsupportedCommandException("The requested protocol listed in "
+                + "environment.properties does not support get customer information.");
+    }
+    
+    /**
+     * Creates a user based on the supplied customer, which must not be null.
+     *
+     * @param customer
+     * @param response
+     * @return command that can be executed on the ILS to create a customer.
+     */
+    public Command getCreateUserCommand(Customer customer, Response response)
+    {
+        throw new UnsupportedCommandException("The requested protocol listed in "
+                + "environment.properties does not support customer creation.");
+    }
+
+    /**
+     * Updates a user based on the supplied customer, which must not be null.
+     *
+     * @param customer
+     * @param response
+     * @return command that can be executed on the ILS to update a customer.
+     */
+    
+    public Command getUpdateUserCommand(Customer customer, Response response)
+    {
+        throw new UnsupportedCommandException("The requested protocol listed in "
+                + "environment.properties does not support update customer.");
+    }
+
+    /**
+     * Gets the status of the ILS.
+     *
+     * @param response
+     * @return APICommand necessary to test the ILS status.
+     */
+    
+    public Command getStatusCommand(Response response)
+    {
+        throw new UnsupportedCommandException("The requested protocol listed in "
+                + "environment.properties does not support system status");
+    }
+    
+    /**
+     * Interprets the results of the ILS command into a meaningful message for
+     * the customer.
+     *
+     * @param commandType the value of commandType
+     * @param status the status of the command that ran on the ILS.
+     * @param response the object to be returned to melibraries.ca.
+     */
+    public abstract void interpretResults(QueryTypes commandType, CommandStatus status, Response response);
+    
+    /**
+     * Creates a new api request handler object depending on the type of 
+     * API wanted.
+     */
+    private static class APIRequest
+    {
+        private static boolean debug;
+
+        private static ILSRequestBuilder getInstanceOf(String whichAPI, boolean b)
+        {
+            debug = b;
+            if (debug)
+            {
+                System.out.println("REQ_INSTANCE:" + whichAPI);
+            }
+            if (whichAPI.equalsIgnoreCase("Symphony"))
+            {
+                return new SymphonyRequestBuilder(debug);
+            } // example of how to extend
+//            else if (apiName.equalsIgnoreCase("Horizon"))
+//            {
+//                return new SQLAPIBuilder();
+//            }
+            throw new UnsupportedAPIException(whichAPI);
+        }
+    }
+}

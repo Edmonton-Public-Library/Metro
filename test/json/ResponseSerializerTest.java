@@ -1,5 +1,5 @@
 package json;
-import api.Response;
+import mecard.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import mecard.ResponseTypes;

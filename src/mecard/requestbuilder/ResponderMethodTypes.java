@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.responder;
+package mecard.requestbuilder;
 
 /**
  * Every command that Metro executes must have a strategy defined for how it will
