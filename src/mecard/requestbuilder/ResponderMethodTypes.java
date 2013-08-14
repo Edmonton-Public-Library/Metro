@@ -28,7 +28,7 @@ package mecard.requestbuilder;
  */
 public enum ResponderMethodTypes
 {
-    LOCAL_CALL("api"), // SQL or API  
+    SYMPHONY_API("symphony-api"), // SQL or API  
     SIP2("sip2"),
     BIMPORT("bimport"), 
     DEBUG("dummy");

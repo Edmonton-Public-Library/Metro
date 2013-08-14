@@ -33,7 +33,7 @@ import mecard.customer.CustomerFormatter;
 import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
-import mecard.exception.UnsupportedResponderException;
+import mecard.exception.DummyException;
 import site.mecard.CustomerLoadNormalizer;
 import site.mecard.MeCardPolicy;
 
@@ -86,10 +86,10 @@ public class Responder
             response = new Response(ResponseTypes.UNKNOWN);
             response.setResponse("Command not implemented, make sure your server is up to date.");
         }
-        else if (ex instanceof UnsupportedResponderException)
+        else if (ex instanceof DummyException)
         {
             response = new Response(ResponseTypes.CONFIG_ERROR);
-            response.setResponse("The server doesn't seem to be configured correctly.");
+            response.setResponse("TEST: DummyCommand intentionally threw error.");
         }
         response.setResponse(ex.getMessage());
         return response;

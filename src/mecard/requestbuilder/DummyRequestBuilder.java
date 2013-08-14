@@ -20,15 +20,22 @@
  */
 package mecard.requestbuilder;
 
+import api.Command;
 import api.CommandStatus;
+import api.DummyCommand;
 import mecard.Response;
 import java.util.Properties;
 import json.ResponseDeserializer;
 import mecard.MetroService;
 import mecard.QueryTypes;
+import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
+import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
+import mecard.customer.FlatUserFormatter;
+import mecard.customer.SIPFormatter;
+import mecard.exception.DummyException;
 
 /**
  *
@@ -36,69 +43,102 @@ import mecard.customer.CustomerFormatter;
  */
 public class DummyRequestBuilder extends ILSRequestBuilder
 {
-    private final String gsonStatus;
-    private final String gsonGetCustomer;
-    private final String gsonCreateCustomer;
-    private final String gsonUpdateCustomer;
-    private final String altData;
+    private final int commandStatus;
+    private final String stdout;
+    private final String stderr;
+    private final boolean debug;
+    private final String format;
     
     DummyRequestBuilder(boolean debug)
     {
+        this.debug = debug;
         Properties props = MetroService.getProperties(ConfigFileTypes.DEBUG);
-        gsonStatus = props.getProperty(DebugQueryConfigTypes.GET_STATUS.toString());
-        gsonGetCustomer = props.getProperty(DebugQueryConfigTypes.GET_CUSTOMER.toString());
-        gsonCreateCustomer = props.getProperty(DebugQueryConfigTypes.CREATE_CUSTOMER.toString());
-        gsonUpdateCustomer = props.getProperty(DebugQueryConfigTypes.UPDATE_CUSTOMER.toString());
-        altData = props.getProperty(DebugQueryConfigTypes.ALT_DATA_CUSTOMER.toString());
+        String s = props.getProperty(DebugQueryConfigTypes.COMMAND_RESULT_CODE.toString());
+        try
+        {
+            this.commandStatus = Integer.parseInt(s);
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new DummyException(DummyRequestBuilder.class.getName()
+                    + " supplied result status in properties file must be an integer.");
+        }
+        this.stdout = props.getProperty(DebugQueryConfigTypes.STDOUT_MESSAGE.toString());
+        this.stderr = props.getProperty(DebugQueryConfigTypes.STDERR_MESSAGE.toString());
+        this.format = props.getProperty(DebugQueryConfigTypes.MESSAGE_FORMAT.toString());
+        if (debug) System.out.println(DummyRequestBuilder.class.getName() + " loaded properties.");
     }
 
     @Override
     public CustomerFormatter getFormatter()
     {
-        throw new UnsupportedOperationException(DummyRequestBuilder.class.getName() 
-                + " does not require formatter.");
+        if (this.format.compareToIgnoreCase(ResponderMethodTypes.SIP2.toString()) == 0)
+        {
+            return new SIPFormatter();
+        }
+        else if (this.format.compareToIgnoreCase(ResponderMethodTypes.SYMPHONY_API.toString()) == 0)
+        {
+            return new FlatUserFormatter();
+        }
+        // BImport doesn't have a formatter; neither does dummy, so if you are asking for one
+        // there is a problem with the call you are making.
+        throw new DummyException(DummyRequestBuilder.class.getName() 
+                + " the is no formatter defined for " + format 
+                + "' which was specified in debug.properties.");
+    }
+    
+    @Override
+    public Command getCustomerCommand(String userId, String userPin, Response response)
+    {
+        return getConfiguredResonse(null, response);
     }
 
     @Override
     public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
     {
-        throw new UnsupportedOperationException(DummyRequestBuilder.class.getName() 
-                + " does not require results to be interpreted.");
+        // what does it mean to interpret results that were canned responses in the first place?
+        if (this.commandStatus == 0) 
+        {
+            response.setCode(ResponseTypes.SUCCESS);
+        }
+        else
+        {
+            response.setCode(ResponseTypes.FAIL);
+        }
+        response.setResponse("DUMMY_RESPONSE: '" + status.getStdout() + "'");
     }
     
-    public void getILSStatus(Response response)
+    @Override
+    public Command getStatusCommand(Response response)
     {
-        ResponseDeserializer deserializer = new ResponseDeserializer();
-        Response r = deserializer.getDeserializedResponse(this.gsonStatus);
-        response.setCode(r.getCode());
-        response.setResponse(r.getMessage());
-        response.setCustomer(r.getCustomer());
+        return getConfiguredResonse(null, response);
     }
 
-    public void getCustomer(Response response)
+    @Override
+    public Command getCreateUserCommand(Customer customer, Response response)
     {
-        ResponseDeserializer deserializer = new ResponseDeserializer();
-        Response r = deserializer.getDeserializedResponse(this.gsonGetCustomer);
-        response.setCode(r.getCode());
-        response.setResponse(r.getMessage());
-        response.setCustomer(r.getCustomer());
+        return getConfiguredResonse(customer, response);
     }
     
-    public void updateCustomer(Response response)
+    @Override
+    public Command getUpdateUserCommand(Customer customer, Response response)
     {
-        ResponseDeserializer deserializer = new ResponseDeserializer();
-        Response r = deserializer.getDeserializedResponse(this.gsonUpdateCustomer);
-        response.setCode(r.getCode());
-        response.setResponse(r.getMessage());
-        response.setCustomer(r.getCustomer());
+        return getConfiguredResonse(customer, response);
     }
-
-    public void createCustomer(Response response)
+    
+    /**
+     * Gets the requested response from debug.properties.
+     * @param customer
+     * @param response
+     * @return 
+     */
+    protected Command getConfiguredResonse(Customer customer, Response response)
     {
-        ResponseDeserializer deserializer = new ResponseDeserializer();
-        Response r = deserializer.getDeserializedResponse(this.gsonCreateCustomer);
-        response.setCode(r.getCode());
-        response.setResponse(r.getMessage());
-        response.setCustomer(r.getCustomer());
+        Command command = new DummyCommand.Builder()
+                .setStatus(this.commandStatus)
+                .setStdout(this.stdout)
+                .setStderr(this.stderr)
+                .build();
+        return command;
     }
 }

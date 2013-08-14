@@ -26,12 +26,10 @@ package mecard.config;
  */
 public enum DebugQueryConfigTypes
 {
-    GET_STATUS("status-result"),
-    GET_CUSTOMER("get-customer-result"),
-    CREATE_CUSTOMER("create-customer-result"),
-    UPDATE_CUSTOMER("update-customer-result"), 
-    NULL("null-result"), 
-    ALT_DATA_CUSTOMER("alt-get-customer-result"); // Additional ILS data for customer.
+    COMMAND_RESULT_CODE("return-code"),// The return code of the command success is usually '0'.
+    STDOUT_MESSAGE("stdout"),          // String you want displayed on stdout.
+    STDERR_MESSAGE("stderr"),          // String you want displayed on stderr.
+    MESSAGE_FORMAT("message-format");  // SIP2, Dumpflatuser what have you.
     
     private String type;
     

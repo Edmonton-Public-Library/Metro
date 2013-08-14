@@ -48,7 +48,7 @@ import mecard.customer.UserFile;
  * UnsupportedOperationException. The way around it is to devise some symphony
  * API that would return the status then implement it in this calls, then switch
  * the extends ILSRequestAdaptor to implements ILSRequestBuilder.
- * @author andrew
+ * @author Andrew Nisbet
  * @see UnsupportedOperationException
  * @see ILSRequestBuilder
  */
@@ -129,13 +129,6 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserUpdate.add("-n"); // turn off BRS checking.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
     }
-    
-    /**
-     *
-     *
-     * @param userId the value of userId
-     * @param userPin the value of userPin
-     */
     
     @Override
     public Command getCustomerCommand(String userId, String userPin, Response response)

@@ -25,17 +25,17 @@ package mecard.exception;
  *
  * @author metro
  */
-public class UnsupportedResponderException extends RuntimeException 
+public class DummyException extends RuntimeException 
 {
     private final static String initMessage = "The requested responder type hasn't been defined yet: ";
     private final static String postMessage = "Please refer to the documentation.";
     
-    public UnsupportedResponderException()
+    public DummyException()
     {
         super(initMessage + postMessage);
     }
     
-    public UnsupportedResponderException(String msg)
+    public DummyException(String msg)
     {
         super(initMessage + " " + msg + " " + postMessage);
     }

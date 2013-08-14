@@ -57,9 +57,6 @@ public class PropertyReaderTest
         Properties bimportProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
         bimportProps.list(System.out);
         
-        Properties apiProps = MetroService.getProperties(ConfigFileTypes.API);
-        apiProps.list(System.out);
-        
         Properties cityProps = MetroService.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
         cityProps.list(System.out);
         

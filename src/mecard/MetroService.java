@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mecard.config.APIPropertyTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
@@ -58,7 +57,6 @@ public class MetroService implements Daemon
     private static String DEFAULT_CREATE_PROPERTY_FILE = "default.properties";
     private static String ENVIRONMENT_FILE = "environment.properties";
     private static String SIP2_FILE = "sip2.properties";
-    private static String API_FILE = "api.properties";
     private static String BIMPORT_CITY_MAPPING = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE = "debug.properties";
     private static String VARIABLES_FILE = "sysvar.properties"; // these are system specifi variables, like PATH.
@@ -68,7 +66,6 @@ public class MetroService implements Daemon
     private static Properties bimport; // Properties Metro needs to operate BImport.
     private static Properties environment; // Basic envrionment values.
     private static Properties sip2; // Variables used to talk to SIP2.
-    private static Properties api; // Optional config file for those using API.
     private static Properties city; // Required for Horizon users to translate site specific city codes.
     private static Properties debugProperties; // Optional config for debugging.
     private static Properties systemVariables; // Optional no mandatory fields.
@@ -111,7 +108,6 @@ public class MetroService implements Daemon
             DEFAULT_CREATE_PROPERTY_FILE = CONFIG_DIR + DEFAULT_CREATE_PROPERTY_FILE;
             ENVIRONMENT_FILE = CONFIG_DIR + ENVIRONMENT_FILE;
             SIP2_FILE = CONFIG_DIR + SIP2_FILE;
-            API_FILE = CONFIG_DIR + API_FILE;
             BIMPORT_CITY_MAPPING = CONFIG_DIR + BIMPORT_CITY_MAPPING;
             DEBUG_SETTINGS_FILE = CONFIG_DIR + DEBUG_SETTINGS_FILE;
             VARIABLES_FILE = CONFIG_DIR + VARIABLES_FILE;
@@ -331,33 +327,6 @@ public class MetroService implements Daemon
                     }
                 }
                 return bimport;
-            case API:
-                if (api == null)
-                {
-                    try
-                    {
-                        api = readProperties(MetroService.API_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + MetroService.API_FILE
-                                + "'. It may be empty but one must be defined to continue.";
-                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read api config file. One must be defined.";
-                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (APIPropertyTypes apiType : APIPropertyTypes.values())
-                    {
-                        if (api.get(apiType.toString()) == null)
-                        {
-                            String msg = "'" + apiType + "' unset in " + MetroService.API_FILE;
-                            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
-                    }
-                }
-                return api;
 
             case BIMPORT_CITY_MAPPING:
                 if (city == null)

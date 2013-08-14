@@ -23,18 +23,15 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import mecard.Response;
-import java.util.Properties;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import static mecard.QueryTypes.CREATE_CUSTOMER;
-import mecard.config.APIPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedAPIException;
 import mecard.exception.UnsupportedCommandException;
-import mecard.requestbuilder.ResponderMethodTypes;
 
 /**
  * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.
@@ -84,6 +81,11 @@ public abstract class ILSRequestBuilder
                 throw new UnsupportedCommandException( 
                     " can't respond to request '" + queryType.name() + "'");
         }
+        if (debug)
+        {
+            System.out.println(ILSRequestBuilder.class.getName()
+                    + " ILS: '" + serviceType + "' ");
+        }
         return mapBuilderType(serviceType, debug);
     }
     
@@ -106,20 +108,22 @@ public abstract class ILSRequestBuilder
     {
         if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.BIMPORT.toString()))
         {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'BIMPORT' ");
             return new BImportRequestBuilder(debug);
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
         {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'SIP2' ");
             return new SIPRequestBuilder(debug);
         }
-        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.LOCAL_CALL.toString()))
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SYMPHONY_API.toString()))
         {
-            Properties apiProps = MetroService.getProperties(ConfigFileTypes.API);
-            String ils = apiProps.getProperty(APIPropertyTypes.ILS_TYPE.toString());
-            return APIRequest.getInstanceOf(ils, debug);
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'SYMPHONY_API' ");
+            return new SymphonyRequestBuilder(debug);
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.DEBUG.toString()))
         {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'DEBUG' (dummy) ");
             return new DummyRequestBuilder(debug);
         }
         else
@@ -169,7 +173,6 @@ public abstract class ILSRequestBuilder
      * @param response
      * @return command that can be executed on the ILS to update a customer.
      */
-    
     public Command getUpdateUserCommand(Customer customer, Response response)
     {
         throw new UnsupportedCommandException("The requested protocol listed in "
@@ -182,7 +185,6 @@ public abstract class ILSRequestBuilder
      * @param response
      * @return APICommand necessary to test the ILS status.
      */
-    
     public Command getStatusCommand(Response response)
     {
         throw new UnsupportedCommandException("The requested protocol listed in "
@@ -198,31 +200,4 @@ public abstract class ILSRequestBuilder
      * @param response the object to be returned to melibraries.ca.
      */
     public abstract void interpretResults(QueryTypes commandType, CommandStatus status, Response response);
-    
-    /**
-     * Creates a new api request handler object depending on the type of 
-     * API wanted.
-     */
-    private static class APIRequest
-    {
-        private static boolean debug;
-
-        private static ILSRequestBuilder getInstanceOf(String whichAPI, boolean b)
-        {
-            debug = b;
-            if (debug)
-            {
-                System.out.println("REQ_INSTANCE:" + whichAPI);
-            }
-            if (whichAPI.equalsIgnoreCase("Symphony"))
-            {
-                return new SymphonyRequestBuilder(debug);
-            } // example of how to extend
-//            else if (apiName.equalsIgnoreCase("Horizon"))
-//            {
-//                return new SQLAPIBuilder();
-//            }
-            throw new UnsupportedAPIException(whichAPI);
-        }
-    }
 }
