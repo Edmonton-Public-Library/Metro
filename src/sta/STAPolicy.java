@@ -18,18 +18,16 @@
 * MA 02110-1301, USA.
 *
 */
-
 package sta;
 
 import api.SIPCustomerMessage;
-import api.SIPMessage;
 import java.util.ArrayList;
 import java.util.List;
 import mecard.Protocol;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.exception.SIPException;
-import site.mecard.MeCardPolicy;
+import mecard.site.MeCardPolicy;
 
 /**
  * Implementation of MeCard's restriction policies as interpreted by the 

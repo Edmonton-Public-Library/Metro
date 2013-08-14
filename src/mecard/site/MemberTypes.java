@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package site.mecard;
+package mecard.site;
 
 /**
  *

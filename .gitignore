@@ -20,3 +20,6 @@ data.txt
 header.txt
 testfile.bat
 logs/
+after_install.txt
+windows/Output/
+windows/metro.iss

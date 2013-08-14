@@ -18,13 +18,12 @@
 * MA 02110-1301, USA.
 *
 */
-
 package epl;
 
 import mecard.Protocol;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
-import site.mecard.MeCardPolicy;
+import mecard.site.MeCardPolicy;
 
 /**
  * Implementation of MeCard's restriction policies as interpreted by the 

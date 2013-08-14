@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import site.mecard.MeCardPolicy;
+import mecard.site.MeCardPolicy;
 
 /**
  *

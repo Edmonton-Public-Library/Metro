@@ -25,7 +25,7 @@ import json.RequestDeserializer;
 import mecard.customer.Customer;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import site.mecard.MeCardPolicy;
+import mecard.site.MeCardPolicy;
 
 /**
  * *** Warning *** These tests don't work unless you have an environment file

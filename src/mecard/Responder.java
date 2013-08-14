@@ -34,8 +34,8 @@ import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
-import site.mecard.CustomerLoadNormalizer;
-import site.mecard.MeCardPolicy;
+import mecard.site.CustomerLoadNormalizer;
+import mecard.site.MeCardPolicy;
 
 /**
  *
