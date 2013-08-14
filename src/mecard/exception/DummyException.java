@@ -27,8 +27,8 @@ package mecard.exception;
  */
 public class DummyException extends RuntimeException 
 {
-    private final static String initMessage = "The requested responder type hasn't been defined yet: ";
-    private final static String postMessage = "Please refer to the documentation.";
+    private final static String initMessage = "DummyException thrown intentionally: ";
+    private final static String postMessage = " To stop this check and edit debug.properties.";
     
     public DummyException()
     {
