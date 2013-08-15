@@ -32,6 +32,7 @@ import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.DateComparer;
 import sta.STAPolicy;
+import str.STRPolicy;
 
 /**
  * This class needs to be sub-classed by all libraries. All customer's must meet 
@@ -61,6 +62,10 @@ public abstract class MeCardPolicy
         else if (libCode.equalsIgnoreCase(MemberTypes.STA.name()))
         {
             return new STAPolicy(DEBUG);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
+        {
+            return new STRPolicy(DEBUG);
         }
         else
         {

@@ -73,7 +73,6 @@ public class Protocol
             {
                 throw new MetroSecurityException("Unrecognized security token");
             }
-//            Responder responder = getResponder(request);
             Responder responder = new Responder(request, this.debugMode);
             response = responder.getResponse();
         }
