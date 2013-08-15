@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import api.CommandStatus;
 import api.DummyCommand;
 import mecard.Response;
 import java.util.Properties;
-import json.ResponseDeserializer;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
@@ -93,19 +92,30 @@ public class DummyRequestBuilder extends ILSRequestBuilder
         return getConfiguredResonse(null, response);
     }
 
+    /**
+     *
+     * @param commandType the value of commandType
+     * @param status the value of status
+     * @param response the value of response
+     * @return the boolean
+     */
     @Override
-    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
+    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
+        boolean result = false;
         // what does it mean to interpret results that were canned responses in the first place?
         if (this.commandStatus == 0) 
         {
             response.setCode(ResponseTypes.SUCCESS);
+            result = true;
         }
         else
         {
             response.setCode(ResponseTypes.FAIL);
+            result = false;
         }
         response.setResponse("DUMMY_RESPONSE: '" + status.getStdout() + "'");
+        return result;
     }
     
     @Override
@@ -126,11 +136,18 @@ public class DummyRequestBuilder extends ILSRequestBuilder
         return getConfiguredResonse(customer, response);
     }
     
+    @Override
+    public boolean tidy()
+    {
+        return true;
+    }
+    
     /**
-     * Gets the requested response from debug.properties.
+     * Gets the requested command from debug.properties.
      * @param customer
      * @param response
-     * @return 
+     * @return Command with canned responses in it. When the command is executed
+     * it does not actually run anything on the server.
      */
     protected Command getConfiguredResonse(Customer customer, Response response)
     {

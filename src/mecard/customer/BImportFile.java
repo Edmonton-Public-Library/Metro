@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ public class BImportFile
         private String name;
         private String expiry;
         private String pin;
-        private String phoneType = "h-noTC";
+        private String phoneType = "h-noTC"; // TODO move this to the bimport.properties.
         private String phone;
         private String address1;
         private String address2 = "";

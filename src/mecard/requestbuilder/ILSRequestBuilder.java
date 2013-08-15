@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.exception.UnsupportedAPIException;
 import mecard.exception.UnsupportedCommandException;
 
 /**
@@ -198,6 +197,14 @@ public abstract class ILSRequestBuilder
      * @param commandType the value of commandType
      * @param status the status of the command that ran on the ILS.
      * @param response the object to be returned to melibraries.ca.
+     * @return true if the operation was successful, and false otherwise.
      */
-    public abstract void interpretResults(QueryTypes commandType, CommandStatus status, Response response);
+    public abstract boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response);
+    
+    /**
+     * Gives the builder opportunity to clean up leftover temporary files or other
+     * operations.
+     * @return true if the tidy operation was successful and false otherwise.
+     */
+    public abstract boolean tidy();
 }

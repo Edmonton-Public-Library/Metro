@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import api.CommandStatus;
 import mecard.Response;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import mecard.exception.MalformedCommandException;
@@ -260,8 +259,9 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
+    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
+        boolean result = false;
         switch (commandType)
         {
 //            case GET_STATUS: // currently handled by default case b/c there is no simple status for Symphony, and we use SIP2.
@@ -269,6 +269,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
             case NULL:
                 response.setCode(ResponseTypes.OK);
                 response.setResponse("Null command back at you...");
+                result = true;
                 break;
             case GET_CUSTOMER:    // see message below all can get an error 111.
                 if (status.getStderr().contains("**error number 111"))
@@ -276,11 +277,13 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse("We're having trouble finding your account."
                             + " Please contact us, and we'll find out what's going on.");
+                    result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.SUCCESS);
                     response.setResponse("Customer account retreived successfully.");
+                    result = true;
                 }
                 break;
             case CREATE_CUSTOMER:
@@ -289,11 +292,13 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse("There was a problem creating your account."
                             + " Please contact us, and we will find out why.");
+                    result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.SUCCESS);
                     response.setResponse("Welcome aboard, and thanks for using our service and supporting your local libraries!");
+                    result = true;
                 }
                 break;
             case UPDATE_CUSTOMER:
@@ -302,11 +307,13 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse("There was a problem updating your account."
                             + " Please contact us, and we will get to the bottom of this.");
+                    result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.SUCCESS);
                     response.setResponse("Thanks for keeping us up-to-date, and for supporting your local libraries!");
+                    result = true;
                 }
                 break;
             default:
@@ -314,6 +321,14 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 response.setResponse(SymphonyRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
+                result = false;
         }
+        return result;
+    }
+    
+    @Override
+    public boolean tidy()
+    {
+        return true;
     }
 }

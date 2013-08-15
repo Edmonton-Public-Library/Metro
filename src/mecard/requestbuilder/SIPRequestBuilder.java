@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,9 +94,17 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         return command;
     }
 
+    /**
+     *
+     * @param commandType the value of commandType
+     * @param status the value of status
+     * @param response the value of response
+     * @return the boolean
+     */
     @Override
-    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
+    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
+        boolean result = false;
         switch (commandType)
         {
             case GET_STATUS:
@@ -104,16 +112,19 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse("SIP2 service currently not available.");
+                    result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.OK);
                     response.setResponse("Services up.");
+                    result = true;
                 }
                 break;
             case NULL:
                 response.setCode(ResponseTypes.OK);
                 response.setResponse("Null SIP2 command back at you...");
+                result = true;
                 break;
             case GET_CUSTOMER: // here we need to check and set validity based on messaging from SIP response string.
                 Customer c = response.getCustomer();
@@ -125,17 +136,20 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                             + " If you are sure that your card number and pin "
                             + "are correct, please contact your home library "
                             + "for assistance.");
+                    result = false;
                 }
                 else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN for station user") == 0)
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.UNAUTHORIZED);
                     response.setResponse("Your pin does not match the one we have on record.");
+                    result = false;
                 }
                 else
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
                     response.setCode(ResponseTypes.SUCCESS);
+                    result = true;
                 }
                 break;
             case CREATE_CUSTOMER:
@@ -145,7 +159,15 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 response.setResponse(SIPRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
+                result = false;
         }
+        return result;
+    }
+    
+    @Override
+    public boolean tidy()
+    {
+        return true;
     }
     
     /** 

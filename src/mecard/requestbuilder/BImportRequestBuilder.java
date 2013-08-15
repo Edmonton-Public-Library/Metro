@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,21 +167,30 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         return getCreateUserCommand(customer, response);
     }
 
+    /**
+     *
+     * @param commandType the value of commandType
+     * @param status the value of status
+     * @param response the value of response
+     * @return the boolean
+     */
     @Override
-    public void interpretResults(QueryTypes commandType, CommandStatus status, Response response)
+    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
+        boolean result = false;
         switch (commandType)
         {
             case CREATE_CUSTOMER:
             case UPDATE_CUSTOMER:
                 // both commands produce the same results from running the 
                 // so if the bimport command was successful it looks like this:
-                String result = status.getStdout();
-                if (result.contains(BImportRequestBuilder.SUCCESS_MARKER))
+                String resultString = status.getStdout();
+                if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
                     response.setCode(ResponseTypes.OK);
                     response.setResponse("Customer account successfully loaded.");
                     System.out.println(new Date() + "Customer account successfully loaded.");
+                    result = true;
                 }
                 else
                 {
@@ -189,18 +198,22 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                     response.setResponse("Customer account failed to load."
                             + " Please contact your home library for more information.");
                     System.out.println(new Date() + "Customer account failed to load.");
+                    result = false;
                 }
                 break;
             case NULL:
                 response.setCode(ResponseTypes.OK);
                 response.setResponse("Null BImport command back at you...");
+                result = true;
                 break;
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
                 response.setResponse(BImportRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
+                result = false;
         }
+        return result;
     }
     
     /** 
@@ -212,6 +225,12 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     protected String computeEmailName(String email) 
     {
         return email.split("@")[0];
+    }
+
+    @Override
+    public boolean tidy()
+    {
+        return true;
     }
 
 }

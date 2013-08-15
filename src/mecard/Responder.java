@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Andrew Nisbet
+ *    Copyright (C) 2013  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,7 @@ package mecard;
 import api.Command;
 import api.CommandStatus;
 import mecard.requestbuilder.ILSRequestBuilder;
-import mecard.ResponseTypes;
 import java.util.Date;
-import mecard.Protocol;
-import mecard.QueryTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -145,7 +142,7 @@ public class Responder
         CustomerFormatter customerFormatter = requestBuilder.getFormatter();
         Customer customer = customerFormatter.getCustomer(status.getStdout());
         response.setCustomer(customer);
-        requestBuilder.interpretResults(QueryTypes.GET_CUSTOMER, status, response);
+        requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
         // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
         // then interpretResults() further sets ISVALID to Protocol.FALSE.
         if (customer.get(CustomerFieldTypes.ISVALID).compareTo(Protocol.FALSE) == 0)
@@ -181,7 +178,7 @@ public class Responder
         ILSRequestBuilder sipRequestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_STATUS, debug);
         Command sipCommand = sipRequestBuilder.getStatusCommand(response);
         CommandStatus status = sipCommand.execute();
-        sipRequestBuilder.interpretResults(QueryTypes.GET_STATUS, status, response);
+        sipRequestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
         System.out.println(new Date() + " STAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " STAT_STDERR:"+status.getStderr());
     }
@@ -200,7 +197,7 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response);
         CommandStatus status = command.execute();
-        requestBuilder.interpretResults(QueryTypes.CREATE_CUSTOMER, status, response);
+        requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response);
         System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
     }
@@ -212,7 +209,7 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
         Command command = requestBuilder.getUpdateUserCommand(customer, response);
         CommandStatus status = command.execute();
-        requestBuilder.interpretResults(QueryTypes.UPDATE_CUSTOMER, status, response);
+        requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response);
         System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
     }

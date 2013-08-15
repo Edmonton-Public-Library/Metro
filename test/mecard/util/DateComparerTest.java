@@ -1,7 +1,7 @@
 /**
 *
 * This class is part of the Metro, MeCard project.
-*    Copyright (C) 2013  Andrew Nisbet, Edmonton public Library.
+*    Copyright (C) 2013  Edmonton Public Library, Edmonton public Library.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
