@@ -174,6 +174,10 @@ public class SIPFormatter implements CustomerFormatter
         else if (userFieldValue.equals("BE"))
         {
             return CustomerFieldTypes.EMAIL;
+        }
+        else if (userFieldValue.equals("BF"))
+        {
+            return CustomerFieldTypes.PHONE; // EPL throws this on the end of the address but St. A uses correct field label.
         } 
         else if (userFieldValue.equals("PA"))
         {
