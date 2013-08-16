@@ -10,6 +10,7 @@ import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import static mecard.site.MeCardPolicy.DEBUG;
 import sta.STACustomerNormalizer;
+import str.STRCustomerNormalizer;
 
 /**
  *
@@ -51,6 +52,10 @@ public abstract class CustomerLoadNormalizer
         else if (libCode.equalsIgnoreCase(MemberTypes.STA.name()))
         {
             normalizer = new STACustomerNormalizer(DEBUG);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
+        {
+            normalizer = new STRCustomerNormalizer(DEBUG);
         }
         else
         {

@@ -22,6 +22,7 @@ package mecard.site;
 
 import epl.EPLPolicy;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Properties;
 import mecard.exception.UnsupportedLibraryException;
 import mecard.MetroService;
@@ -55,6 +56,7 @@ public abstract class MeCardPolicy
         DEBUG = debug;
         Properties props = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
         String libCode = props.getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
+        if (DEBUG) System.out.println(new Date() + "LIB_CODE: '" + libCode + "'");
         if (libCode.equalsIgnoreCase(MemberTypes.EPL.name()))
         {
             return new EPLPolicy(DEBUG);
