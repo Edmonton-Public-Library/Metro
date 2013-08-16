@@ -55,7 +55,7 @@ public class BImportBat
         private String database;
         private String headerFileName;
         private String dataFileName;
-        private String alias;
+        private String uniqueBorrowerTableKey;
         private String format;
         private String bType;
         private String mType;
@@ -128,9 +128,9 @@ public class BImportBat
             return this;
         }
         
-        public Builder alias(String a)
+        public Builder borrowerTableKey(String k)
         {
-            this.alias = a;
+            this.uniqueBorrowerTableKey = k;
             return this;
         }
         
@@ -224,11 +224,11 @@ public class BImportBat
             fileContent.append(b.dataFileName);
             fileContentList.add("/i" + b.dataFileName);
         }
-        if (b.alias != null)
+        if (b.uniqueBorrowerTableKey != null)
         {
             fileContent.append("/k");
-            fileContent.append(b.alias);
-            fileContentList.add("/k" + b.alias);
+            fileContent.append(b.uniqueBorrowerTableKey);
+            fileContentList.add("/k" + b.uniqueBorrowerTableKey);
         }
         if (b.format != null)
         {

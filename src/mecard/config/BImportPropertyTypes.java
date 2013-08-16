@@ -29,17 +29,21 @@ public enum BImportPropertyTypes
 {
     LOAD_DIR("load-dir"),     // Directory where to find customer files to load.
     BIMPORT_DIR("bimport-dir"), // Directory where to find customer files to load.
-    SERVER("server"),         // '/s' switch the name of the server.
+    SERVER("server-alias"),     // '/s' switch the name of the server.
     PASSWORD("password"),     // password for server function.
     USER("user"),             // bimport user, should be admin privileges in Horizon.
     DATABASE("database"),     // Name of the database.
-    SERVER_ALIAS("server-alias"), // This is identified as the server alias.
-    VERSION("version"),       // like fm41 any other version is currently untested.
+    UNIQUE_BORROWER_TABLE_KEY("borrower-key"), // '/k' switch The borrower triggers ensure that any non-null
+                                               // second_id values in the borrower table are unique
+    VERSION("version"),       // like m41 any other version is currently untested.
     DEFAULT_BTYPE("btype"),   // like bawb
     MAIL_TYPE("mail-type"),   // dom seems to be the default type.
-    LOCATION("location"),     // Like lalap
-    IS_INDEXED("indexed");    // "y = NOT indexed"
-//    DATE_FORMAT("date-format"); // the prefered date formatting. now in Environment file.
+    LOCATION("location"),     // Like alap
+    IS_INDEXED("indexed");    // This switch bypasses the requirement that the match column must be in
+                              // a unique SQL index. When you use this switch, the match column can
+                              // be in any SQL index. This means that Borrower Import can work with
+                              // the second_id column. (The borrower triggers ensure that any non-null
+                              // second_id values in the borrower table are unique.)
     
     private String type;
 

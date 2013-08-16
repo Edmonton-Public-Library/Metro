@@ -28,7 +28,8 @@ public enum MemberTypes
 {
     EPL("edmonton"), // these values are used to map cities to codes in city_st.properties.
     STA("st. albert"),
-    STR("strathcona");
+    STR("strathcona"),
+    FTS("fort saskatchewan");
     
     private String type;
 

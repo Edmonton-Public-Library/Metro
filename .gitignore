@@ -5,11 +5,10 @@ metro-21221012345678-data.txt
 metro-21221012345678-header.txt
 nbproject/
 test/mecard/MetroClient.class
-*.zip
+*.z_
 *.tar
 *.jar
 dist
-*.properties
 TESTconfiguration/sip2cemu.pl
 test/mecard/MetroClient.java
 windows/*.exe
@@ -24,4 +23,3 @@ after_install.txt
 windows/Output/
 windows/metro.iss
 windows/bimport/
-MeCard_0.1_STR.z_

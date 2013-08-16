@@ -60,7 +60,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     private String password;
     private String userName;
     private String database; // we may need another way to distinguish DBs on a server.
-    private String serverAlias;
+    private String uniqueBorrowerTableKey;
     private String bimportVersion; // like fm41
     private String defaultBtype; // like bawb
     private String mailType;
@@ -81,7 +81,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         this.password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
         this.userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
         this.database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
-        this.serverAlias = bimpProps.getProperty(BImportPropertyTypes.SERVER_ALIAS.toString());
+        this.uniqueBorrowerTableKey = bimpProps.getProperty(BImportPropertyTypes.UNIQUE_BORROWER_TABLE_KEY.toString());
         this.bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
         // TODO these should come from the default.properties.
         this.defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
@@ -150,7 +150,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 .server(serverName).password(password)
                 .user(userName).database(database)
                 .header(headerFile).data(dataFile)
-                .alias(serverAlias).format(bimportVersion).bType(defaultBtype)
+                .borrowerTableKey(uniqueBorrowerTableKey).format(bimportVersion).bType(defaultBtype)
                 .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
 //                .setDebug(debug) // not used in class yet.
                 .build();

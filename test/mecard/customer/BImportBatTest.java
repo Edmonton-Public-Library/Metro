@@ -34,7 +34,7 @@ public class BImportBatTest
         BImportBat b = new BImportBat.Builder("testfile.bat")
                 .setBimportPath("C:\\metro\\logs\\Customers\\bimport.exe").server("'Horizon MSSQL Server'")
                 .password("sql54200").user("sa").database("stalbert")
-                .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").alias("second_id")
+                .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").borrowerTableKey("second_id")
                 .format("m41").bType("metro").mType("dom").location("st").setIndexed(true).build();
         f = new File("testfile.bat");
         assertTrue(f.exists());
@@ -50,7 +50,7 @@ public class BImportBatTest
         BImportBat b = new BImportBat.Builder("testfile.bat")
                 .setBimportPath("C:\\metro\\logs\\Customers\\bimport.exe").server("'Horizon MSSQL Server'")
                 .password("sql54200").user("sa").database("stalbert")
-                .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").alias("second_id")
+                .header("C:\\metro\\logs\\Customers\\header.txt").data("C:\\metro\\logs\\Customers\\data.txt").borrowerTableKey("second_id")
                 .format("m41").bType("metro").mType("dom").location("st").setIndexed(true).build();
         System.out.println("cmd:'"+b.getCommandLine()+"'");
         List<String> resultArray = new ArrayList<String>();
@@ -68,7 +68,7 @@ public class BImportBatTest
         System.out.println("===getBatchFileName===");
         BImportBat b = new BImportBat.Builder().server("server")
                 .password("password").user("user").database("database")
-                .header("headerFileName.txt").data("dataFileName").alias("second_id")
+                .header("headerFileName.txt").data("dataFileName").borrowerTableKey("second_id")
                 .format("m41").bType("awb").location("alap").setIndexed(true).build();
         
         assertTrue(b.getBatchFileName().compareTo("obsolete.bat") == 0);
