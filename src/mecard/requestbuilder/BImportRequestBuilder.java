@@ -177,7 +177,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        boolean result = false;
+        boolean result;
         switch (commandType)
         {
             case CREATE_CUSTOMER:

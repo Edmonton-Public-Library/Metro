@@ -183,6 +183,10 @@ public class SIPFormatter implements CustomerFormatter
         {
             return CustomerFieldTypes.PRIVILEGE_EXPIRES;
         } 
+        else if (userFieldValue.equals("PE"))
+        {
+            return CustomerFieldTypes.PRIVILEGE_EXPIRES;
+        }
         else if (userFieldValue.equals("PD"))
         {
             return CustomerFieldTypes.DOB;

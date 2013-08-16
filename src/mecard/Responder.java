@@ -27,6 +27,7 @@ import java.util.Date;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
+import mecard.exception.ConfigurationException;
 import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
@@ -78,6 +79,10 @@ public class Responder
         {
             response = new Response(ResponseTypes.ERROR);
         }
+        else if (ex instanceof ConfigurationException)
+        {
+            response = new Response(ResponseTypes.CONFIG_ERROR);
+        }
         else if (ex instanceof UnsupportedCommandException)
         {
             response = new Response(ResponseTypes.UNKNOWN);
@@ -88,6 +93,7 @@ public class Responder
             response = new Response(ResponseTypes.CONFIG_ERROR);
             response.setResponse("TEST: DummyCommand intentionally threw error.");
         }
+        
         response.setResponse(ex.getMessage());
         return response;
     }
@@ -197,7 +203,10 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response);
         CommandStatus status = command.execute();
-        requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response);
+        if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
+        {
+            throw new ConfigurationException();
+        }
         System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
     }
@@ -209,7 +218,10 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
         Command command = requestBuilder.getUpdateUserCommand(customer, response);
         CommandStatus status = command.execute();
-        requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response);
+        if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
+        {
+            throw new ConfigurationException();
+        }
         System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
     }
