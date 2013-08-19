@@ -42,7 +42,7 @@ public class MeCardPolicyTest
     {
         this.meta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         String custReq =
-                "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"NAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"GENDER\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"DEFAULT\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"DEFAULT\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         this.c = request.getCustomer();
@@ -130,5 +130,65 @@ public class MeCardPolicyTest
         result = p.isValidExpiryDate(c, meta);
         expected= false;
         assertTrue(expected == result);
+    }
+    
+    /**
+     * Test of isValidExpiryDate method, of class MeCardPolicy.
+     */
+    @Test
+    public void testProperCase()
+    {
+        System.out.println("==setProperCase==");
+        // TODO Set up tests.
+        String custData = "initial string";
+        String result   = MeCardPolicy.toDisplayCase(custData);
+        String expected = "Initial String";
+        assertTrue(expected.compareTo(result) == 0);
+        
+        custData = "Initial String";
+        result   = MeCardPolicy.toDisplayCase(custData);
+        expected = "Initial String";
+        assertTrue(expected.compareTo(result) == 0);
+        
+        custData = " initial String";
+        result   = MeCardPolicy.toDisplayCase(custData);
+        expected = " Initial String";
+        assertTrue(expected.compareTo(result) == 0);
+        
+        custData = "";
+        result   = MeCardPolicy.toDisplayCase(custData);
+        expected = "";
+        assertTrue(expected.compareTo(result) == 0);
+        
+        custData = "mark-antony";
+        result   = MeCardPolicy.toDisplayCase(custData);
+        expected = "Mark-Antony";
+        assertTrue(expected.compareTo(result) == 0);
+        
+        custData = "ALL CAPS";
+        result   = MeCardPolicy.toDisplayCase(custData);
+        expected = "All Caps";
+        assertTrue(expected.compareTo(result) == 0);
+        
+        this.c.set(CustomerFieldTypes.FIRSTNAME, "BALZAC");
+        System.out.println("NO_NORM:" + this.c.toString());
+        MeCardPolicy policy = MeCardPolicy.getInstanceOf(true);
+        policy.normalizeCustomerFields(this.c);
+        System.out.println("NORM:" + this.c.toString());
+        
+        this.c.set(CustomerFieldTypes.LASTNAME, "BILLY");
+        System.out.println("NO_NORM:" + this.c.toString());
+        policy.normalizeCustomerFields(this.c);
+        System.out.println("NORM:" + this.c.toString());
+        
+        this.c.set(CustomerFieldTypes.STREET, "123 ADA LACE LANE");
+        System.out.println("NO_NORM:" + this.c.toString());
+        policy.normalizeCustomerFields(this.c);
+        System.out.println("NORM:" + this.c.toString());
+        
+        this.c.set(CustomerFieldTypes.PREFEREDNAME, "BILLY, BALZAC");
+        System.out.println("NO_NORM:" + this.c.toString());
+        policy.normalizeCustomerFields(this.c);
+        System.out.println("NORM:" + this.c.toString());
     }
 }

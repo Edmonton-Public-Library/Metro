@@ -260,6 +260,11 @@ public class Responder
             return false;
         }
         MeCardPolicy policy = MeCardPolicy.getInstanceOf(this.debug);
+        // If everything goes well we expect the customer data to be sent back
+        // to be loaded. Some libraries use case to distinguish customers, you
+        // know who you are, so we standardize important fields for loading on 
+        // a regular ILS.
+        policy.normalizeCustomerFields(customer);
         if (policy.isEmailable(customer, additionalData) == false) 
         {
             System.out.println("Customer not emailable.");

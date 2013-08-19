@@ -21,8 +21,8 @@
 package mecard.site;
 
 /**
- *
- * @author metro
+ * Member types are the current members of Metro Federation.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public enum MemberTypes
 {
