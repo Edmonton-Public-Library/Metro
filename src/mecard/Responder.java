@@ -32,8 +32,8 @@ import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
-import mecard.site.CustomerLoadNormalizer;
-import mecard.site.MeCardPolicy;
+import site.CustomerLoadNormalizer;
+import site.MeCardPolicy;
 
 /**
  *
@@ -133,7 +133,9 @@ public class Responder
     }
     
     /**
-     * Gets the customer information.
+     * Creates and executes the "get customer" command, then 
+     * executes the command, and populates the argument Response with the customer
+     * object and or a message about the status of the command.
      * @param response object as a container for the results.
      */
     public void getCustomer(Response response)
@@ -176,7 +178,7 @@ public class Responder
     }
     
     /**
-     * Gets the status of the server.
+     * Gets the status of the ILS server.
      * @param response
      */
     public void getILSStatus(Response response)
@@ -190,16 +192,16 @@ public class Responder
     }
     
     /**
-     * Looks confusing but merely converts the customer into a ILS meaningful
-     * expression of some sort (for BImport that's a command line expression or
-     * bat file name), then executes the command.
+     * Converts the customer into a ILS-meaningful expression to create a 
+     * customer, then executes the command, and populates the argument 
+     * response with the results.
      * 
      * @param response object
      */
     public void createCustomer(Response response)
     {
         Customer customer = request.getCustomer();
-        normalize(response, customer);
+        normalizeBeforeCustomerLoad(response, customer);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response);
         CommandStatus status = command.execute();
@@ -214,7 +216,7 @@ public class Responder
     public void updateCustomer(Response response)
     {
         Customer customer = request.getCustomer();
-        normalize(response, customer);
+        normalizeBeforeCustomerLoad(response, customer);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
         Command command = requestBuilder.getUpdateUserCommand(customer, response);
         CommandStatus status = command.execute();
@@ -226,7 +228,12 @@ public class Responder
         System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
     }
 
-    public void normalize(Response response, Customer customer)
+    /**
+     * 
+     * @param response
+     * @param customer 
+     */
+    public void normalizeBeforeCustomerLoad(Response response, Customer customer)
     {
         if (customer == null)
         {

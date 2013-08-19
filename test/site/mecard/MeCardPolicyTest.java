@@ -20,7 +20,7 @@
  */
 package site.mecard;
 
-import mecard.site.MeCardPolicy;
+import site.MeCardPolicy;
 import mecard.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;

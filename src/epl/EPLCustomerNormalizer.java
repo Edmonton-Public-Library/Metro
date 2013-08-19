@@ -21,7 +21,7 @@
 package epl;
 
 import mecard.customer.Customer;
-import mecard.site.CustomerLoadNormalizer;
+import site.CustomerLoadNormalizer;
 
 /**
  *

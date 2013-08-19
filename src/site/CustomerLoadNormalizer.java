@@ -1,5 +1,5 @@
 
-package mecard.site;
+package site;
 
 import epl.EPLCustomerNormalizer;
 import java.util.Properties;
@@ -8,7 +8,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
-import static mecard.site.MeCardPolicy.DEBUG;
+import static site.MeCardPolicy.DEBUG;
 import sta.STACustomerNormalizer;
 import str.STRCustomerNormalizer;
 

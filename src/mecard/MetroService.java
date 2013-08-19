@@ -44,7 +44,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import org.apache.commons.daemon.*;
-import mecard.site.MemberTypes;
+import site.MemberTypes;
 /**
  * This is the entry point of the MeCard server application.
  * @author Andrew Nisbet <anisbet@epl.ca>

@@ -22,7 +22,7 @@ package str;
 
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.site.CustomerLoadNormalizer;
+import site.CustomerLoadNormalizer;
 
 /**
  *

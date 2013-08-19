@@ -27,7 +27,7 @@ import mecard.Protocol;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.exception.SIPException;
-import mecard.site.MeCardPolicy;
+import site.MeCardPolicy;
 
 /**
  * Implementation of MeCard's restriction policies as interpreted by the 

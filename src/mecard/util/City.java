@@ -23,7 +23,7 @@ package mecard.util;
 import java.util.Properties;
 import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
-import mecard.site.MemberTypes;
+import site.MemberTypes;
 
 /**
  * Does a lookup for city code in the city_st.properties file.
