@@ -27,7 +27,6 @@ public class CustomerTest
         instance.setName(name);
         assertTrue(instance.get(CustomerFieldTypes.FIRSTNAME).compareTo("some") == 0);
         assertTrue(instance.get(CustomerFieldTypes.LASTNAME).compareTo("name") == 0);
-        assertTrue(instance.get(CustomerFieldTypes.NAME).compareTo(name) == 0);
     }
 
     /**
@@ -44,7 +43,7 @@ public class CustomerTest
         for (CustomerFieldTypes cTypes: CustomerFieldTypes.values())
         {
             instance.set(cTypes, value);
-            if (cTypes != CustomerFieldTypes.NAME)
+            if (cTypes != CustomerFieldTypes.PREFEREDNAME)
                 assertTrue(instance.get(cTypes).compareTo(value) == 0);
         }
     }

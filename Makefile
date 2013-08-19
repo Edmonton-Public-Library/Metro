@@ -22,11 +22,11 @@ updatesta:
 	zip -r ${ARCHIVE}_STA.z_ dist/* 
 
 diststr:
-	zip -r ${ARCHIVE}_STR.z_ ${STR_DIR}/* dist/* ${WIN_DIR}/* logs/
+	zip -r ${ARCHIVE}_STR.z_ ${STR_DIR}/* dist/* ${WIN_DIR}/* logs/ config_templates/
 distepl:
-	tar cvf ${ARCHIVE}_EPL.tar ${EPL_DIR}/* dist/* logs/
+	tar cvf ${ARCHIVE}_EPL.tar ${EPL_DIR}/* dist/* logs/ unix/* config_templates/
 diststa:
-	zip -r ${ARCHIVE}_STA.z_ ${STA_DIR}/* dist/* ${WIN_DIR}/* logs/
+	zip -r ${ARCHIVE}_STA.z_ ${STA_DIR}/* dist/* ${WIN_DIR}/* logs/ config_templates/
 clean:
 	-rm ${ARCHIVE}_EPL.tar 
 	-rm ${ARCHIVE}_STR.z_

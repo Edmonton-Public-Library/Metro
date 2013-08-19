@@ -37,7 +37,7 @@ import mecard.security.SecurityManager;
  */
 public class Protocol
 {
-    public final static String DEFAULT_FIELD = "X";
+    public final static String DEFAULT_FIELD_VALUE = "X";
     public final static String TRUE        = "Y";
     public final static String FALSE       = "N";
     public final static String TERMINATE   = "XX0";

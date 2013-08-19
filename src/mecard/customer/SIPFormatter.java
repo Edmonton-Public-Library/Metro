@@ -109,7 +109,7 @@ public class SIPFormatter implements CustomerFormatter
                 // This value is used because sip returns the "lastname, fname"
                 // not individual lastname firstname. Using the USER_PREFERRED_NAME
                 // is just a convension used here.
-                if (fieldType == CustomerFieldTypes.NAME)
+                if (fieldType == CustomerFieldTypes.PREFEREDNAME)
                 {
                     customer.setName(sipField.substring(2));
                 } 
@@ -161,7 +161,7 @@ public class SIPFormatter implements CustomerFormatter
         } 
         else if (userFieldValue.equals("AE"))
         {
-            return CustomerFieldTypes.NAME; // last name, first name.
+            return CustomerFieldTypes.PREFEREDNAME; // last name, first name.
         }
         else if (userFieldValue.equals("AF"))
         {
@@ -193,7 +193,7 @@ public class SIPFormatter implements CustomerFormatter
         } // PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|
         else if (userFieldValue.equals("PF"))
         {
-            return CustomerFieldTypes.GENDER;
+            return CustomerFieldTypes.SEX;
         } 
         else
         {

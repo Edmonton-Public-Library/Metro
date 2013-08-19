@@ -50,7 +50,7 @@ public class Customer //extends ProtocolPayload
         {
             return;
         }
-        this.customerFields.put(CustomerFieldTypes.NAME, name);
+        this.customerFields.put(CustomerFieldTypes.PREFEREDNAME, name);
         // Sometimes services return names that are the 'lastName, firstName'.
         // we always assume the last name is first. If only one name is supplied
         // we assume it the last name and set the content string to that, other-
@@ -76,7 +76,7 @@ public class Customer //extends ProtocolPayload
      */
     public void set(CustomerFieldTypes ft, String value)
     {
-        if (ft.equals(CustomerFieldTypes.NAME))
+        if (ft.equals(CustomerFieldTypes.PREFEREDNAME))
         {
             this.setName(value);
         }
@@ -98,7 +98,7 @@ public class Customer //extends ProtocolPayload
 
     /**
      * Ensures that empty fields are populated with default values.
-     * @see Protocol#DEFAULT_FIELD
+     * @see Protocol#DEFAULT_FIELD_VALUE
      */
     private void normalizeFields()
     {
@@ -107,7 +107,7 @@ public class Customer //extends ProtocolPayload
         {
             if (this.customerFields.get(cType) == null || this.customerFields.get(cType).isEmpty())
             {
-                this.customerFields.put(cType, Protocol.DEFAULT_FIELD);
+                this.customerFields.put(cType, Protocol.DEFAULT_FIELD_VALUE);
             }
         }
     }

@@ -60,7 +60,7 @@ public class FlatUserFormatter implements CustomerFormatter
         flatUser.add(FlatUserFieldTypes.USER_PIN, customer.get(CustomerFieldTypes.PIN));
         flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, customer.get(CustomerFieldTypes.FIRSTNAME));
         flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, customer.get(CustomerFieldTypes.LASTNAME));
-        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, customer.get(CustomerFieldTypes.NAME));
+        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, customer.get(CustomerFieldTypes.PREFEREDNAME));
         // Dates
         flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, customer.get(CustomerFieldTypes.DOB));
         flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
@@ -89,8 +89,8 @@ public class FlatUserFormatter implements CustomerFormatter
                 FlatUserExtendedFieldTypes.USER_ADDR1, 
                 FlatUserFieldTypes.PHONE, 
                 mecard.util.Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
-        String gender = customer.get(CustomerFieldTypes.GENDER);
-        if (gender.contains(Protocol.DEFAULT_FIELD) == false)
+        String gender = customer.get(CustomerFieldTypes.SEX);
+        if (gender.contains(Protocol.DEFAULT_FIELD_VALUE) == false)
         {
             // we will have to revisit this since I don't know how Horizon 
             //  designates different sexes.
@@ -114,10 +114,10 @@ public class FlatUserFormatter implements CustomerFormatter
     }
 
     @Override
-    public Customer getCustomer(List<String> customer)
+    public Customer getCustomer(List<String> customerList)
     {
-        Customer customerObject = new Customer();
-        for (String field : customer)
+        Customer customer = new Customer();
+        for (String field : customerList)
         {
             String[] keyValue = this.parseRawCustomerData(field);
             String flatUserFieldName = keyValue[0];
@@ -130,16 +130,16 @@ public class FlatUserFormatter implements CustomerFormatter
                 {
                     // Sirsi puts pastes the city and state together so split them on ','
                     String[] cityState = flatUserFieldValue.split(",");
-                    customerObject.set(CustomerFieldTypes.CITY, cityState[0]);
+                    customer.set(CustomerFieldTypes.CITY, cityState[0]);
                     if (cityState[1] != null)
                     {
-                        customerObject.set(CustomerFieldTypes.PROVINCE, cityState[1].trim());
+                        customer.set(CustomerFieldTypes.PROVINCE, cityState[1].trim());
                     }
                 } // we also have to reformat the date from ANSI
                 else if (fieldType == CustomerFieldTypes.POSTALCODE)
                 {
                     PostalCode pCode = new PostalCode(flatUserFieldValue);
-                    customerObject.set(CustomerFieldTypes.POSTALCODE, pCode.toString());
+                    customer.set(CustomerFieldTypes.POSTALCODE, pCode.toString());
                 }
                 else if (fieldType == CustomerFieldTypes.DOB
                             || fieldType == CustomerFieldTypes.PRIVILEGE_EXPIRES)
@@ -148,38 +148,38 @@ public class FlatUserFormatter implements CustomerFormatter
                     // lets screen for that now.
                     if (flatUserFieldValue.equalsIgnoreCase("NEVER"))
                     {
-                        customerObject.set(fieldType, DEFAULT_DATE);
+                        customer.set(fieldType, DEFAULT_DATE);
                     } 
                     else
                     {
-                        customerObject.set(fieldType, flatUserFieldValue);
+                        customer.set(fieldType, flatUserFieldValue);
                     }
                 }
                 else if (fieldType == CustomerFieldTypes.PHONE)
                 {
                     Phone phone = new Phone(flatUserFieldValue);
 //                    customerObject.set(fieldType, phone.toString());
-                    customerObject.set(fieldType, phone.getUnformattedPhone());
+                    customer.set(fieldType, phone.getUnformattedPhone());
                 }
-                else if (fieldType == CustomerFieldTypes.NAME)
+                else if (fieldType == CustomerFieldTypes.PREFEREDNAME)
                 {
-                    customerObject.setName(flatUserFieldValue);
+                    customer.setName(flatUserFieldValue);
                 }
-//                else if (fieldType == CustomerFieldTypes.LASTNAME)
-//                {
-//                    customerObject.set(CustomerFieldTypes.LASTNAME, flatUserFieldValue);
-//                }
-//                else if (fieldType == CustomerFieldTypes.FIRSTNAME)
-//                {
-//                    customerObject.set(CustomerFieldTypes.FIRSTNAME, flatUserFieldValue);
-//                }
+                else if (fieldType == CustomerFieldTypes.LASTNAME)
+                {
+                    customer.set(CustomerFieldTypes.LASTNAME, flatUserFieldValue);
+                }
+                else if (fieldType == CustomerFieldTypes.FIRSTNAME)
+                {
+                    customer.set(CustomerFieldTypes.FIRSTNAME, flatUserFieldValue);
+                }
                 else
                 {
-                    customerObject.set(fieldType, flatUserFieldValue);
+                    customer.set(fieldType, flatUserFieldValue);
                 }    
             }
         }
-        return customerObject;
+        return customer;
     }
 
     /**
@@ -195,18 +195,18 @@ public class FlatUserFormatter implements CustomerFormatter
         } 
         else if (flatUserFieldValue.equals("USER_NAME"))
         {
-            return CustomerFieldTypes.NAME;
+            return CustomerFieldTypes.PREFEREDNAME;
         }
         // uncommenting these lines cause the firt and last names to set in 
         // Customer, but any salutation will not come across.
-//        else if (flatUserFieldValue.equals("USER_FIRST_NAME"))
-//        {
-//            return CustomerFieldTypes.FIRSTNAME;
-//        } 
-//        else if (flatUserFieldValue.equals("USER_LAST_NAME"))
-//        {
-//            return CustomerFieldTypes.LASTNAME;
-//        } 
+        else if (flatUserFieldValue.equals("USER_FIRST_NAME"))
+        {
+            return CustomerFieldTypes.FIRSTNAME;
+        } 
+        else if (flatUserFieldValue.equals("USER_LAST_NAME"))
+        {
+            return CustomerFieldTypes.LASTNAME;
+        } 
         else if (flatUserFieldValue.equals("USER_PIN"))
         {
             return CustomerFieldTypes.PIN;
@@ -224,7 +224,7 @@ public class FlatUserFormatter implements CustomerFormatter
         // suggest this be a field that loaded from a property file.
         else if (flatUserFieldValue.equals("USER_CATEGORY2"))
         {
-            return CustomerFieldTypes.GENDER;
+            return CustomerFieldTypes.SEX;
         } 
         else if (flatUserFieldValue.equals("STREET"))
         {

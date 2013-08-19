@@ -30,30 +30,28 @@ public enum CustomerFieldTypes
     // class that uses the order in its @Customer#toString method. That in turn
     // is used for creating the customer's MD5 finger print. We use that for
     // determining if the the customer account has changed.
-    ID(0), 
-    PIN(1),
-    NAME(2),  // last name first name comma-separated.
-    STREET(3), 
-    CITY(4), 
-    PROVINCE(5), 
-    POSTALCODE(6),
-    GENDER(7), 
-    EMAIL(8), 
-    PHONE(9),
-    DOB(10), 
-    PRIVILEGE_EXPIRES(11),
-    RESERVED(12), // General field can be used for what ever, currently empty.
-    DEFAULT(13), // Used for fields that can remain empty like 'province' on Horizon.
-    ISVALID(14), // start of flagged fields. This one means the host library has all customer information.
-    ISMINAGE(15),
-    ISRECIPROCAL(16),
-    ISRESIDENT(17),
-    ISGOODSTANDING(18),
-    ISLOSTCARD(19),
-    FIRSTNAME(20),
-    LASTNAME(21);
-    
-    private int type;
+    ID, 
+    PIN,
+    PREFEREDNAME,  // last name first name comma-separated.
+    STREET, 
+    CITY, 
+    PROVINCE, 
+    POSTALCODE,
+    SEX, 
+    EMAIL, 
+    PHONE,
+    DOB, 
+    PRIVILEGE_EXPIRES,
+    RESERVED, // General field can be used for what ever, currently empty.
+    DEFAULT, // Used for fields that can remain empty like 'province' on Horizon.
+    ISVALID, // start of flagged fields. This one means the host library has all customer information.
+    ISMINAGE,
+    ISRECIPROCAL,
+    ISRESIDENT,
+    ISGOODSTANDING,
+    ISLOSTCARD,
+    FIRSTNAME,
+    LASTNAME;
     
     public static int size()
     {
@@ -63,28 +61,5 @@ public enum CustomerFieldTypes
             count++;
         }
         return count;
-    }
-    
-    private CustomerFieldTypes(int type)
-    {
-        this.type = type;
-    }
-    
-    private CustomerFieldTypes(String type)
-    {
-        for (CustomerFieldTypes cType : CustomerFieldTypes.values())
-        {
-            if (type.equalsIgnoreCase(cType.name()))
-            {
-                this.type = cType.ordinal();
-                break;
-            }
-        }
-    }
-    
-    @Override
-    public String toString()
-    {
-        return this.name();
     }
 }

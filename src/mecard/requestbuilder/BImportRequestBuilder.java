@@ -122,7 +122,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         new BImportFile.Builder(headerFile, dataFile)
                 .barcode(customer.get(CustomerFieldTypes.ID))
                 .pin(customer.get(CustomerFieldTypes.PIN))
-                .name(customer.get(CustomerFieldTypes.NAME))
+                .name(customer.get(CustomerFieldTypes.PREFEREDNAME))
                 .address1(customer.get(CustomerFieldTypes.STREET))
                 .city(customer.get(CustomerFieldTypes.CITY))
                 .postalCode(customer.get(CustomerFieldTypes.POSTALCODE))

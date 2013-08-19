@@ -141,7 +141,7 @@ public abstract class MeCardPolicy
     public boolean isMinimumAgeByDate(Customer customer, String meta)
     {
         String dateOfBirth = customer.get(CustomerFieldTypes.DOB);
-        if (dateOfBirth.compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (dateOfBirth.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG)
             {
@@ -181,7 +181,7 @@ public abstract class MeCardPolicy
      */
     public boolean isEmailable(Customer customer, String meta)
     {
-        if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG)
             {
@@ -206,54 +206,71 @@ public abstract class MeCardPolicy
     public boolean isValidCustomerData(Customer customer)
     {
         // Test customer fields that they are somewhat valid.
-        if (customer.get(CustomerFieldTypes.ID).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.ID).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer failed barcode requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.PIN).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.PIN).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed pin requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed email requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.NAME).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        // for naming customer can have a name field or the first name last name field populated.
+        if (customer.get(CustomerFieldTypes.PREFEREDNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed name requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        else
+        {
+            if (customer.get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed last name requirement.");
+                return false;
+            }
+            if (customer.get(CustomerFieldTypes.FIRSTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed first name requirement.");
+                return false;
+            }
+        }
+        
+        if (customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed expiry requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.STREET).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.STREET).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed address: street requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.CITY).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.CITY).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed address: city requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.PROVINCE).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.PROVINCE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed address: province requirement.");
             return false;
         }
-        if (customer.get(CustomerFieldTypes.POSTALCODE).compareTo(Protocol.DEFAULT_FIELD) == 0)
+        if (customer.get(CustomerFieldTypes.POSTALCODE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
         {
             if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                     +" failed address: postal code requirement.");
