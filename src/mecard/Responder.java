@@ -213,6 +213,11 @@ public class Responder
         System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
     }
 
+    /**
+     * Creates the ILS specific command to run to update a customer account, then
+     * runs it and places the results into the response object.
+     * @param response 
+     */
     public void updateCustomer(Response response)
     {
         Customer customer = request.getCustomer();
@@ -229,7 +234,12 @@ public class Responder
     }
 
     /**
-     * 
+     * Normalizes information from melibraries.ca into a format that the local ILS
+     * can handle. Example: some libraries can only accept 4 digit pins. The 
+     * rules for making that happen start here. Once completed the response
+     * object will contain the changes that were made. In our example an 
+     * explanation of that the over-sized PIN was truncated and what the new value
+     * is can be added.
      * @param response
      * @param customer 
      */
