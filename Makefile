@@ -4,30 +4,26 @@
 ########################################################################
 
 VERSION=0.1
-ARCHIVE=MeCard_${VERSION}
-JAR=MeCard.jar
-EPL_DIR=EPLconfiguration
-STR_DIR=STRconfiguration
-STA_DIR=STAconfiguration
-WIN_DIR=windows
+ARCHIVE=Metro_${VERSION}
+CONFIGS=config_templates/*.properties
+WIN_SETUP=windows/Output/setup.exe
+WIN_DIR=windows/*.exe windows/*.dll
+UNIX_DIR=unix/*
 
-update: clean updateepl updatestr updatesta
-install: clean distepl diststr diststa
+update: clean update_unix update_windows
+install: clean dist_windows dist_unix
 
-updateepl:
+update_unix:
 	tar cvf ${ARCHIVE}_EPL.tar dist/*
-updatestr:
-	zip -r ${ARCHIVE}_STR.z_ dist/* 
-updatesta:
-	zip -r ${ARCHIVE}_STA.z_ dist/* 
+update_windows:
+	cp ${WIN_SETUP} ./setup.e__
+	
+dist_windows:
+	zip -r ${ARCHIVE}.z_ ${CONFIGS} dist/* ${WIN_DIR} logs/Customers
+dist_unix:
+	tar cvf ${ARCHIVE}.tar ${CONFIGS} dist/* ${UNIX_DIR} logs/Customers
 
-diststr:
-	zip -r ${ARCHIVE}_STR.z_ ${STR_DIR}/* dist/* ${WIN_DIR}/* logs/ config_templates/
-distepl:
-	tar cvf ${ARCHIVE}_EPL.tar ${EPL_DIR}/* dist/* logs/ unix/* config_templates/
-diststa:
-	zip -r ${ARCHIVE}_STA.z_ ${STA_DIR}/* dist/* ${WIN_DIR}/* logs/ config_templates/
 clean:
-	-rm ${ARCHIVE}_EPL.tar 
-	-rm ${ARCHIVE}_STR.z_
-	-rm ${ARCHIVE}_STA.z_
+	-rm ${ARCHIVE}.tar 
+	-rm ${ARCHIVE}.z_
+	-rm ./setup.e__
