@@ -21,17 +21,24 @@
 package mecard.config;
 
 /**
- *
- * @author metro
+ * Mandatory property types of the Polaris config file. Note that there are
+ * fields 
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum ConfigFileTypes
+public enum PolarisPropertyTypes
 {
-    SYMPHONY,
-    ENVIRONMENT, 
-    SIP2,
-    BIMPORT,
-    BIMPORT_CITY_MAPPING,
-    POLARIS,
-    DEBUG, // used with DummyResponder, this file contains canned results to return to client.
-    VARS;  // System variables like PATH, UPATH, etc.
+    LOAD_DIR("load-dir");     // Directory where to find customer files to load.
+    
+    private String type;
+
+    private PolarisPropertyTypes(String s)
+    {
+        this.type = s;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.type;
+    }
 }

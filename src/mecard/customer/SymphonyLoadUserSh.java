@@ -53,6 +53,12 @@ public class SymphonyLoadUserSh
         private String magicNumber;
         private String unixCommand = "cat ";
         
+        /**
+         * Takes the name of the file which should include the fully qualified 
+         * path or it will try and create a file in the default directory of the
+         * current user.
+         * @param fileName 
+         */
         public Builder(String fileName)
         {
             this.fileName     = fileName;
@@ -66,12 +72,18 @@ public class SymphonyLoadUserSh
          * @param m the magic number.
          * @return Builder object.
          */
-        public Builder setMagicNumber(String m)
+        public Builder setSheBang(String m)
         {
             this.magicNumber = m;
             return this;
         }
         
+        /**
+         * Sets what Unix command you want the shell script to run.
+         * @param c the command which should be fully qualified path if it is
+         * not a shell command or if you have not provisioned for pathing.
+         * @return Builder object
+         */
         public Builder setUnixCommand(String c)
         {
             this.unixCommand = c;
@@ -228,17 +240,8 @@ public class SymphonyLoadUserSh
     public List<String> getCommandLine()
     {
         List<String> cmdLine = new ArrayList<String>();
-//        if (isDebugMode)
-//        {
-//            // my god this is bad: TODO think of something better than this!
-//            // there is a shell script in this directory.
-//            cmdLine.add("/home/metro/bimport/bimport");
-//        }
-//        else
-//        {
-            cmdLine.add(shellFileName);
-//        }
-       
+        cmdLine.add(shellFileName);
+
         return cmdLine;
     }
 }

@@ -45,7 +45,7 @@ public class SymphonyLoadUserShTest
                 .Builder(testFileName)
                 .setDebug(true)
                 .setFlatUserFile(srcFileName)
-                .setMagicNumber("#!/bin/bash")
+                .setSheBang("#!/bin/bash")
                 .setLogFile("symphonyloadusershtest.log")
                 .setLoadFlatUserCommand(loadFlatUserUpdate)
                 .build();

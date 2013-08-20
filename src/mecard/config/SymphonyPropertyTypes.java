@@ -21,17 +21,32 @@
 package mecard.config;
 
 /**
- *
- * @author metro
+ * Mandatory property types of the Symphony configuration file. Note that there are
+ * fields 
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum ConfigFileTypes
+public enum SymphonyPropertyTypes
 {
-    SYMPHONY,
-    ENVIRONMENT, 
-    SIP2,
-    BIMPORT,
-    BIMPORT_CITY_MAPPING,
-    POLARIS,
-    DEBUG, // used with DummyResponder, this file contains canned results to return to client.
-    VARS;  // System variables like PATH, UPATH, etc.
+    LOAD_DIR("load-dir"),     // Directory where to find customer files to load.
+    USER_LIBRARY("USER_LIBRARY"),
+    USER_PROFILE("USER_PROFILE"),
+    USER_PREFERED_LANGUAGE("USER_PREF_LANG"),
+    USER_STATUS("USER_STATUS"),
+    USER_ROUTING_FLAG("USER_ROUTING_FLAG"),
+    USER_CHARGE_HISTORY_RULE("USER_CHG_HIST_RULE"),
+    USER_ACCESS("USER_ACCESS"),
+    USER_ENVIRONMENT("USER_ENVIRONMENT");
+    
+    private String type;
+
+    private SymphonyPropertyTypes(String s)
+    {
+        this.type = s;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.type;
+    }
 }

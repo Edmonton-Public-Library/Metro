@@ -36,7 +36,9 @@ import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.config.LibraryPropertyTypes;
+import mecard.config.PolarisPropertyTypes;
 import mecard.config.SipPropertyTypes;
+import mecard.config.SymphonyPropertyTypes;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -54,15 +56,16 @@ public class MetroService implements Daemon
     public final static String VERSION = "0.1"; // server version.
     private static String CONFIG_DIR = "";
     private static String BIMPORT_PROPERTY_FILE = "bimport.properties";
-    private static String DEFAULT_CREATE_PROPERTY_FILE = "default.properties";
+    private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
+    private static String POLARIS_PROPERTY_FILE = "polaris.properties";
     private static String ENVIRONMENT_FILE = "environment.properties";
     private static String SIP2_FILE = "sip2.properties";
     private static String BIMPORT_CITY_MAPPING = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE = "debug.properties";
-    private static String VARIABLES_FILE = "sysvar.properties"; // these are system specifi variables, like PATH.
+    private static String VARIABLES_FILE = "sysvar.properties"; // these are system specific variables, like PATH.
         // There are no mandatory variables, so no checking is done.
-    
-    private static Properties defaultPolicies; // Default properties need to create a user.
+    private static Properties polaris; // Default properties needed by Polaris.
+    private static Properties symphony; // Default properties needed to create a user in Symphony.
     private static Properties bimport; // Properties Metro needs to operate BImport.
     private static Properties environment; // Basic envrionment values.
     private static Properties sip2; // Variables used to talk to SIP2.
@@ -105,7 +108,8 @@ public class MetroService implements Daemon
                 System.out.println(new Date() + "CONFIG: dir set to "+CONFIG_DIR);
             }
             BIMPORT_PROPERTY_FILE = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
-            DEFAULT_CREATE_PROPERTY_FILE = CONFIG_DIR + DEFAULT_CREATE_PROPERTY_FILE;
+            SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
+            POLARIS_PROPERTY_FILE = CONFIG_DIR + POLARIS_PROPERTY_FILE;
             ENVIRONMENT_FILE = CONFIG_DIR + ENVIRONMENT_FILE;
             SIP2_FILE = CONFIG_DIR + SIP2_FILE;
             BIMPORT_CITY_MAPPING = CONFIG_DIR + BIMPORT_CITY_MAPPING;
@@ -228,15 +232,15 @@ public class MetroService implements Daemon
 
         switch (type)
         {
-            case DEFAULT_CREATE: // Additional properties that are given to a customer by default at creation time.
-                if (defaultPolicies == null)
+            case SYMPHONY: // Additional properties that are given to a customer by default at creation time.
+                if (symphony == null)
                 {
                     try
                     {
-                        defaultPolicies = readProperties(MetroService.DEFAULT_CREATE_PROPERTY_FILE);
+                        symphony = readProperties(MetroService.SYMPHONY_PROPERTY_FILE);
                     } catch (FileNotFoundException ex)
                     {
-                        String msg = "Failed to find '" + MetroService.DEFAULT_CREATE_PROPERTY_FILE
+                        String msg = "Failed to find '" + MetroService.SYMPHONY_PROPERTY_FILE
                                 + "'. It is required to message customers of important events.";
                         Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
                     } catch (NullPointerException npe)
@@ -244,8 +248,17 @@ public class MetroService implements Daemon
                         String msg = "Failed to read customer creation default config file. One must be defined.";
                         Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, npe);
                     }
+                    // Now check manditory fields
+                    for (SymphonyPropertyTypes sType : SymphonyPropertyTypes.values())
+                    {
+                        if (symphony.get(sType.toString()) == null)
+                        {
+                            String msg = "'" + sType + "' unset in " + MetroService.SYMPHONY_PROPERTY_FILE;
+                            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        }
+                    }
                 }
-                return defaultPolicies;
+                return symphony;
             case ENVIRONMENT:
                 if (environment == null)
                 {
@@ -401,6 +414,33 @@ public class MetroService implements Daemon
                     }
                 }
                 return systemVariables;
+                
+            case POLARIS:
+                if (polaris == null)
+                {
+                    try
+                    {
+                        polaris = readProperties(MetroService.POLARIS_PROPERTY_FILE);
+                    } catch (FileNotFoundException ex)
+                    {
+                        String msg = "Failed to find '" + MetroService.POLARIS_PROPERTY_FILE + "'";
+                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+                    } catch (NullPointerException npe)
+                    {
+                        String msg = "Failed to read Polaris config file. One must be defined.";
+                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, npe);
+                    }
+                    // now check that all mandetory values are here.
+                    for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
+                    {
+                        if (polaris.get(pType.toString()) == null)
+                        {
+                            String msg = "'" + pType + "' unset in " + MetroService.POLARIS_PROPERTY_FILE;
+                            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        }
+                    }
+                }
+                return polaris;
                 
             default:
                 throw new UnsupportedOperationException("unsupported property file");

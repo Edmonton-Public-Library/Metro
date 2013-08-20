@@ -48,7 +48,7 @@ public class PropertyReaderTest
         Properties envProps = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
         envProps.list(System.out);
         
-        Properties createProps = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);
+        Properties createProps = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
         createProps.list(System.out);
 
         Properties sip2Props = MetroService.getProperties(ConfigFileTypes.SIP2);
@@ -62,6 +62,9 @@ public class PropertyReaderTest
         
         Properties debugProps = MetroService.getProperties(ConfigFileTypes.DEBUG);
         debugProps.list(System.out);
+        
+        Properties polarisProps = MetroService.getProperties(ConfigFileTypes.POLARIS);
+        polarisProps.list(System.out);
     }
 
     /**
@@ -84,6 +87,6 @@ public class PropertyReaderTest
             System.out.println(count + ") " + s + " == " + props.get(s));
             count++;
         }
-        assertTrue(props.size() == 8);
+        assertTrue(props.size() == 6);
     }
 }

@@ -207,7 +207,7 @@ public class FlatUser
     public void setDefaultProperties()
     {
         Properties defaultCreateProperties = MetroService.getProperties(
-                ConfigFileTypes.DEFAULT_CREATE);
+                ConfigFileTypes.SYMPHONY);
         Enumeration defaultProperties = defaultCreateProperties.propertyNames();
         FlatUserFieldTypes[] flatUserFieldKeys = FlatUserFieldTypes.values();
         while (defaultProperties.hasMoreElements())

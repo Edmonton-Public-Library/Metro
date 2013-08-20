@@ -65,7 +65,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public SymphonyRequestBuilder(boolean debug)
     {
         // Lets get the properties from the properties file.
-        Properties defaultProperties = MetroService.getProperties(ConfigFileTypes.DEFAULT_CREATE);
+        Properties defaultProperties = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = defaultProperties.getProperty("USER_LIBRARY");
         // The default values for creating a user vary from ILS to ILS so there
         // is no error checking for mandatory values of the default.properties file.
@@ -73,7 +73,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         if (homeLibrary == null || homeLibrary.isEmpty())
         {
             String msg = "Symphony requires a user to be given a default home-library. "
-                    + "Please specify one in default.properties config file.";
+                    + "Please specify one in symphony.properties config file.";
             throw new MalformedCommandException(msg);
         }
         
@@ -197,7 +197,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 // this we will not direct stdout or stderr, we will then test the 
                 // command status buffers.
                 //  .setLogFile(this.homeDirectory + File.separator + "load.log")
-                .setMagicNumber("#!" + this.shell)
+                .setSheBang("#!" + this.shell)
                 .setFlatUserFile(userDataFileName)
                 .setLoadFlatUserCommand(loadFlatUserCreate)
                 .build();
@@ -243,7 +243,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 // this we will not direct stdout or stderr, we will then test the 
                 // command status buffers.
                 //  .setLogFile(this.homeDirectory + File.separator + "load.log")
-                .setMagicNumber("#!"+shell)
+                .setSheBang("#!"+shell)
                 .setFlatUserFile(userDataFileName)
                 .setLoadFlatUserCommand(loadFlatUserUpdate)
                 .build();
