@@ -33,6 +33,7 @@ import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
@@ -65,40 +66,10 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public SymphonyRequestBuilder(boolean debug)
     {
         // Lets get the properties from the properties file.
-        Properties defaultProperties = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
-        String homeLibrary = defaultProperties.getProperty("USER_LIBRARY");
-        // The default values for creating a user vary from ILS to ILS so there
-        // is no error checking for mandatory values of the default.properties file.
-        // We do the checking here.
-        if (homeLibrary == null || homeLibrary.isEmpty())
-        {
-            String msg = "Symphony requires a user to be given a default home-library. "
-                    + "Please specify one in symphony.properties config file.";
-            throw new MalformedCommandException(msg);
-        }
-        
-        Properties sysProps = MetroService.getProperties(ConfigFileTypes.VARS);
-        this.homeDirectory = sysProps.getProperty("METRO_HOME");
-        // The default values for creating a user vary from ILS to ILS so there
-        // is no error checking for mandatory values of the default.properties file.
-        // We do the checking here.
-        if (homeDirectory == null || homeDirectory.isEmpty())
-        {
-            String msg = "Metro requires a METRO_HOME variable to be defined. "
-                    + "Please specify one in sysvar.properties config file.";
-            throw new MalformedCommandException(msg);
-        }
-        
-        this.shell = sysProps.getProperty("SHELL");
-        // The default values for creating a user vary from ILS to ILS so there
-        // is no error checking for mandatory values of the default.properties file.
-        // We do the checking here.
-        if (shell == null || shell.isEmpty())
-        {
-            String msg = "Metro requires a SHELL variable to be defined. "
-                    + "Please specify one in sysvar.properties config file.";
-            throw new MalformedCommandException(msg);
-        }
+        Properties symphonyProps = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
+        String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
+        this.homeDirectory = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
+        this.shell = symphonyProps.getProperty(SymphonyPropertyTypes.SHELL.toString());
         
         seluser = new ArrayList<String>();
         seluser.add("seluser");
