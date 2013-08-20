@@ -172,6 +172,7 @@ public class Responder
             // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
             response.setResponse("there is a problem with your account, please contact your home library for assistance");
             response.setCode(ResponseTypes.FAIL);
+            response.setCustomer(null);
         }
         System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
         System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
