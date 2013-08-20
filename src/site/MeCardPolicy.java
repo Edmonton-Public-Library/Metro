@@ -20,8 +20,8 @@
  */
 package site;
 
-import epl.EPLPolicy;
-import fts.FTSPolicy;
+import site.edmonton.EPLPolicy;
+import site.ftsaskatchewan.FTSPolicy;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Properties;
@@ -33,8 +33,8 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.DateComparer;
-import sta.STAPolicy;
-import str.STRPolicy;
+import site.stalbert.STAPolicy;
+import site.strathcona.STRPolicy;
 
 /**
  * This class needs to be sub-classed by all libraries. All customer's must meet 

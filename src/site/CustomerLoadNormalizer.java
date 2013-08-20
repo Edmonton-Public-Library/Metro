@@ -1,7 +1,7 @@
 
 package site;
 
-import epl.EPLCustomerNormalizer;
+import site.edmonton.EPLCustomerNormalizer;
 import java.util.Properties;
 import mecard.MetroService;
 import mecard.config.ConfigFileTypes;
@@ -9,8 +9,8 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import static site.MeCardPolicy.DEBUG;
-import sta.STACustomerNormalizer;
-import str.STRCustomerNormalizer;
+import site.stalbert.STACustomerNormalizer;
+import site.strathcona.STRCustomerNormalizer;
 
 /**
  *

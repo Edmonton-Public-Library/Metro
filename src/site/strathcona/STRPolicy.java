@@ -18,7 +18,7 @@
 * MA 02110-1301, USA.
 *
 */
-package sta;
+package site.strathcona;
 
 import api.SIPCustomerMessage;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import site.MeCardPolicy;
  * into responses to the basic MeCard restriction policies:
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class STAPolicy extends MeCardPolicy
+public class STRPolicy extends MeCardPolicy
 {
     private List<String> nonResidentBTypes;
     private List<String> reciprocalBTypes;
@@ -44,7 +44,7 @@ public class STAPolicy extends MeCardPolicy
     private final static String LOST_CARD = "LOSTCARD";
     
     
-    public STAPolicy(boolean debug)
+    public STRPolicy(boolean debug)
     {
         this.debug = debug;
         this.nonResidentBTypes = new ArrayList<String>();
@@ -96,7 +96,7 @@ public class STAPolicy extends MeCardPolicy
         }
         catch (SIPException ex)
         {
-            System.out.println(STAPolicy.class.getName() + " isResident test failed: " + ex.getMessage());
+            System.out.println(STRPolicy.class.getName() + " isResident test failed: " + ex.getMessage());
         }
         
         customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
@@ -122,7 +122,7 @@ public class STAPolicy extends MeCardPolicy
         }
         catch (SIPException ex)
         {
-            System.out.println(STAPolicy.class.getName() + " isReciprocal test failed: " + ex.getMessage());
+            System.out.println(STRPolicy.class.getName() + " isReciprocal test failed: " + ex.getMessage());
         }
         
         customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
@@ -147,7 +147,7 @@ public class STAPolicy extends MeCardPolicy
         }
         catch (SIPException ex)
         {
-            System.out.println(STAPolicy.class.getName() + " isInGoodStanding test failed: " + ex.getMessage());
+            System.out.println(STRPolicy.class.getName() + " isInGoodStanding test failed: " + ex.getMessage());
         }
 
         customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
@@ -175,7 +175,7 @@ public class STAPolicy extends MeCardPolicy
         }
         catch (SIPException ex)
         {
-            System.out.println(STAPolicy.class.getName() + " isMinimumAge test failed: " + ex.getMessage());
+            System.out.println(STRPolicy.class.getName() + " isMinimumAge test failed: " + ex.getMessage());
         }
         
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);

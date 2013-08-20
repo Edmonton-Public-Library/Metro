@@ -18,7 +18,7 @@
 * MA 02110-1301, USA.
 *
 */
-package epl;
+package site.edmonton;
 
 import mecard.Protocol;
 import mecard.customer.Customer;

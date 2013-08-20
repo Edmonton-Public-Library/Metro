@@ -18,7 +18,7 @@
 * MA 02110-1301, USA.
 *
 */
-package str;
+package site.ftsaskatchewan;
 
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
@@ -28,12 +28,12 @@ import site.CustomerLoadNormalizer;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class STRCustomerNormalizer extends CustomerLoadNormalizer
+public final class FTSCustomerNormalizer extends CustomerLoadNormalizer
 {
     public final static int MAXIMUM_PIN_WIDTH = 4;
     private final boolean debug;
     
-    public STRCustomerNormalizer(boolean debug)
+    public FTSCustomerNormalizer(boolean debug)
     {
         this.debug = debug;
     }
@@ -42,10 +42,10 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
     public String normalize(Customer c)
     {
         StringBuilder returnMessage = new StringBuilder();
-        if (c.get(CustomerFieldTypes.PIN).length() <= STRCustomerNormalizer.MAXIMUM_PIN_WIDTH == false)
+        if (c.get(CustomerFieldTypes.PIN).length() <= FTSCustomerNormalizer.MAXIMUM_PIN_WIDTH == false)
         {
             String pin = c.get(CustomerFieldTypes.PIN);
-            int start = pin.length() - STRCustomerNormalizer.MAXIMUM_PIN_WIDTH;
+            int start = pin.length() - FTSCustomerNormalizer.MAXIMUM_PIN_WIDTH;
             if (start >= 0)
             {
                 String newPin = pin.substring(start);
@@ -54,24 +54,9 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
                 returnMessage.append("' to comply with this library's policies.");
                 c.set(CustomerFieldTypes.PIN, newPin);
                 System.out.println("Customer's PIN was too long trimmed to last "
-                    + STRCustomerNormalizer.MAXIMUM_PIN_WIDTH + " characters.");
+                    + FTSCustomerNormalizer.MAXIMUM_PIN_WIDTH + " characters.");
             }
         }
-        // Strathcona use UPPERCASE Name and Address for their customers, to make
-        // it easier to spot STR and FTS customers.
-        // We change the first and last name, but note this does not effect PREFEREDNAME.
-        String customerData = c.get(CustomerFieldTypes.FIRSTNAME).toUpperCase();
-        c.set(CustomerFieldTypes.FIRSTNAME, customerData);
-        customerData = c.get(CustomerFieldTypes.LASTNAME).toUpperCase();
-        c.set(CustomerFieldTypes.LASTNAME, customerData);
-        customerData = c.get(CustomerFieldTypes.STREET).toUpperCase();
-        c.set(CustomerFieldTypes.STREET, customerData);
-        // We deliberately don't do City or Province because 1) it is just a visual
-        // queue for the staff, 2) there may be translation issues for finding
-        // the customer's city in the city_st table. CONFIRMED: there is no
-        // translation problem since the City class does a lookup case insensitively
-        // but I still recommend not converting case, since it effects other libraries
-        // records.
         return returnMessage.toString();
     }
 }
