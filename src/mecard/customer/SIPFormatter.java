@@ -23,6 +23,7 @@ package mecard.customer;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
 import mecard.util.Address;
+import mecard.util.Phone;
 
 /**
  *
@@ -123,6 +124,10 @@ public class SIPFormatter implements CustomerFormatter
                     customer.set(CustomerFieldTypes.POSTALCODE, address.getPostalCode());
                     customer.set(CustomerFieldTypes.PHONE, address.getPhone());
                 } 
+                else if (fieldType == CustomerFieldTypes.PHONE) // St. A actually includes this in BF field, EPL doesn't
+                {
+                    customer.set(CustomerFieldTypes.PHONE, sipField.substring(2));
+                }
                 else if (fieldType == CustomerFieldTypes.PRIVILEGE_EXPIRES)
                 {
                     // PA20140321    235900

@@ -14,9 +14,10 @@ update: clean update_unix update_windows
 install: clean dist_windows dist_unix
 
 update_unix:
-	tar cvf ${ARCHIVE}_EPL.tar dist/*
+	tar cvf ${ARCHIVE}.tar dist/*
 update_windows:
 	cp ${WIN_SETUP} ./setup.e__
+	cp dist/MeCard.jar ./MeCard.j__
 	
 dist_windows:
 	zip -r ${ARCHIVE}.z_ ${CONFIGS} dist/* ${WIN_DIR} logs/Customers
