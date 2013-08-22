@@ -48,31 +48,23 @@ public class STRPolicy extends MeCardPolicy
     {
         this.debug = debug;
         this.nonResidentBTypes = new ArrayList<String>();
-        this.nonResidentBTypes.add("ill");    // INTERNAL LIBRARY LOANS
-        this.nonResidentBTypes.add("inter");  // INTERLIBRARY LOAN BORROWER
-        this.nonResidentBTypes.add("mnra");   // MASTER MEMBER NON RESIDENT ADULT
-        this.nonResidentBTypes.add("mnrsen"); // MASTER MEMBER NON RES SENIOR
-        this.nonResidentBTypes.add("mrecip"); // MASTER MEMBER RECIP BORROWER
-        this.nonResidentBTypes.add("nra");    // NON-RESIDENT ADULT
-        this.nonResidentBTypes.add("nrj");    // NON-RESIDENT JUNIOR
-        this.nonResidentBTypes.add("nrsen");  // NON-RESIDENT SENIOR
-        this.nonResidentBTypes.add("nrya");   // NON-RESIDENT YOUNG ADULT
-        this.nonResidentBTypes.add("RecipJ"); // RECIPROCAL JUNIOR
-        this.nonResidentBTypes.add("RecipYA");// RECIPROCAL YOUNG ADULT
+        this.nonResidentBTypes.add("nr");     // Non-resident
+        this.nonResidentBTypes.add("nrf");    // Non-resident family
+        this.nonResidentBTypes.add("oi");     // Outreach institution
         this.nonResidentBTypes.add("tal");    // TAL MEMBER
+        this.nonResidentBTypes.add("tnr");    // visitor
+        this.nonResidentBTypes.add("hsr");    // self reg
         
         this.reciprocalBTypes = new ArrayList<String>();
-        this.reciprocalBTypes.add("recip");   // RECIPROCAL MEMBERSHIP
+        this.reciprocalBTypes.add("rec");     // RECIPROCAL Edmonton 
+        this.reciprocalBTypes.add("recd");    // RECIPROCAL Devon
+        this.reciprocalBTypes.add("recsa");   // RECIPROCAL St Albert Lamont
+        this.reciprocalBTypes.add("rect");    // RECIPROCAL Tofield Leduc
+//        this.reciprocalBTypes.add("dept");  // Department head professional card.
         
         this.juvenile = new ArrayList<String>();
-        this.juvenile.add("nrj");            // NON-RESIDENT JUNIOR
-        this.juvenile.add("nrya");           // NON-RESIDENT YOUNG ADULT
-        this.juvenile.add("rj");             // RESIDENT JUNIOR
-        this.juvenile.add("rya");            // RESIDENT YOUNG ADULT
-        this.juvenile.add("metroYA");        // METRO YOUNG ADULT
-        this.juvenile.add("metroJ");         // METRO JUNIOR
-        this.juvenile.add("RecipJ");         // RECIPROCAL JUNIOR
-        this.juvenile.add("RecipYA");        // RECIPROCAL YOUNG ADULT
+        this.juvenile.add("nrf");            // NON-RESIDENT Family
+        
     }
 
     @Override
