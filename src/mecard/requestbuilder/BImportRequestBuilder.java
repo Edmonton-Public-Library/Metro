@@ -128,6 +128,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 .postalCode(customer.get(CustomerFieldTypes.POSTALCODE))
                 .emailName(computeEmailName(customer.get(CustomerFieldTypes.EMAIL)))
                 .email(customer.get(CustomerFieldTypes.EMAIL))
+                .preferEmailNotifications(true) // Users must have an email address to use MeCard metro.
                 .expire(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES))
                 .pNumber(customer.get(CustomerFieldTypes.PHONE))
                 .build();

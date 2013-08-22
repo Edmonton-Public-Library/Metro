@@ -38,7 +38,8 @@ public enum BImportDBFieldTypes
     POSTAL_CODE("postal_code"),
     EMAIL_NAME("email_name"),
     EMAIL_ADDRESS("email_address"),
-    BARCODE("bbarcode");
+    BARCODE("bbarcode"), 
+    EMAIL_NOTIFICATION("send_notice_by");
     
     private String type;
 

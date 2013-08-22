@@ -59,6 +59,7 @@ public class BImportFile
         private String email;
         private String barcode;
         private String emailName;
+        private boolean isNotifyByEmail;
         
         public Builder(String headerPath, String dataPath)
         {
@@ -132,6 +133,12 @@ public class BImportFile
             return this;
         }
         
+        public Builder preferEmailNotifications(boolean b)
+        {
+            this.isNotifyByEmail = b;
+            return this;
+        }
+        
         public BImportFile build()
         {
             return new BImportFile(this);
@@ -191,6 +198,7 @@ public class BImportFile
         headerContent.append(BImportDBFieldTypes.CITY + "; ");
         headerContent.append(BImportDBFieldTypes.POSTAL_CODE + "; ");
         headerContent.append(BImportDBFieldTypes.EMAIL_NAME + "; ");
+        if (b.isNotifyByEmail) headerContent.append(BImportDBFieldTypes.EMAIL_NOTIFICATION + "; ");
         headerContent.append(BImportDBFieldTypes.EMAIL_ADDRESS + "\r\n");
         
         dataContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
@@ -199,6 +207,7 @@ public class BImportFile
         dataContent.append(cityCode + "; ");
         dataContent.append(b.postalCode + "; ");
         dataContent.append(b.emailName + "; ");
+        if (b.isNotifyByEmail) dataContent.append("1; "); // careful this is an ENUM type in Horizon. Safe to leave out but if used must match.
         dataContent.append(b.email + "\r\n");
         
         // Table borrower_barcode
