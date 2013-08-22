@@ -206,12 +206,12 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response);
         CommandStatus status = command.execute();
+        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
         if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
         {
             throw new ConfigurationException();
         }
-        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
-        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
     }
 
     /**
@@ -226,12 +226,12 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
         Command command = requestBuilder.getUpdateUserCommand(customer, response);
         CommandStatus status = command.execute();
+        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
         if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
         {
             throw new ConfigurationException();
         }
-        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
-        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
     }
 
     /**
