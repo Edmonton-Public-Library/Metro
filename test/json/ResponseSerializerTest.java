@@ -46,18 +46,18 @@ public class ResponseSerializerTest
         System.out.println("==getSerializedResponse==");
         Response response = new Response();
         ResponseSerializer serializer = new ResponseSerializer();
-        String expResult = "{\"code\":\"INIT\",\"customer\":\"null\"}";
+        String expResult = "{\"code\":\"INIT\",\"responseMessage\":\"\",\"customer\":\"null\"}";
         String result = serializer.getSerializedResponse(response);
         System.out.println("RESULT:"+result);
         assertTrue(expResult.compareTo(result) == 0);
         
-        expResult = "{\"code\":\"INIT\",\"responseMessage\":\"Hello World!\",\"customer\":\"null\"}";
+        expResult = "{\"code\":\"INIT\",\"responseMessage\":\"Hello World! \",\"customer\":\"null\"}";
         response.setResponse("Hello World!");
         result = serializer.getSerializedResponse(response);
         System.out.println("RESULT:"+result);
         assertTrue(expResult.compareTo(result) == 0);
         
-        expResult = "{\"code\":\"INIT\",\"responseMessage\":\"Hello World!\",\"customer\":\"{\\\"ID\\\":\\\"X\\\",\\\"PIN\\\":\\\"X\\\",\\\"NAME\\\":\\\"X\\\",\\\"STREET\\\":\\\"X\\\",\\\"CITY\\\":\\\"X\\\",\\\"PROVINCE\\\":\\\"X\\\",\\\"POSTALCODE\\\":\\\"X\\\",\\\"GENDER\\\":\\\"X\\\",\\\"EMAIL\\\":\\\"X\\\",\\\"PHONE\\\":\\\"X\\\",\\\"DOB\\\":\\\"X\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"X\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"DEFAULT\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"X\\\",\\\"ISMINAGE\\\":\\\"X\\\",\\\"ISRECIPROCAL\\\":\\\"X\\\",\\\"ISRESIDENT\\\":\\\"X\\\",\\\"ISGOODSTANDING\\\":\\\"X\\\",\\\"ISLOSTCARD\\\":\\\"X\\\",\\\"FIRSTNAME\\\":\\\"X\\\",\\\"LASTNAME\\\":\\\"X\\\"}\"}";
+        expResult = "{\"code\":\"INIT\",\"responseMessage\":\"Hello World! \",\"customer\":\"{\\\"ID\\\":\\\"X\\\",\\\"PIN\\\":\\\"X\\\",\\\"PREFEREDNAME\\\":\\\"X\\\",\\\"STREET\\\":\\\"X\\\",\\\"CITY\\\":\\\"X\\\",\\\"PROVINCE\\\":\\\"X\\\",\\\"POSTALCODE\\\":\\\"X\\\",\\\"SEX\\\":\\\"X\\\",\\\"EMAIL\\\":\\\"X\\\",\\\"PHONE\\\":\\\"X\\\",\\\"DOB\\\":\\\"X\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"X\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"X\\\",\\\"ISMINAGE\\\":\\\"X\\\",\\\"ISRECIPROCAL\\\":\\\"X\\\",\\\"ISRESIDENT\\\":\\\"X\\\",\\\"ISGOODSTANDING\\\":\\\"X\\\",\\\"ISLOSTCARD\\\":\\\"X\\\",\\\"FIRSTNAME\\\":\\\"X\\\",\\\"LASTNAME\\\":\\\"X\\\"}\"}";
         response.setCustomer(new Customer());
         result = serializer.getSerializedResponse(response);
         System.out.println("RESULT:"+result);

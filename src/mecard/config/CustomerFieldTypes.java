@@ -42,8 +42,8 @@ public enum CustomerFieldTypes
     PHONE,
     DOB, 
     PRIVILEGE_EXPIRES,
-    RESERVED, // General field can be used for what ever, currently empty.
-    DEFAULT, // Used for fields that can remain empty like 'province' on Horizon.
+    RESERVED, // General field can be used for what ever, used by SIP for messages.
+    ALTERNATE_ID, // Used for fields that can remain empty like 'province' on Horizon.
     ISVALID, // start of flagged fields. This one means the host library has all customer information.
     ISMINAGE,
     ISRECIPROCAL,
