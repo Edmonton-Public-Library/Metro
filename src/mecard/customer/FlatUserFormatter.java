@@ -246,6 +246,11 @@ public class FlatUserFormatter implements CustomerFormatter
         {
             return CustomerFieldTypes.EMAIL;
         } 
+        else if (flatUserFieldValue.equals("INACTVID") ||
+                 flatUserFieldValue.equals("PREV_ID"))
+        {
+            return CustomerFieldTypes.ALTERNATE_ID;
+        }
         else
         {
             return null;
