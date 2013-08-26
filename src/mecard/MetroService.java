@@ -36,6 +36,7 @@ import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.config.LibraryPropertyTypes;
+import mecard.config.MessagesConfigTypes;
 import mecard.config.PolarisPropertyTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.config.SymphonyPropertyTypes;
@@ -63,6 +64,7 @@ public class MetroService implements Daemon
     private static String BIMPORT_CITY_MAPPING = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE = "debug.properties";
     private static String VARIABLES_FILE = "sysvar.properties"; // these are system specific variables, like PATH.
+    private static String MESSAGES_FILE = "messages.properties";
         // There are no mandatory variables, so no checking is done.
     private static Properties polaris; // Default properties needed by Polaris.
     private static Properties symphony; // Default properties needed to create a user in Symphony.
@@ -72,6 +74,7 @@ public class MetroService implements Daemon
     private static Properties city; // Required for Horizon users to translate site specific city codes.
     private static Properties debugProperties; // Optional config for debugging.
     private static Properties systemVariables; // Optional no mandatory fields.
+    private static Properties messagesProperties; // Messages tailored by local library.
     
     private static ServerSocket serverSocket = null;
     private static boolean listening = true;
@@ -441,6 +444,33 @@ public class MetroService implements Daemon
                     }
                 }
                 return polaris;
+                
+            case MESSAGES:
+                if (messagesProperties == null)
+                {
+                    try
+                    {
+                        messagesProperties = readProperties(MetroService.MESSAGES_FILE);
+                    } catch (FileNotFoundException ex)
+                    {
+                        String msg = "Failed to find '" + MetroService.MESSAGES_FILE + "'";
+                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+                    } catch (NullPointerException npe)
+                    {
+                        String msg = "Failed to read messages config file. One must be defined.";
+                        Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, npe);
+                    }
+                    // now check that all mandetory values are here.
+                    for (MessagesConfigTypes mType : MessagesConfigTypes.values())
+                    {
+                        if (messagesProperties.get(mType.toString()) == null)
+                        {
+                            String msg = "'" + mType + "' unset in " + MetroService.MESSAGES_FILE;
+                            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        }
+                    }
+                }
+                return messagesProperties;
                 
             default:
                 throw new UnsupportedOperationException("unsupported property file");

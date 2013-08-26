@@ -21,18 +21,31 @@
 package mecard.config;
 
 /**
- *
- * @author metro
+ * These are custom messages libraries can tailor as return messages to customers.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum ConfigFileTypes
+public enum MessagesConfigTypes
 {
-    SYMPHONY,
-    ENVIRONMENT, 
-    SIP2,
-    BIMPORT,
-    BIMPORT_CITY_MAPPING,
-    POLARIS,
-    DEBUG, // used with DummyResponder, this file contains canned results to return to client.
-    VARS,  // System variables like PATH, UPATH, etc.
-    MESSAGES;  // Custom messages for each library.
+    SUCCESS_JOIN("success-join"),
+    SUCCESS_UPDATE("success-update"),
+    ACCOUNT_NOT_FOUND("account-not-found"),
+    ACCOUNT_NOT_CREATED("account-not-created"),
+    ACCOUNT_NOT_UPDATED("account-not-updated"),
+    USERID_PIN_MISMATCH("userid-pin-mismatch"),
+    UNAVAILABLE_SERVICE("unavailable-service"),
+    FAIL_METRO_POLICY("fail-metro-policy"), // Is not valid, or goodstanding, or underage...
+    FAIL_LOCAL_POLICY("fail-local-policy"); // Could load user because customer failed local policy tests.
+    
+    private String type;
+    
+    private MessagesConfigTypes(String s)
+    {
+        this.type = s;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.type;
+    }
 }

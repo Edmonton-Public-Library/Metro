@@ -24,7 +24,11 @@ import api.Command;
 import api.CommandStatus;
 import mecard.requestbuilder.ILSRequestBuilder;
 import java.util.Date;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.DebugQueryConfigTypes;
+import mecard.config.MessagesConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.ConfigurationException;
@@ -32,6 +36,7 @@ import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
+import mecard.requestbuilder.DummyRequestBuilder;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 
@@ -44,6 +49,7 @@ public class Responder
     private final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     protected Request request;
     protected final boolean debug;
+    private final Properties props;
     
     /**
      *
@@ -54,6 +60,7 @@ public class Responder
     {
         this.debug = debugMode;
         this.request = cmd;
+        this.props = MetroService.getProperties(ConfigFileTypes.MESSAGES);
         if (debug)
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
@@ -170,7 +177,7 @@ public class Responder
         else
         {
             // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
-            response.setResponse("there is a problem with your account, please contact your home library for assistance");
+            response.setResponse(props.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
             response.setCode(ResponseTypes.FAIL);
             response.setCustomer(null);
         }

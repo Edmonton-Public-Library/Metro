@@ -27,12 +27,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import mecard.exception.MalformedCommandException;
 import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.MessagesConfigTypes;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -62,10 +62,12 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
     private final String homeDirectory;
     private final String shell;
+    private final Properties messageProperties;
     
     public SymphonyRequestBuilder(boolean debug)
     {
         // Lets get the properties from the properties file.
+        messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
         Properties symphonyProps = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
         this.homeDirectory = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
@@ -112,20 +114,20 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         switch(status.getStatus())
         {
             case UNAVAILABLE:
-                response.setResponse("I'm sorry the system is currently unavailable.");
+                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                System.out.println("system is currently unavailable." + status.getStderr());
                 break;
             case FAIL:
-                response.setResponse("I can't find your account. "
-                        + "Pleae check your library card and try again."
-                        + status.getStderr());
+                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                System.out.println("account not found." + status.getStderr());
                 break;
             case OK:
                 String customerKey = status.getStdout();
                 command = new APICommand.Builder().echo(customerKey).args(dumpflatuser).build();
                 break;
             default:
-                response.setResponse("an error occured while searching for "
-                        + "your account, please contact the system's administrator."
+                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                System.out.println("an error occured while searching for account."
                         + status.getStderr());
                 break;
         }
@@ -246,8 +248,8 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 if (status.getStderr().contains("**error number 111"))
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse("We're having trouble finding your account."
-                            + " Please contact us, and we'll find out what's going on.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println("account not found.");
                     result = false;
                 }
                 else
@@ -261,14 +263,15 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 if (status.getStderr().contains("**error number 111"))
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse("There was a problem creating your account."
-                            + " Please contact us, and we will find out why.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_CREATED.toString()));
+                    System.out.println("There was a problem creating account.");
                     result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse("Welcome aboard, and thanks for using our service and supporting your local libraries!");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));
+                    System.out.println("customer created.");
                     result = true;
                 }
                 break;
@@ -276,20 +279,22 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 if (status.getStderr().contains("**error number 111"))
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse("There was a problem updating your account."
-                            + " Please contact us, and we will get to the bottom of this.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_UPDATED.toString()));
+                    System.out.println("customer not updated.");
                     result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse("Thanks for keeping us up-to-date, and for supporting your local libraries!");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_UPDATE.toString()));
+                    System.out.println("customer updated.");
                     result = true;
                 }
                 break;
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
-                response.setResponse(SymphonyRequestBuilder.class.getName() 
+                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                System.out.println(SymphonyRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
                 result = false;

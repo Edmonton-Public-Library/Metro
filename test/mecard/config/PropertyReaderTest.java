@@ -65,6 +65,9 @@ public class PropertyReaderTest
         
         Properties polarisProps = MetroService.getProperties(ConfigFileTypes.POLARIS);
         polarisProps.list(System.out);
+        
+        Properties messageProps = MetroService.getProperties(ConfigFileTypes.MESSAGES);
+        messageProps.list(System.out);
     }
 
     /**

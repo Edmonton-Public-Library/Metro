@@ -33,6 +33,7 @@ import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.MessagesConfigTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -47,12 +48,14 @@ import mecard.exception.SIPException;
 public class SIPRequestBuilder extends ILSRequestBuilder
 {
     private static SIPConnector sipServer;
+    private Properties messageProperties;
     /**
      *
      * @param debug the value of debug
      */
     SIPRequestBuilder(boolean debug)
     {
+        this.messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
         Properties sipProps = MetroService.getProperties(ConfigFileTypes.SIP2);
         String host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
         String port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001"); // port optional in config.
@@ -111,13 +114,14 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 if (isSuccessful(status.getStdout()) == false)
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse("SIP2 service currently not available.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    System.out.println("SIP2 service currently not available.");
                     result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.OK);
-                    response.setResponse("Services up.");
+                    response.setResponse("Services up."); // doesn't require personalized message.
                     result = true;
                 }
                 break;
@@ -132,7 +136,8 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse("We cannot find your account."
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println("We cannot find your account."
                             + " If you are sure that your card number and pin "
                             + "are correct, please contact your home library "
                             + "for assistance.");
@@ -142,7 +147,8 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.UNAUTHORIZED);
-                    response.setResponse("Your pin does not match the one we have on record.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.USERID_PIN_MISMATCH.toString()));
+                    System.out.println("User pin does not match the one on record.");
                     result = false;
                 }
                 else
@@ -156,7 +162,8 @@ public class SIPRequestBuilder extends ILSRequestBuilder
             case UPDATE_CUSTOMER:
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
-                response.setResponse(SIPRequestBuilder.class.getName() 
+                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                System.out.println(SIPRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
                 result = false;
