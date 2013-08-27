@@ -18,25 +18,24 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard;
+
+package mecard.exception;
 
 /**
- * The types of responses MeCard server is capable of producing.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ *
+ * @author metro
  */
-public enum ResponseTypes
+public class LostCardException extends InvalidCustomerException 
 {
-    ERROR, // Command was received but failed to execute
-    // either it was malformed, empty (null), or not supported.
-    INIT,
-    OK,
-    BUSY,
-    UNAVAILABLE,
-    SUCCESS,
-    FAIL,
-    UNAUTHORIZED, 
-    UNKNOWN, 
-    CONFIG_ERROR,
-    COMMAND_COMPLETED,
-    LOST_CARD;
+    private final static String initMessage = "The supplied customer card is reported as lost. ";
+    
+    public LostCardException()
+    {
+        super(initMessage);
+    }
+    
+    public LostCardException(String msg)
+    {
+        super(msg);
+    }
 }

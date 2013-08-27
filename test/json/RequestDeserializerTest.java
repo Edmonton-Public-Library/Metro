@@ -1,11 +1,9 @@
 package json;
 import mecard.Request;
-import mecard.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.Reader;
 import java.io.StringReader;
-import mecard.customer.Customer;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -43,7 +41,7 @@ public class RequestDeserializerTest
 //        System.out.println("..."+request); // which should look the same since toString serializes a JSON too.
         assertTrue(request.toString().compareToIgnoreCase("[\"GET_CUSTOMER\", \"21221012345678\", \"60458\"]") == 0);
         
-        data = new StringReader("{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"X\\\",\\\"PIN\\\":\\\"X\\\",\\\"NAME\\\":\\\"X\\\",\\\"STREET\\\":\\\"X\\\",\\\"CITY\\\":\\\"X\\\",\\\"PROVINCE\\\":\\\"X\\\",\\\"POSTALCODE\\\":\\\"X\\\",\\\"GENDER\\\":\\\"X\\\",\\\"EMAIL\\\":\\\"X\\\",\\\"PHONE\\\":\\\"X\\\",\\\"DOB\\\":\\\"X\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"X\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"DEFAULT\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"X\\\",\\\"ISMINAGE\\\":\\\"X\\\",\\\"ISRECIPROCAL\\\":\\\"X\\\",\\\"ISRESIDENT\\\":\\\"X\\\",\\\"ISGOODSTANDING\\\":\\\"X\\\",\\\"ISLOSTCARD\\\":\\\"X\\\",\\\"FIRSTNAME\\\":\\\"X\\\",\\\"LASTNAME\\\":\\\"X\\\"}\"}");
+        data = new StringReader("{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"X\\\",\\\"PIN\\\":\\\"X\\\",\\\"PREFEREDNAME\\\":\\\"X\\\",\\\"STREET\\\":\\\"X\\\",\\\"CITY\\\":\\\"X\\\",\\\"PROVINCE\\\":\\\"X\\\",\\\"POSTALCODE\\\":\\\"X\\\",\\\"SEX\\\":\\\"X\\\",\\\"EMAIL\\\":\\\"X\\\",\\\"PHONE\\\":\\\"X\\\",\\\"DOB\\\":\\\"X\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"X\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"X\\\",\\\"ISMINAGE\\\":\\\"X\\\",\\\"ISRECIPROCAL\\\":\\\"X\\\",\\\"ISRESIDENT\\\":\\\"X\\\",\\\"ISGOODSTANDING\\\":\\\"X\\\",\\\"ISLOSTCARD\\\":\\\"X\\\",\\\"FIRSTNAME\\\":\\\"X\\\",\\\"LASTNAME\\\":\\\"X\\\"}\"}");
         request = gson.fromJson(data, Request.class);
         System.out.println("..."+request); // which should look the same since toString serializes a JSON too.
         assertTrue(request.toString().compareToIgnoreCase("[\"CREATE_CUSTOMER\", \"\", \"\", \"[X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X]\"]") == 0);

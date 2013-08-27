@@ -1,17 +1,26 @@
-MeCard
-======
-The MeCard allows customers from one library to join, participate, and borrow
-resources at another library. Think of it like the TAL (The Library of Alberta)
-but without having to fill out cumbersome paperwork or getting a new library card
-number. You submit your home library card number and pin, which is then registered
-at any other affiliated library.
+Metro Federation of Libraries
+=============================
 
-For this to occur a significant amount of cooperation has to take place
-behind the scenes. The two libraries must agree to the terms of MeCard policies,
-on a political level, then both ILSs must cooperate to produce and consume
-information about customers in an ILS agnostic way.
+The Metro Federation of Libraries members are Edmonton Public Library (EPL), 
+Ft. Saskatchewan Public Library (FSPL), St. Albert Public Library (SAPL), 
+and Strathcona County Library (SCL). The Metro Federation members share 
+an interest in collaborating to increase access to library collections 
+and programs for our customers across the Metro Edmonton region. The 
+Me Card project was created to reduce barriers in accessing the library 
+collections and diverse programs of the Metro Federation libraries.
 
-Enter project Metro. Metro is the service that runs on the ILS server and performs
+What is the Me Card service?
+----------------------------
+
+The Me Card is a web-based service that allows customers with a library 
+card from an affiliated Metro Federation library to create an account 
+with and access the collections and programs at one or more other 
+affiliated Metro Federation libraries.  Interested customers complete 
+a self-service web form to create an account with libraries other than 
+their home library, letting them use their home library card as their 
+library card at any registered library.
+
+Metro is the server that runs on the ILS server and performs
 the function of negotiating and translating communications between different ILSs.
 The design is centered around a few simple requests that are initiated by the 
 customer on a website, then translated and sent to the home (host) library, a 

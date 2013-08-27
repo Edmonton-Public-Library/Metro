@@ -37,6 +37,8 @@ import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.requestbuilder.DummyRequestBuilder;
+import mecard.exception.InvalidCustomerException;
+import mecard.exception.LostCardException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 
@@ -85,6 +87,10 @@ public class Responder
         else if (ex instanceof MalformedCommandException)
         {
             response = new Response(ResponseTypes.ERROR);
+        }
+        else if (ex instanceof LostCardException)
+        {
+            response = new Response(ResponseTypes.LOST_CARD);
         }
         else if (ex instanceof ConfigurationException)
         {
@@ -256,6 +262,13 @@ public class Responder
         if (customer == null)
         {
             return;
+        }
+        if (customer.get(CustomerFieldTypes.ISLOSTCARD).compareTo(Protocol.TRUE) == 0)
+        {
+            String msg = "card is reported as a lost card. You can fix your account by calling your home library.";
+            System.out.println("refusing to load reported lost card: '" + 
+                    customer.get(CustomerFieldTypes.ID) + "'.");
+            throw new LostCardException(msg);
         }
         CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(debug);
         String changes = normalizer.normalize(customer);
