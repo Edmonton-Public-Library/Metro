@@ -3,7 +3,7 @@
 # distribution to each participating library.
 ########################################################################
 
-VERSION=0.1
+VERSION=0.5
 ARCHIVE=Metro_${VERSION}
 CONFIGS=config_templates/*.properties
 WIN_SETUP=windows/Output/setup.exe

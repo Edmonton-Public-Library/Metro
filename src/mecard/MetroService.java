@@ -54,31 +54,31 @@ import site.MemberTypes;
  */
 public class MetroService implements Daemon
 {
-    public final static String VERSION = "0.1"; // server version.
-    private static String CONFIG_DIR = "";
-    private static String BIMPORT_PROPERTY_FILE = "bimport.properties";
+    public final static String VERSION           = "1.0"; // server version.
+    private static String CONFIG_DIR             = "";
+    private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
-    private static String POLARIS_PROPERTY_FILE = "polaris.properties";
-    private static String ENVIRONMENT_FILE = "environment.properties";
-    private static String SIP2_FILE = "sip2.properties";
-    private static String BIMPORT_CITY_MAPPING = "city_st.properties";
-    private static String DEBUG_SETTINGS_FILE = "debug.properties";
-    private static String VARIABLES_FILE = "sysvar.properties"; // these are system specific variables, like PATH.
-    private static String MESSAGES_FILE = "messages.properties";
+    private static String POLARIS_PROPERTY_FILE  = "polaris.properties";
+    private static String ENVIRONMENT_FILE       = "environment.properties";
+    private static String SIP2_FILE              = "sip2.properties";
+    private static String BIMPORT_CITY_MAPPING   = "city_st.properties";
+    private static String DEBUG_SETTINGS_FILE    = "debug.properties";
+    private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
+    private static String MESSAGES_PROPERTY_FILE = "messages.properties";
         // There are no mandatory variables, so no checking is done.
-    private static Properties polaris; // Default properties needed by Polaris.
-    private static Properties symphony; // Default properties needed to create a user in Symphony.
-    private static Properties bimport; // Properties Metro needs to operate BImport.
-    private static Properties environment; // Basic envrionment values.
-    private static Properties sip2; // Variables used to talk to SIP2.
-    private static Properties city; // Required for Horizon users to translate site specific city codes.
-    private static Properties debugProperties; // Optional config for debugging.
-    private static Properties systemVariables; // Optional no mandatory fields.
+    private static Properties polaris;            // Default properties needed by Polaris.
+    private static Properties symphony;           // Default properties needed to create a user in Symphony.
+    private static Properties bimport;            // Properties Metro needs to operate BImport.
+    private static Properties environment;        // Basic envrionment values.
+    private static Properties sip2;               // Variables used to talk to SIP2.
+    private static Properties city;               // Required for Horizon users to translate site specific city codes.
+    private static Properties debugProperties;    // Optional config for debugging.
+    private static Properties systemVariables;    // Optional no mandatory fields.
     private static Properties messagesProperties; // Messages tailored by local library.
     
     private static ServerSocket serverSocket = null;
-    private static boolean listening = true;
-    private static String defaultPort = "2004";
+    private static boolean listening         = true;
+    private static String defaultPort        = "2004";
     private static String[] ARGS;
 
     public static void main(String[] args)
@@ -110,14 +110,15 @@ public class MetroService implements Daemon
                 CONFIG_DIR = configDirectory;
                 System.out.println(new Date() + "CONFIG: dir set to "+CONFIG_DIR);
             }
-            BIMPORT_PROPERTY_FILE = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
+            BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
             SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
-            POLARIS_PROPERTY_FILE = CONFIG_DIR + POLARIS_PROPERTY_FILE;
-            ENVIRONMENT_FILE = CONFIG_DIR + ENVIRONMENT_FILE;
-            SIP2_FILE = CONFIG_DIR + SIP2_FILE;
-            BIMPORT_CITY_MAPPING = CONFIG_DIR + BIMPORT_CITY_MAPPING;
-            DEBUG_SETTINGS_FILE = CONFIG_DIR + DEBUG_SETTINGS_FILE;
-            VARIABLES_FILE = CONFIG_DIR + VARIABLES_FILE;
+            POLARIS_PROPERTY_FILE  = CONFIG_DIR + POLARIS_PROPERTY_FILE;
+            MESSAGES_PROPERTY_FILE = CONFIG_DIR + MESSAGES_PROPERTY_FILE;
+            ENVIRONMENT_FILE       = CONFIG_DIR + ENVIRONMENT_FILE;
+            SIP2_FILE              = CONFIG_DIR + SIP2_FILE;
+            BIMPORT_CITY_MAPPING   = CONFIG_DIR + BIMPORT_CITY_MAPPING;
+            DEBUG_SETTINGS_FILE    = CONFIG_DIR + DEBUG_SETTINGS_FILE;
+            VARIABLES_FILE         = CONFIG_DIR + VARIABLES_FILE;
         } 
         catch (ParseException ex)
         {
@@ -262,6 +263,7 @@ public class MetroService implements Daemon
                     }
                 }
                 return symphony;
+                
             case ENVIRONMENT:
                 if (environment == null)
                 {
@@ -289,6 +291,7 @@ public class MetroService implements Daemon
                     }
                 }
                 return environment;
+                
             case SIP2:
                 if (sip2 == null)
                 {
@@ -316,6 +319,7 @@ public class MetroService implements Daemon
                     }
                 }
                 return sip2;
+                
             case BIMPORT:
                 if (bimport == null)
                 {
@@ -450,10 +454,10 @@ public class MetroService implements Daemon
                 {
                     try
                     {
-                        messagesProperties = readProperties(MetroService.MESSAGES_FILE);
+                        messagesProperties = readProperties(MetroService.MESSAGES_PROPERTY_FILE);
                     } catch (FileNotFoundException ex)
                     {
-                        String msg = "Failed to find '" + MetroService.MESSAGES_FILE + "'";
+                        String msg = "Failed to find '" + MetroService.MESSAGES_PROPERTY_FILE + "'";
                         Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
                     } catch (NullPointerException npe)
                     {
@@ -465,7 +469,7 @@ public class MetroService implements Daemon
                     {
                         if (messagesProperties.get(mType.toString()) == null)
                         {
-                            String msg = "'" + mType + "' unset in " + MetroService.MESSAGES_FILE;
+                            String msg = "'" + mType + "' unset in " + MetroService.MESSAGES_PROPERTY_FILE;
                             Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                         }
                     }
