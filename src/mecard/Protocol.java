@@ -79,6 +79,7 @@ public class Protocol
         catch (RuntimeException ex)
         {
             response = Responder.getExceptionResponse(ex);
+            ex.printStackTrace(System.out);
         }
         finally
         {
