@@ -25,7 +25,6 @@ import api.CommandStatus;
 import mecard.Response;
 import mecard.MetroService;
 import mecard.QueryTypes;
-import static mecard.QueryTypes.CREATE_CUSTOMER;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;

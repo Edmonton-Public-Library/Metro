@@ -35,6 +35,7 @@ import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.MessagesConfigTypes;
 import mecard.customer.BImportBat;
 import mecard.customer.BImportFile;
 import mecard.customer.Customer;
@@ -69,11 +70,13 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     private String batFile;
     private String headerFile;
     private String dataFile;
+    private final Properties messageProperties;
     private final boolean debug;
     
     BImportRequestBuilder(boolean debug)
     {
         this.debug = debug;
+        this.messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
         Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
         this.bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         this.loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
@@ -179,26 +182,42 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
         boolean result;
+        String resultString = "";
         switch (commandType)
         {
             case CREATE_CUSTOMER:
-            case UPDATE_CUSTOMER:
-                // both commands produce the same results from running the 
                 // so if the bimport command was successful it looks like this:
-                String resultString = status.getStdout();
+                resultString = status.getStdout();
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
                     response.setCode(ResponseTypes.OK);
-                    response.setResponse("Customer account successfully loaded.");
-                    System.out.println(new Date() + "Customer account successfully loaded.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));
+                    System.out.println(new Date() + "Customer account successfully create.");
                     result = true;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse("Customer account failed to load."
-                            + " Please contact your home library for more information.");
-                    System.out.println(new Date() + "Customer account failed to load.");
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_CREATED.toString()));
+                    System.out.println(new Date() + "Customer account failed to create.");
+                    result = false;
+                }
+                break;
+            case UPDATE_CUSTOMER:
+                // so if the bimport command was successful it looks like this:
+                resultString = status.getStdout();
+                if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
+                {
+                    response.setCode(ResponseTypes.OK);
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_UPDATE.toString()));
+                    System.out.println(new Date() + "Customer account successfully updated.");
+                    result = true;
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_UPDATED.toString()));
+                    System.out.println(new Date() + "Customer account failed to update.");
                     result = false;
                 }
                 break;
@@ -231,6 +250,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean tidy()
     {
+        // TODO in the mature version use this method to clean up unwanted header, data and batch files.
         return true;
     }
 

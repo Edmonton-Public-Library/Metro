@@ -25,6 +25,7 @@ import api.CommandStatus;
 import mecard.Response;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import mecard.MetroService;
@@ -67,7 +68,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public SymphonyRequestBuilder(boolean debug)
     {
         // Lets get the properties from the properties file.
-        messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
+        this.messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
         Properties symphonyProps = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
         this.homeDirectory = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
@@ -115,19 +116,20 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         {
             case UNAVAILABLE:
                 response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
-                System.out.println("system is currently unavailable." + status.getStderr());
+                System.out.println(new Date() + "system is currently unavailable." + status.getStderr());
                 break;
             case FAIL:
                 response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
-                System.out.println("account not found." + status.getStderr());
+                System.out.println(new Date() + "account not found." + status.getStderr());
                 break;
             case OK:
                 String customerKey = status.getStdout();
                 command = new APICommand.Builder().echo(customerKey).args(dumpflatuser).build();
+                System.out.println(new Date() + " Ok.");
                 break;
             default:
                 response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
-                System.out.println("an error occured while searching for account."
+                System.out.println(new Date() + "an error occured while searching for account."
                         + status.getStderr());
                 break;
         }
@@ -305,6 +307,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean tidy()
     {
+        // TODO future release to include file cleanup and return false if you can't.
         return true;
     }
 }
