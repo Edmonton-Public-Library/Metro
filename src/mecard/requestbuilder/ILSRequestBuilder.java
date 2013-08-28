@@ -23,13 +23,13 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import mecard.Response;
-import mecard.MetroService;
 import mecard.QueryTypes;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
+import metro.common.PropertyReader;
 
 /**
  * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.
@@ -56,22 +56,22 @@ public abstract class ILSRequestBuilder
         switch (queryType)
         {
             case CREATE_CUSTOMER:
-                serviceType = MetroService.
+                serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
                 break;
             case GET_CUSTOMER:
-                serviceType = MetroService.
+                serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
                 break;
             case GET_STATUS:
-                serviceType = MetroService.
+                serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
                 break;
             case UPDATE_CUSTOMER:
-                serviceType = MetroService.
+                serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
                 break;

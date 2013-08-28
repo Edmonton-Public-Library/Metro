@@ -27,8 +27,8 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import mecard.MetroService;
-import mecard.config.ConfigFileTypes;
+import metro.common.PropertyReader;
+import metro.common.ConfigFileTypes;
 
 /**
  * Builds commands ready for execution.
@@ -217,7 +217,7 @@ public class APICommand implements Command
     private void setEnvironment(ProcessBuilder processBuilder)
     {
         Map<String, String> env = processBuilder.environment();
-        MetroService.augmentProperties(env, ConfigFileTypes.VARS);
+        PropertyReader.augmentProperties(env, ConfigFileTypes.VARS);
         if (env.get(APICommand.WORKING_DIRECTORY_PROPERTY_NAME) != null &&
             env.get(APICommand.WORKING_DIRECTORY_PROPERTY_NAME).isEmpty() == false)
             processBuilder.directory(new File(env.get(APICommand.WORKING_DIRECTORY_PROPERTY_NAME)));

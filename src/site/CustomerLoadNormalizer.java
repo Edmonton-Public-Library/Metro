@@ -3,11 +3,11 @@ package site;
 
 import site.edmonton.EPLCustomerNormalizer;
 import java.util.Properties;
-import mecard.MetroService;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
+import metro.common.PropertyReader;
 import static site.MeCardPolicy.DEBUG;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
@@ -43,7 +43,7 @@ public abstract class CustomerLoadNormalizer
         // read the config, find what type of normalizer we need, create it 
         // and return it.
         DEBUG = debug;
-        Properties props = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         String libCode = props.getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
         if (libCode.equalsIgnoreCase(MemberTypes.EPL.name()))
         {

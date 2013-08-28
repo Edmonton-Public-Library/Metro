@@ -23,9 +23,9 @@ package mecard.security;
 
 import java.util.Properties;
 import mecard.exception.MetroSecurityException;
-import mecard.MetroService;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.LibraryPropertyTypes;
+import metro.common.PropertyReader;
 
 /**
  *
@@ -45,7 +45,7 @@ public final class SecurityManager
     public static final boolean isAuthorized(String token)
     {
         // Compare if the client sent an appropriate API Key.
-        Properties properties = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
+        Properties properties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         String expectedKey = properties.getProperty(LibraryPropertyTypes.API_KEY.toString());
         return (token.compareTo(expectedKey) == 0);
     }

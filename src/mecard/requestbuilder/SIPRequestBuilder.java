@@ -27,18 +27,18 @@ import api.SIPCommand;
 import api.SIPConnector;
 import api.SIPStatusMessage;
 import java.util.Properties;
-import mecard.MetroService;
 import mecard.Protocol;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import mecard.config.ConfigFileTypes;
+import metro.common.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
-import mecard.config.SipPropertyTypes;
+import metro.common.MessagesConfigTypes;
+import metro.common.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.SIPException;
+import metro.common.PropertyReader;
 
 /**
  * Helper class for formatting SIP requests.
@@ -55,8 +55,8 @@ public class SIPRequestBuilder extends ILSRequestBuilder
      */
     SIPRequestBuilder(boolean debug)
     {
-        this.messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
-        Properties sipProps = MetroService.getProperties(ConfigFileTypes.SIP2);
+        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        Properties sipProps = PropertyReader.getProperties(ConfigFileTypes.SIP2);
         String host = sipProps.getProperty(SipPropertyTypes.HOST.toString());
         String port = sipProps.getProperty(SipPropertyTypes.PORT.toString(), "6001"); // port optional in config.
         String user = sipProps.getProperty(SipPropertyTypes.USER.toString(), "");

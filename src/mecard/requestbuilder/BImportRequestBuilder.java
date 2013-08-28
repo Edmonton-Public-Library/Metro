@@ -29,19 +29,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import mecard.config.BImportPropertyTypes;
-import mecard.config.ConfigFileTypes;
+import metro.common.BImportPropertyTypes;
+import metro.common.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import metro.common.MessagesConfigTypes;
 import mecard.customer.BImportBat;
 import mecard.customer.BImportFile;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
+import metro.common.PropertyReader;
 
 /**
  *
@@ -76,8 +76,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     BImportRequestBuilder(boolean debug)
     {
         this.debug = debug;
-        this.messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
-        Properties bimpProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
+        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         this.bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         this.loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
         this.serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());

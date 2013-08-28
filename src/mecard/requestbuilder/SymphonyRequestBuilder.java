@@ -28,18 +28,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import mecard.config.ConfigFileTypes;
+import metro.common.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
-import mecard.config.SymphonyPropertyTypes;
+import metro.common.MessagesConfigTypes;
+import metro.common.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.customer.SymphonyLoadUserSh;
 import mecard.customer.UserFile;
+import metro.common.PropertyReader;
 
 /**
  * SymphonyRequestBuilder creates the commands used to perform the MeCard request
@@ -68,8 +68,8 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public SymphonyRequestBuilder(boolean debug)
     {
         // Lets get the properties from the properties file.
-        this.messageProperties = MetroService.getProperties(ConfigFileTypes.MESSAGES);
-        Properties symphonyProps = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
+        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        Properties symphonyProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
         this.homeDirectory = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
         this.shell = symphonyProps.getProperty(SymphonyPropertyTypes.SHELL.toString());

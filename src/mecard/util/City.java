@@ -21,8 +21,8 @@
 package mecard.util;
 
 import java.util.Properties;
-import mecard.MetroService;
-import mecard.config.ConfigFileTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.PropertyReader;
 import site.MemberTypes;
 
 /**
@@ -50,7 +50,7 @@ public class City
      */
     public static final String getCity(String fullCityName, boolean debug)
     {
-        Properties properties = MetroService.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
+        Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
         
         if (fullCityName == null) return "";
         if (debug) System.out.println("NAME:"+fullCityName);

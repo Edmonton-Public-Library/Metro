@@ -25,9 +25,9 @@ import api.CommandStatus;
 import mecard.requestbuilder.ILSRequestBuilder;
 import java.util.Date;
 import java.util.Properties;
-import mecard.config.ConfigFileTypes;
+import metro.common.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import metro.common.MessagesConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.ConfigurationException;
@@ -36,6 +36,7 @@ import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.exception.LostCardException;
+import metro.common.PropertyReader;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 
@@ -59,7 +60,7 @@ public class Responder
     {
         this.debug = debugMode;
         this.request = cmd;
-        this.props = MetroService.getProperties(ConfigFileTypes.MESSAGES);
+        this.props = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         if (debug)
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");

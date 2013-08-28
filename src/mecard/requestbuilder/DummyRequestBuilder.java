@@ -25,16 +25,16 @@ import api.CommandStatus;
 import api.DummyCommand;
 import mecard.Response;
 import java.util.Properties;
-import mecard.MetroService;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import mecard.config.ConfigFileTypes;
-import mecard.config.DebugQueryConfigTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.DebugQueryConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.DummyException;
+import metro.common.PropertyReader;
 
 /**
  *
@@ -51,7 +51,7 @@ public class DummyRequestBuilder extends ILSRequestBuilder
     DummyRequestBuilder(boolean debug)
     {
         this.debug = debug;
-        Properties props = MetroService.getProperties(ConfigFileTypes.DEBUG);
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
         String s = props.getProperty(DebugQueryConfigTypes.COMMAND_RESULT_CODE.toString());
         try
         {

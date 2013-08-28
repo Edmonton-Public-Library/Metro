@@ -26,13 +26,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Properties;
 import mecard.exception.UnsupportedLibraryException;
-import mecard.MetroService;
 import mecard.Protocol;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.DateComparer;
+import metro.common.PropertyReader;
 import site.stalbert.STAPolicy;
 import site.strathcona.STRPolicy;
 
@@ -55,7 +55,7 @@ public abstract class MeCardPolicy
     public static MeCardPolicy getInstanceOf(boolean debug)
     {
         DEBUG = debug;
-        Properties props = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         String libCode = props.getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
         if (DEBUG) System.out.println(new Date() + "LIB_CODE: '" + libCode + "'");
         if (libCode.equalsIgnoreCase(MemberTypes.EPL.name()))

@@ -23,7 +23,8 @@ package mecard.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import mecard.MetroService;
+import metro.common.ConfigFileTypes;
+import metro.common.PropertyReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -45,28 +46,28 @@ public class PropertyReaderTest
     public void testGetProperties() throws Exception
     {
         System.out.println("===getProperties===");
-        Properties envProps = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT);
+        Properties envProps = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         envProps.list(System.out);
         
-        Properties createProps = MetroService.getProperties(ConfigFileTypes.SYMPHONY);
+        Properties createProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         createProps.list(System.out);
 
-        Properties sip2Props = MetroService.getProperties(ConfigFileTypes.SIP2);
+        Properties sip2Props = PropertyReader.getProperties(ConfigFileTypes.SIP2);
         sip2Props.list(System.out);
         
-        Properties bimportProps = MetroService.getProperties(ConfigFileTypes.BIMPORT);
+        Properties bimportProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         bimportProps.list(System.out);
         
-        Properties cityProps = MetroService.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
+        Properties cityProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
         cityProps.list(System.out);
         
-        Properties debugProps = MetroService.getProperties(ConfigFileTypes.DEBUG);
+        Properties debugProps = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
         debugProps.list(System.out);
         
-        Properties polarisProps = MetroService.getProperties(ConfigFileTypes.POLARIS);
+        Properties polarisProps = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
         polarisProps.list(System.out);
         
-        Properties messageProps = MetroService.getProperties(ConfigFileTypes.MESSAGES);
+        Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         messageProps.list(System.out);
     }
 
@@ -83,7 +84,7 @@ public class PropertyReaderTest
         props.put("value_A", "A");
         props.put("value_B", "B");
         ConfigFileTypes type = ConfigFileTypes.DEBUG;
-        MetroService.augmentProperties(props, type);
+        PropertyReader.augmentProperties(props, type);
         int count = 1;
         for (String s: props.keySet())
         {

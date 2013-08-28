@@ -23,9 +23,10 @@ package mecard;
 import json.RequestDeserializer;
 import json.ResponseSerializer;
 import mecard.exception.MetroSecurityException;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
+import metro.common.ConfigFileTypes;
+import metro.common.LibraryPropertyTypes;
 import mecard.security.SecurityManager;
+import metro.common.PropertyReader;
 
 /**
  * Responsible for interpreting incoming MeCard requests.
@@ -49,7 +50,7 @@ public class Protocol
     
     public Protocol()
     { 
-        String debug = MetroService.getProperties(ConfigFileTypes.ENVIRONMENT)
+        String debug = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
                 .getProperty(LibraryPropertyTypes.DEBUG.toString());
         debugMode = Boolean.valueOf(debug);
     }
