@@ -233,7 +233,7 @@ public class APICommand implements Command
             {
                 // and send them to stdin
                 commandTwoInput.write(lineReadFromCommandOne);
-                System.out.println("LN:'" + lineReadFromCommandOne + "'");
+                System.out.println("API_STDIN:'" + lineReadFromCommandOne + "'");
                 commandTwoInput.newLine();
             }
             // send end-of-file signal to next process so it will terminate itself

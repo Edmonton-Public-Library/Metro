@@ -18,6 +18,7 @@ update_unix:
 update_windows:
 	cp ${WIN_SETUP} ./setup.e__
 	cp dist/MeCard.jar ./MeCard.j__
+	cp dist/MeCard.jar ./
 	
 dist_windows:
 	zip -r ${ARCHIVE}.z_ ${CONFIGS} dist/* ${WIN_DIR} logs/Customers

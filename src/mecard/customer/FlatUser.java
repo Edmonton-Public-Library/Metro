@@ -143,8 +143,8 @@ public class FlatUser
     public List<String> toList()
     {
         List<String> flatData = new ArrayList<String>();
-        flatData.add(FlatUser.DOC_BOUNDARY + "\n");
-        flatData.add(FlatUser.FORM_TYPE + "\n");
+        flatData.add(FlatUser.DOC_BOUNDARY);
+        flatData.add(FlatUser.FORM_TYPE);
         Set<FlatUserFieldTypes> keys = this.customerFields.keySet();
         for (FlatUserFieldTypes key : keys)
         {
@@ -176,7 +176,7 @@ public class FlatUser
         if (this.xinfo.size() > 0)
         {
             keys = this.xinfo.keySet();
-            flatData.add("." + FlatUserFieldTypes.USER_XINFO_BEGIN + ".\n");
+            flatData.add("." + FlatUserFieldTypes.USER_XINFO_BEGIN + ".\n" );
             for (FlatUserFieldTypes key : keys)
             {
                 flatData.add(this.formatLine(key.name(), this.xinfo.get(key)));
@@ -229,7 +229,7 @@ public class FlatUser
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append(FlatUser.DOC_BOUNDARY.toString()).append("\n");
+        sb.append(FlatUser.DOC_BOUNDARY.toString());//.append("\n");
         Set<FlatUserFieldTypes> keys = this.customerFields.keySet();
         for (FlatUserFieldTypes key : keys)
         {

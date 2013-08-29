@@ -191,6 +191,10 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response)
     {
+        return runLocally(customer);
+    }
+    private Command runLocally(Customer customer)
+    {
         // we have a customer let's convert them to a flat user.
         CustomerFormatter formatter = getFormatter();
         List<String> flatUser = formatter.setCustomer(customer);
@@ -211,19 +215,19 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 + SymphonyRequestBuilder.SHELL_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 
                 + ".sh";
-        SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
-                .setDebug(true)
-                // turning on the logging passes the stdout and err to a log file
-                // which is much harder to test for success or failure. To over come
-                // this we will not direct stdout or stderr, we will then test the 
-                // command status buffers.
-                //  .setLogFile(this.homeDirectory + File.separator + "load.log")
-                .setSheBang("#!"+shell)
-                .setFlatUserFile(userDataFileName)
-                .setLoadFlatUserCommand(loadFlatUserUpdate)
-                .build();
-        
-        APICommand command = new APICommand.Builder().commandLine(loadUserFile.getCommandLine()).build();
+//        SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
+//                .setDebug(true)
+//                // turning on the logging passes the stdout and err to a log file
+//                // which is much harder to test for success or failure. To over come
+//                // this we will not direct stdout or stderr, we will then test the 
+//                // command status buffers.
+//                //  .setLogFile(this.homeDirectory + File.separator + "load.log")
+//                .setSheBang("#!"+shell)
+//                .setFlatUserFile(userDataFileName)
+//                .setLoadFlatUserCommand(loadFlatUserUpdate)
+//                .build();
+        APICommand command = new APICommand.Builder("sirsi@edpl-t.library.ualberta.ca").cat(flatUser).commandLine(loadFlatUserUpdate).build();
+//        APICommand command = new APICommand.Builder().commandLine(loadUserFile.getCommandLine()).build(); // works
         return command;
     }
 
@@ -269,7 +273,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                     System.out.println("There was a problem creating account.");
                     result = false;
                 }
-                else
+                else 
                 {
                     response.setCode(ResponseTypes.SUCCESS);
                     response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));

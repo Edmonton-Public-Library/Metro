@@ -27,7 +27,7 @@ public class UserFileTest
         System.out.println("==create UserFile==");
         List<String> data = new ArrayList<String>();
         data.add("*** DOCUMENT BOUNDARY ***\n");
-        data.add("FORM=LDUSER\n");
+//        data.add("FORM=LDUSER\n");
         data.add(".USER_ID.   |a21221012345678\n");
         data.add(".USER_FIRST_NAME.   |aBalzac\n");
         data.add(".USER_LAST_NAME.   |aBilly\n");
