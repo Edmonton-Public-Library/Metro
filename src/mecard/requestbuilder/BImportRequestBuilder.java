@@ -160,7 +160,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 .build();
         List<String> bimportBatExec = new ArrayList<String>();
         batch.getCommandLine(bimportBatExec);
-        APICommand command = new APICommand.Builder().args(bimportBatExec).build();
+        APICommand command = new APICommand.Builder().commandLine(bimportBatExec).build();
         return command;
     }
 

@@ -110,7 +110,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // 1) call seluser to get the user key. If that fails append message to reponsebuffer.
         // if succeeds
         // 2) create a command that will complete the transaction
-        APICommand command = new APICommand.Builder().echo(userId).args(seluser).build();
+        APICommand command = new APICommand.Builder().echo(userId).commandLine(seluser).build();
         CommandStatus status = command.execute();
         switch(status.getStatus())
         {
@@ -124,7 +124,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 break;
             case OK:
                 String customerKey = status.getStdout();
-                command = new APICommand.Builder().echo(customerKey).args(dumpflatuser).build();
+                command = new APICommand.Builder().echo(customerKey).commandLine(dumpflatuser).build();
                 System.out.println(new Date() + " Ok.");
                 break;
             default:
@@ -177,7 +177,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 .setLoadFlatUserCommand(loadFlatUserCreate)
                 .build();
         
-        APICommand command = new APICommand.Builder().args(loadUserFile.getCommandLine()).build();
+        APICommand command = new APICommand.Builder().commandLine(loadUserFile.getCommandLine()).build();
         return command;
     }
 
@@ -223,7 +223,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 .setLoadFlatUserCommand(loadFlatUserUpdate)
                 .build();
         
-        APICommand command = new APICommand.Builder().args(loadUserFile.getCommandLine()).build();
+        APICommand command = new APICommand.Builder().commandLine(loadUserFile.getCommandLine()).build();
         return command;
     }
 

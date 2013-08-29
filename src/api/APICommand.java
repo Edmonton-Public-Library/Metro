@@ -50,6 +50,7 @@ public class APICommand implements Command
         // optional
         private List<String> args;
         private List<String> stdinData;
+        private List<String> remoteSSHCommands;
 
         /**
          * Constructor that insists that the command gets at least a status
@@ -59,15 +60,34 @@ public class APICommand implements Command
         {
             this.cmdFormat = APICommandTypes.CMD_LINE;
         }
+        
+        /**
+         * Creates a builder that will run the commands remotely. The argument
+         * is an IP or host name. Example: user&#64;hostname.lib.ca or user&#64;1.2.3.4.
+         * To use this feature you must be trusted by the remote machine. To do 
+         * that you need to cat the local machine's public key into the authorized_keys
+         * file in ~/.ssh
+         * 
+         * @param userServer 
+         */
+        public Builder(String sshRemoteUserServer)
+        {
+            this.cmdFormat = APICommandTypes.CMD_LINE;
+            // since this is the constructor we can just add the ssh commands
+            this.remoteSSHCommands = new ArrayList<String>();
+            this.remoteSSHCommands.add("ssh");
+//            ssh.add("sirsi@edpl-t.library.ualberta.ca");
+            this.remoteSSHCommands.add(sshRemoteUserServer);
+        }
 
         /**
          * Allows the inclusion of addition command-line arguments to a command.
          *
          * @param arguments
          * @return Builder. Usage: APICommand cmd = new APICommand.Builder(status,
-         * APICommandTypes.WC).args(new Sting[]{"a","b"}).build();
+         * APICommandTypes.WC).commandLine(new Sting[]{"a","b"}).build();
          */
-        public Builder args(List<String> arguments)
+        public Builder commandLine(List<String> arguments)
         {
             this.args = new ArrayList<String>();
             this.args.addAll(arguments);
@@ -113,6 +133,23 @@ public class APICommand implements Command
          */
         public APICommand build()
         {
+            if (this.remoteSSHCommands != null)
+            {
+                List<String> tmpList = new ArrayList<String>();
+                tmpList.addAll(this.remoteSSHCommands);
+                // Now we may have to cat (or echo) what was sent to the commandLine command
+                if (this.cmdFormat == APICommandTypes.CMD_PIPE)
+                {
+                    // this next command will act either as echo or cat.
+                    tmpList.add("cat"); // cat (or echo)
+                    tmpList.add("-"); // incoming stream from ssh
+                    tmpList.add("|"); // tested with '>' and '|'.
+                }
+                // else the command should just be run as remotely on the command line.
+                tmpList.addAll(this.args);
+                this.args.clear();
+                this.args.addAll(tmpList);
+            }
             return new APICommand(this);
         }
     }
@@ -151,7 +188,7 @@ public class APICommand implements Command
     }
 
     /**
-     * Executes a command in the format of 'cmd [args]. Use this for Windows,
+     * Executes a command in the format of 'cmd [commandLine]. Use this for Windows,
      * and many Unix commands.
      *
      */

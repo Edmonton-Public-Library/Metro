@@ -38,7 +38,7 @@ public class CommandTest {
         
         List<String> cmdArgs = new ArrayList<String>();
         cmdArgs.add("ls");
-        APICommand cmd = new APICommand.Builder().args(cmdArgs).build();
+        APICommand cmd = new APICommand.Builder().commandLine(cmdArgs).build();
         CommandStatus status = cmd.execute();
         String stdout = status.getStdout();
         assertTrue(stdout.length() > 0);
@@ -66,7 +66,7 @@ public class CommandTest {
         List<String> cmdArgs = new ArrayList<String>();
         cmdArgs.add("ls");
         cmdArgs.add("-la");
-        APICommand cmd = new APICommand.Builder().args(cmdArgs).build();
+        APICommand cmd = new APICommand.Builder().commandLine(cmdArgs).build();
         CommandStatus status = cmd.execute();
         String stdout = status.getStdout();
         assertTrue(stdout.length() > 0);
@@ -83,7 +83,7 @@ public class CommandTest {
         cmdArgs.add("ls");
         cmdArgs.add("-la");
         cmdArgs.add("foobar");
-        APICommand cmd = new APICommand.Builder().args(cmdArgs).build();
+        APICommand cmd = new APICommand.Builder().commandLine(cmdArgs).build();
         CommandStatus status = cmd.execute();
         String out = status.getStderr();
         assertTrue(out.length() > 0);
@@ -99,7 +99,7 @@ public class CommandTest {
         List<String> cmdArgs = new ArrayList<String>();
         cmdArgs.add("wc");
         cmdArgs.add("-l");
-        APICommand cmd = new APICommand.Builder().echo("This and that").args(cmdArgs).build();
+        APICommand cmd = new APICommand.Builder().echo("This and that").commandLine(cmdArgs).build();
         CommandStatus status = cmd.execute();
         String out = status.getStdout();
         assertTrue(out.length() > 0);
@@ -121,7 +121,7 @@ public class CommandTest {
         data.add("-name");
         data.add("\"*.pdf\"");
 //        data.add("-print");
-        APICommand instance = new APICommand.Builder().args(data).build();
+        APICommand instance = new APICommand.Builder().commandLine(data).build();
         CommandStatus status = instance.execute();
         String out = status.getStdout();
         assertTrue(out.length() > 0);
