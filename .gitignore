@@ -7,8 +7,7 @@ nbproject/
 test/mecard/MetroClient.class
 *.z_
 *.tar
-*.jar
-dist
+dist/MeCard.jar
 TESTconfiguration/sip2cemu.pl
 test/mecard/MetroClient.java
 windows/*.exe
@@ -22,3 +21,4 @@ logs/
 after_install.txt
 windows/Output/
 windows/bimport/
+extlibs/
