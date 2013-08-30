@@ -44,6 +44,8 @@ public class Address
 
     public Address(String address, boolean isRequired)
     {
+        street = new String();
+        city = new String();
         content = new String();
         postalCodePattern = Pattern.compile( // Canadian postal code with or without spaces.
                 "[ABCEGHJKLMNPRSTVXY]{1}\\d{1}[A-Z]{1} *\\d{1}[A-Z]{1}\\d{1}",
@@ -150,33 +152,40 @@ public class Address
         // now we have:
         //5 St. Anne St., St. Albert, 
         // get rid of potential last ','
-        if (content.endsWith(","))
+        try
         {
-            content = content.substring(0, content.length() - 1).trim();
-        }
-        // The town is next. Here we use a simple but not robust strategy
-        // all other members have two word names. if the last word is some variation
-        // of edmonton then grab it and if not take the last two words.
-        int pos = content.lastIndexOf(" ");
-        String cityString = content.substring(pos);
-        // set content now since we will grab the next word as part of the city name.
-        content = content.substring(0, pos);
-        if (cityString.contains("dmonton") == false)
-        {
-            // find the start of the next word 'St.'.
-            pos = content.lastIndexOf(" ");
-            // put the two together
-            cityString = content.substring(pos) + cityString;
-            // chop off the city
-            content = content.substring(0, pos);
-            // get rid of any trailing ','s.
             if (content.endsWith(","))
             {
                 content = content.substring(0, content.length() - 1).trim();
             }
+            // The town is next. Here we use a simple but not robust strategy
+            // all other members have two word names. if the last word is some variation
+            // of edmonton then grab it and if not take the last two words.
+        
+            int pos = content.lastIndexOf(" ");
+            String cityString = content.substring(pos);
+            // set content now since we will grab the next word as part of the city name.
+            content = content.substring(0, pos);
+            if (cityString.contains("dmonton") == false)
+            {
+                // find the start of the next word 'St.'.
+                pos = content.lastIndexOf(" ");
+                // put the two together
+                cityString = content.substring(pos) + cityString;
+                // chop off the city
+                content = content.substring(0, pos);
+                // get rid of any trailing ','s.
+                if (content.endsWith(","))
+                {
+                    content = content.substring(0, content.length() - 1).trim();
+                }
+            }
+            // chops off initial space from ' Edmonton'
+            city = cityString.trim();
+        } catch (RuntimeException ex)
+        {
+            System.out.println("error while parsing address: '"+ address + "'");
         }
-        // chops off initial space from ' Edmonton'
-        city = cityString.trim();
         // the rest is street address.
         street = content.trim();
         if (street == null || street.length() == 0)

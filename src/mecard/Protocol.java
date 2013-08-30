@@ -52,7 +52,14 @@ public class Protocol
     { 
         String debug = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
                 .getProperty(LibraryPropertyTypes.DEBUG.toString());
-        debugMode = Boolean.valueOf(debug);
+        if (debug.equalsIgnoreCase("false"))
+        {
+            debugMode = false;
+        }
+        else
+        {
+            debugMode = true;
+        }
     }
 
     /**

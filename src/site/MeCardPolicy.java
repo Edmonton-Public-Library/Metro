@@ -227,75 +227,83 @@ public abstract class MeCardPolicy
      */
     public boolean isValidCustomerData(Customer customer)
     {
-        // Test customer fields that they are somewhat valid.
-        if (customer.get(CustomerFieldTypes.ID).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        try
         {
-            if (DEBUG) System.out.println("customer failed barcode requirement.");
-            return false;
-        }
-        if (customer.get(CustomerFieldTypes.PIN).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed pin requirement.");
-            return false;
-        }
-        if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed email requirement.");
-            return false;
-        }
-        // for naming customer can have a name field or the first name last name field populated.
-        if (customer.get(CustomerFieldTypes.PREFEREDNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed name requirement.");
-            return false;
-        }
-        else
-        {
-            if (customer.get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            // Test customer fields that they are somewhat valid.
+            if (customer.get(CustomerFieldTypes.ID).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed last name requirement.");
+                if (DEBUG) System.out.println("customer failed barcode requirement.");
                 return false;
             }
-            if (customer.get(CustomerFieldTypes.FIRSTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.get(CustomerFieldTypes.PIN).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed first name requirement.");
+                        +" failed pin requirement.");
+                return false;
+            }
+            if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed email requirement.");
+                return false;
+            }
+            // for naming customer can have a name field or the first name last name field populated.
+//            if (customer.get(CustomerFieldTypes.PREFEREDNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+//            {
+//                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+//                        +" failed name requirement.");
+//                return false;
+//            }
+            else
+            {
+                if (customer.get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+                {
+                    if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                            +" failed last name requirement.");
+                    return false;
+                }
+                if (customer.get(CustomerFieldTypes.FIRSTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+                {
+                    if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                            +" failed first name requirement.");
+                    return false;
+                }
+            }
+
+            if (customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed expiry requirement.");
+                return false;
+            }
+            if (customer.get(CustomerFieldTypes.STREET).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed address: street requirement.");
+                return false;
+            }
+            if (customer.get(CustomerFieldTypes.CITY).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed address: city requirement.");
+                return false;
+            }
+            if (customer.get(CustomerFieldTypes.PROVINCE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed address: province requirement.");
+                return false;
+            }
+            if (customer.get(CustomerFieldTypes.POSTALCODE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed address: postal code requirement.");
                 return false;
             }
         }
-        
-        if (customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        catch (NullPointerException ex) // if any of the fields didn't get filled in a check of the hash will return null.
         {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed expiry requirement.");
-            return false;
-        }
-        if (customer.get(CustomerFieldTypes.STREET).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed address: street requirement.");
-            return false;
-        }
-        if (customer.get(CustomerFieldTypes.CITY).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed address: city requirement.");
-            return false;
-        }
-        if (customer.get(CustomerFieldTypes.PROVINCE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed address: province requirement.");
-            return false;
-        }
-        if (customer.get(CustomerFieldTypes.POSTALCODE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                    +" failed address: postal code requirement.");
+            System.out.println("Customer failed isValid test in MecardPolicies, one of required customer fields was null.");
             return false;
         }
 
@@ -316,13 +324,15 @@ public abstract class MeCardPolicy
         try
         {
             int expiryDays = DateComparer.getDaysUntilExpiry(expiryDate);
-            if (DEBUG) System.out.println("Customer privilege date:"+expiryDate+", computed days: " + expiryDays);
+            if (DEBUG) System.out.println("Customer privilege date:"
+                    + expiryDate + ", computed days: " + expiryDays);
             if (expiryDays >= MeCardPolicy.MINIMUM_EXPIRY_DAYS)
             {
                 return true;
             }
         } catch (ParseException ex)
         {
+            System.out.println("Error parsing date: '" + expiryDate + "'");
             return false;
         }
         return false;

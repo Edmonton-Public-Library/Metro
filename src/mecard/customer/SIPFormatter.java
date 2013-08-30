@@ -20,6 +20,8 @@
  */
 package mecard.customer;
 
+import api.SIPCustomerMessage;
+import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
 import mecard.util.Address;
@@ -92,124 +94,33 @@ public class SIPFormatter implements CustomerFormatter
 //          (O) Screen Message:User BLOCKED
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
-        String[] sipResponseFields = s.split("\\|");
-        for (String sipField : sipResponseFields)
+// here we will fill in the customer attributes with the contents of s- the SIP message.
+        SIPCustomerMessage sipMessage = new SIPCustomerMessage(s);
+        customer.set(CustomerFieldTypes.ID, sipMessage.getField("AA"));
+        customer.set(CustomerFieldTypes.PREFEREDNAME, sipMessage.getField("AE"));
+        customer.set(CustomerFieldTypes.RESERVED, sipMessage.getField("AF"));
+        customer.set(CustomerFieldTypes.EMAIL, sipMessage.getField("BE"));
+        // Phone object
+        Phone phone = new Phone(sipMessage.getField("BF"));
+//        customer.set(CustomerFieldTypes.PHONE, sipMessage.getField("BF"));
+        customer.set(CustomerFieldTypes.PHONE, phone.getUnformattedPhone());
+        customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, sipMessage.getField("PA"));
+        // PE can also be privilege expires, so 
+        String possibleDate = sipMessage.getField("PE");
+        if (SIPMessage.isDate(possibleDate))
         {
-            // take off the first two characters, that's the name of the field.
-            // like 'AA' is the user's id so 'AA21221012345678'.
-            if (sipField.length() == 0)
-            {
-                continue;
-            }
-            String fieldName = sipField.substring(0, 2);
-            // the rest of the field is the value.
-            String fieldValue = sipField.substring(2);
-            CustomerFieldTypes fieldType = this.translateToCustomerField(fieldName);
-            if (fieldType != null)
-            {
-                // This value is used because sip returns the "lastname, fname"
-                // not individual lastname firstname. Using the USER_PREFERRED_NAME
-                // is just a convension used here.
-                if (fieldType == CustomerFieldTypes.PREFEREDNAME)
-                {
-                    customer.setName(sipField.substring(2));
-                } 
-                else if (fieldType == CustomerFieldTypes.STREET)
-                {
-                    // special STREET in this context comes with everything
-                    Address address = new Address(sipField.substring(2), true);
-                    customer.set(CustomerFieldTypes.STREET, address.getStreet());
-                    customer.set(CustomerFieldTypes.CITY, address.getCity());
-                    customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());
-                    customer.set(CustomerFieldTypes.POSTALCODE, address.getPostalCode());
-                    customer.set(CustomerFieldTypes.PHONE, address.getPhone());
-                } 
-                else if (fieldType == CustomerFieldTypes.PHONE) // St. A actually includes this in BF field, EPL doesn't
-                {
-                    customer.set(CustomerFieldTypes.PHONE, sipField.substring(2));
-                }
-                else if (fieldType == CustomerFieldTypes.PRIVILEGE_EXPIRES)
-                {
-                    // PA20140321    235900
-                    String strippedDate = fieldValue.substring(0, 8);
-                    customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, strippedDate);
-                } 
-                else if (fieldType == CustomerFieldTypes.DOB)
-                {
-                    // PD20050303
-                    if (fieldValue.isEmpty() == false)
-                    {
-                        // the site can subclass MeCardPolicy object to test 
-                        // a customer for adult with profile as an alternate.
-                        customer.set(CustomerFieldTypes.DOB, fieldValue);
-                    }
-                } 
-                else // direct translation, no conversion of data requred.
-                {
-                    customer.set(fieldType, fieldValue);
-                }
-            }
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, possibleDate);
         }
+        customer.set(CustomerFieldTypes.DOB, sipMessage.getField("PD"));
+        customer.set(CustomerFieldTypes.SEX, sipMessage.getField("PF"));
+        // Complete address
+        Address address = new Address(sipMessage.getField("BD"), true);
+        customer.set(CustomerFieldTypes.STREET, address.getStreet());
+        customer.set(CustomerFieldTypes.CITY, address.getCity());
+        customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());
+        customer.set(CustomerFieldTypes.POSTALCODE, address.getPostalCode());
+        customer.set(CustomerFieldTypes.PHONE, address.getPhone());
         return customer;
-    }
-
-    /**
-     *
-     * @param string
-     * @return CustomerField that matches a customer field, or null.
-     */
-    private CustomerFieldTypes translateToCustomerField(String userFieldValue)
-    {
-        if (userFieldValue.equals("AA"))
-        {
-            return CustomerFieldTypes.ID;
-        } 
-        else if (userFieldValue.equals("AE"))
-        {
-            return CustomerFieldTypes.PREFEREDNAME; // last name, first name.
-        }
-        else if (userFieldValue.equals("AF"))
-        {
-            return CustomerFieldTypes.RESERVED; // Message from SIP2 Server.
-        }
-        else if (userFieldValue.equals("BD"))
-        {
-            return CustomerFieldTypes.STREET; // Complete address break it up.
-        } 
-        else if (userFieldValue.equals("BE"))
-        {
-            return CustomerFieldTypes.EMAIL;
-        }
-        else if (userFieldValue.equals("BF"))
-        {
-            return CustomerFieldTypes.PHONE; // EPL throws this on the end of the address but St. A uses correct field label.
-        } 
-        else if (userFieldValue.equals("PA"))
-        {
-            return CustomerFieldTypes.PRIVILEGE_EXPIRES;
-        } 
-        else if (userFieldValue.equals("PE"))
-        {
-            return CustomerFieldTypes.PRIVILEGE_EXPIRES;
-        }
-        else if (userFieldValue.equals("PD"))
-        {
-            return CustomerFieldTypes.DOB;
-        } // PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|
-        else if (userFieldValue.equals("PF"))
-        {
-            return CustomerFieldTypes.SEX;
-        } 
-        else
-        {
-            return null;
-        }
-    }
-
-    @Override
-    public Customer getCustomer(List<String> s)
-    {
-        return this.getCustomer(s.get(0));
     }
 
     /**
@@ -221,5 +132,11 @@ public class SIPFormatter implements CustomerFormatter
     public List<String> setCustomer(Customer c)
     {
         throw new UnsupportedOperationException("SIP does not support customer creation.");
+    }
+
+    @Override
+    public Customer getCustomer(List<String> list)
+    {
+        return getCustomer(list.get(0));
     }
 }

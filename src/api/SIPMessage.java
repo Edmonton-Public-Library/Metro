@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import mecard.Protocol;
 import mecard.exception.SIPException;
 
 /**
@@ -127,7 +128,26 @@ public class SIPMessage
      */
     public final String getField(String which)
     {
-        return this.fields.get(which.toUpperCase()); // which could return null
+        String returnValue = this.fields.get(which.toUpperCase()); // which could return null
+        if (returnValue == null)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+        return returnValue;
+    }
+    
+    /**
+     * Tests if a string looks like a possible date.
+     * @param possibleDate
+     * @return 
+     */
+    public static boolean isDate(String possibleDate)
+    {
+        if (possibleDate == null)
+        {
+            return false;
+        }
+        return possibleDate.matches("\\d{8}");
     }
 
     @Override
