@@ -29,3 +29,5 @@ clean:
 	-rm ${ARCHIVE}.tar 
 	-rm ${ARCHIVE}.z_
 	-rm ./setup.e__
+	-rm ./MeCard.jar
+	-rm ./MeCard.j__

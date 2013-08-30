@@ -37,7 +37,6 @@ import metro.common.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
-import mecard.customer.SymphonyLoadUserSh;
 import mecard.customer.UserFile;
 import metro.common.PropertyReader;
 
@@ -62,7 +61,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public final static String USER_FILE_NAME_PREFIX  = "metro_user_";
     public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
     private final String homeDirectory;
-    private final String shell;
+    private final String sshServer;
     private final Properties messageProperties;
     
     public SymphonyRequestBuilder(boolean debug)
@@ -72,7 +71,9 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         Properties symphonyProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
         this.homeDirectory = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
-        this.shell = symphonyProps.getProperty(SymphonyPropertyTypes.SHELL.toString());
+        // This is an optional tag that if included will run the commands remotely.
+        // sshServer should now have either the name of the ssh server or "" if not defined.
+        this.sshServer = symphonyProps.getProperty(PropertyReader.SSH_TAG, "");
         
         seluser = new ArrayList<String>();
         seluser.add("seluser");
@@ -148,87 +149,32 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // we have a customer let's convert them to a flat user.
         CustomerFormatter formatter = getFormatter();
         List<String> flatUser = formatter.setCustomer(customer);
-        // since printing Lists of strings to loadflatuser fail, we will do it the Sirsi-Dynix
-        // way: create a temp file of user data and cat the data to loadflatuser.
-        // Job 1: create user data file.
-        // 1a create file name
-        String userDataFileName = this.homeDirectory 
-                + File.separator 
-                + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
-                + customer.get(CustomerFieldTypes.ID) 
-                + ".flat";
-        UserFile userFile = new UserFile(userDataFileName);
-        userFile.addUserData(flatUser);
-        // Now create the shell command to run
-        String shellFileName = this.homeDirectory 
-                + File.separator  
-                + SymphonyRequestBuilder.SHELL_FILE_NAME_PREFIX 
-                + customer.get(CustomerFieldTypes.ID) 
-                + ".sh";
-        SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
-                .setDebug(true)
-                // turning on the logging passes the stdout and err to a log file
-                // which is much harder to test for success or failure. To over come
-                // this we will not direct stdout or stderr, we will then test the 
-                // command status buffers.
-                //  .setLogFile(this.homeDirectory + File.separator + "load.log")
-                .setSheBang("#!" + this.shell)
-                .setFlatUserFile(userDataFileName)
-                .setLoadFlatUserCommand(loadFlatUserCreate)
-                .build();
-        
-        APICommand command = new APICommand.Builder().commandLine(loadUserFile.getCommandLine()).build();
-        return command;
+        this.printReceipt(customer, flatUser);
+        if (this.sshServer.isEmpty())
+        {
+            return new APICommand.Builder().cat(flatUser).commandLine(loadFlatUserCreate).build();
+        }
+        return new APICommand.Builder(this.sshServer).cat(flatUser).commandLine(loadFlatUserCreate).build();
     }
-
+    
     /**
      *
      *
      * @param customer the value of customer
      * @param response the value of responseBuffer
      */
-    
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response)
-    {
-        return runLocally(customer);
-    }
-    private Command runLocally(Customer customer)
     {
         // we have a customer let's convert them to a flat user.
         CustomerFormatter formatter = getFormatter();
         List<String> flatUser = formatter.setCustomer(customer);
-        // since printing Lists of strings to loadflatuser fail, we will do it the Sirsi-Dynix
-        // way: create a temp file of user data and cat the data to loadflatuser.
-        // Job 1: create user data file.
-        // 1a create file name
-        String userDataFileName = this.homeDirectory 
-                + File.separator
-                + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
-                + customer.get(CustomerFieldTypes.ID) 
-                + ".flat";
-        UserFile userFile = new UserFile(userDataFileName);
-        userFile.addUserData(flatUser);
-        // Now create the shell command to run
-        String shellFileName = this.homeDirectory 
-                + File.separator
-                + SymphonyRequestBuilder.SHELL_FILE_NAME_PREFIX 
-                + customer.get(CustomerFieldTypes.ID) 
-                + ".sh";
-//        SymphonyLoadUserSh loadUserFile = new SymphonyLoadUserSh.Builder(shellFileName)
-//                .setDebug(true)
-//                // turning on the logging passes the stdout and err to a log file
-//                // which is much harder to test for success or failure. To over come
-//                // this we will not direct stdout or stderr, we will then test the 
-//                // command status buffers.
-//                //  .setLogFile(this.homeDirectory + File.separator + "load.log")
-//                .setSheBang("#!"+shell)
-//                .setFlatUserFile(userDataFileName)
-//                .setLoadFlatUserCommand(loadFlatUserUpdate)
-//                .build();
-        APICommand command = new APICommand.Builder("sirsi@edpl-t.library.ualberta.ca").cat(flatUser).commandLine(loadFlatUserUpdate).build();
-//        APICommand command = new APICommand.Builder().commandLine(loadUserFile.getCommandLine()).build(); // works
-        return command;
+        this.printReceipt(customer, flatUser);
+        if (this.sshServer.isEmpty())
+        {
+            return new APICommand.Builder().cat(flatUser).commandLine(loadFlatUserUpdate).build();
+        }
+        return new APICommand.Builder(this.sshServer).cat(flatUser).commandLine(loadFlatUserUpdate).build();
     }
 
     @Override
@@ -266,7 +212,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 }
                 break;
             case CREATE_CUSTOMER:
-                if (status.getStderr().contains("**error number 111"))
+                if (status.getStderr().contains("**error number 111") || status.getStdout().isEmpty())
                 {
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_CREATED.toString()));
@@ -282,7 +228,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 }
                 break;
             case UPDATE_CUSTOMER:
-                if (status.getStderr().contains("**error number 111"))
+                if (status.getStderr().contains("**error number 111") || status.getStdout().isEmpty())
                 {
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_UPDATED.toString()));
@@ -313,5 +259,21 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     {
         // TODO future release to include file cleanup and return false if you can't.
         return true;
+    }
+    
+    /** Prints the flat user data to file in case something goes wrong.
+     * 
+     * @param customer Customer object.
+     * @param flatUser Customer as a flat user.
+     */
+    private void printReceipt(Customer customer, List<String> flatUser)
+    {
+        String userDataFileName = this.homeDirectory 
+                + File.separator
+                + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
+                + customer.get(CustomerFieldTypes.ID) 
+                + ".flat";
+        UserFile userFile = new UserFile(userDataFileName);
+        userFile.addUserData(flatUser);
     }
 }
