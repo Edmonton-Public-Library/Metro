@@ -31,17 +31,17 @@ import java.util.List;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import metro.common.BImportPropertyTypes;
-import metro.common.ConfigFileTypes;
+import mecard.config.BImportPropertyTypes;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import metro.common.MessagesConfigTypes;
+import mecard.config.MessagesConfigTypes;
 import mecard.customer.BImportBat;
 import mecard.customer.BImportFile;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 
 /**
  *

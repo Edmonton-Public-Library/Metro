@@ -30,15 +30,15 @@ import java.util.Properties;
 import mecard.Protocol;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import metro.common.ConfigFileTypes;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import metro.common.MessagesConfigTypes;
-import metro.common.SipPropertyTypes;
+import mecard.config.MessagesConfigTypes;
+import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.SIPException;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 
 /**
  * Helper class for formatting SIP requests.

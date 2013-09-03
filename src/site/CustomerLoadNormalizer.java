@@ -3,11 +3,11 @@ package site;
 
 import site.edmonton.EPLCustomerNormalizer;
 import java.util.Properties;
-import metro.common.ConfigFileTypes;
-import metro.common.LibraryPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 import static site.MeCardPolicy.DEBUG;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;

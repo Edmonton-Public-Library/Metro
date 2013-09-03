@@ -27,12 +27,12 @@ import java.util.Date;
 import java.util.Properties;
 import mecard.exception.UnsupportedLibraryException;
 import mecard.Protocol;
-import metro.common.ConfigFileTypes;
-import metro.common.LibraryPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.DateComparer;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 import site.stalbert.STAPolicy;
 import site.strathcona.STRPolicy;
 

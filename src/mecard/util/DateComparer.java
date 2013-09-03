@@ -24,9 +24,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import metro.common.ConfigFileTypes;
-import metro.common.LibraryPropertyTypes;
-import metro.common.PropertyReader;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
 
 /**
  * Utility class used to help with date conversions. Serveral classes use these

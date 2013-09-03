@@ -23,10 +23,10 @@ package mecard;
 import json.RequestDeserializer;
 import json.ResponseSerializer;
 import mecard.exception.MetroSecurityException;
-import metro.common.ConfigFileTypes;
-import metro.common.LibraryPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
 import mecard.security.SecurityManager;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 
 /**
  * Responsible for interpreting incoming MeCard requests.

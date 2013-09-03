@@ -27,14 +27,14 @@ import mecard.Response;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import metro.common.ConfigFileTypes;
-import metro.common.DebugQueryConfigTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.DebugQueryConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.DummyException;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 
 /**
  *

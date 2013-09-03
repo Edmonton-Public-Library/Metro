@@ -23,9 +23,9 @@ package mecard.security;
 
 import java.util.Properties;
 import mecard.exception.MetroSecurityException;
-import metro.common.ConfigFileTypes;
-import metro.common.LibraryPropertyTypes;
-import metro.common.PropertyReader;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
 
 /**
  *

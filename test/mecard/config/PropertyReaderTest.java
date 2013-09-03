@@ -23,8 +23,6 @@ package mecard.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import metro.common.ConfigFileTypes;
-import metro.common.PropertyReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

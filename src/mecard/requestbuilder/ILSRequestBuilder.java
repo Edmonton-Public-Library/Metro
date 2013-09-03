@@ -24,12 +24,12 @@ import api.Command;
 import api.CommandStatus;
 import mecard.Response;
 import mecard.QueryTypes;
-import metro.common.ConfigFileTypes;
-import metro.common.LibraryPropertyTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 
 /**
  * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.

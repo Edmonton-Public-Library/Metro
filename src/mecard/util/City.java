@@ -21,8 +21,8 @@
 package mecard.util;
 
 import java.util.Properties;
-import metro.common.ConfigFileTypes;
-import metro.common.PropertyReader;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import site.MemberTypes;
 
 /**

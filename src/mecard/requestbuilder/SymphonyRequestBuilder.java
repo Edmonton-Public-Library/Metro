@@ -30,15 +30,15 @@ import java.util.List;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
-import metro.common.ConfigFileTypes;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import metro.common.MessagesConfigTypes;
-import metro.common.SymphonyPropertyTypes;
+import mecard.config.MessagesConfigTypes;
+import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.customer.UserFile;
-import metro.common.PropertyReader;
+import mecard.config.PropertyReader;
 
 /**
  * SymphonyRequestBuilder creates the commands used to perform the MeCard request

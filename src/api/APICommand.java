@@ -27,8 +27,8 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import metro.common.PropertyReader;
-import metro.common.ConfigFileTypes;
+import mecard.config.PropertyReader;
+import mecard.config.ConfigFileTypes;
 
 /**
  * Builds commands ready for execution.
