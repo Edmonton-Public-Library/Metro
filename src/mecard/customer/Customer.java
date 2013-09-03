@@ -93,7 +93,12 @@ public class Customer //extends ProtocolPayload
      */
     public String get(CustomerFieldTypes t)
     {
-        return this.customerFields.get(t);
+        String returnValue = this.customerFields.get(t); // which could return null
+        if (returnValue == null)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+        return returnValue;
     }
 
     /**
