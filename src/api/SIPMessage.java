@@ -43,6 +43,42 @@ public class SIPMessage
     protected final String code;
     protected final String codeBits;
 
+    /**
+     * This method accepts a possible dateField and returns a clean date. 
+     * @param possibleDate example: '20131231    235900STAFF' worst case.
+     * @return cleaned string if date valid and parse-able as date and Protocol#DEFAULT_FIELD_VALUE
+     * otherwise.
+     */
+    public static String cleanDateTime(String possibleDate)
+    {
+        if (possibleDate == null)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+        // 20131231    235900STAFF
+        // Split if you can on whitespace
+        String[] split = possibleDate.split("\\s{1,}");
+        if (split.length == 0 || isDate(split[0]) == false)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+        return split[0];
+    }
+    
+     /**
+     * Tests if a string looks like a possible date.
+     * @param possibleDate
+     * @return 
+     */
+    public static boolean isDate(String possibleDate)
+    {
+        if (possibleDate == null)
+        {
+            return false;
+        }
+        return possibleDate.matches("\\d{8}");
+    }
+    
     public SIPMessage(String sipMessage)
             throws SIPException
     {
@@ -136,21 +172,7 @@ public class SIPMessage
         return returnValue;
     }
     
-    /**
-     * Tests if a string looks like a possible date.
-     * @param possibleDate
-     * @return 
-     */
-    public static boolean isDate(String possibleDate)
-    {
-        if (possibleDate == null)
-        {
-            return false;
-        }
-        return possibleDate.matches("\\d{8}");
-    }
-
-    @Override
+   @Override
     public String toString()
     {
         return this.originalMessage;

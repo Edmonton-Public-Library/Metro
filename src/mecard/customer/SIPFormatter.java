@@ -24,6 +24,7 @@ import api.SIPCustomerMessage;
 import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
+import mecard.Protocol;
 import mecard.util.Address;
 import mecard.util.Phone;
 
@@ -102,16 +103,31 @@ public class SIPFormatter implements CustomerFormatter
         customer.set(CustomerFieldTypes.EMAIL, sipMessage.getField("BE"));
         // Phone object
         Phone phone = new Phone(sipMessage.getField("BF"));
-//        customer.set(CustomerFieldTypes.PHONE, sipMessage.getField("BF"));
         customer.set(CustomerFieldTypes.PHONE, phone.getUnformattedPhone());
-        customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, sipMessage.getField("PA"));
-        // PE can also be privilege expires, so 
-        String possibleDate = sipMessage.getField("PE");
-        if (SIPMessage.isDate(possibleDate))
+        // Privilege date dates: horizon uses PE and puts profile in PA.
+        // The test is slightly less expensive 
+        String cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PA"));
+        if (SIPMessage.isDate(cleanDate))
         {
-            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, possibleDate);
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }
-        customer.set(CustomerFieldTypes.DOB, sipMessage.getField("PD"));
+        // PE can also be privilege expires, so if PA fails try this field.
+        else
+        {
+            cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PE"));
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
+        }
+        // DOB same thing
+        cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PB"));
+        if (SIPMessage.isDate(cleanDate))
+        {
+            customer.set(CustomerFieldTypes.DOB, SIPMessage.cleanDateTime(sipMessage.getField("PB"))); // Strathcona.
+        }
+        else
+        {
+            cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PD"));
+            customer.set(CustomerFieldTypes.DOB, cleanDate);
+        }
         customer.set(CustomerFieldTypes.SEX, sipMessage.getField("PF"));
         // Complete address
         Address address = new Address(sipMessage.getField("BD"), true);
@@ -119,7 +135,13 @@ public class SIPFormatter implements CustomerFormatter
         customer.set(CustomerFieldTypes.CITY, address.getCity());
         customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());
         customer.set(CustomerFieldTypes.POSTALCODE, address.getPostalCode());
-        customer.set(CustomerFieldTypes.PHONE, address.getPhone());
+        // Next careful, EPL gloms the phone on the end of the address, but if a lib returns
+        // the phone in the correct field parsing this will erase the phone we already
+        // collected.
+        if (customer.get(CustomerFieldTypes.PHONE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        {
+            customer.set(CustomerFieldTypes.PHONE, address.getPhone());
+        }
         return customer;
     }
 

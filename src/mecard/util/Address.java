@@ -113,7 +113,7 @@ public class Address
         else
         {
             phoneNumber = new Phone("");
-            System.out.println("no phone number found.");
+            System.out.println("no phone number found in address field");
         }
         
         matcher = postalCodePattern.matcher(address);
