@@ -68,7 +68,7 @@ public class APICommand implements Command
          * that you need to cat the local machine's public key into the authorized_keys
          * file in ~/.ssh
          * 
-         * @param userServer 
+         * @param sshRemoteUserServer 
          */
         public Builder(String sshRemoteUserServer)
         {

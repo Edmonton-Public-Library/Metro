@@ -66,9 +66,10 @@ public class SIPMessage
     }
     
      /**
-     * Tests if a string looks like a possible date.
-     * @param possibleDate
-     * @return 
+     * Tests if a string looks like a possible date. The check is not strict - 
+     * a string of 8 digits.
+     * @param possibleDate string value. To bass must be 8 single digits like '20130822'.
+     * @return true if the string is likely to be an ANSI date and false otherwise.
      */
     public static boolean isDate(String possibleDate)
     {
@@ -76,7 +77,8 @@ public class SIPMessage
         {
             return false;
         }
-        return possibleDate.matches("\\d{8}");
+        return possibleDate.matches("^[1-2][0,9]\\d{2}[0-1][0-9][0-3][0-9]$");
+//        return possibleDate.matches("\\d{8}");
     }
     
     public SIPMessage(String sipMessage)
