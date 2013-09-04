@@ -35,8 +35,7 @@ public enum SymphonyPropertyTypes
     USER_ROUTING_FLAG("USER_ROUTING_FLAG"),
     USER_CHARGE_HISTORY_RULE("USER_CHG_HIST_RULE"),
     USER_ACCESS("USER_ACCESS"),
-    USER_ENVIRONMENT("USER_ENVIRONMENT"), 
-    SHELL("shell");  // the command line shell to use to execute the script.
+    USER_ENVIRONMENT("USER_ENVIRONMENT");
     
     private String type;
 
