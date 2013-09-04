@@ -190,7 +190,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 resultString = status.getStdout();
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
-                    response.setCode(ResponseTypes.OK);
+                    response.setCode(ResponseTypes.SUCCESS);
                     response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));
                     System.out.println(new Date() + "Customer account successfully create.");
                     result = true;
@@ -208,7 +208,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 resultString = status.getStdout();
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
-                    response.setCode(ResponseTypes.OK);
+                    response.setCode(ResponseTypes.SUCCESS);
                     response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_UPDATE.toString()));
                     System.out.println(new Date() + "Customer account successfully updated.");
                     result = true;
@@ -222,7 +222,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 }
                 break;
             case NULL:
-                response.setCode(ResponseTypes.OK);
+                response.setCode(ResponseTypes.SUCCESS);
                 response.setResponse("Null BImport command back at you...");
                 result = true;
                 break;

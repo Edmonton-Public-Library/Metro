@@ -26,8 +26,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.config.ConfigFileTypes;
+import mecard.config.MessagesConfigTypes;
+import mecard.config.PropertyReader;
+import mecard.exception.BImportException;
+import mecard.exception.BusyException;
 import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
@@ -243,7 +249,14 @@ public class BImportFile
         File file = new File(name);
         if (file.exists())
         {
-            file.delete();
+            if (file.delete() == false)
+            {
+                System.out.println("Could not delete '" 
+                        + name + "', is it being used by another process?");
+                Properties props = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+                String busyMessage = props.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString());
+                throw new BusyException(busyMessage);
+            }
         }
         // create a new one.
         file = new File(name);

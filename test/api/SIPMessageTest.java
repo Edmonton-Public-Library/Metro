@@ -158,7 +158,7 @@ public class SIPMessageTest
     @Test
     public void testCleanDateTime()
     {
-        // System.out.println("===cleanDateTime===");
+        System.out.println("===cleanDateTime===");
         String possibleDate = "20131231    235900STAFF";
         String expResult = "20131231";
         String result = SIPMessage.cleanDateTime(possibleDate);
@@ -174,6 +174,7 @@ public class SIPMessageTest
         assertFalse(SIPMessage.isDate(possibleDate));
         System.out.println("CLEAN:'"+SIPMessage.cleanDateTime(possibleDate)+"'");
         result = SIPMessage.cleanDateTime(possibleDate);
+        expResult = "20140903";
         assertTrue(expResult.compareTo(result) == 0);
     }
 
@@ -183,7 +184,7 @@ public class SIPMessageTest
     @Test
     public void testGetCode()
     {
-        // // System.out.println("==getCode==");
+        System.out.println("==getCode==");
         SIPMessage instance = new SIPStatusMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
         
         String expResult = "98";
@@ -197,7 +198,7 @@ public class SIPMessageTest
     @Test
     public void testGetCodeMessage()
     {
-        // // System.out.println("==getCodeMessage==");
+        System.out.println("==getCodeMessage==");
         SIPMessage instance = new SIPStatusMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
         
         String expResult = "NYYYYN60000320130424    1135112.00AOEPLMNA";
@@ -211,7 +212,7 @@ public class SIPMessageTest
     @Test
     public void testIsDate()
     {
-        // // System.out.println("===isDate===");
+        System.out.println("===isDate===");
         String possibleDate = "20131231";
         boolean expResult = true;
         boolean result = SIPMessage.isDate(possibleDate);

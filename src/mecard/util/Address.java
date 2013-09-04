@@ -92,6 +92,10 @@ public class Address
 
     protected boolean setContent(String address)
     {
+        // TODO needs to be able to process:
+        // BD10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1
+        // and:
+        // BD10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1
         if (address == null || address.length() == 0)
         {
             return false;
@@ -221,5 +225,28 @@ public class Address
         sb.append(", ");
         sb.append(getPhone());
         return sb.toString();
+    }
+    
+    public class PhoneNumber
+    {
+        private String phone;
+        private boolean hasPhone;
+        protected Pattern phonePattern;
+        
+        public PhoneNumber(String addressLine)
+        {
+            this.hasPhone = false;
+            this.phonePattern = Pattern.compile("\\d{3}-\\d{3}-\\d{4}");
+        }
+        
+        public boolean hasPhone()
+        {
+            return this.hasPhone;
+        }
+        
+        public String getPhone()
+        {
+            return this.phone;
+        }
     }
 }

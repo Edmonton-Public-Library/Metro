@@ -37,6 +37,7 @@ import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.exception.LostCardException;
 import mecard.config.PropertyReader;
+import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 
@@ -93,6 +94,10 @@ public class Responder
         else if (ex instanceof ConfigurationException)
         {
             response = new Response(ResponseTypes.CONFIG_ERROR);
+        }
+        else if (ex instanceof BusyException)
+        {
+            response = new Response(ResponseTypes.BUSY);
         }
         else if (ex instanceof UnsupportedCommandException)
         {
