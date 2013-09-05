@@ -23,19 +23,20 @@ package mecard.util;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
-import site.MemberTypes;
+import mecard.config.MemberTypes;
 
 /**
  * Does a lookup for city code in the city_st.properties file.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class City 
+public abstract class City 
 {
     /**
      * Does a lookup for city code in the city_st.properties file. The city code
      * is required and the codes are defined by each library that uses Horizon.
      * @param p
      * @return city code suitable for this instance of Horizon's city_st fields.
+     * @deprecated 
      */
     public final static String getCity(String p)
     {
@@ -47,6 +48,7 @@ public class City
      * is required and the codes are defined by each library that uses Horizon.
      * @param fullCityName
      * @return city code suitable for this instance of Horizon's city_st.
+     * @deprecated 
      */
     public static final String getCity(String fullCityName, boolean debug)
     {
@@ -67,4 +69,23 @@ public class City
         }
         return fullCityName;
     }
+    
+    /**
+     * Translates city names into mapped codes, primarily for Horizon but also
+     * useful for normalization of city names. Currently only Alberta cities
+     * are implemented.
+     * @see AlbertaCity
+     * @param ciyName
+     * @return the code for that city, or the default field value if it wasn't found.
+     */
+    public abstract String getCityCode(String ciyName);
+    
+    /**
+     * This method allows you to check a string of unknown contents to see if 
+     * it is a known place name for a given region.
+     * 
+     * @param placeName
+     * @return true if placeName string is a known place name and false otherwise.
+     */
+    public abstract boolean isPlaceName(String placeName);
 }

@@ -1,4 +1,23 @@
-
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package site;
 
 import site.edmonton.EPLCustomerNormalizer;
@@ -8,7 +27,7 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import mecard.config.PropertyReader;
-import static site.MeCardPolicy.DEBUG;
+import mecard.config.MemberTypes;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
 
@@ -42,20 +61,19 @@ public abstract class CustomerLoadNormalizer
         }
         // read the config, find what type of normalizer we need, create it 
         // and return it.
-        DEBUG = debug;
         Properties props = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         String libCode = props.getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
         if (libCode.equalsIgnoreCase(MemberTypes.EPL.name()))
         {
-            normalizer = new EPLCustomerNormalizer(DEBUG);
+            normalizer = new EPLCustomerNormalizer(debug);
         } 
         else if (libCode.equalsIgnoreCase(MemberTypes.STA.name()))
         {
-            normalizer = new STACustomerNormalizer(DEBUG);
+            normalizer = new STACustomerNormalizer(debug);
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
         {
-            normalizer = new STRCustomerNormalizer(DEBUG);
+            normalizer = new STRCustomerNormalizer(debug);
         }
         else
         {

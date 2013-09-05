@@ -31,10 +31,13 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.MemberTypes;
 import mecard.util.DateComparer;
 import mecard.config.PropertyReader;
+import mecard.util.Text;
 import site.stalbert.STAPolicy;
 import site.strathcona.STRPolicy;
+
 
 /**
  * This class needs to be sub-classed by all libraries. All customer's must meet 
@@ -87,11 +90,11 @@ public abstract class MeCardPolicy
      */
     public void normalizeCustomerFields(Customer customer)
     {
-        String customerData = MeCardPolicy.toDisplayCase(customer.get(CustomerFieldTypes.FIRSTNAME));
+        String customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.FIRSTNAME));
         customer.set(CustomerFieldTypes.FIRSTNAME, customerData);
-        customerData = MeCardPolicy.toDisplayCase(customer.get(CustomerFieldTypes.LASTNAME));
+        customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.LASTNAME));
         customer.set(CustomerFieldTypes.LASTNAME, customerData);
-        customerData = MeCardPolicy.toDisplayCase(customer.get(CustomerFieldTypes.STREET));
+        customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.STREET));
         customer.set(CustomerFieldTypes.STREET, customerData);
         customerData = customer.get(CustomerFieldTypes.POSTALCODE).toUpperCase();
         customer.set(CustomerFieldTypes.POSTALCODE, customerData);
@@ -350,31 +353,5 @@ public abstract class MeCardPolicy
      * @see mecard.customer.Customer
      */
     public abstract boolean isLostCard(Customer customer, String meta);
-    
-    /**
-     * Converts strings to proper case. Used for normalizing names and streets
-     * to a proper case convention. One of the libraries uses UPPERCASE for
-     * customer first name last name and address fields, which is not helpful
-     * for other libraries. Each should expect their data in a constant format.
-     * @param s string to be Proper Cased.
-     * @return the string in proper case.
-     */
-    public static String toDisplayCase(String s)
-    {
-        // Credit to: http://stackoverflow.com/questions/1086123/titlecase-conversion
-        final String ACTIONABLE_DELIMITERS = " -"; // these cause the character following
-                                                   // to be capitalized
-        StringBuilder sb = new StringBuilder();
-        boolean capNext = true;
-
-        for (char c : s.toCharArray()) 
-        {
-            c = (capNext)
-                    ? Character.toUpperCase(c)
-                    : Character.toLowerCase(c);
-            sb.append(c);
-            capNext = (ACTIONABLE_DELIMITERS.indexOf((int) c) >= 0); // explicit cast not needed
-        }
-        return sb.toString();
-    }
+   
 }

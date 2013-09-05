@@ -25,7 +25,7 @@ import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
 import mecard.Protocol;
-import mecard.util.Address;
+import mecard.util.Address2;
 import mecard.util.Phone;
 
 /**
@@ -130,7 +130,7 @@ public class SIPFormatter implements CustomerFormatter
         }
         customer.set(CustomerFieldTypes.SEX, sipMessage.getField("PF"));
         // Complete address
-        Address address = new Address(sipMessage.getField("BD"), true);
+        Address2 address = new Address2(sipMessage.getField("BD"));
         customer.set(CustomerFieldTypes.STREET, address.getStreet());
         customer.set(CustomerFieldTypes.CITY, address.getCity());
         customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());

@@ -25,7 +25,7 @@ public class AddressTest
     public void testAddress()
     {
         System.out.println("=== Address0 ===");
-        Address instance = new Address("5 St. Anne St., St. Albert, AB, T8N 3Z9 780-433-5567", true);
+        Address2 instance = new Address2("5 St. Anne St., St. Albert, AB, T8N 3Z9 780-433-5567");
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
@@ -34,7 +34,7 @@ public class AddressTest
         System.out.println("CONTENT:'"+instance+"'");
         
         System.out.println("=== Address1 ===");
-        instance = new Address("7 Sir Winston Churchill Square Edmonton, AB T5J 2V4", true);
+        instance = new Address2("7 Sir Winston Churchill Square Edmonton, AB T5J 2V4");
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
@@ -43,7 +43,7 @@ public class AddressTest
         System.out.println("CONTENT:'"+instance+"'");
         
         System.out.println("=== Address2 ===");
-        instance = new Address("1277 Elgin Cres., Ft. Saskatchewan AB L6h2j9", true);
+        instance = new Address2("1277 Elgin Cres., Ft. Saskatchewan AB L6h2j9");
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
@@ -52,7 +52,7 @@ public class AddressTest
         System.out.println("CONTENT:'"+instance+"'");
         
         System.out.println("=== Address3 ===");
-        instance = new Address("364 8915 147 Avenue NW Edmonton, AB T5E 5Y5 780-702-3114", true);
+        instance = new Address2("364 8915 147 Avenue NW Edmonton, AB T5E 5Y5 780-702-3114");
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
@@ -61,13 +61,15 @@ public class AddressTest
         System.out.println("CONTENT:'"+instance+"'");
         
         System.out.println("=== Address4 ===");
-        instance = new Address("10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1", true);
-        System.out.println("STREET:'"+instance.getStreet()+"'");
-        System.out.println("CITY:'"+instance.getCity()+"'");
-        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
-        System.out.println("PROVINC:'"+instance.getProvince()+"'");
-        System.out.println("PHONE:'"+instance.getPhone()+"'");
-        System.out.println("CONTENT:'"+instance+"'");
+        String thisAddress = "10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        Address2 addr2 = new Address2(thisAddress);
+        System.out.println("STREET:'"+addr2.getStreet()+"'");
+        System.out.println("CITY:'"+addr2.getCity()+"'");
+        System.out.println("POSTALC:'"+addr2.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+addr2.getProvince()+"'");
+        System.out.println("PHONE:'"+addr2.getPhone()+"'");
+        System.out.println("CONTENT:'"+addr2+"'");
         
     }
 }

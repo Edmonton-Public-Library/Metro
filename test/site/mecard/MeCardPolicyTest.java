@@ -25,6 +25,7 @@ import mecard.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
+import mecard.util.Text;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -141,32 +142,32 @@ public class MeCardPolicyTest
         System.out.println("==setProperCase==");
         // TODO Set up tests.
         String custData = "initial string";
-        String result   = MeCardPolicy.toDisplayCase(custData);
+        String result   = Text.toDisplayCase(custData);
         String expected = "Initial String";
         assertTrue(expected.compareTo(result) == 0);
         
         custData = "Initial String";
-        result   = MeCardPolicy.toDisplayCase(custData);
+        result   = Text.toDisplayCase(custData);
         expected = "Initial String";
         assertTrue(expected.compareTo(result) == 0);
         
         custData = " initial String";
-        result   = MeCardPolicy.toDisplayCase(custData);
+        result   = Text.toDisplayCase(custData);
         expected = " Initial String";
         assertTrue(expected.compareTo(result) == 0);
         
         custData = "";
-        result   = MeCardPolicy.toDisplayCase(custData);
+        result   = Text.toDisplayCase(custData);
         expected = "";
         assertTrue(expected.compareTo(result) == 0);
         
         custData = "mark-antony";
-        result   = MeCardPolicy.toDisplayCase(custData);
+        result   = Text.toDisplayCase(custData);
         expected = "Mark-Antony";
         assertTrue(expected.compareTo(result) == 0);
         
         custData = "ALL CAPS";
-        result   = MeCardPolicy.toDisplayCase(custData);
+        result   = Text.toDisplayCase(custData);
         expected = "All Caps";
         assertTrue(expected.compareTo(result) == 0);
         

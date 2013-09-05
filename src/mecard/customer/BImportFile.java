@@ -34,6 +34,7 @@ import mecard.config.MessagesConfigTypes;
 import mecard.config.PropertyReader;
 import mecard.exception.BImportException;
 import mecard.exception.BusyException;
+import mecard.util.AlbertaCity;
 import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
@@ -171,7 +172,12 @@ public class BImportFile
         // Phone
         String phone = Phone.formatPhone(b.phone);
         // City needs to be mapped.
-        String cityCode = City.getCity(b.city);
+        // TODO fix to work for other provinces if required.
+        City city = AlbertaCity.getInstanceOf();
+        // This will get 'a code' for a legal place name, but if the code is not set
+        // in the city_st.properties file, the customer's account will not load.
+        String cityCode = city.getCityCode(b.city);
+//        String cityCode = City.getCity(b.city);
         
         // Table borrower
         headerContent.append("x- "); // add or modify if exists

@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
  * address.
  *
  * @author metro
+ * @deprecated Use Address2 instead.
  */
 public class Address
 {
@@ -93,9 +94,9 @@ public class Address
     protected boolean setContent(String address)
     {
         // TODO needs to be able to process:
-        // BD10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1
+        // 10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1
         // and:
-        // BD10255 PRINCESS ELIZABETH AVENUE, Edmonton, Ab, T5G 0Y1
+        // 364 8915 147 Avenue NW Edmonton, AB T5E 5Y5 780-702-3114
         if (address == null || address.length() == 0)
         {
             return false;
