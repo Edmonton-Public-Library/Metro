@@ -21,7 +21,6 @@
 package site;
 
 import site.edmonton.EPLPolicy;
-import site.ftsaskatchewan.FTSPolicy;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Properties;
@@ -72,10 +71,6 @@ public abstract class MeCardPolicy
         else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
         {
             return new STRPolicy(DEBUG);
-        }
-        else if (libCode.equalsIgnoreCase(MemberTypes.FTS.name()))
-        {
-            return new FTSPolicy(DEBUG);
         }
         else
         {
