@@ -88,4 +88,12 @@ public abstract class City
      * @return true if placeName string is a known place name and false otherwise.
      */
     public abstract boolean isPlaceName(String placeName);
+
+    /**
+     * Performs a fuzzy search for a place name that contains the argument string.
+     * @param place the partial name of a place to find.
+     * @return the full place name or empty string if the place name fragment didn't
+     * match anything.
+     */
+    public abstract String getPlaceNameLike(String place);
 }

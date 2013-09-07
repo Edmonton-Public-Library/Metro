@@ -36,5 +36,11 @@ public class AlbertaCityTest
         
         assertTrue(instance.isPlaceName("Sherwood Park"));
         assertFalse(instance.isPlaceName("Mars"));
+        
+        System.out.println("NAME_GUESS:"+instance.getPlaceNameLike("Park"));
+        assertTrue("Sherwood Park".compareTo(instance.getPlaceNameLike("Park")) == 0);
+
+        System.out.println("NAME_GUESS:"+instance.getPlaceNameLike("Estates"));
+        
     }
 }

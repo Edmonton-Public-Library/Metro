@@ -46,6 +46,19 @@ public final class AlbertaCity extends City
     }
     
     @Override
+    public String getPlaceNameLike(String placeNameFragment)
+    {
+        for (String fullPlaceName: cityMap.keySet())
+        {
+            if (fullPlaceName.endsWith(placeNameFragment))
+            {
+                return fullPlaceName;
+            }
+        }
+        return "";
+    }
+    
+    @Override
     public boolean isPlaceName(String placeName)
     {
         if (cityMap.containsKey(placeName))

@@ -53,4 +53,28 @@ public final class Text
         }
         return sb.toString();
     }
+    
+    /**
+     * Creates a random 4 digit PIN suitable for Horizon requirements.
+     * @return 4 digit pin of random numbers as a String.
+     */
+    public static String getNew4DigitPin()
+    {
+        int min =  1000;
+        int max = 10000;
+        int value = min + (int)(Math.random() * ((max - min) + 1));
+        String returnValue = String.valueOf(value);
+        return returnValue.substring(returnValue.length() -4);
+    }
+    
+    /** 
+     * Determines if a string is composed exclusively of digits.
+     * @param s input string, could be a PIN for example.
+     * @param maxLength the maximum width you will allow s to be.
+     * @return true if the arg string is all digits and false otherwise.
+     */
+    public static boolean isMaximumDigits(String s, int maxLength)
+    {
+        return s.matches("\\d{" + maxLength + "}");
+    }
 }

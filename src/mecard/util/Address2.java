@@ -20,15 +20,15 @@
  */
 package mecard.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import mecard.Protocol;
-import mecard.util.City;
-import mecard.util.AlbertaCity;
 
 /**
  * Replacement class for Address.
- * @author andrew
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class Address2
 {
@@ -50,35 +50,66 @@ public class Address2
         {
             return;
         }
-        // Usually fields are separated by ',', but it is inconsistent.
-        String[] split = supposedAddress.split(",");
-        for (int i = split.length -1; i >= 0; i--)
+        // Low hanging fruit lets see if there is a postal code.
+        StringBuilder supposedAddressBuilder = new StringBuilder(supposedAddress);
+        this.postalCode.test(supposedAddressBuilder);
+        this.phone.test(supposedAddressBuilder);
+        // Now we should split on commas, this will give us rough catagories
+        // The first is street address, but may have a city on the end.
+        String[] splitGroups = supposedAddressBuilder.toString().split(",");
+        int numberOfGroups = splitGroups.length;
+        if (numberOfGroups >= 3)
         {
-            String field = split[i].trim();
-            if (this.phone.test(field))
+            // then we have a well formed address with fields separated by commas,
+            // the value should be the province.
+            this.street.test(splitGroups[0].trim());
+            this.city.test(splitGroups[1].trim());
+            this.province.test(splitGroups[2].trim());
+        }
+        if (numberOfGroups == 2)
+        {
+            // The second may include a city and will include a province do it first
+            String[] splitCityProvince = splitGroups[1].trim().split("\\s+");
+            String[] splitStreetCity   = splitGroups[0].trim().split("\\s+");
+            
+            if (splitCityProvince.length > 1) // We have the city and then the province last
             {
-                continue;
+                String provinceString = splitCityProvince[splitCityProvince.length -1];
+                if (this.province.test(provinceString))
+                {
+                    splitCityProvince[splitCityProvince.length -1] = ""; // reset the last value so it doesn't end up on the address.
+                }
+                // put it back together again
+                String cityString = splitCityProvince[splitCityProvince.length -2];
+                this.city.testGently(cityString.trim());
             }
-            if (this.postalCode.test(field))
+            else if (splitCityProvince.length == 1)
             {
-                continue; // we found it.
+                this.province.test(splitCityProvince[0]); // there is only one so it should be the province.
             }
-            if (this.province.test(field))
+            // Now what to do with the address, city?
+            // Well if the city is the last field then it will test positive, but
+            // we can tell just by checking if the first part found the city
+            if (this.city.isSet()) // the rest is street
             {
-                continue; // we found it.
+                this.street.test(splitGroups[0]); 
             }
-            if (this.city.test(field))
+            else // Worst case we have to grab the last word and try and match --
+                // two word place names like ft sask and st. albert are hit worst
             {
-                continue; // we found it.
-            }
-            if (this.street.test(field))
-            {
-                continue; // we found it.
-            }
-            else
-            {
-                System.out.println("'" + field
-                        + "' didn't match expected address fields.");
+                // grab the last word in splitStreetCity
+                String cityString = splitStreetCity[splitStreetCity.length -1];
+                if (this.city.testGently(cityString)) // this could be set to a fuzzy search for the last word in a multiline place name.
+                {
+                    splitStreetCity[splitStreetCity.length -1] = ""; // reset the city field
+                }
+                // paste street back together.
+                String addressString = "";
+                for (String s: splitStreetCity)
+                {
+                    addressString += s + " ";
+                }
+                this.street.test(addressString.trim());
             }
         }
     }
@@ -122,23 +153,64 @@ public class Address2
         out.append(this.getPhone());
         return out.toString();
     }
+
+    private String parseAddressGroup(StringBuilder field)
+    {
+        // on a single line there could be all elements or only any one of them
+        // so start at the back since it is most likely that you will find a 
+        // city phone or postal code at the end.
+        List<String> leftOverWords = new ArrayList<>();
+        String[] wordsArray = field.toString().split("\\s+");
+        for (String word: wordsArray)
+        {
+            // now try and match on the tightest to loosest match that is,
+            // regex that matches closely to loose matches.
+            if (! this.postalCode.test(word))
+            {
+                leftOverWords.add(word);
+            }
+            if (! this.phone.test(word))
+            {
+                leftOverWords.add(word);
+            }
+        }
+        // Return all that is left over as a string.
+        StringBuilder sBuilder = new StringBuilder();
+        for (String s: leftOverWords)
+        {
+            sBuilder.append(s);
+            sBuilder.append(" ");
+        }
+        return sBuilder.toString();
+    }
     
+    /**
+     * Utility class for testable address field strings.
+     */
     protected abstract class AddressRecord
     {
-        protected StringBuilder value;
+        protected String value;
         public AddressRecord()
         {
-            this.value = new StringBuilder(Protocol.DEFAULT_FIELD_VALUE);
+            this.value = Protocol.DEFAULT_FIELD_VALUE;
         }
         
+        /**
+         * @param s the value of s
+         * @return the boolean
+         */
         public abstract boolean test(String s);
-        
+        public abstract boolean test(StringBuilder s);
+        public boolean isSet() { return this.value.compareTo(Protocol.DEFAULT_FIELD_VALUE) != 0; }
         public String toString()
         {
-            return this.value.toString();
+            return this.value;
         }
     }
     
+    /**
+     * Utility class for testing phone number strings.
+     */
     protected class Phone extends AddressRecord
     {
         private Pattern phonePattern;
@@ -148,27 +220,42 @@ public class Address2
             this.phonePattern = Pattern.compile("\\d{3}-?\\d{3}-?\\d{4}");
         }
         
+        /**
+         * Tests a string to determine if it could likely be a phone number.
+         * @param s the suspected phone string.
+         * @return the boolean
+         */
         @Override
         public boolean test(String s)
         {
-            // clean any '()' characters from the string if it is a phone number
             String testString = s;
-            if (testString.contains("("))
-            {
-                testString = testString.replace('(', ' ');
-                testString = testString.replace(')', '-');
-                testString = testString.trim();
-            }
             Matcher matcher = phonePattern.matcher(testString);
             if (matcher.find())
             {
-                this.value = new StringBuilder(matcher.group());
+                this.value = matcher.group();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean test(StringBuilder s)
+        {
+            String testString = s.toString();
+            Matcher matcher = phonePattern.matcher(testString);
+            if (matcher.find())
+            {
+                this.value = matcher.group();
+                // if arg is a string builder we are supposed to modify it.
+                s.delete(matcher.start(), matcher.end());
                 return true;
             }
             return false;
         }
     }
-    
+    /**
+     * Utility class for testing place name strings.
+     */
     protected class City extends AddressRecord
     {
         private mecard.util.City city;
@@ -177,19 +264,52 @@ public class Address2
             this.city = AlbertaCity.getInstanceOf();
         }
         
+        /**
+         * Parses and populates the City object with a recognized place name.
+         * @return true if a legal city name was found and false otherwise.
+         */
         @Override
-        public boolean test(String place)
+        public boolean test(String s)
         {
             // Here we are going to do a lookup for city in the city table.
+            String place = Text.toDisplayCase(s.trim());
             if (this.city.isPlaceName(place))
             {
-                this.value = new StringBuilder(Text.toDisplayCase(place));
+                this.value = place;
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * This method will always fail if you pass a complete address line since
+         * it will look up the entire line. The recommended procedure is to pass
+         * in a string that is a good candidate to be a city name, remembering that
+         * many place names contain multiple words.
+         * @param s
+         * @return 
+         */
+        @Override
+        public boolean test(StringBuilder s)
+        {
+            return this.test(s.toString());
+        }
+
+        private boolean testGently(String s)
+        {
+            String place = Text.toDisplayCase(s.trim());
+            if ((place = this.city.getPlaceNameLike(place)).isEmpty() == false)
+            {
+                this.value = place;
                 return true;
             }
             return false;
         }
     }
     
+    /**
+     * Utility class for testing street strings.
+     */
     protected class Street extends AddressRecord
     {
         private final Pattern streetPattern;
@@ -197,10 +317,16 @@ public class Address2
         {
             super();
             this.streetPattern = Pattern.compile(
-                "^\\d{1,}\\s.*",
+                "^\\d{1,}\\s.*", // This will not catch PO boxes.
                 Pattern.CASE_INSENSITIVE);
         }
         
+        /**
+         * This class has the weakest regex because a street address has no
+         * real form.
+         * @param s the possible address string.
+         * @return true if the argument is a likely street address and false otherwise.
+         */
         @Override
         public boolean test(String s)
         {
@@ -210,10 +336,16 @@ public class Address2
             Matcher matcher = this.streetPattern.matcher(s);
             if (matcher.find())
             {
-                this.value = new StringBuilder(Text.toDisplayCase(matcher.group()));
+                this.value = Text.toDisplayCase(matcher.group());
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public boolean test(StringBuilder s)
+        {
+            return this.test(s.toString());
         }
     }
     
@@ -231,31 +363,64 @@ public class Address2
                 Pattern.CASE_INSENSITIVE);
         }
         
+        /**
+         *
+         *
+         * @param s the value of s
+         * @return the boolean
+         */
         @Override
         public boolean test(String s)
         {
             Matcher matcher = postalCodePattern.matcher(s);
             if (matcher.find())
             {
-                this.value = new StringBuilder(matcher.group().toUpperCase());
+                this.value = matcher.group().toUpperCase();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean test(StringBuilder s)
+        {
+            Matcher matcher = postalCodePattern.matcher(s.toString());
+            if (matcher.find())
+            {
+                this.value = matcher.group().toUpperCase();
+                s.delete(matcher.start(), matcher.end());
                 return true;
             }
             return false;
         }
     }
     
+    /**
+     * Utility class for testing strings for possible Canadian province names.
+     */
     protected class Province extends AddressRecord
     {
+        /**
+         * @param s the possible province name
+         * @return true if the arg is likely a province name and false otherwise.
+         */
         @Override
         public boolean test(String s)
         {
-            mecard.util.Province province = new mecard.util.Province(s);
+            // TODO this needs a static tester method.
+            mecard.util.Province province = new mecard.util.Province(s.toString());
             if (province.isValid())
             {
-                this.value = new StringBuilder(province.toString());
+                this.value = province.toString();
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public boolean test(StringBuilder s)
+        {
+            return this.test(s.toString());
         }
     }
 }

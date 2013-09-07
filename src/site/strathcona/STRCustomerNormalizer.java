@@ -22,6 +22,7 @@ package site.strathcona;
 
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -42,20 +43,15 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
     public String normalize(Customer c)
     {
         StringBuilder returnMessage = new StringBuilder();
-        if (c.get(CustomerFieldTypes.PIN).length() <= STRCustomerNormalizer.MAXIMUM_PIN_WIDTH == false)
+        String pin = c.get(CustomerFieldTypes.PIN);
+        if (Text.isMaximumDigits(pin, MAXIMUM_PIN_WIDTH) == false)
         {
-            String pin = c.get(CustomerFieldTypes.PIN);
-            int start = pin.length() - STRCustomerNormalizer.MAXIMUM_PIN_WIDTH;
-            if (start >= 0)
-            {
-                String newPin = pin.substring(start);
-                returnMessage.append("Your pin has been set to '");
-                returnMessage.append(newPin);
-                returnMessage.append("' to comply with this library's policies.");
-                c.set(CustomerFieldTypes.PIN, newPin);
-                System.out.println("Customer's PIN was too long trimmed to last "
-                    + STRCustomerNormalizer.MAXIMUM_PIN_WIDTH + " characters.");
-            }
+            String newPin = Text.getNew4DigitPin();
+            returnMessage.append("Your pin has been set to '");
+            returnMessage.append(newPin);
+            returnMessage.append("' to comply with this library's policies.");
+            c.set(CustomerFieldTypes.PIN, newPin);
+            System.out.println("Customer's PIN was not 4 digits as required by Horizon.");
         }
         // Strathcona use UPPERCASE Name and Address for their customers, to make
         // it easier to spot STR and FTS customers.
