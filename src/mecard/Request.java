@@ -20,15 +20,16 @@
  */
 package mecard;
 
-import mecard.QueryTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 
 /**
- *
+ * This class represents a Metro request. It includes the query code, authorization
+ * token, customer which may be 'null', user id, and PIN which in some cases may be empty
+ * depending on the query type.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Request //extends ProtocolPayload
+public final class Request
 {
 
     private QueryTypes code;
@@ -86,53 +87,71 @@ public class Request //extends ProtocolPayload
 
     /**
      * 
-     * @param cField - the customer field type you want.
-     * @return the contents of the field or null if the field is not set.
+     * @return the user id.
      */
-    public String getCustomerField(CustomerFieldTypes cField)
-    {
-        if (this.customer == null)
-        {
-            return "";
-        }
-        return this.customer.get(cField);
-    }
-
     public String getUserId()
     {
         return this.userId;
     }
 
+    /**
+     * 
+     * @return the user's PIN.
+     */
     public String getUserPin()
     {
         return this.pin;
     }
     
+    /**
+     * 
+     * @return the customer object.
+     */
     public Customer getCustomer()
     {
         return this.customer;
     }
 
+    /**
+     * 
+     * @param code of the query type.
+     */
     public void setCode(QueryTypes code)
     {
         this.code = code;
     }
 
+    /**
+     * 
+     * @param authorityToken 
+     */
     public void setAuthorityToken(String authorityToken)
     {
         this.authorityToken = authorityToken;
     }
 
+    /**
+     * Sets the customer object.
+     * @param customer object.
+     */
     public void setCustomer(Customer customer)
     {
         this.customer = customer;
     }
 
+    /**
+     * Sets the user's PIN. Required by the ILS before returning the user data.
+     * @param pin 
+     */
     public void setPin(String pin)
     {
         this.pin = pin;
     }
 
+    /**
+     * Sets the user's ID, AKA library card or barcode.
+     * @param userId 
+     */
     public void setUserId(String userId)
     {
         this.userId = userId;

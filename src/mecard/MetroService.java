@@ -39,7 +39,7 @@ import org.apache.commons.daemon.*;
  * This is the entry point of the MeCard server application.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class MetroService implements Daemon
+public final class MetroService implements Daemon
 {
     public final static String VERSION       = "0.7.5"; // server version
     private static ServerSocket serverSocket = null;

@@ -36,7 +36,7 @@ import mecard.config.PropertyReader;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Protocol
+public final class Protocol
 {
     public final static String DEFAULT_FIELD_VALUE = "X";
     public final static String TRUE        = "Y";

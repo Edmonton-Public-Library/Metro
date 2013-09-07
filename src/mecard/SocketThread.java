@@ -28,20 +28,14 @@ import java.net.Socket;
 import java.util.Date;
 
 /**
- * This example introduces you to Java socket programming. The server listens
- * for a connection. When a connection is established by a client. The client
- * can send data. In the current example the client sends the message "Hi my
- * server". To terminate the connection, the client sends the message "bye".
- * Then the server sends the message "bye" too. Finally the connection is ended
- * and the server waits for an other connection. The two programs should be
- * runned in the same machine. however if you want to run them in two different
- * machines, you may simply change the adress "localhost" by the IP adress of
- * the machine where you will run the server.
- * <code>http://zerioh.tripod.com/ressources/sockets.html</code>
+ * This class is the server socket that allows a Metro server to handle several
+ * requests at a time. Its function is acknowledge a connection request, listen
+ * for further requests and pass them onto the Metro server for consideration,
+ * return responses and gracefully close the connection.
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class SocketThread extends Thread
+public final class SocketThread extends Thread
 {
 
     private Socket connection = null;
@@ -68,14 +62,11 @@ public class SocketThread extends Thread
             //3. get Input and Output streams
             out = new PrintWriter(connection.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            out.println(Protocol.ACKNOWLEDGE);
-//            message = new String();
+//            out.println(Protocol.ACKNOWLEDGE);
+            out.println(Protocol.ACKNOWLEDGE + " status OK use '" + Protocol.TERMINATE + "' to hangup.");
             //4. The two parts communicate via the input and output streams
             while ((message = in.readLine()) != null)
             {
-
-//                message = (String) in.readLine();
-
                 // Catch any protocol related strings, the rest are commands.
                 if (message.equals(Protocol.TERMINATE))
                 {
@@ -88,6 +79,7 @@ public class SocketThread extends Thread
                     out.println(response);
                 }
             }
+            System.out.println(new Date() + " Connection closed to " + connection.getInetAddress().getHostName());
         }
         catch (IOException ex)
         {

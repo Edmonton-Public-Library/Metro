@@ -20,14 +20,15 @@
  */
 package mecard;
 
-import mecard.ResponseTypes;
 import mecard.customer.Customer;
 
 /**
- * Simple object to order responses.
+ * Response object container for Metro. Contains the response code from the 
+ * request, the response message which may be empty and customer information
+ * which may be 'null'.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Response
+public final class Response
 {
     protected ResponseTypes code;
     protected String responseMessage;
@@ -40,6 +41,10 @@ public class Response
         customer = null;
     }
     
+    /**
+     * 
+     * @param rt response type.
+     */
     public Response(ResponseTypes rt)
     {
         code = rt;
@@ -47,16 +52,28 @@ public class Response
         customer = null;
     }
     
+    /**
+     * 
+     * @param s sets the response string.
+     */
     public void setResponse(String s)
     {
         this.responseMessage += s + " ";
     }
     
+    /**
+     * Sets the responses customer object.
+     * @param c customer object.
+     */
     public void setCustomer(Customer c)
     {
         this.customer = c;
     }
 
+    /**
+     * Sets the response code.
+     * @param code 
+     */
     public void setCode(ResponseTypes code) 
     {
         this.code = code;
@@ -79,16 +96,28 @@ public class Response
         return sb.toString();
     }
 
+    /**
+     * Gets the response code.
+     * @return response code.
+     */
     public ResponseTypes getCode()
     {
         return code;
     }
 
+    /**
+     * Gets the customer object if any.
+     * @return Customer object.
+     */
     public Customer getCustomer()
     {
         return customer;
     }
 
+    /**
+     * Gets the message of the response, used to display messages to the user.
+     * @return message to the user.
+     */
     public String getMessage()
     {
         return responseMessage;

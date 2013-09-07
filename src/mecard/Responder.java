@@ -42,8 +42,10 @@ import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 
 /**
- *
- * @author Andrew Nisbet
+ * Responder object handles requests and responses to and from the ILS. The 
+ * responder is the adaptor that requests commands from request builders and 
+ * then executes them.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class Responder
 {
