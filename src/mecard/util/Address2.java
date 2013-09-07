@@ -154,36 +154,6 @@ public class Address2
         return out.toString();
     }
 
-    private String parseAddressGroup(StringBuilder field)
-    {
-        // on a single line there could be all elements or only any one of them
-        // so start at the back since it is most likely that you will find a 
-        // city phone or postal code at the end.
-        List<String> leftOverWords = new ArrayList<>();
-        String[] wordsArray = field.toString().split("\\s+");
-        for (String word: wordsArray)
-        {
-            // now try and match on the tightest to loosest match that is,
-            // regex that matches closely to loose matches.
-            if (! this.postalCode.test(word))
-            {
-                leftOverWords.add(word);
-            }
-            if (! this.phone.test(word))
-            {
-                leftOverWords.add(word);
-            }
-        }
-        // Return all that is left over as a string.
-        StringBuilder sBuilder = new StringBuilder();
-        for (String s: leftOverWords)
-        {
-            sBuilder.append(s);
-            sBuilder.append(" ");
-        }
-        return sBuilder.toString();
-    }
-    
     /**
      * Utility class for testable address field strings.
      */
