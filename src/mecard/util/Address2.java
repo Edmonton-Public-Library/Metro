@@ -114,26 +114,46 @@ public class Address2
         }
     }
     
+    /**
+     * 
+     * @return street portion of the customer's address.
+     */
     public String getStreet()
     {
         return this.street.toString();
     }
     
+    /**
+     * 
+     * @return city portion of the customer's address.
+     */
     public String getCity()
     {
         return this.city.toString();
     }
     
+    /**
+     * 
+     * @return province portion of the customer's address.
+     */
     public String getProvince()
     {
         return this.province.toString();
     }
     
+    /**
+     * 
+     * @return postal code portion of the customer's address.
+     */
     public String getPostalCode()
     {
         return this.postalCode.toString();
     }
     
+    /**
+     * 
+     * @return phone portion of the customer's address.
+     */
     public String getPhone()
     {
         return this.phone.toString();
@@ -256,8 +276,9 @@ public class Address2
          * it will look up the entire line. The recommended procedure is to pass
          * in a string that is a good candidate to be a city name, remembering that
          * many place names contain multiple words.
-         * @param s
-         * @return 
+         * @param s potential city name to be tested.
+         * @return true if the argument string matched a known place name and 
+         * false otherwise.
          */
         @Override
         public boolean test(StringBuilder s)
