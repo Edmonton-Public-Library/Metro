@@ -22,7 +22,8 @@ package mecard.config;
 
 /**
  * Mandatory property types of the bimp config file. Note that there are
- * fields 
+ * fields that are optional.
+ * @see BImportDBFieldTypes
  * @author metro
  */
 public enum BImportPropertyTypes

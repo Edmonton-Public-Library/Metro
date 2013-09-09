@@ -33,6 +33,7 @@ public class BImportFileTest
                 .postalCode("H0H 0H0")
                 .emailName("ilsteam")
                 .email("ilsteam@epl.ca")
+                .setDefaultPreoverdue(false)
                 .build();
         File f = new File(hName);
         assertTrue(f.exists());

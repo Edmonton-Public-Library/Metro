@@ -49,6 +49,12 @@ import mecard.config.PropertyReader;
  */
 public class BImportRequestBuilder extends ILSRequestBuilder
 {
+    // Optional field in BImport bimport.properties file
+    /**
+     * Include this value in your bimport.properties file if you want to turn 
+     * this setting on, or off on a customer account upon creation. Default it on.
+     */
+    public final static String SEND_PREOVERDUE = "send-preoverdue";
     // Use this to prefix all our files.
     public final static String FILE_NAME_PREFIX = "metro-";
     public final static String BAT_FILE = "-bimp.bat";
@@ -67,6 +73,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     private String mailType;
     private String location; // branch? see 'lalap'
     private String isIndexed; // "y = NOT indexed"
+    private boolean isSetDefaultSendPreoverdue;
     private String batFile;
     private String headerFile;
     private String dataFile;
@@ -86,11 +93,18 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         this.database = bimpProps.getProperty(BImportPropertyTypes.DATABASE.toString()); // we may need another way to distinguish DBs on a server.
         this.uniqueBorrowerTableKey = bimpProps.getProperty(BImportPropertyTypes.UNIQUE_BORROWER_TABLE_KEY.toString());
         this.bimportVersion = bimpProps.getProperty(BImportPropertyTypes.VERSION.toString()); // like fm41
-        // TODO these should come from the default.properties.
         this.defaultBtype = bimpProps.getProperty(BImportPropertyTypes.DEFAULT_BTYPE.toString()); // like bawb
         this.mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
         this.location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
         this.isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
+        // Optional fields.
+        // Optional bimport value, defaults to 'on' for default send pre-overdue notices.
+        this.isSetDefaultSendPreoverdue = true;
+        String sendPreoverdue = bimpProps.getProperty(SEND_PREOVERDUE.toString(), "true");
+        if (sendPreoverdue.compareToIgnoreCase("false") == 0)
+        {
+            this.isSetDefaultSendPreoverdue = false;
+        }
     }
 
     @Override
@@ -134,6 +148,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 .preferEmailNotifications(true) // Users must have an email address to use MeCard metro.
                 .expire(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES))
                 .pNumber(customer.get(CustomerFieldTypes.PHONE))
+                .setDefaultPreoverdue(this.isSetDefaultSendPreoverdue)
                 .build();
         File fTest = new File(headerFile);
         if (fTest.exists() == false)

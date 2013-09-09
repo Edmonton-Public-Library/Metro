@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import mecard.config.ConfigFileTypes;
 import mecard.config.MessagesConfigTypes;
 import mecard.config.PropertyReader;
-import mecard.exception.BImportException;
 import mecard.exception.BusyException;
 import mecard.util.AlbertaCity;
 import mecard.util.City;
@@ -67,6 +66,7 @@ public class BImportFile
         private String barcode;
         private String emailName;
         private boolean isNotifyByEmail;
+        private boolean isPreoverdueRequiredByDefault = false;
         
         public Builder(String headerPath, String dataPath)
         {
@@ -74,75 +74,148 @@ public class BImportFile
             this.dataName   = dataPath;
         }
         
+        /**
+         * Sets the customer's email name, the string before the domain.
+         * @param e
+         * @return builder object.
+         */
         public Builder emailName(String e)
         {
             this.emailName = e;
             return this;
         }
         
+        /**
+         * Sets the name of the customer.
+         * @param n name.
+         * @return builder object. 
+         */
         public Builder name(String n)
         {
             this.name = n;
             return this;
         }
         
+        /**
+         * Sets the customer's bar code.
+         * @param b barcode or library card number.
+         * @return builder object.
+         */
         public Builder barcode(String b)
         {
             this.barcode = b;
             return this;
         }
         
+        /**
+         * Sets the customer's account expiry date.
+         * @param e date. Formatting is system dependant.
+         * @return builder object.
+         */
         public Builder expire(String e)
         {
             this.expiry = e;
             return this;
         }
         
+        /**
+         * Sets the customer's PIN.
+         * @param p pin
+         * @return builder object.
+         */
         public Builder pin(String p)
         {
             this.pin = p;
             return this;
         }
         
+        /**
+         * Sets the customer's phone type.
+         * @param p phone type. Defaults to 'h-noTC'.
+         * @return builder object.
+         */
         public Builder pType(String p)
         {
             this.phoneType = p;
             return this;
         }
         
+        /**
+         * Sets the customer's phone number.
+         * @param p phone number.
+         * @return builder object.
+         */
         public Builder pNumber(String p)
         {
             this.phone = p;
             return this;
         }
         
+        /**
+         * Sets the customer's street address.
+         * @param a street address without city, postal code or province.
+         * @return builder object.
+         */
         public Builder address1(String a)
         {
             this.address1 = a;
             return this;
         }
         
+        /**
+         * Sets the customer's city code (Horizon system dependant, values listed
+         * in city_st table.
+         * @param c city string code.
+         * @return builder object.
+         */
         public Builder city(String c)
         {
             this.city = c;
             return this;
         }
-          
+         
+        /**
+         * Sets the customer's postal code.
+         * @param p postal code string.
+         * @return builder object.
+         */
         public Builder postalCode(String p)
         {
             this.postalCode = p;
             return this;
         }
         
+        /**
+         * Sets the customers email address.
+         * @param e the full email address of the customer.
+         * @return builder object.
+         */
         public Builder email(String e)
         {
             this.email = e;
             return this;
         }
         
+        /** Sets the customer's prefer email notifications, defaults to true.
+         * 
+         * @param b true if you want notices to default to email and false
+         * otherwise.
+         * @return builder object.
+         */
         public Builder preferEmailNotifications(boolean b)
         {
             this.isNotifyByEmail = b;
+            return this;
+        }
+        
+        /**
+         * Sets the send_preoverdue switch on the customer's account at creation time.
+         * @param b true if you want send_preoverdue turned on and false otherwise.
+         * @return builder object.
+         */
+        public Builder setDefaultPreoverdue(boolean b)
+        {
+            this.isPreoverdueRequiredByDefault = b;
             return this;
         }
         
@@ -211,7 +284,8 @@ public class BImportFile
         headerContent.append(BImportDBFieldTypes.POSTAL_CODE + "; ");
         headerContent.append(BImportDBFieldTypes.EMAIL_NAME + "; ");
         if (b.isNotifyByEmail) headerContent.append(BImportDBFieldTypes.EMAIL_NOTIFICATION + "; ");
-        headerContent.append(BImportDBFieldTypes.EMAIL_ADDRESS + "\r\n");
+        headerContent.append(BImportDBFieldTypes.EMAIL_ADDRESS + "; ");
+        headerContent.append(BImportDBFieldTypes.SEND_PREOVERDUE + "\r\n"); // Defaults on so not optional field.
         
         dataContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
         dataContent.append(b.address1 + "; ");
@@ -220,7 +294,15 @@ public class BImportFile
         dataContent.append(b.postalCode + "; ");
         dataContent.append(b.emailName + "; ");
         if (b.isNotifyByEmail) dataContent.append("1; "); // careful this is an ENUM type in Horizon. Safe to leave out but if used must match.
-        dataContent.append(b.email + "\r\n");
+        dataContent.append(b.email + "; ");
+        if (b.isPreoverdueRequiredByDefault)
+        {
+            dataContent.append("1\r\n");
+        }
+        else
+        {
+            dataContent.append("0\r\n"); // not set to send preoverdue notices.
+        }
         
         // Table borrower_barcode
         headerContent.append(BORROWER_BARCODE_TABLE + ": "); // add or modify if exists

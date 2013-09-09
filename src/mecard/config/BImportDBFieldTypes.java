@@ -39,7 +39,8 @@ public enum BImportDBFieldTypes
     EMAIL_NAME("email_name"),
     EMAIL_ADDRESS("email_address"),
     BARCODE("bbarcode"), 
-    EMAIL_NOTIFICATION("send_notice_by");
+    EMAIL_NOTIFICATION("send_notice_by"),
+    SEND_PREOVERDUE("send_preoverdue"); // optional field, defaults to true.
     
     private String type;
 
