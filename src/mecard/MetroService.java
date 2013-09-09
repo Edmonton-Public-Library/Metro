@@ -41,7 +41,7 @@ import org.apache.commons.daemon.*;
  */
 public final class MetroService implements Daemon
 {
-    public final static String VERSION       = "0.7.5_01"; // server version
+    public final static String VERSION       = "0.7.5_02"; // server version
     private static ServerSocket serverSocket = null;
     private static boolean listening         = true;
     private static String defaultPort        = "2004";
