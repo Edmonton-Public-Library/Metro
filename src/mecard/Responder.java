@@ -276,8 +276,10 @@ public class Responder
             throw new LostCardException(msg);
         }
         CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(debug);
-        String changes = normalizer.normalize(customer);
-        response.setResponse(changes);
+        StringBuilder resultStringBuilder = new StringBuilder();
+        ResponseTypes responseType = normalizer.normalize(customer, resultStringBuilder);
+        response.setCode(responseType);
+        response.setResponse(resultStringBuilder.toString());
     }
     
     /**

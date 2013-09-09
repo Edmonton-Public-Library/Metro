@@ -20,6 +20,8 @@
 */
 package site.stalbert;
 
+import java.util.Date;
+import mecard.ResponseTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.Text;
@@ -40,19 +42,21 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
     }
     
     @Override
-    public String normalize(Customer c)
+    public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
     {
-        StringBuilder returnMessage = new StringBuilder();
+        ResponseTypes rType = ResponseTypes.SUCCESS;
         String pin = c.get(CustomerFieldTypes.PIN);
         if (Text.isMaximumDigits(pin, MAXIMUM_PIN_WIDTH) == false)
         {
             String newPin = Text.getNew4DigitPin();
-            returnMessage.append("Your pin has been set to '");
-            returnMessage.append(newPin);
-            returnMessage.append("' to comply with this library's policies.");
+            responseStringBuilder.append("Your pin has been set to '");
+            responseStringBuilder.append(newPin);
+            responseStringBuilder.append("' to comply with this library's policies.");
             c.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println("Customer's PIN was not 4 digits as required by Horizon.");
+            System.out.println(new Date() + " Customer's PIN was not 4 digits as required by Horizon. Set to: '" 
+                    + newPin + "'.");
+            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         }
-        return returnMessage.toString();
+        return rType;
     }
 }

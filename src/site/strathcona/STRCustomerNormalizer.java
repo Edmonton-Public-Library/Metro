@@ -20,6 +20,8 @@
 */
 package site.strathcona;
 
+import java.util.Date;
+import mecard.ResponseTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.Text;
@@ -40,18 +42,20 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
     }
     
     @Override
-    public String normalize(Customer c)
+    public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
     {
-        StringBuilder returnMessage = new StringBuilder();
+        ResponseTypes rType = ResponseTypes.SUCCESS;
         String pin = c.get(CustomerFieldTypes.PIN);
         if (Text.isMaximumDigits(pin, MAXIMUM_PIN_WIDTH) == false)
         {
             String newPin = Text.getNew4DigitPin();
-            returnMessage.append("Your pin has been set to '");
-            returnMessage.append(newPin);
-            returnMessage.append("' to comply with this library's policies.");
+            responseStringBuilder.append("Your pin has been set to '");
+            responseStringBuilder.append(newPin);
+            responseStringBuilder.append("' to comply with this library's policies.");
             c.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println("Customer's PIN was not 4 digits as required by Horizon.");
+            System.out.println(new Date() + " Customer's PIN was not 4 digits as required by Horizon. Set to: '" 
+                    + newPin + "'.");
+            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         }
         // Strathcona use UPPERCASE Name and Address for their customers, to make
         // it easier to spot STR and FTS customers.
@@ -68,6 +72,6 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
         // translation problem since the City class does a lookup case insensitively
         // but I still recommend not converting case, since it effects other libraries
         // records.
-        return returnMessage.toString();
+        return rType;
     }
 }

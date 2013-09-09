@@ -22,6 +22,7 @@ package site;
 
 import site.edmonton.EPLCustomerNormalizer;
 import java.util.Properties;
+import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
@@ -46,12 +47,14 @@ public abstract class CustomerLoadNormalizer
     /**
      * Normalizes the customer data to local load restrictions like minimum PIN 
      * width.
+     *
      * @param c customer object must not be null.
+     * @param r the response from the normalization process.
      * @return String message of what was changed that the customer should know about.
      * In the above example they would be notified that St. Albert has their 
      * last 4 digits of their EPL Pin saved.
      */
-    public abstract String normalize(Customer c);
+    public abstract ResponseTypes normalize(Customer c, StringBuilder r);
             
     public static CustomerLoadNormalizer getInstanceOf(boolean debug)
     {

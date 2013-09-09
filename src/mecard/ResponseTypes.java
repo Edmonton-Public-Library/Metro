@@ -38,5 +38,6 @@ public enum ResponseTypes
     UNKNOWN, 
     CONFIG_ERROR,
     COMMAND_COMPLETED,
-    LOST_CARD;
+    LOST_CARD,
+    PIN_CHANGE_REQUIRED;
 }

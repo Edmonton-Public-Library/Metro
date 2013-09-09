@@ -20,6 +20,7 @@
 */
 package site.edmonton;
 
+import mecard.ResponseTypes;
 import mecard.customer.Customer;
 import site.CustomerLoadNormalizer;
 
@@ -37,8 +38,8 @@ public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
     }
     
     @Override
-    public String normalize(Customer c)
+    public ResponseTypes normalize(Customer c, StringBuilder r)
     {
-        return ""; // no special rules for EPL.
+        return ResponseTypes.SUCCESS; // no special rules for EPL.
     }
 }
