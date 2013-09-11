@@ -90,7 +90,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserCreate.add("-bA"); // Add extended.
         loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
         loadFlatUserCreate.add("-mc"); // Create
-        loadFlatUserCreate.add("-n"); // Turn off BRS checking.
+//        loadFlatUserCreate.add("-n"); // Turn off BRS checking.
         loadFlatUserCreate.add("-y\"" + homeLibrary + "\"");
         loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
@@ -100,7 +100,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserUpdate.add("-bR"); // Replace extended information
         loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\""); // User and station.
         loadFlatUserUpdate.add("-mu"); // update
-        loadFlatUserUpdate.add("-n"); // turn off BRS checking.
+//        loadFlatUserUpdate.add("-n"); // turn off BRS checking.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
     }
     
