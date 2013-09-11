@@ -34,7 +34,15 @@ public enum MessagesConfigTypes
     USERID_PIN_MISMATCH("userid-pin-mismatch"),
     UNAVAILABLE_SERVICE("unavailable-service"),
     FAIL_METRO_POLICY("fail-metro-policy"), // Is not valid, or goodstanding, or underage...
-    FAIL_LOCAL_POLICY("fail-local-policy"); // Could load user because customer failed local policy tests.
+    FAIL_LOCAL_POLICY("fail-local-policy"), // Could load user because customer failed local policy tests.
+    FAIL_MIN_AGE_TEST("fail-min-age"),
+    FAIL_RECIPROCAL_TEST("fail-reciprocal"),
+    FAIL_RESIDENCY_TEST("fail-residency"),
+    FAIL_GOODSTANDING_TEST("fail-goodstanding"),
+    FAIL_LOSTCARD_TEST("fail-lostcard"),
+    FAIL_EMAIL_TEST("fail-email"),
+    FAIL_EXPIRY_TEST("fail-expiry"),
+    FAIL_COMPLETENESS_TEST("fail-incomplete-information");
     
     private String type;
     

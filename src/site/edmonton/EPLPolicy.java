@@ -51,12 +51,13 @@ public class EPLPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isResident(Customer customer, String meta)
+    public boolean isResident(Customer customer, String meta, StringBuilder s)
     {
         if (meta.contains(EPL_VISITOR))
         {
             customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
             if (debug) System.out.println("failed resident test");
+            s.append(failResidencyTest);
             return false;
         }
         customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
@@ -64,12 +65,13 @@ public class EPLPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isReciprocal(Customer customer, String meta)
+    public boolean isReciprocal(Customer customer, String meta, StringBuilder s)
     {
         if (meta.contains(EPL_RECIPROCAL))
         {
             customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
             if (debug) System.out.println("failed reciprocal test");
+            s.append(failReciprocalTest);
             return true;
         }
         customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE); 
@@ -77,7 +79,7 @@ public class EPLPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isInGoodStanding(Customer customer, String meta)
+    public boolean isInGoodStanding(Customer customer, String meta, StringBuilder s)
     {
         // because EPL uses SIP to get customer information we can assume that
         // meta will contain BARRED if the customer is not in good standing.
@@ -86,6 +88,7 @@ public class EPLPolicy extends MeCardPolicy
         {
             customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
             if (debug) System.out.println("failed good-standing test");
+            s.append(failGoodstandingTest);
             return false;
         }
         customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
@@ -93,7 +96,7 @@ public class EPLPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isMinimumAge(Customer customer, String meta)
+    public boolean isMinimumAge(Customer customer, String meta, StringBuilder s)
     {
         // run through all the juv profile types and if one matches then
         // no can do.
@@ -103,6 +106,7 @@ public class EPLPolicy extends MeCardPolicy
             {
                 customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
                 if (debug) System.out.println("failed minimum age test");
+                s.append(failMinAgeTest);
                 return false;
             }
         }
@@ -111,12 +115,13 @@ public class EPLPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isLostCard(Customer customer, String meta)
+    public boolean isLostCard(Customer customer, String meta, StringBuilder s)
     {
         if (meta.contains(LOST_CARD))
         {
             customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
             if (debug) System.out.println("passed lost card test");
+            s.append(failLostCardTest);
             return true;
         }
         customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);

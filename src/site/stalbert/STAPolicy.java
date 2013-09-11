@@ -76,7 +76,7 @@ public class STAPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isResident(Customer customer, String meta)
+    public boolean isResident(Customer customer, String meta, StringBuilder responseError)
     {
         // 64YY        Y   00020130808    150700000000000000000500000000AOst|AA22222001047624|AETEST, 1|AQst|BZ0030|CA0100|CB0200|BLY|BHCAD|BV16.8|CC9.99|BD5 St. Anne St., St. Albert, AB, T8N 3Z9|BEktroppmann@sapl.ca|BF780-459-1537|DH1|DJTEST|PCmra|PE20130824    235900|PS20130824    235900|ZYmra|AF#You are barred from borrowing - Please refer to the circulation desk.|AY0AZ9A5C
         // we can use a SIPMessage object to parse the meta...
@@ -90,6 +90,7 @@ public class STAPolicy extends MeCardPolicy
                 if (bType.compareTo(s) == 0) // if we match on a non resident bType we aren't a resident.
                 {
                     customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
+                    responseError.append(failResidencyTest);
                     return false;
                 }
             }
@@ -97,6 +98,8 @@ public class STAPolicy extends MeCardPolicy
         catch (SIPException ex)
         {
             System.out.println(STAPolicy.class.getName() + " isResident test failed: " + ex.getMessage());
+            responseError.append(failResidencyTest);
+            return false;
         }
         
         customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
@@ -104,7 +107,7 @@ public class STAPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isReciprocal(Customer customer, String meta)
+    public boolean isReciprocal(Customer customer, String meta, StringBuilder responseError)
     {
         SIPCustomerMessage sipData;
         try
@@ -123,14 +126,17 @@ public class STAPolicy extends MeCardPolicy
         catch (SIPException ex)
         {
             System.out.println(STAPolicy.class.getName() + " isReciprocal test failed: " + ex.getMessage());
+            responseError.append(failReciprocalTest);
+            return false;
         }
         
         customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
+        responseError.append(failReciprocalTest);
         return false;
     }
 
     @Override
-    public boolean isInGoodStanding(Customer customer, String meta)
+    public boolean isInGoodStanding(Customer customer, String meta, StringBuilder responseError)
     {
         // because EPL uses SIP to get customer information we can assume that
         // meta will contain BARRED if the customer is not in good standing.
@@ -142,12 +148,15 @@ public class STAPolicy extends MeCardPolicy
             if (message.contains("barred")) // if we match on a non resident bType we aren't a resident.
             {
                 customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+                responseError.append(failGoodstandingTest);
                 return false;
             }
         }
         catch (SIPException ex)
         {
             System.out.println(STAPolicy.class.getName() + " isInGoodStanding test failed: " + ex.getMessage());
+            responseError.append(failGoodstandingTest);
+            return false;
         }
 
         customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
@@ -155,7 +164,7 @@ public class STAPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isMinimumAge(Customer customer, String meta)
+    public boolean isMinimumAge(Customer customer, String meta, StringBuilder responseError)
     {
         // run through all the juv profile types and if one matches then
         // no can do.
@@ -169,6 +178,7 @@ public class STAPolicy extends MeCardPolicy
                 if (bType.compareTo(s) == 0) // if we match juv bType we are a minor.
                 {
                     customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+                    responseError.append(failMinAgeTest);
                     return false;
                 }
             }
@@ -176,6 +186,8 @@ public class STAPolicy extends MeCardPolicy
         catch (SIPException ex)
         {
             System.out.println(STAPolicy.class.getName() + " isMinimumAge test failed: " + ex.getMessage());
+            responseError.append(failMinAgeTest);
+            return false;
         }
         
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
@@ -183,7 +195,7 @@ public class STAPolicy extends MeCardPolicy
     }
 
     @Override
-    public boolean isLostCard(Customer customer, String meta)
+    public boolean isLostCard(Customer customer, String meta, StringBuilder responseError)
     {
         if (meta.contains(LOST_CARD))
         {
@@ -192,6 +204,7 @@ public class STAPolicy extends MeCardPolicy
             return true;
         }
         customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
+        responseError.append(failLostCardTest);
         return false;
     }
 

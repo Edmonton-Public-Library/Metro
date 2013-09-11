@@ -181,15 +181,17 @@ public class Responder
         // You have this before the test metro requirements b/c it checks for PIN
         // and SIP2 does not return the pin.
         customer.set(CustomerFieldTypes.PIN, userPin);
-        if (meetsMeCardRequirements(customer, status.getStdout()))
+        StringBuilder failedTests = new StringBuilder();
+        if (meetsMeCardRequirements(customer, status.getStdout(), failedTests))
         {
             response.setCode(ResponseTypes.OK);
         }
         else
         {
-            // this can happen if the user is barred, underage, non-resident, reciprocol, lostcard.
-            response.setResponse(props.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
+            // this can happen if the user is barred, underage, non-resident, reciprocal, lostcard.
             response.setCode(ResponseTypes.FAIL);
+            response.setResponse(props.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
+            response.setResponse(failedTests.toString());
             response.setCustomer(null);
         }
         System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
@@ -293,12 +295,17 @@ public class Responder
      * <li>Must have a valid expiry date.</li>
      * <li>Must have mandatory account fields filled with valid data.</li>
      * </ul>
+     *
      * @param customer
      * @param additionalData
+     * @param failResponseMessage buffer to add any fail messages.
      * @return true if the customer meets the MeCard participation requirements
      * and false otherwise.
      */
-    protected boolean meetsMeCardRequirements(Customer customer, String additionalData)
+    protected boolean meetsMeCardRequirements(
+            Customer customer, 
+            String additionalData, 
+            StringBuilder failResponseMessage)
     {
         if (customer == null || additionalData == null)
         {
@@ -310,42 +317,42 @@ public class Responder
         // know who you are, so we standardize important fields for loading on 
         // a regular ILS.
         policy.normalizeCustomerFields(customer);
-        if (policy.isEmailable(customer, additionalData) == false) 
+        if (policy.isEmailable(customer, additionalData, failResponseMessage) == false) 
         {
             System.out.println("Customer not emailable.");
             return false;
         }
-        if (policy.isInGoodStanding(customer, additionalData) == false)
+        if (policy.isInGoodStanding(customer, additionalData, failResponseMessage) == false)
         {
             System.out.println("Customer not in good standing.");
             return false;
         }
-        if (policy.isMinimumAge(customer, additionalData) == false)
+        if (policy.isMinimumAge(customer, additionalData, failResponseMessage) == false)
         {
             System.out.println("Customer not minimum age.");
             return false;
         }
-        if (policy.isReciprocal(customer, additionalData))
+        if (policy.isReciprocal(customer, additionalData, failResponseMessage))
         {
             System.out.println("Customer cannot join because they are a reciprocal customer.");
             return false;
         } // reciprocals not allowed.
-        if (policy.isResident(customer, additionalData) == false) 
+        if (policy.isResident(customer, additionalData, failResponseMessage) == false) 
         {
             System.out.println("Customer is not resident.");
             return false;
         }
-        if (policy.isValidCustomerData(customer) == false) 
+        if (policy.isValidCustomerData(customer, failResponseMessage) == false) 
         {
             System.out.println("Customer's data is not valid.");
             return false;
         }
-        if (policy.isValidExpiryDate(customer, additionalData) == false) 
+        if (policy.isValidExpiryDate(customer, additionalData, failResponseMessage) == false) 
         {
             System.out.println("Customer does not have a valid privilege date.");
             return false;
         }
-        if (policy.isLostCard(customer, additionalData)) 
+        if (policy.isLostCard(customer, additionalData, failResponseMessage)) 
         {
             System.out.println("Customer's card reported as lost.");
             return false;

@@ -58,7 +58,7 @@ public class MeCardPolicyTest
         System.out.println("==isMinimumAge by Date String==");
         
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isMinimumAgeByDate(c, meta);
+        boolean result = p.isMinimumAgeByDate(c, meta, null);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         boolean expected= true;
         assertTrue(expected == result);
@@ -71,7 +71,7 @@ public class MeCardPolicyTest
                 + "PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
         c.set(CustomerFieldTypes.DOB, "20050101");
-        result = p.isMinimumAgeByDate(c, modeMeta);
+        result = p.isMinimumAgeByDate(c, modeMeta, null);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         
         assertTrue(false == result);
@@ -87,11 +87,11 @@ public class MeCardPolicyTest
 
         
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isEmailable(c, meta);
+        boolean result = p.isEmailable(c, meta, null);
         assertTrue(true == result);
         
         c.set(CustomerFieldTypes.EMAIL, "X");
-        result = p.isEmailable(c, meta);
+        result = p.isEmailable(c, meta, null);
         
         assertTrue(false == result);
     }
@@ -105,12 +105,12 @@ public class MeCardPolicyTest
         System.out.println("==isValidCustomerData==");
 
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isValidCustomerData(c);
+        boolean result = p.isValidCustomerData(c, null);
         boolean expected= true;
         assertTrue(expected == result);
 
         c.set(CustomerFieldTypes.POSTALCODE, "X");
-        result = p.isValidCustomerData(c);
+        result = p.isValidCustomerData(c, null);
         assertTrue(result == false);
     }
 
@@ -123,12 +123,12 @@ public class MeCardPolicyTest
         System.out.println("==isValidExpiryDate==");
         
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isValidExpiryDate(c, meta);
+        boolean result = p.isValidExpiryDate(c, meta, null);
         boolean expected= true;
         assertTrue(expected == result);
 
         c.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, "20120602");
-        result = p.isValidExpiryDate(c, meta);
+        result = p.isValidExpiryDate(c, meta, null);
         expected= false;
         assertTrue(expected == result);
     }
