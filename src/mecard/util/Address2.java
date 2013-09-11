@@ -20,8 +20,6 @@
  */
 package mecard.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import mecard.Protocol;
@@ -53,7 +51,14 @@ public class Address2
         // Low hanging fruit lets see if there is a postal code.
         StringBuilder supposedAddressBuilder = new StringBuilder(supposedAddress);
         this.postalCode.test(supposedAddressBuilder);
-        this.phone.test(supposedAddressBuilder);
+        if (this.phone.test(supposedAddressBuilder) == false)
+        {
+            // To get here SIP2 has pasted a partial phone number to the end of 
+            // the address. Symphony customers are created with a default initial
+            // value of '780-'. If left it becomes their phone number, though
+            // clearly not valid. Let's test gently to get rid of this value.
+            this.phone.testGently(supposedAddressBuilder);
+        }
         // Now we should split on commas, this will give us rough catagories
         // The first is street address, but may have a city on the end.
         String[] splitGroups = supposedAddressBuilder.toString().split(",");
@@ -204,10 +209,12 @@ public class Address2
     protected class Phone extends AddressRecord
     {
         private Pattern phonePattern;
+        private Pattern partialPhonePattern;
         public Phone()
         {
             super();
             this.phonePattern = Pattern.compile("\\d{3}-?\\d{3}-?\\d{4}");
+            this.partialPhonePattern = Pattern.compile("\\d{3}-$");
         }
         
         /**
@@ -238,6 +245,27 @@ public class Address2
                 this.value = matcher.group();
                 // if arg is a string builder we are supposed to modify it.
                 s.delete(matcher.start(), matcher.end());
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Gently tests if the substring at the end of the argument is a partial
+         * phone number. If tests positive then the fragment will be removed.
+         *
+         * @param supposedAddressBuilder complete or partial address line.
+         * @return true if a partial phone number was found at the end of the argument
+         * and false otherwise. The phone number fragment, if found, is not retained.
+         */
+        private boolean testGently(StringBuilder supposedAddressBuilder)
+        {
+            String testString = supposedAddressBuilder.toString();
+            Matcher matcher = partialPhonePattern.matcher(testString);
+            if (matcher.find())
+            {
+                // in this case the phone number is not valid so we should delete it.
+                supposedAddressBuilder.delete(matcher.start(), matcher.end());
                 return true;
             }
             return false;
