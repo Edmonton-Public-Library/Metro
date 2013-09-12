@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -89,241 +90,109 @@ public class PropertyReader
         switch (type)
         {
             case SYMPHONY: // Additional properties that are given to a customer by default at creation time.
-                if (symphony == null)
+                symphony = readPropertyFile(PropertyReader.SYMPHONY_PROPERTY_FILE);
+                // Now check manditory fields
+                for (SymphonyPropertyTypes sType : SymphonyPropertyTypes.values())
                 {
-                    try
+                    if (symphony.get(sType.toString()) == null)
                     {
-                        symphony = readProperties(PropertyReader.SYMPHONY_PROPERTY_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.SYMPHONY_PROPERTY_FILE
-                                + "'. It is required to message customers of important events.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read customer creation default config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // Now check manditory fields
-                    for (SymphonyPropertyTypes sType : SymphonyPropertyTypes.values())
-                    {
-                        if (symphony.get(sType.toString()) == null)
-                        {
-                            String msg = "'" + sType + "' unset in " + PropertyReader.SYMPHONY_PROPERTY_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + sType + "' unset in " + PropertyReader.SYMPHONY_PROPERTY_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return symphony;
                 
             case ENVIRONMENT:
-                if (environment == null)
+                environment = readPropertyFile(PropertyReader.ENVIRONMENT_FILE);
+                // now check that all mandetory values are here.
+                for (LibraryPropertyTypes lType : LibraryPropertyTypes.values())
                 {
-                    try
+                    if (environment.get(lType.toString()) == null)
                     {
-                        environment = readProperties(PropertyReader.ENVIRONMENT_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.ENVIRONMENT_FILE
-                                + "'. It may be empty but one must be defined to continue.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read environment config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (LibraryPropertyTypes lType : LibraryPropertyTypes.values())
-                    {
-                        if (environment.get(lType.toString()) == null)
-                        {
-                            String msg = "'" + lType + "' unset in " + PropertyReader.ENVIRONMENT_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + lType + "' unset in " + PropertyReader.ENVIRONMENT_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return environment;
                 
             case SIP2:
-                if (sip2 == null)
+                sip2 = readPropertyFile(PropertyReader.SIP2_FILE);
+                // now check that all mandetory values are here.
+                for (SipPropertyTypes sType : SipPropertyTypes.values())
                 {
-                    try
+                    if (sip2.get(sType.toString()) == null)
                     {
-                        sip2 = readProperties(PropertyReader.SIP2_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.SIP2_FILE
-                                + "'. It may be empty but one must be defined to continue.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read environment config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (SipPropertyTypes sType : SipPropertyTypes.values())
-                    {
-                        if (sip2.get(sType.toString()) == null)
-                        {
-                            String msg = "'" + sType + "' unset in " + PropertyReader.SIP2_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + sType + "' unset in " + PropertyReader.SIP2_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return sip2;
                 
             case BIMPORT:
-                if (bimport == null)
+                bimport = readPropertyFile(PropertyReader.BIMPORT_PROPERTY_FILE);
+                // now check that all mandetory values are here.
+                for (BImportPropertyTypes bType : BImportPropertyTypes.values())
                 {
-                    try
+                    if (bimport.get(bType.toString()) == null)
                     {
-                        bimport = readProperties(PropertyReader.BIMPORT_PROPERTY_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.BIMPORT_PROPERTY_FILE
-                                + "'. It may be empty but one must be defined to continue.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read bimport config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (BImportPropertyTypes bType : BImportPropertyTypes.values())
-                    {
-                        if (bimport.get(bType.toString()) == null)
-                        {
-                            String msg = "'" + bType + "' unset in " + PropertyReader.BIMPORT_PROPERTY_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + bType + "' unset in " + PropertyReader.BIMPORT_PROPERTY_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return bimport;
 
             case BIMPORT_CITY_MAPPING:
-                if (city == null)
+                city = readPropertyFile(PropertyReader.BIMPORT_CITY_MAPPING);
+                // now check that all mandetory values are here.
+                for (MemberTypes mType : MemberTypes.values())
                 {
-                    try
+                    if (city.get(mType.toString()) == null)
                     {
-                        city = readProperties(PropertyReader.BIMPORT_CITY_MAPPING);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.BIMPORT_CITY_MAPPING
-                                + "'. It may be empty but one must be defined to continue.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read bimport config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (MemberTypes mType : MemberTypes.values())
-                    {
-                        if (city.get(mType.toString()) == null)
-                        {
-                            String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return city;
 
             case DEBUG:
-                if (debugProperties == null)
+                debugProperties = readPropertyFile(PropertyReader.DEBUG_SETTINGS_FILE);
+                // now check that all mandetory values are here.
+                for (DebugQueryConfigTypes dType : DebugQueryConfigTypes.values())
                 {
-                    try
+                    if (debugProperties.get(dType.toString()) == null)
                     {
-                        debugProperties = readProperties(PropertyReader.DEBUG_SETTINGS_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.DEBUG_SETTINGS_FILE + "'";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read debug config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (DebugQueryConfigTypes dType : DebugQueryConfigTypes.values())
-                    {
-                        if (debugProperties.get(dType.toString()) == null)
-                        {
-                            String msg = "'" + dType + "' unset in " + PropertyReader.DEBUG_SETTINGS_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + dType + "' unset in " + PropertyReader.DEBUG_SETTINGS_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return debugProperties;
 
             case VARS: // Additional variables used by this application as a user on a system like PATH.
-                if (systemVariables == null)
-                {
-                    try
-                    {
-                        systemVariables = readProperties(PropertyReader.VARIABLES_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.VARIABLES_FILE
-                                + "'. It is required for Metro run run services on the ILS.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read system variable config file. One has been requested by Command.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                }
+                systemVariables = readPropertyFile(PropertyReader.VARIABLES_FILE);
                 return systemVariables;
                 
             case POLARIS:
-                if (polaris == null)
+                polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
+                // now check that all mandetory values are here.
+                for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
                 {
-                    try
+                    if (polaris.get(pType.toString()) == null)
                     {
-                        polaris = readProperties(PropertyReader.POLARIS_PROPERTY_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.POLARIS_PROPERTY_FILE + "'";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read Polaris config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
-                    {
-                        if (polaris.get(pType.toString()) == null)
-                        {
-                            String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PROPERTY_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PROPERTY_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return polaris;
                 
             case MESSAGES:
-                if (messagesProperties == null)
+                messagesProperties = readPropertyFile(PropertyReader.MESSAGES_PROPERTY_FILE);
+                // now check that all mandetory values are here.
+                for (MessagesConfigTypes mType : MessagesConfigTypes.values())
                 {
-                    try
+                    if (messagesProperties.get(mType.toString()) == null)
                     {
-                        messagesProperties = readProperties(PropertyReader.MESSAGES_PROPERTY_FILE);
-                    } catch (FileNotFoundException ex)
-                    {
-                        String msg = "Failed to find '" + PropertyReader.MESSAGES_PROPERTY_FILE + "'";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-                    } catch (NullPointerException npe)
-                    {
-                        String msg = "Failed to read messages config file. One must be defined.";
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-                    }
-                    // now check that all mandetory values are here.
-                    for (MessagesConfigTypes mType : MessagesConfigTypes.values())
-                    {
-                        if (messagesProperties.get(mType.toString()) == null)
-                        {
-                            String msg = "'" + mType + "' unset in " + PropertyReader.MESSAGES_PROPERTY_FILE;
-                            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                        }
+                        String msg = "'" + mType + "' unset in " + PropertyReader.MESSAGES_PROPERTY_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
                     }
                 }
                 return messagesProperties;
@@ -355,23 +224,32 @@ public class PropertyReader
 //            System.out.println("VAR:'" + key + "'='" + localProps.getProperty(key, "") + "'");
             props.put(key, (String) localProps.getProperty(key, ""));
         }
-    }
+    }    
 
-    static Properties readProperties(String whichFile)
-            throws FileNotFoundException
+    /**
+     *
+     * @param propertyFileName the value of propertyFileName
+     * @return the Properties
+     */
+    private static Properties readPropertyFile(String propertyFileName)
     {
-
         Properties properties = new Properties();
         try
         {
-            FileInputStream fis = new FileInputStream(whichFile);
+            FileInputStream fis = new FileInputStream(propertyFileName);
             properties.loadFromXML(fis);
-        }
-        catch (IOException ioe)
+        } catch (FileNotFoundException ex)
         {
-            String msg = "Failed to read '" + whichFile + "'. One must be defined.";
-            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ioe);
+            String msg = "Failed to find '" + propertyFileName + "'";
+            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
+        } catch (NullPointerException npe)
+        {
+            String msg = "Failed to read messages config file. One must be defined.";
+            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
+        } catch (IOException ex)
+        {
+            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return properties;
-    }    
+    }
 }

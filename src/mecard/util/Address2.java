@@ -213,7 +213,8 @@ public class Address2
         public Phone()
         {
             super();
-            this.phonePattern = Pattern.compile("\\d{3}-?\\d{3}-?\\d{4}");
+            // end of line matching important to avoid 209-1123 street matching.
+            this.phonePattern = Pattern.compile("\\d{3}-?\\d{3}-?\\d{4}$");
             this.partialPhonePattern = Pattern.compile("\\d{3}-$");
         }
         
@@ -336,8 +337,8 @@ public class Address2
         {
             super();
             this.streetPattern = Pattern.compile(
-                "^\\d{1,}\\s.*", // This will not catch PO boxes.
-                Pattern.CASE_INSENSITIVE);
+                "^\\d{1,}" // This will not catch PO boxes.
+            );
         }
         
         /**
@@ -355,7 +356,7 @@ public class Address2
             Matcher matcher = this.streetPattern.matcher(s);
             if (matcher.find())
             {
-                this.value = Text.toDisplayCase(matcher.group());
+                this.value = Text.toDisplayCase(s);
                 return true;
             }
             return false;
