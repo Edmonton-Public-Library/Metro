@@ -20,6 +20,9 @@
  */
 package mecard.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import mecard.Protocol;
@@ -59,64 +62,46 @@ public class Address2
             // clearly not valid. Let's test gently to get rid of this value.
             this.phone.testGently(supposedAddressBuilder);
         }
-        // Now we should split on commas, this will give us rough catagories
-        // The first is street address, but may have a city on the end.
-        String[] splitGroups = supposedAddressBuilder.toString().split(",");
-        int numberOfGroups = splitGroups.length;
-        if (numberOfGroups >= 3)
+        
+        // Different approach. If we have taken care of the phone and pcode
+        // then chop off each of the remaining elements and try to match
+        // The next would be province.
+        String cleanAddress = supposedAddressBuilder.toString().replace(",", " ");
+        List<String> addressWords = new ArrayList<>();
+        addressWords.addAll(Arrays.asList(cleanAddress.split("\\s+")));
+        if (addressWords.size() > 0) // at least one word
         {
-            // then we have a well formed address with fields separated by commas,
-            // the value should be the province.
-            this.street.test(splitGroups[0].trim());
-            this.city.test(splitGroups[1].trim());
-            this.province.test(splitGroups[2].trim());
-        }
-        if (numberOfGroups == 2)
-        {
-            // The second may include a city and will include a province do it first
-            String[] splitCityProvince = splitGroups[1].trim().split("\\s+");
-            String[] splitStreetCity   = splitGroups[0].trim().split("\\s+");
-            
-            if (splitCityProvince.length > 1) // We have the city and then the province last
+            int lastWordPos = addressWords.size() -1;
+            if (this.province.test(addressWords.get(lastWordPos)))
             {
-                String provinceString = splitCityProvince[splitCityProvince.length -1];
-                if (this.province.test(provinceString))
-                {
-                    splitCityProvince[splitCityProvince.length -1] = ""; // reset the last value so it doesn't end up on the address.
-                }
-                // put it back together again
-                String cityString = splitCityProvince[splitCityProvince.length -2];
-                this.city.testGently(cityString.trim());
-            }
-            else if (splitCityProvince.length == 1)
-            {
-                this.province.test(splitCityProvince[0]); // there is only one so it should be the province.
-            }
-            // Now what to do with the address, city?
-            // Well if the city is the last field then it will test positive, but
-            // we can tell just by checking if the first part found the city
-            if (this.city.isSet()) // the rest is street
-            {
-                this.street.test(splitGroups[0]); 
-            }
-            else // Worst case we have to grab the last word and try and match --
-                // two word place names like ft sask and st. albert are hit worst
-            {
-                // grab the last word in splitStreetCity
-                String cityString = splitStreetCity[splitStreetCity.length -1];
-                if (this.city.testGently(cityString)) // this could be set to a fuzzy search for the last word in a multiline place name.
-                {
-                    splitStreetCity[splitStreetCity.length -1] = ""; // reset the city field
-                }
-                // paste street back together.
-                String addressString = "";
-                for (String s: splitStreetCity)
-                {
-                    addressString += s + " ";
-                }
-                this.street.test(addressString.trim());
+                addressWords.remove(lastWordPos);
             }
         }
+        // next should be the city
+        if (addressWords.size() > 0) // at least one word
+        {
+            int lastWordPos = addressWords.size() -1;
+            if (this.city.testGently(addressWords.get(lastWordPos)))
+            {
+                // remove all the words of the city name 
+                int cityWords = this.city.getWordCount();
+                for (int i = 0; i < cityWords; i++)
+                {
+                    lastWordPos = addressWords.size() -1;
+                    if (lastWordPos >= 0)
+                    {
+                        addressWords.remove(lastWordPos);
+                    }
+                }
+            }
+        }
+        // paste street back together.
+        String addressString = "";
+        for (String s: addressWords)
+        {
+            addressString += s + " ";
+        }
+        this.street.test(addressString.trim());
     }
     
     /**
@@ -325,6 +310,20 @@ public class Address2
             }
             return false;
         }
+
+        /**
+         * Computes and returns the size of the city name. If the city has 
+         * not been set it returns 0;
+         * @return number of words in the place name.
+         */
+        private int getWordCount()
+        {
+            if (this.value.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            {
+                return 0;
+            }
+            return this.value.split("\\s+").length;
+        }
     }
     
     /**
@@ -332,13 +331,9 @@ public class Address2
      */
     protected class Street extends AddressRecord
     {
-        private final Pattern streetPattern;
         public Street()
         {
             super();
-            this.streetPattern = Pattern.compile(
-                "^\\d{1,}" // This will not catch PO boxes.
-            );
         }
         
         /**
@@ -353,8 +348,7 @@ public class Address2
             // This is the most unreliable. All we can say about it is that it 
             // should start with at least one number. Check this last. It should
             // also be the first item on the address string.
-            Matcher matcher = this.streetPattern.matcher(s);
-            if (matcher.find())
+            if (s.length() > 0)
             {
                 this.value = Text.toDisplayCase(s);
                 return true;

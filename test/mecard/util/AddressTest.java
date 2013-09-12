@@ -90,5 +90,16 @@ public class AddressTest
         System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
         
+        
+        System.out.println("=== Address6 ===");
+        thisAddress = "7705 154 Street NW Edmonton, AB, T5R 1R6 780-893-3959";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }
