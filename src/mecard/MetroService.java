@@ -132,7 +132,7 @@ public final class MetroService implements Daemon
     @Override
     public void start() throws Exception
     {
-        System.out.println(new Date() + " starting service...");
+        System.out.println(new Date() + " starting service, server version: " + VERSION);
         main(ARGS);
     }
 
