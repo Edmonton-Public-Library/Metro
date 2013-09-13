@@ -87,7 +87,7 @@ public class DateComparer
     public static int getDaysUntilExpiry(String ANSIExpiryDate)
             throws ParseException
     {
-        DateFormat ANSIDateFormatter    = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
+        DateFormat ANSIDateFormatter = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
         Date expiryDate  = ANSIDateFormatter.parse(ANSIExpiryDate);
         Date today = new Date();
         // the delta is in milliseconds.
@@ -120,5 +120,25 @@ public class DateComparer
         Date myDate = sdfSrc.parse(ANSIDate);
         SimpleDateFormat dateFormat = new SimpleDateFormat(CUSTOMER_DATE_FORMAT);
         return dateFormat.format(myDate);
+    }
+
+    /**
+     * Given the argument number of days in the future, this method will return
+     * the ANSI date of that day.
+     * @param daysFromNow number of days in the future as an integer minimum 0.
+     * @return ANSI date in the future.
+     */
+    public static String getFutureDate(int daysFromNow)
+    {
+        if (daysFromNow < 1)
+        {
+            return DateComparer.ANSIToday();
+        }
+        Date today = new Date();
+        // the delta is in milliseconds.
+        long daysInfuture = today.getTime() + (daysFromNow * MILLISECONDS_PER_DAY);
+        Date futureDate = new Date(daysInfuture);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
+        return dateFormat.format(futureDate);
     }
 }

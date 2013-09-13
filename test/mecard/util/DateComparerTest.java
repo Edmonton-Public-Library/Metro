@@ -101,4 +101,27 @@ public class DateComparerTest
         System.out.println("RESULT:"+result);
         assertTrue(expResult.compareTo(result) == 0);
     }
+    
+    /**
+     * Test of dateInFutre method, of class DateComparer.
+     */
+    @Test
+    public void testDateInFuture()
+    {
+        System.out.println("===dateInFuture===");
+        String expResult = "20130914";
+        String result = DateComparer.getFutureDate(1);
+        System.out.println("RESULT:"+result);
+        assertTrue(expResult.compareTo(result) == 0);
+        
+        expResult = "20130913";
+        result = DateComparer.getFutureDate(-1);
+        System.out.println("RESULT:"+result);
+        assertTrue(expResult.compareTo(result) == 0);
+        
+        expResult = "20140913";
+        result = DateComparer.getFutureDate(365);
+        System.out.println("RESULT:"+result);
+        assertTrue(expResult.compareTo(result) == 0);
+    }
 }

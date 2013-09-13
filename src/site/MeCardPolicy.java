@@ -357,7 +357,6 @@ public abstract class MeCardPolicy
     public boolean isValidExpiryDate(Customer customer, String meta, StringBuilder s)
     {
         String expiryDate = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
-        // TODO set Max expiry, no greater than 365 days.
         try
         {
             int expiryDays = DateComparer.getDaysUntilExpiry(expiryDate);
@@ -365,6 +364,13 @@ public abstract class MeCardPolicy
                     + expiryDate + ", computed days: " + expiryDays);
             if (expiryDays >= MeCardPolicy.MINIMUM_EXPIRY_DAYS)
             {
+                if (expiryDays > MeCardPolicy.MAXIMUM_EXPIRY_DAYS)
+                {
+                    // set the customer's expiry to 365 days from now and output the message.
+                    String newExpiryOneYearFromNow = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
+                    customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, newExpiryOneYearFromNow);
+                    System.out.println("customer expiry throttled to: '" + newExpiryOneYearFromNow + "'");
+                }
                 return true;
             }
         } catch (ParseException ex)

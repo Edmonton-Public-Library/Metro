@@ -20,15 +20,26 @@
  */
 package mecard.util;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 
 /**
- *
+ * Source:
+ * 
+ * Municipal Services Branch
+ * 17th Floor Commerce Place
+ * 10155 - 102 Street Edmonton, Alberta T5J 4L4
+ * Phone: 780-427-2225 Fax: 780-420-1016
+ * E-mail: lgs.update@gov.ab.ca
+ * 
+ * Updated December 28, 2012
+ * 
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public final class AlbertaCity extends City
@@ -66,6 +77,20 @@ public final class AlbertaCity extends City
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public List<String> getPlaceNames(String place)
+    {
+        List<String> listOfNames = new ArrayList<>();
+        for (String fullPlaceName: cityMap.keySet())
+        {
+            if (fullPlaceName.endsWith(place))
+            {
+                listOfNames.add(fullPlaceName);
+            }
+        }
+        return listOfNames;
     }
     
     @Override
@@ -742,6 +767,79 @@ public final class AlbertaCity extends City
         cityMap.put("Wostok","0885");
         cityMap.put("Wrentham","0886");
         cityMap.put("Zama City","0887");
+        // Counties and M.D.s
+        // Officially Municiple districts do take a 'M.D. of' but that interferes
+        // with Address2's operation making it too agressive at trimming words.
+        // The worst case is a street name will have 'M.D. of' tacked on.
+        cityMap.put("Crowsnest Pass", "0361");
+        cityMap.put("Jasper", "0418");
+        cityMap.put("Mackenzie County", "0505");
+        cityMap.put("Strathcona County", "0302");
+        cityMap.put("Wood Buffalo", "0508");
+        cityMap.put("Acadia", "0001");
+        cityMap.put("Athabasca County", "0012");
+        cityMap.put("County of Barrhead", "0015");
+        cityMap.put("Beaver County", "0020");
+        cityMap.put("Big Lakes", "0506");
+        cityMap.put("Bighorn", "0382");
+        cityMap.put("Birch Hills County", "0502");
+        cityMap.put("Bonnyville", "0036");
+        cityMap.put("Brazeau County", "0383");
+        cityMap.put("Camrose County", "0049");
+        cityMap.put("Cardston County", "0053");
+        cityMap.put("Clear Hills County", "0504");
+        cityMap.put("Clearwater County", "0377");
+        cityMap.put("Cypress County", "0376");
+        cityMap.put("Fairview", "0107");
+        cityMap.put("Flagstaff County", "0110");
+        cityMap.put("Foothills", "0111");
+        cityMap.put("County of Forty Mile", "0118");
+        cityMap.put("County of Grande Prairie", "0133");
+        cityMap.put("Greenview", "0481");
+        cityMap.put("Kneehill County", "0191");
+        cityMap.put("Lac La Biche County", "4353");
+        cityMap.put("Lac Ste. Anne County", "0193");
+        cityMap.put("Lacombe County", "0195");
+        cityMap.put("Lamont County", "0198");
+        cityMap.put("Leduc County", "0201");
+        cityMap.put("Lesser Slave River", "0507");
+        cityMap.put("County of Lethbridge", "0204");
+        cityMap.put("County of Minburn", "0222");
+        cityMap.put("Mountain View County", "0226");
+        cityMap.put("County of Newell", "0235");
+        cityMap.put("County of Northern Lights", "0511");
+        cityMap.put("Northern Sunrise County", "0496");
+        cityMap.put("Opportunity", "0512");
+        cityMap.put("Paintearth", "0243");
+        cityMap.put("Parkland County", "0245");
+        cityMap.put("Peace", "0246");
+        cityMap.put("Pincher Creek", "0251");
+        cityMap.put("Ponoka County", "0255");
+        cityMap.put("Provost", "0258");
+        cityMap.put("Ranchland", "0501");
+        cityMap.put("Red Deer County", "0263");
+        cityMap.put("Rocky View County", "0269");
+        cityMap.put("Saddle Hills County", "0503");
+        cityMap.put("Smoky Lake County", "0286");
+        cityMap.put("Smoky River", "0287");
+        cityMap.put("Spirit River", "0290");
+        cityMap.put("County of St. Paul", "0294");
+        cityMap.put("Starland County", "0296");
+        cityMap.put("County of Stettler", "0299");
+        cityMap.put("Sturgeon County", "0305");
+        cityMap.put("Taber", "0312");
+        cityMap.put("County of Thorhild", "0314");
+        cityMap.put("County of Two Hills", "0323");
+        cityMap.put("County of Vermilion River", "0329");
+        cityMap.put("Vulcan County", "0334");
+        cityMap.put("Wainwright", "0336");
+        cityMap.put("County of Warner", "0340");
+        cityMap.put("Westlock County", "0346");
+        cityMap.put("County of Wetaskiwin", "0348");
+        cityMap.put("Wheatland County", "0349");
+        cityMap.put("Willow Creek", "0353");
+        cityMap.put("Woodlands County", "0480");
+        cityMap.put("Yellowhead County", "0482");
         
         // Now we overlay place name records with config requested codes for BImport.
         Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);

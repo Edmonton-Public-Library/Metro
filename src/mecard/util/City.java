@@ -20,6 +20,7 @@
  */
 package mecard.util;
 
+import java.util.List;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
@@ -96,4 +97,13 @@ public abstract class City
      * match anything.
      */
     public abstract String getPlaceNameLike(String place);
+
+    /**
+     * Returns a list of names that ended with argument string.
+     * @param place name of a place or fragment like 'Valley'.
+     * @return list of all matches of known place names that end with the argument.
+     * In the case of 'Lake' it would contain "Cold Lake" and "Pigeon Lake", or 
+     * if there were not matches the list will be empty.
+     */
+    public abstract List<String> getPlaceNames(String place);
 }

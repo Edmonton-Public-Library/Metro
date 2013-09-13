@@ -77,20 +77,27 @@ public class Address2
                 addressWords.remove(lastWordPos);
             }
         }
-        // next should be the city
+        // next should be the city, or place name.
         if (addressWords.size() > 0) // at least one word
         {
+            // Grab the next word off the end of the array of address words and try
+            // and match it.
             int lastWordPos = addressWords.size() -1;
-            if (this.city.testGently(addressWords.get(lastWordPos)))
+            String possiblePlaceName = addressWords.remove(lastWordPos);
+            if (! this.city.testGently(possiblePlaceName))
             {
-                // remove all the words of the city name 
-                int cityWords = this.city.getWordCount();
-                for (int i = 0; i < cityWords; i++)
+                // There is still a chance that possiblePlaceName has too many selection
+                // if it was Valley, or County, so try the next word.
+                lastWordPos = addressWords.size() -1;
+                if (lastWordPos >= 0)
                 {
-                    lastWordPos = addressWords.size() -1;
-                    if (lastWordPos >= 0)
+                    String nextWord = addressWords.remove(lastWordPos);
+                    if (! this.city.testGently(nextWord))
                     {
-                        addressWords.remove(lastWordPos);
+                        // ok we're barking up the wrong tree, this doesn't look 
+                        // like a valid place name so restore the address field.
+                        addressWords.add(nextWord);
+                        addressWords.add(possiblePlaceName);
                     }
                 }
             }
@@ -263,9 +270,12 @@ public class Address2
     protected class City extends AddressRecord
     {
         private mecard.util.City city;
+        private List<String> placeName; // store multiple selections.
+        
         public City()
         {
             this.city = AlbertaCity.getInstanceOf();
+            this.placeName = new ArrayList<>();
         }
         
         /**
@@ -303,10 +313,37 @@ public class Address2
         private boolean testGently(String s)
         {
             String place = Text.toDisplayCase(s.trim());
-            if ((place = this.city.getPlaceNameLike(place)).isEmpty() == false)
+            // so sometimes the name will end in a common term like: Valley, 
+            // Lake or County. Here we will first check how big the selection
+            // set is. If it is more than 1 then return false.
+            // The first time this method is hit we populate the List of potential
+            // names
+            if (this.placeName.isEmpty())
             {
-                this.value = place;
-                return true;
+                this.placeName = this.city.getPlaceNames(place);
+                if (this.placeName.isEmpty() || this.placeName.size() > 1)
+                {
+                    return false; // we either didn't get any or we got too many.
+                }
+                else // there must be 1 name.
+                {
+                    this.value = this.placeName.get(0);
+                    this.placeName.clear();
+                    return true;
+                }
+            }
+            else // The list is not empty so a previous call must have filled it.
+            {
+                for (int i = 0; i < this.placeName.size(); i++)
+                {
+                    String possibleName = this.placeName.get(i);
+                    if (possibleName.contains(place))
+                    {
+                        this.value = possibleName;
+                        this.placeName.clear();
+                        return true;
+                    }
+                }
             }
             return false;
         }
