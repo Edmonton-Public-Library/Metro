@@ -49,9 +49,7 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
         if (Text.isMaximumDigits(pin, MAXIMUM_PIN_WIDTH) == false)
         {
             String newPin = Text.getNew4DigitPin();
-            responseStringBuilder.append("Your pin has been set to '");
-            responseStringBuilder.append(newPin);
-            responseStringBuilder.append("' to comply with this library's policies.");
+            responseStringBuilder.append(newPin); // Send back new PIN to melibraries.ca.
             c.set(CustomerFieldTypes.PIN, newPin);
             System.out.println(new Date() + " Customer's PIN was not 4 digits as required by Horizon. Set to: '" 
                     + newPin + "'.");
