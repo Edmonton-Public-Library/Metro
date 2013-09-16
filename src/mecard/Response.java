@@ -71,12 +71,19 @@ public final class Response
     }
 
     /**
-     * Sets the response code.
+     * Sets the response code, but only if the ordinal of the argument code 
+     * is higher than the current code. SUCCESS can be overwritten by PIN_CHANGE_REQUIRED
+     * but not the other way around.
      * @param code 
      */
     public void setCode(ResponseTypes code) 
     {
-        this.code = code;
+        // Smaller codes like OK can be overwritten by PIN_CHANGE_REQUIRED
+        // but PIN_CHANGE_REQUIRED can't be overwritten by SUCCESS.
+        if (code.ordinal() > this.code.ordinal())
+        {
+            this.code = code;
+        }
     }
     
     @Override

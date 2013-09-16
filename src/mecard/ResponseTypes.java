@@ -21,23 +21,26 @@
 package mecard;
 
 /**
- * The types of responses MeCard server is capable of producing.
+ * The types of responses MeCard server is capable of producing. The order is
+ * purposeful, lower ordinal values can be over written by higher ordinal values
+ * in the response object but not the other way around. This stops error messages
+ * from being reset to SUCCESS by other well meaning processes.
+ * @see Response
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public enum ResponseTypes
 {
-    ERROR, // Command was received but failed to execute
-    // either it was malformed, empty (null), or not supported.
     INIT,
-    OK,
     BUSY,
+    COMMAND_COMPLETED,
+    OK,
+    SUCCESS, // be careful when changing the ordering of these values See Response.java.
+    PIN_CHANGE_REQUIRED,
+    LOST_CARD,
     UNAVAILABLE,
-    SUCCESS,
     FAIL,
+    CONFIG_ERROR,
     UNAUTHORIZED, 
     UNKNOWN, 
-    CONFIG_ERROR,
-    COMMAND_COMPLETED,
-    LOST_CARD,
-    PIN_CHANGE_REQUIRED;
+    ERROR; // Command was received but failed to execute either it was malformed, empty (null), or not supported.;
 }

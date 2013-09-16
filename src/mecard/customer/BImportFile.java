@@ -257,15 +257,25 @@ public class BImportFile
         headerContent.append(BORROWER_TABLE + ": "); // add or modify if exists
         headerContent.append(BImportDBFieldTypes.SECOND_ID + "; ");
         headerContent.append(BImportDBFieldTypes.NAME + "; ");
-        headerContent.append(BImportDBFieldTypes.EXPIRY + "; ");
-        headerContent.append(BImportDBFieldTypes.PIN + "\r\n");
-            
+        headerContent.append(BImportDBFieldTypes.EXPIRY);
+        if (b.pin != null)
+        {
+            headerContent.append("; ");
+            headerContent.append(BImportDBFieldTypes.PIN);
+        }
+        headerContent.append("\r\n");
+        
         dataContent.append("M- "); // add or modify if exists
         dataContent.append(BORROWER_TABLE + ": "); // add or modify if exists
         dataContent.append(b.barcode + "; ");
         dataContent.append(b.name + "; ");
-        dataContent.append(expiryDate + "; ");    // see above for computation
-        dataContent.append(b.pin + "\r\n");
+        dataContent.append(expiryDate);    // see above for computation
+        if (b.pin != null)
+        {
+            dataContent.append("; ");
+            dataContent.append(b.pin);
+        }
+        dataContent.append("\r\n");
         
         // Table borrower_phone
         headerContent.append(BORROWER_PHONE_TABLE + ": "); // add or modify if exists
@@ -284,8 +294,13 @@ public class BImportFile
         headerContent.append(BImportDBFieldTypes.POSTAL_CODE + "; ");
         headerContent.append(BImportDBFieldTypes.EMAIL_NAME + "; ");
         if (b.isNotifyByEmail) headerContent.append(BImportDBFieldTypes.EMAIL_NOTIFICATION + "; ");
-        headerContent.append(BImportDBFieldTypes.EMAIL_ADDRESS + "; ");
-        headerContent.append(BImportDBFieldTypes.SEND_PREOVERDUE + "\r\n"); // Defaults on so not optional field.
+        headerContent.append(BImportDBFieldTypes.EMAIL_ADDRESS);
+        if (b.isPreoverdueRequiredByDefault)
+        {
+            headerContent.append("; ");
+            headerContent.append(BImportDBFieldTypes.SEND_PREOVERDUE); // Defaults on so not optional field.
+        }
+        headerContent.append("\r\n");
         
         dataContent.append(BORROWER_ADDRESS_TABLE + ": "); // add or modify if exists
         dataContent.append(b.address1 + "; ");
@@ -294,15 +309,13 @@ public class BImportFile
         dataContent.append(b.postalCode + "; ");
         dataContent.append(b.emailName + "; ");
         if (b.isNotifyByEmail) dataContent.append("1; "); // careful this is an ENUM type in Horizon. Safe to leave out but if used must match.
-        dataContent.append(b.email + "; ");
+        dataContent.append(b.email);
         if (b.isPreoverdueRequiredByDefault)
         {
-            dataContent.append("1\r\n");
+            dataContent.append("; ");
+            dataContent.append("1");
         }
-        else
-        {
-            dataContent.append("0\r\n"); // not set to send preoverdue notices.
-        }
+        dataContent.append("\r\n");
         
         // Table borrower_barcode
         headerContent.append(BORROWER_BARCODE_TABLE + ": "); // add or modify if exists

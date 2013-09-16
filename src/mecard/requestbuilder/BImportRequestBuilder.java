@@ -173,7 +173,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
 //                .setDebug(debug) // not used in class yet.
                 .build();
-        List<String> bimportBatExec = new ArrayList<String>();
+        List<String> bimportBatExec = new ArrayList<>();
         batch.getCommandLine(bimportBatExec);
         APICommand command = new APICommand.Builder().commandLine(bimportBatExec).build();
         return command;

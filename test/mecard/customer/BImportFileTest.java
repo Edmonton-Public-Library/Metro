@@ -25,7 +25,7 @@ public class BImportFileTest
                 .barcode("21221012345678")
                 .name("Billy, Balzac")
                 .expire("20140822")
-                .pin("1234")
+                .pin("1234")      // Optional
                 .pType("h-noTC")
                 .pNumber("7804964058")
                 .address1("12345 123 St.")
