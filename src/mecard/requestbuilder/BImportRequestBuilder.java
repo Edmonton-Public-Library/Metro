@@ -42,6 +42,8 @@ import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
+import mecard.customer.BImportFormatter;
+import mecard.customer.UserFile;
 
 /**
  *
@@ -73,7 +75,6 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     private String mailType;
     private String location; // branch? see 'lalap'
     private String isIndexed; // "y = NOT indexed"
-    private boolean isSetDefaultSendPreoverdue;
     private String batFile;
     private String headerFile;
     private String dataFile;
@@ -97,14 +98,6 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         this.mailType = bimpProps.getProperty(BImportPropertyTypes.MAIL_TYPE.toString());
         this.location = bimpProps.getProperty(BImportPropertyTypes.LOCATION.toString()); // branch? see 'lalap'
         this.isIndexed = bimpProps.getProperty(BImportPropertyTypes.IS_INDEXED.toString());
-        // Optional fields.
-        // Optional bimport value, defaults to 'on' for default send pre-overdue notices.
-        this.isSetDefaultSendPreoverdue = true;
-        String sendPreoverdue = bimpProps.getProperty(SEND_PREOVERDUE.toString(), "true");
-        if (sendPreoverdue.compareToIgnoreCase("false") == 0)
-        {
-            this.isSetDefaultSendPreoverdue = false;
-        }
     }
 
     @Override
@@ -136,20 +129,12 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         // header and data file names.
         headerFile = loadDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
         dataFile = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
-        new BImportFile.Builder(headerFile, dataFile)
-                .barcode(customer.get(CustomerFieldTypes.ID))
-                .pin(customer.get(CustomerFieldTypes.PIN))
-                .name(customer.get(CustomerFieldTypes.PREFEREDNAME))
-                .address1(customer.get(CustomerFieldTypes.STREET))
-                .city(customer.get(CustomerFieldTypes.CITY))
-                .postalCode(customer.get(CustomerFieldTypes.POSTALCODE))
-                .emailName(computeEmailName(customer.get(CustomerFieldTypes.EMAIL)))
-                .email(customer.get(CustomerFieldTypes.EMAIL))
-                .preferEmailNotifications(true) // Users must have an email address to use MeCard metro.
-                .expire(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES))
-                .pNumber(customer.get(CustomerFieldTypes.PHONE))
-                .setDefaultPreoverdue(this.isSetDefaultSendPreoverdue)
-                .build();
+        BImportFormatter formatter = new BImportFormatter();
+        // important to process customer data first, then header
+        UserFile bimportDataFile   = new UserFile(dataFile);
+        bimportDataFile.addUserData(formatter.setCustomer(customer));
+        UserFile bimportHeaderFile = new UserFile(headerFile);
+        bimportHeaderFile.addUserData(formatter.getCustomerHeader());
         File fTest = new File(headerFile);
         if (fTest.exists() == false)
         {

@@ -185,7 +185,7 @@ public class BImportBat
     {
         isDebugMode = b.isDebugMode;
         fileContent = new StringBuilder();
-        fileContentList = new ArrayList<String>();
+        fileContentList = new ArrayList<>();
         fileContent.append(b.bimportPath);
         fileContentList.add(b.bimportPath);
         if (b.server != null)
@@ -304,12 +304,6 @@ public class BImportBat
      */
     public String getCommandLine()
     {
-//        if (isDebugMode)
-//        {
-//            // my god this is bad: TODO think of something better than this!
-//            // there is a shell script in this directory.
-//            return "/home/metro/bimport/bimport";
-//        }
         return fileContent.toString();
     }
     

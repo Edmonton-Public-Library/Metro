@@ -53,7 +53,7 @@ public class FlatUserFormatter implements CustomerFormatter
     {
         if (customer == null)
         {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         FlatUser flatUser = new FlatUser();
         flatUser.add(FlatUserFieldTypes.USER_ID, customer.get(CustomerFieldTypes.ID));
@@ -108,7 +108,7 @@ public class FlatUserFormatter implements CustomerFormatter
     public Customer getCustomer(String customerString)
     {
         String[] custStrArray = customerString.split("\n");
-        List<String> cList = new ArrayList<String>();
+        List<String> cList = new ArrayList<>();
         cList.addAll(Arrays.asList(custStrArray));
         return this.getCustomer(cList);
     }
@@ -189,71 +189,39 @@ public class FlatUserFormatter implements CustomerFormatter
      */
     private CustomerFieldTypes translateToCustomerField(String flatUserFieldValue)
     {
-        if (flatUserFieldValue.equals("USER_ID"))
+        switch (flatUserFieldValue)
         {
-            return CustomerFieldTypes.ID;
-        } 
-        else if (flatUserFieldValue.equals("USER_NAME"))
-        {
-            return CustomerFieldTypes.PREFEREDNAME;
-        }
-        // uncommenting these lines cause the firt and last names to set in 
-        // Customer, but any salutation will not come across.
-        else if (flatUserFieldValue.equals("USER_FIRST_NAME"))
-        {
-            return CustomerFieldTypes.FIRSTNAME;
-        } 
-        else if (flatUserFieldValue.equals("USER_LAST_NAME"))
-        {
-            return CustomerFieldTypes.LASTNAME;
-        } 
-        else if (flatUserFieldValue.equals("USER_PIN"))
-        {
-            return CustomerFieldTypes.PIN;
-        } 
-        else if (flatUserFieldValue.equals("USER_PRIV_EXPIRES"))
-        {
-            return CustomerFieldTypes.PRIVILEGE_EXPIRES;
-        } 
-        else if (flatUserFieldValue.equals("USER_BIRTH_DATE"))
-        {
-            return CustomerFieldTypes.DOB;
-        } 
-        // TODO handle variance of library usage of CAT2.
-        // a little dangerous since other libraries may not use CAT2 for gender,
-        // suggest this be a field that loaded from a property file.
-        else if (flatUserFieldValue.equals("USER_CATEGORY2"))
-        {
-            return CustomerFieldTypes.SEX;
-        } 
-        else if (flatUserFieldValue.equals("STREET"))
-        {
-            return CustomerFieldTypes.STREET;
-        } 
-        else if (flatUserFieldValue.equals("CITY/STATE"))
-        {
-            return CustomerFieldTypes.CITY;
-        } 
-        else if (flatUserFieldValue.equals("POSTALCODE"))
-        {
-            return CustomerFieldTypes.POSTALCODE;
-        } 
-        else if (flatUserFieldValue.equals("PHONE"))
-        {
-            return CustomerFieldTypes.PHONE;
-        } 
-        else if (flatUserFieldValue.equals("EMAIL"))
-        {
-            return CustomerFieldTypes.EMAIL;
-        } 
-        else if (flatUserFieldValue.equals("INACTVID") ||
-                 flatUserFieldValue.equals("PREV_ID"))
-        {
-            return CustomerFieldTypes.ALTERNATE_ID;
-        }
-        else
-        {
-            return null;
+            case "USER_ID":
+                return CustomerFieldTypes.ID;
+            case "USER_NAME":
+                return CustomerFieldTypes.PREFEREDNAME;
+            case "USER_FIRST_NAME":
+                return CustomerFieldTypes.FIRSTNAME;
+            case "USER_LAST_NAME":
+                return CustomerFieldTypes.LASTNAME;
+            case "USER_PIN":
+                return CustomerFieldTypes.PIN;
+            case "USER_PRIV_EXPIRES":
+                return CustomerFieldTypes.PRIVILEGE_EXPIRES;
+            case "USER_BIRTH_DATE":
+                return CustomerFieldTypes.DOB;
+            case "USER_CATEGORY2":
+                return CustomerFieldTypes.SEX;
+            case "STREET":
+                return CustomerFieldTypes.STREET;
+            case "CITY/STATE":
+                return CustomerFieldTypes.CITY;
+            case "POSTALCODE":
+                return CustomerFieldTypes.POSTALCODE;
+            case "PHONE":
+                return CustomerFieldTypes.PHONE;
+            case "EMAIL":
+                return CustomerFieldTypes.EMAIL;
+            case "INACTVID":
+            case "PREV_ID":
+                return CustomerFieldTypes.ALTERNATE_ID;
+            default:
+                return null;
         }
     }
 

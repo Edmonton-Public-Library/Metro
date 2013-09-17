@@ -135,4 +135,19 @@ public class Customer //extends ProtocolPayload
         sb.append("]");
         return sb.toString();
     }
+
+    /**
+     * Tests if a given field is empty.
+     * @param customerFieldTypes field to test.
+     * @return true if the field is set to {@link Protocol#DEFAULT_FIELD_VALUE} or 
+     * is null, and false otherwise.
+     */
+    public boolean isEmpty(CustomerFieldTypes customerFieldTypes)
+    {
+        if (this.get(customerFieldTypes) == null)
+        {
+            return true;
+        }
+        return (this.get(customerFieldTypes).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0);
+    }
 }

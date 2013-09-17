@@ -21,31 +21,22 @@
 package mecard.config;
 
 /**
- *
- * @author metro
+ * Tables we use in handling loading customers with BImport. Not referenced in 
+ * configuration files.
+ * @see mecard.customer.BImportTable
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum BImportDBFieldTypes
+public enum BImportTableTypes
 {
-    SECOND_ID("second_id"),
-    NAME("name"),
-    EXPIRY("expiration_date"),
-    PIN("pin#"),
-    PHONE_TYPE("phone_type"),
-    PHONE_NUMBER("phone_no"),
-    ADDRESS_1("address1"),
-    ADDRESS_2("address2"),
-    CITY("city_st"),
-    POSTAL_CODE("postal_code"),
-    EMAIL_NAME("email_name"),
-    EMAIL_ADDRESS("email_address"),
-    BARCODE("bbarcode"), 
-    EMAIL_NOTIFICATION("send_notice_by"),
-    SEND_PREOVERDUE("send_preoverdue"),  // optional field, defaults to true.
-    BIRTH_DATE("birth_date");
     
+    BORROWER_PHONE_TABLE("borrower_phone"), 
+    BORROWER_ADDRESS_TABLE("borrower_address"),
+    BORROWER_BARCODE_TABLE("borrower_barcode"),
+    BORROWER_TABLE("borrower");
+   
     private String type;
 
-    private BImportDBFieldTypes(String s)
+    private BImportTableTypes(String s)
     {
         this.type = s;
     }

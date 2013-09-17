@@ -44,7 +44,7 @@ public class UserFile
     public UserFile(String path)
     {
         this.filePath = path;
-        this.data     = new ArrayList<String>();
+        this.data     = new ArrayList<>();
         this.dataFile = createFile(this.filePath);
     }
     
