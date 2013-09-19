@@ -165,4 +165,26 @@ public class BImportFormattedCustomerTest
         String result = instance.computeEmailName(email);
         assertTrue(expResult.compareTo(result) == 0);
     }
+    
+    /**
+     * Test of InsertKeyValuePair method, of class FlatFormattedCustomer.
+     */
+    @Test
+    public void testInsertKeyValuePair()
+    {
+        System.out.println("==InsertKeyValuePair==");
+        FormattedCustomer formatter = new BImportFormattedCustomer(customer);
+        assertTrue(formatter.insertValue(BImportTableTypes.BORROWER_TABLE.toString(), "cell_phone", "780-999-1212"));
+        assertFalse(formatter.insertValue("NON_EXISTANT_TABLE", "SOCCER_STAR", "Beckem"));
+        List<String> result = formatter.getFormattedCustomer();
+        for (String s: result)
+        {
+            System.out.print("INSERT:\n"+s);
+        }
+        result = formatter.getFormattedHeader();
+        for (String s: result)
+        {
+            System.out.print("INSERT:\n"+s);
+        }
+    }
 }

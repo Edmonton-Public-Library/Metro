@@ -208,4 +208,17 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         }
     }
 
+    @Override
+    public boolean insertValue(String tableName, String key, String value)
+    {
+        for (FormattedTable table: this.customerAccount)
+        {
+            if (table.getName().compareTo(tableName) == 0)
+            {
+                table.setValue(key, value);
+                return true;
+            }
+        }
+        return false;
+    }
 }

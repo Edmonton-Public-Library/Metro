@@ -119,4 +119,22 @@ public class FlatFormattedCustomerTest
             System.out.print("NEW_TABLE:\n"+s);
         }
     }
+    
+    /**
+     * Test of InsertKeyValuePair method, of class FlatFormattedCustomer.
+     */
+    @Test
+    public void testInsertKeyValuePair()
+    {
+        System.out.println("==InsertKeyValuePair==");
+        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
+        assertTrue(formatter.containsKey(FlatUserFieldTypes.USER_FIRST_NAME.name()));
+        assertTrue(formatter.insertValue(FlatUserExtendedFieldTypes.USER.name(), "HOCKEY_STAR", "Gretzky"));
+        assertFalse(formatter.insertValue("NON_EXISTANT_TABLE", "SOCCER_STAR", "Beckem"));
+        List<String> result = formatter.getFormattedCustomer();
+        for (String s: result)
+        {
+            System.out.print("INSERT:\n"+s);
+        }
+    }
 }

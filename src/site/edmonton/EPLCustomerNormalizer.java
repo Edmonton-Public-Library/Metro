@@ -24,6 +24,7 @@ import java.util.Properties;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
+import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SymphonyPropertyTypes;
@@ -71,7 +72,7 @@ public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
             // of the flat file, we don't need to create new FlatFormattedTable objects.
             String key = defaultType.toString();
             String value = defaultProps.get(key).toString();
-            formattedCustomer.setValue(key, value);
+            formattedCustomer.insertValue(FlatUserExtendedFieldTypes.USER.name(), key, value);
         }
         // Next tidy up fields so they look nicer
         // Phone

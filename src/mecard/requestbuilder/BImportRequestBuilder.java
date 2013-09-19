@@ -132,8 +132,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
         UserFile bimportDataFile = new UserFile(dataFile);
         FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
-        // TODO finish finalize
-        normalizer.finalize(null, formattedCustomer, response);
+        // Make final changes to the formatted customer before loading as adding bstat.
+        normalizer.finalize(customer, formattedCustomer, response);
         bimportDataFile.addUserData(formattedCustomer.getFormattedCustomer());
         UserFile bimportHeaderFile = new UserFile(headerFile);
         bimportHeaderFile.addUserData(formattedCustomer.getFormattedHeader());

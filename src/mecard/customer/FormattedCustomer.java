@@ -54,6 +54,16 @@ public interface FormattedCustomer
     public boolean setValue(String key, String value);
     
     /**
+     * Inserts a given key value pair into an existing table.
+     * @param tableName
+     * @param key
+     * @param value
+     * @return true if the table was found and the key value pair inserted and 
+     * false otherwise.
+     */
+    public boolean insertValue(String tableName, String key, String value);
+    
+    /**
      * 
      * @param key
      * @return true if the key was found in the formatted customer account and

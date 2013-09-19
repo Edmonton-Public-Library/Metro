@@ -92,11 +92,6 @@ public abstract class CustomerLoadNormalizer
      * This method applies all the final touches to the customer's account pre-
      * loading to the ILS. This is where default values are applied, bStats are 
      * computed. It is the last stop before loading.
-     * @param formattedCustomer
-     * @param response 
-     */
-    /**
-     *
      * @param unformattedCustomer the value of unformattedCustomer
      * @param formattedCustomer the value of formattedCustomer
      * @param response the value of response

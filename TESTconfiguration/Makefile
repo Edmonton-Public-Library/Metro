@@ -34,3 +34,15 @@ test_it: client ${SERVICE}
 #	echo "==="
 #	tail ${OUT}.err
 #	-netstat -an | grep 2004
+test_local: client ${SERVICE}
+	./${SERVICE} start
+	-tail ${OUT}.out
+	sleep 3
+	-netstat -an | grep 2004
+	java ${FLAGS} ${C_PATH} ${CLIENT} 
+#	sleep 2
+	./${SERVICE} stop
+	tail ${OUT}.out
+	echo "==="
+	tail ${OUT}.err
+#	-netstat -an | grep 2004

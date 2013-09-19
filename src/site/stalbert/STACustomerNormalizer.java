@@ -20,7 +20,6 @@
 */
 package site.stalbert;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import mecard.Response;
@@ -32,7 +31,6 @@ import mecard.customer.BImportTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;
-import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
 import mecard.util.Text;

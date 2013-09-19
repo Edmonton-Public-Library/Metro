@@ -152,7 +152,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // we have a customer let's convert them to a flat user.
         FormattedCustomer formattedCustomer = new FlatFormattedCustomer(customer);
         // apply library centric normalization to the customer account.
-        normalizer.finalize(null, formattedCustomer, response);
+        normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
         this.printReceipt(customer, flatFileLines);
         if (this.sshServer.isEmpty())
@@ -168,7 +168,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // we have a customer let's convert them to a flat user.
         FormattedCustomer formattedCustomer = new FlatFormattedCustomer(customer);
         // apply library centric normalization to the customer account.
-        normalizer.finalize(null, formattedCustomer, response);
+        normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
         this.printReceipt(customer, flatFileLines);
         if (this.sshServer.isEmpty())
