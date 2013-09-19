@@ -4,14 +4,12 @@
  */
 package mecard.config;
 
-import mecard.config.BImportPropertyTypes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -23,13 +21,14 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "1.0"; // server version.
+    public final static String VERSION           = "0.8.0"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh). 
      * The tag is optional. Leaving it out means 
      * you expect to run the commands on the ILS server itself.
      */
     public final static String SSH_TAG           = "ssh";
+    public final static String LOAD_DIR          = "load-dir";
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";

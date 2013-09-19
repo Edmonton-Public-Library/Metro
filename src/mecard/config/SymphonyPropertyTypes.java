@@ -22,12 +22,16 @@ package mecard.config;
 
 /**
  * Mandatory property types of the Symphony configuration file. Note that there are
- * fields 
+ * fields non-mandatory fields:
+ * <ol>
+ * <li> "load-dir" the optional directory where flat user files are loaded from, no longer used.</li>
+ * <li> "ssh" [user]@[someserver.com] if you want to run your commands via SSH.</li>
+ * </ol>
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public enum SymphonyPropertyTypes
 {
-    LOAD_DIR("load-dir"),     // Directory where to find customer files to load.
+//    LOAD_DIR("load-dir"),     // Optional field Directory where to find customer files to load.
     USER_LIBRARY("USER_LIBRARY"),
     USER_PROFILE("USER_PROFILE"),
     USER_PREFERED_LANGUAGE("USER_PREF_LANG"),

@@ -20,12 +20,24 @@
 */
 package site.strathcona;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import mecard.Response;
 import mecard.ResponseTypes;
+import mecard.config.BImportDBFieldTypes;
+import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.customer.BImportTable;
 import mecard.customer.Customer;
+import mecard.customer.FormattedCustomer;
+import mecard.customer.FormattedTable;
+import mecard.util.DateComparer;
+import mecard.util.Phone;
+import mecard.util.PostalCode;
 import mecard.util.Text;
 import site.CustomerLoadNormalizer;
+import static site.stalbert.STACustomerNormalizer.SENIOR;
 
 /**
  *
@@ -71,5 +83,72 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
         // but I still recommend not converting case, since it effects other libraries
         // records.
         return rType;
+    }
+    
+    @Override
+    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    {
+        // Next tidy up fields so they look nicer
+        // Phone
+        String phoneField = formattedCustomer.getValue(BImportDBFieldTypes.PHONE_NUMBER.name());
+        phoneField = Phone.formatPhone(phoneField);
+        formattedCustomer.setValue(BImportDBFieldTypes.PHONE_NUMBER.name(), phoneField);
+        // PCode
+        String postalCode = formattedCustomer.getValue(BImportDBFieldTypes.POSTAL_CODE.name());
+        postalCode = PostalCode.formatPostalCode(postalCode);
+        formattedCustomer.setValue(BImportDBFieldTypes.POSTAL_CODE.name(), postalCode);
+        // STR has some special issues related to bStat.
+        //        If the patron is 65 or older and their barcode starts with 23877, the bstat should be fssen
+        //        If the patron is under 65 and their barcode starts with 23877, the bstat should be fsadu
+        //
+        //        If the patron is 65 or older and their barcode starts with 21974, the bstat should be s
+        //        If the patron is under 65 and their barcode starts with 21974, the bstat should be a 
+        if (unformattedCustomer.isEmpty(CustomerFieldTypes.DOB) == false)
+        {
+            String dob = unformattedCustomer.get(CustomerFieldTypes.DOB);
+            String userId = unformattedCustomer.get(CustomerFieldTypes.ID);
+            try
+            {
+                if (DateComparer.getYearsOld(dob) >= SENIOR)
+                {
+                    if (userId.startsWith("23877"))
+                    {
+                        addBStatTable(formattedCustomer, "fssen");
+                    }
+                    else if (userId.startsWith("21974"))
+                    {
+                        addBStatTable(formattedCustomer, "s");
+                    }
+                }
+                else // Regular adult account.
+                {
+                    if (userId.startsWith("23877"))
+                    {
+                        addBStatTable(formattedCustomer, "fsadu");
+                    }
+                    else if (userId.startsWith("21974"))
+                    {
+                        addBStatTable(formattedCustomer, "a");
+                    }
+                }
+            } catch (ParseException ex)
+            {
+                System.out.println(new Date() 
+                        + " STR normalizer couldn't parse dob: '" + dob + "'");
+            }
+        }
+    }
+
+    /**
+     * Creates and inserts a new table entry into the bimport file.
+     * @param formattedCustomer
+     * @param value 
+     */
+    private void addBStatTable(FormattedCustomer formattedCustomer, String value)
+    {
+        FormattedTable table = BImportTable.getInstanceOf(
+                BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
+        table.setValue(BImportTableTypes.BORROWER_BSTAT.toString(), value);
+        formattedCustomer.insertTable(table, 99); // insert at the end.
     }
 }

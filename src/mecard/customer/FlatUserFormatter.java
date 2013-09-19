@@ -41,68 +41,6 @@ import mecard.util.PostalCode;
 public class FlatUserFormatter implements CustomerFormatter
 {
     public final static String DEFAULT_DATE = "";
-    
-    /**
-     * Converts a customer into a flatUser that can be loaded by Symphony's
-     * loadflatuser.
-     * @param customer
-     * @return Flat user data as a List of Strings.
-     */
-    @Override
-    public List<String> setCustomer(Customer customer)
-    {
-        if (customer == null)
-        {
-            return new ArrayList<>();
-        }
-        FlatUser flatUser = new FlatUser();
-        flatUser.add(FlatUserFieldTypes.USER_ID, customer.get(CustomerFieldTypes.ID));
-        flatUser.add(FlatUserFieldTypes.USER_PIN, customer.get(CustomerFieldTypes.PIN));
-        flatUser.add(FlatUserFieldTypes.USER_FIRST_NAME, customer.get(CustomerFieldTypes.FIRSTNAME));
-        flatUser.add(FlatUserFieldTypes.USER_LAST_NAME, customer.get(CustomerFieldTypes.LASTNAME));
-        flatUser.add(FlatUserFieldTypes.USER_PREFERRED_NAME, customer.get(CustomerFieldTypes.PREFEREDNAME));
-        // Dates
-        flatUser.add(FlatUserFieldTypes.USER_BIRTH_DATE, customer.get(CustomerFieldTypes.DOB));
-        flatUser.add(FlatUserFieldTypes.USER_PRIV_EXPIRES, customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
-        // Address
-        flatUser.add(
-                FlatUserExtendedFieldTypes.USER_ADDR1, 
-                FlatUserFieldTypes.STREET, 
-                customer.get(CustomerFieldTypes.STREET));
-        // Symphony uses CITY/STATE as a field (sigh)
-        String city     = customer.get(CustomerFieldTypes.CITY);
-        String province = customer.get(CustomerFieldTypes.PROVINCE);
-        flatUser.add(
-                FlatUserExtendedFieldTypes.USER_ADDR1, 
-                FlatUserFieldTypes.CITY_STATE, 
-                city + ", " + province.toUpperCase());
-        flatUser.add(
-                FlatUserExtendedFieldTypes.USER_ADDR1, 
-                FlatUserFieldTypes.POSTALCODE, 
-                PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
-        flatUser.add(
-                FlatUserExtendedFieldTypes.USER_ADDR1, 
-                FlatUserFieldTypes.EMAIL, 
-                customer.get(CustomerFieldTypes.EMAIL));
-        // Load optional fields.
-        flatUser.add(
-                FlatUserExtendedFieldTypes.USER_ADDR1, 
-                FlatUserFieldTypes.PHONE, 
-                mecard.util.Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
-        String gender = customer.get(CustomerFieldTypes.SEX);
-        if (gender.contains(Protocol.DEFAULT_FIELD_VALUE) == false)
-        {
-            // we will have to revisit this since I don't know how Horizon 
-            //  designates different sexes.
-            flatUser.add(FlatUserFieldTypes.USER_CATEGORY2, gender);
-        }
-        // There is not middle name field.
-        // set todays date as the date privilege granted.
-        flatUser.add(FlatUserFieldTypes.USER_PRIV_GRANTED,  DateComparer.ANSIToday());
-        // Now load all the default values we need to set like PROFILE.
-        flatUser.setDefaultProperties();
-        return flatUser.toList(); 
-    }
 
     @Override
     public Customer getCustomer(String customerString)

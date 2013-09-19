@@ -23,8 +23,9 @@ package mecard.customer;
 import java.util.List;
 
 /**
- * This class formats requests and responses to and from the ILS.
- * @author metro
+ * This class formats ILS output into Customer objects. The reverse is carried
+ * out by {@link FormattedCustomer} objects.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public interface CustomerFormatter
 {
@@ -42,12 +43,4 @@ public interface CustomerFormatter
      * @return true if the conversion was successful and false otherwise.
      */
     public Customer getCustomer(String s);
-    
-    /**
-     *
-     * @param c the Customer object to convert into a list to be consumed by 
-     * a subtype.
-     * @return the List<String>
-     */
-    public List<String> setCustomer(Customer c);
 }

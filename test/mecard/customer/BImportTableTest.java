@@ -42,7 +42,7 @@ public class BImportTableTest
     public void testGetHeaderLine()
     {
         System.out.println("==getHeaderLine==");
-        BImportTable instance = BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_TABLE, this.testMap);
+        BImportTable instance = BImportTable.getInstanceOf(BImportTableTypes.BORROWER_TABLE, this.testMap);
         String result = instance.getHeader();
         System.out.print("HEADER:"+result);
         result = instance.getData();
@@ -67,7 +67,7 @@ public class BImportTableTest
         this.testMap.put("expiration_date", "20180101");
         this.testMap.put("birth_date", "19700101");
         
-        BImportTable instance1 = BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_ADDRESS_TABLE, testMap);
+        BImportTable instance1 = BImportTable.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, testMap);
         result = instance1.getHeader();
         System.out.print("HEADER:"+result);
         result = instance1.getData();

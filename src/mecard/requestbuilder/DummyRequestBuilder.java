@@ -35,6 +35,7 @@ import mecard.customer.FlatUserFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
+import site.CustomerLoadNormalizer;
 
 /**
  *
@@ -125,13 +126,13 @@ public class DummyRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getCreateUserCommand(Customer customer, Response response)
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         return getConfiguredResonse(customer, response);
     }
     
     @Override
-    public Command getUpdateUserCommand(Customer customer, Response response)
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         return getConfiguredResonse(customer, response);
     }

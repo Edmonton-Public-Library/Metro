@@ -30,6 +30,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
+import site.CustomerLoadNormalizer;
 
 /**
  * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.
@@ -156,9 +157,11 @@ public abstract class ILSRequestBuilder
      *
      * @param customer
      * @param response
+     * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to create a customer.
      */
-    public Command getCreateUserCommand(Customer customer, Response response)
+    
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         throw new UnsupportedCommandException("The requested protocol listed in "
                 + "environment.properties does not support customer creation.");
@@ -169,9 +172,11 @@ public abstract class ILSRequestBuilder
      *
      * @param customer
      * @param response
+     * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to update a customer.
      */
-    public Command getUpdateUserCommand(Customer customer, Response response)
+    
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         throw new UnsupportedCommandException("The requested protocol listed in "
                 + "environment.properties does not support update customer.");

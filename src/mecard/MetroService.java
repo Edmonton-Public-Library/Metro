@@ -41,7 +41,6 @@ import org.apache.commons.daemon.*;
  */
 public final class MetroService implements Daemon
 {
-    public final static String VERSION       = "0.7.6_08"; // server version
     private static ServerSocket serverSocket = null;
     private static boolean listening         = true;
     private static String defaultPort        = "2004";
@@ -63,7 +62,7 @@ public final class MetroService implements Daemon
             cmd = parser.parse(options, args);
             if (cmd.hasOption("v"))
             {
-                System.out.println("Metro (MeCard) server version " + VERSION);
+                System.out.println("Metro (MeCard) server version " + PropertyReader.VERSION);
             }
              // get c option value
             String configDirectory = cmd.getOptionValue("c");
@@ -132,7 +131,7 @@ public final class MetroService implements Daemon
     @Override
     public void start() throws Exception
     {
-        System.out.println(new Date() + " starting service, server version: " + VERSION);
+        System.out.println(new Date() + " starting service, server version: " + PropertyReader.VERSION);
         main(ARGS);
     }
 

@@ -28,26 +28,25 @@ import mecard.config.BImportTableTypes;
  * Single line of either a header or data file.
  * @author andrew
  */
-public class BImportTable
+public class BImportTable implements FormattedTable
 {
     private final String tableName;
-    private final HashMap<String, String> columbs;
+    private final HashMap<String, String> columns;
     // set so that we can check if the user has output the header then added
     // another value then tries to output the data, bimport will break.
     private boolean isPairAccessed;
     
-    public static BImportTable getInstanceOBImportTable(
-            BImportTableTypes type, HashMap<String, String> dataFields)
+    public static BImportTable getInstanceOf(BImportTableTypes type, HashMap<String, String> dataFields)
     {
         return new BImportTable(type.toString(), dataFields);
     }
 
     private BImportTable(String dbTable, HashMap<String, String> headDataMap)
     {
-        this.columbs = new HashMap<>();
+        this.columns = new HashMap<>();
         for (String key: headDataMap.keySet())
         {
-            this.columbs.put(key, headDataMap.get(key));
+            this.columns.put(key, headDataMap.get(key));
         }
         this.tableName      = dbTable;
         this.isPairAccessed = true;
@@ -65,6 +64,7 @@ public class BImportTable
      * could not be added because they were null, or the key and value pair did
      * not exist when they were added.
      */
+    @Override
     public boolean setValue(String key, String value)
     {
         if (! isPairAccessed)
@@ -75,21 +75,37 @@ public class BImportTable
         boolean response = false;
         if (key != null && value != null)
         {
-            response = this.columbs.containsKey(key);
-            this.columbs.put(key, value);
+            response = this.columns.containsKey(key);
+            this.columns.put(key, value);
         }
         return response;
+    }
+    
+    /**
+     * Returns the value associated with this key.
+     * @param key
+     * @return the value associated with this key, or an empty string if the key is not present.
+     */
+    @Override
+    public String getValue(String key)
+    {
+        if (this.columns.containsKey(key))
+        {
+            return this.columns.get(key);
+        }
+        return "";
     }
     
     /**
      * 
      * @return properly formatted bimport header string for the table this represents.
      */
+    @Override
     public String getHeader()
     {
         // x- borrower: second_id; name; expiration_date; birth_date
-        String head = "x- " + this.tableName + ": ";
-        for (String sKeys: this.columbs.keySet())
+        String head = this.tableName + ": ";
+        for (String sKeys: this.columns.keySet())
         {
             head += sKeys + "; ";
         }
@@ -101,13 +117,14 @@ public class BImportTable
      * Creates matching.
      * @return properly formatted bimport data string for the table this represents.
      */
+    @Override
     public String getData()
     {
         // M- borrower: 21221012345677; Balzac, Billy; 04-15-2014; 01-31-1998
-        String data = "M- " + this.tableName + ": ";
-        for (String sKeys: this.columbs.keySet())
+        String data = this.tableName + ": ";
+        for (String sKeys: this.columns.keySet())
         {
-            data += this.columbs.get(sKeys) + "; ";
+            data += this.columns.get(sKeys) + "; ";
         }
         isPairAccessed = !isPairAccessed;
         return finalizeLine(data);
@@ -121,6 +138,17 @@ public class BImportTable
     private String finalizeLine(String line)
     {
         int lastSemiColonPos = line.lastIndexOf("; ");
+        // bStat doesn't have a ';' so don't fail.
+        if (lastSemiColonPos < 0)
+        {
+            return line + "\r\n";
+        }
         return line.substring(0, lastSemiColonPos) + "\r\n";
+    }
+    
+    @Override
+    public String getName()
+    {
+        return this.tableName;
     }
 }

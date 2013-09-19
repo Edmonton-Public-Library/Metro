@@ -32,7 +32,8 @@ public enum BImportTableTypes
     BORROWER_PHONE_TABLE("borrower_phone"), 
     BORROWER_ADDRESS_TABLE("borrower_address"),
     BORROWER_BARCODE_TABLE("borrower_barcode"),
-    BORROWER_TABLE("borrower");
+    BORROWER_TABLE("borrower"),
+    BORROWER_BSTAT("borrower_bstat");
    
     private String type;
 

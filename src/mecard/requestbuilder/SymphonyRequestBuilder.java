@@ -39,6 +39,9 @@ import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.customer.UserFile;
 import mecard.config.PropertyReader;
+import mecard.customer.FlatFormattedCustomer;
+import mecard.customer.FormattedCustomer;
+import site.CustomerLoadNormalizer;
 
 /**
  * SymphonyRequestBuilder creates the commands used to perform the MeCard request
@@ -70,20 +73,20 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         Properties symphonyProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
-        this.homeDirectory = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
+        this.homeDirectory = symphonyProps.getProperty(PropertyReader.LOAD_DIR, "");
         // This is an optional tag that if included will run the commands remotely.
         // sshServer should now have either the name of the ssh server or "" if not defined.
         this.sshServer = symphonyProps.getProperty(PropertyReader.SSH_TAG, "");
         
-        seluser = new ArrayList<String>();
+        seluser = new ArrayList<>();
         seluser.add("seluser");
         seluser.add("-iB"); // expects barcode.
         seluser.add("-oU"); // will output user key.
         // Dumpflatuser settings, ready for inclusion in the APICommand object.
-        dumpflatuser = new ArrayList<String>();
+        dumpflatuser = new ArrayList<>();
         dumpflatuser.add("dumpflatuser");
         // loadflatuser settings, ready for inclusion in the APICommand object.
-        loadFlatUserCreate = new ArrayList<String>();
+        loadFlatUserCreate = new ArrayList<>();
         // /s/sirsi/Unicorn/Bin/loadflatuser -aA -bA -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
         loadFlatUserCreate.add("loadflatuser");
         loadFlatUserCreate.add("-aA"); // Add base.
@@ -94,7 +97,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserCreate.add("-y\"" + homeLibrary + "\"");
         loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
-        loadFlatUserUpdate = new ArrayList<String>();
+        loadFlatUserUpdate = new ArrayList<>();
         loadFlatUserUpdate.add("loadflatuser");
         loadFlatUserUpdate.add("-aR"); // replace base information
         loadFlatUserUpdate.add("-bR"); // Replace extended information
@@ -144,37 +147,35 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getCreateUserCommand(Customer customer, Response response)
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // we have a customer let's convert them to a flat user.
-        CustomerFormatter formatter = getFormatter();
-        List<String> flatUser = formatter.setCustomer(customer);
-        this.printReceipt(customer, flatUser);
+        FormattedCustomer formattedCustomer = new FlatFormattedCustomer(customer);
+        // apply library centric normalization to the customer account.
+        normalizer.finalize(null, formattedCustomer, response);
+        List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
+        this.printReceipt(customer, flatFileLines);
         if (this.sshServer.isEmpty())
         {
-            return new APICommand.Builder().cat(flatUser).commandLine(loadFlatUserCreate).build();
+            return new APICommand.Builder().cat(flatFileLines).commandLine(loadFlatUserCreate).build();
         }
-        return new APICommand.Builder(this.sshServer).cat(flatUser).commandLine(loadFlatUserCreate).build();
+        return new APICommand.Builder(this.sshServer).cat(flatFileLines).commandLine(loadFlatUserCreate).build();
     }
     
-    /**
-     *
-     *
-     * @param customer the value of customer
-     * @param response the value of responseBuffer
-     */
     @Override
-    public Command getUpdateUserCommand(Customer customer, Response response)
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // we have a customer let's convert them to a flat user.
-        CustomerFormatter formatter = getFormatter();
-        List<String> flatUser = formatter.setCustomer(customer);
-        this.printReceipt(customer, flatUser);
+        FormattedCustomer formattedCustomer = new FlatFormattedCustomer(customer);
+        // apply library centric normalization to the customer account.
+        normalizer.finalize(null, formattedCustomer, response);
+        List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
+        this.printReceipt(customer, flatFileLines);
         if (this.sshServer.isEmpty())
         {
-            return new APICommand.Builder().cat(flatUser).commandLine(loadFlatUserUpdate).build();
+            return new APICommand.Builder().cat(flatFileLines).commandLine(loadFlatUserUpdate).build();
         }
-        return new APICommand.Builder(this.sshServer).cat(flatUser).commandLine(loadFlatUserUpdate).build();
+        return new APICommand.Builder(this.sshServer).cat(flatFileLines).commandLine(loadFlatUserUpdate).build();
     }
 
     @Override

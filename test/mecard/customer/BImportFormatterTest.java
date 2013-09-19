@@ -29,14 +29,14 @@ public class BImportFormatterTest
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         Customer customer = request.getCustomer();
-        BImportFormatter formatter = new BImportFormatter();
+        BImportFormattedCustomer formatter = new BImportFormattedCustomer(customer);
         List<String> expResult = new ArrayList<>();
         expResult.add("x- borrower: second_id; name; expiration_date; birth_date; pin\r\n");
         expResult.add("borrower_phone: phone_type; phone_no\r\n");
         expResult.add("borrower_address: address1; address2; city_st; postal_code; email_name; email_address; send_preoverdue\r\n");
         expResult.add("borrower_barcode: bbarcode\r\n");
 
-        List<String> result = formatter.setCustomer(customer);
+        List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
         {
             System.out.print("=>"+s);
@@ -48,7 +48,7 @@ public class BImportFormatterTest
         expResult.add("borrower_phone: h-noTC; 7804964058\r\n");
         expResult.add("borrower_address: 12345 123 St.; ; edmonton; H0H 0H0; ilsteam; ilsteam@epl.ca; 1\r\n");
         expResult.add("borrower_barcode: 21221012345678\r\n");
-        result = formatter.getCustomerHeader();
+        result = formatter.getFormattedHeader();
         for (String s: result)
         {
             System.out.print("=>"+s);

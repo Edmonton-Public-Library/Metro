@@ -222,9 +222,9 @@ public class Responder
     public void createCustomer(Response response)
     {
         Customer customer = request.getCustomer();
-        normalizeBeforeCustomerLoad(response, customer);
+        CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
-        Command command = requestBuilder.getCreateUserCommand(customer, response);
+        Command command = requestBuilder.getCreateUserCommand(customer, response, normalizer);
         CommandStatus status = command.execute();
         System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
@@ -242,9 +242,9 @@ public class Responder
     public void updateCustomer(Response response)
     {
         Customer customer = request.getCustomer();
-        normalizeBeforeCustomerLoad(response, customer);
+        CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
-        Command command = requestBuilder.getUpdateUserCommand(customer, response);
+        Command command = requestBuilder.getUpdateUserCommand(customer, response, normalizer);
         CommandStatus status = command.execute();
         System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
@@ -261,14 +261,17 @@ public class Responder
      * object will contain the changes that were made. In our example an 
      * explanation of that the over-sized PIN was truncated and what the new value
      * is can be added.
+     *
+     * @param customer
      * @param response
-     * @param customer 
+     * @return customer load normalizer.
      */
-    public void normalizeBeforeCustomerLoad(Response response, Customer customer)
+    
+    public CustomerLoadNormalizer getNormalizerPreformatCustomer(Customer customer, Response response)
     {
         if (customer == null)
         {
-            return;
+            throw new MalformedCommandException("Expected customer, but got null.");
         }
         if (customer.get(CustomerFieldTypes.ISLOSTCARD).compareTo(Protocol.TRUE) == 0)
         {
@@ -282,6 +285,7 @@ public class Responder
         ResponseTypes responseType = normalizer.normalize(customer, resultStringBuilder);
         response.setCode(responseType);
         response.setResponse(resultStringBuilder.toString());
+        return normalizer;
     }
     
     /**

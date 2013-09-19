@@ -145,17 +145,6 @@ public class SIPFormatter implements CustomerFormatter
         return customer;
     }
 
-    /**
-     *
-     * @param c the value of c
-     * @return the List<String>
-     */
-    @Override
-    public List<String> setCustomer(Customer c)
-    {
-        throw new UnsupportedOperationException("SIP does not support customer creation.");
-    }
-
     @Override
     public Customer getCustomer(List<String> list)
     {

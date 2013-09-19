@@ -69,8 +69,8 @@ public class FlatUserFormatterTest
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         Customer customer = request.getCustomer();
-        FlatUserFormatter formatter = new FlatUserFormatter();
-        List<String> expResult = new ArrayList<String>();
+        FlatFormattedCustomer formatter = new FlatFormattedCustomer(customer);
+        List<String> expResult = new ArrayList<>();
         expResult.add("*** DOCUMENT BOUNDARY ***\n");
         expResult.add(".USER_ID.   |a21221012345678\n");
         expResult.add(".USER_FIRST_NAME.   |aBalzac\n");
@@ -97,7 +97,7 @@ public class FlatUserFormatterTest
         expResult.add(".EMAIL.   |ailsteam@epl.ca\n");
         expResult.add(".USER_ADDR1_END.\n");
 
-        List<String> result = formatter.setCustomer(customer);
+        List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
         {
             System.out.print("=>"+s);

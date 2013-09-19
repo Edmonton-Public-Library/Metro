@@ -22,6 +22,7 @@ package site;
 
 import site.edmonton.EPLCustomerNormalizer;
 import java.util.Properties;
+import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
@@ -29,6 +30,8 @@ import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import mecard.config.PropertyReader;
 import mecard.config.MemberTypes;
+import mecard.customer.CustomerFormatter;
+import mecard.customer.FormattedCustomer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
 
@@ -84,4 +87,20 @@ public abstract class CustomerLoadNormalizer
         }
         return normalizer;
     }
+
+    /**
+     * This method applies all the final touches to the customer's account pre-
+     * loading to the ILS. This is where default values are applied, bStats are 
+     * computed. It is the last stop before loading.
+     * @param formattedCustomer
+     * @param response 
+     */
+    /**
+     *
+     * @param unformattedCustomer the value of unformattedCustomer
+     * @param formattedCustomer the value of formattedCustomer
+     * @param response the value of response
+     */
+    
+    public abstract void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response);
 }

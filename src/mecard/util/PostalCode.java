@@ -42,9 +42,19 @@ public class PostalCode
         this.isValid = this.setContent(postalCode);
     }
     
+    /** 
+     * Formats a given postal code to "CDC DCD" from "CDCDCD".
+     * @param postalCode
+     * @return formatted postal code.
+     */
     public static String formatPostalCode(String postalCode)
     {
-        return postalCode.substring(0, 3) + " " + postalCode.substring(3);
+        PostalCode code  = new PostalCode(postalCode);
+        if (code.isValid)
+        {
+            return postalCode.substring(0, 3) + " " + postalCode.substring(3);
+        }
+        return postalCode;
     }
 
     /**

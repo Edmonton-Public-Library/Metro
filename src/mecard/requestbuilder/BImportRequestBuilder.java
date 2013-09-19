@@ -20,6 +20,7 @@
  */
 package mecard.requestbuilder;
 
+import mecard.customer.FormattedCustomer;
 import api.APICommand;
 import api.Command;
 import api.CommandStatus;
@@ -36,14 +37,14 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesConfigTypes;
 import mecard.customer.BImportBat;
-import mecard.customer.BImportFile;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
-import mecard.customer.BImportFormatter;
+import mecard.customer.BImportFormattedCustomer;
 import mecard.customer.UserFile;
+import site.CustomerLoadNormalizer;
 
 /**
  *
@@ -108,7 +109,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getCreateUserCommand(Customer customer, Response response)
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // In this method on this class we create the data file and optionally
         // a batch file at the same time since all three files must have consistent
@@ -125,16 +126,17 @@ public class BImportRequestBuilder extends ILSRequestBuilder
             bimportDir += File.separator;
         }
         // bat file name 
-        batFile = loadDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
+        batFile    = loadDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
         // header and data file names.
         headerFile = loadDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
-        dataFile = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
-        BImportFormatter formatter = new BImportFormatter();
-        // important to process customer data first, then header
-        UserFile bimportDataFile   = new UserFile(dataFile);
-        bimportDataFile.addUserData(formatter.setCustomer(customer));
+        dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
+        UserFile bimportDataFile = new UserFile(dataFile);
+        FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
+        // TODO finish finalize
+        normalizer.finalize(null, formattedCustomer, response);
+        bimportDataFile.addUserData(formattedCustomer.getFormattedCustomer());
         UserFile bimportHeaderFile = new UserFile(headerFile);
-        bimportHeaderFile.addUserData(formatter.getCustomerHeader());
+        bimportHeaderFile.addUserData(formattedCustomer.getFormattedHeader());
         File fTest = new File(headerFile);
         if (fTest.exists() == false)
         {
@@ -165,10 +167,10 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getUpdateUserCommand(Customer customer, Response response)
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // Since we use the same command for updating as creating we can do this:
-        return getCreateUserCommand(customer, response);
+        return getCreateUserCommand(customer, response, null);
     }
 
     /**
@@ -236,17 +238,6 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         return result;
     }
     
-    /** 
-     * Horizon has an additional required field, email name, which is just the 
-     * user's email name (without the domain). We compute that here.
-     * @param email
-     * @return String value of email account name (without the domain).
-     */
-    protected String computeEmailName(String email) 
-    {
-        return email.split("@")[0];
-    }
-
     @Override
     public boolean tidy()
     {

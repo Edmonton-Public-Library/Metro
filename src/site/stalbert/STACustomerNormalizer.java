@@ -20,10 +20,21 @@
 */
 package site.stalbert;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import mecard.Response;
 import mecard.ResponseTypes;
+import mecard.config.BImportDBFieldTypes;
+import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.customer.BImportTable;
 import mecard.customer.Customer;
+import mecard.customer.FormattedCustomer;
+import mecard.customer.FormattedTable;
+import mecard.util.DateComparer;
+import mecard.util.Phone;
+import mecard.util.PostalCode;
 import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
@@ -35,6 +46,7 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
 {
     public final static int MAXIMUM_PIN_WIDTH = 4;
     private final boolean debug;
+    public final static int SENIOR = 65;
     
     public STACustomerNormalizer(boolean debug)
     {
@@ -56,5 +68,49 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
             rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         }
         return rType;
+    }
+
+    @Override
+    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    {
+        // Next tidy up fields so they look nicer
+        // Phone
+        String phoneField = formattedCustomer.getValue(BImportDBFieldTypes.PHONE_NUMBER.name());
+        phoneField = Phone.formatPhone(phoneField);
+        formattedCustomer.setValue(BImportDBFieldTypes.PHONE_NUMBER.name(), phoneField);
+        // PCode
+        String postalCode = formattedCustomer.getValue(BImportDBFieldTypes.POSTAL_CODE.name());
+        postalCode = PostalCode.formatPostalCode(postalCode);
+        formattedCustomer.setValue(BImportDBFieldTypes.POSTAL_CODE.name(), postalCode);
+        // They also set bstat for sex
+        if (unformattedCustomer.isEmpty(CustomerFieldTypes.SEX) == false)
+        {
+            String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
+            if (sex.compareToIgnoreCase("M") == 0)
+            {
+                addBStatTable(formattedCustomer, "m");
+            }
+            else if (sex.compareToIgnoreCase("F") == 0)
+            {
+                addBStatTable(formattedCustomer, "f");
+            }
+            else
+            {
+                addBStatTable(formattedCustomer, "unknown");
+            }
+        }
+    }
+
+    /**
+     * Creates and inserts a new table entry into the bimport file.
+     * @param formattedCustomer
+     * @param value 
+     */
+    private void addBStatTable(FormattedCustomer formattedCustomer, String value)
+    {
+        FormattedTable table = BImportTable.getInstanceOf(
+                BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
+        table.setValue(BImportTableTypes.BORROWER_BSTAT.toString(), value);
+        formattedCustomer.insertTable(table, 99); // insert at the end.
     }
 }

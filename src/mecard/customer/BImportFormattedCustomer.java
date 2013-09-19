@@ -23,83 +23,24 @@ package mecard.customer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
-import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.PropertyReader;
-import mecard.requestbuilder.BImportRequestBuilder;
 
 /**
- * This formatter takes Customer data and returns data ready for producing 
- * a BImport file.
+ * Instance of a customer formatted for loading.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class BImportFormatter implements CustomerFormatter
+public final class BImportFormattedCustomer implements FormattedCustomer
 {
-            // ==== Head =====
-//        x- borrower: second_id; name; expiration_date; birth_date
-//        borrower_phone: phone_type; phone_no
-//        borrower_address: address1; address2; city_st; postal_code; email_name; email_address; send_preoverdue
-//        borrower_barcode: bbarcode
-//        borrower_bstat: bstat
-        
-        // ==== Data =====
-//        M- borrower: 21221012345677; Balzac, Billy; 04-15-2014; 01-31-1998
-//        borrower_phone: h-noTC; 7804964058
-//        borrower_address: 12345 123 St.; ; edmonton; H0H 0H0; ilsteam; ilsteam@epl.ca; 1
-//        borrower_barcode: 21221012345678
-//        borrower_bstat: unknown
+    private List<BImportTable> customerAccount;
     private boolean isSetDefaultSendPreoverdue;
-    private List<BImportTable> headDataList;
     
-    public BImportFormatter()
+    public BImportFormattedCustomer(Customer c)
     {
-        Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
-        // Optional bimport value, defaults to 'on' for default send pre-overdue notices.
-        this.isSetDefaultSendPreoverdue = true;
-        String sendPreoverdue = bimpProps.getProperty(BImportRequestBuilder.SEND_PREOVERDUE.toString(), "true");
-        if (sendPreoverdue.compareToIgnoreCase("false") == 0)
-        {
-            this.isSetDefaultSendPreoverdue = false;
-        }
-        this.headDataList = new ArrayList<>();
-    }
-    
-    @Override
-    public Customer getCustomer(List<String> list)
-    {
-        throw new UnsupportedOperationException("BImport does not support "
-                + "creating Customers.");
-    }
-
-    @Override
-    public Customer getCustomer(String s)
-    {
-        throw new UnsupportedOperationException("BImport does not support "
-                + "creating Customers.");
-    }
-    
-    /** Returns the header portion of the customer's data set. 
-     * 
-     * @return header data, if {@link #setCustomer(mecard.customer.Customer)}
-     * has been called and an empty list otherwise.
-     */
-    public List<String> getCustomerHeader()
-    {
-        List<String> customerList = new ArrayList<>();
-        for (BImportTable table: headDataList)
-        {
-            customerList.add(table.getHeader());
-        }
-        return customerList;
-    }
-
-    @Override
-    public List<String> setCustomer(Customer c)
-    {
-        // Basic borrower table.
+        this.customerAccount = new ArrayList<>();
+        // initial formatting of the customer
+                // Basic borrower table.
         HashMap<String, String> customerTable = new HashMap<>();
         customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ID));
         customerTable.put(BImportDBFieldTypes.NAME.toString(), (c.get(CustomerFieldTypes.LASTNAME) 
@@ -117,7 +58,7 @@ public class BImportFormatter implements CustomerFormatter
         {
             customerTable.put(BImportDBFieldTypes.PIN.toString(), c.get(CustomerFieldTypes.PIN));
         }
-        headDataList.add(BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_TABLE, customerTable));
+        customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_TABLE, customerTable));
         
         // Next the phone table
         if (c.isEmpty(CustomerFieldTypes.PHONE) == false)
@@ -125,7 +66,7 @@ public class BImportFormatter implements CustomerFormatter
             customerTable.clear();
             customerTable.put(BImportDBFieldTypes.PHONE_TYPE.toString(), "h-noTC");
             customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), c.get(CustomerFieldTypes.PHONE));
-            headDataList.add(BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
+            customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
         }
         
         // Address
@@ -141,27 +82,100 @@ public class BImportFormatter implements CustomerFormatter
         {
             customerTable.put(BImportDBFieldTypes.SEND_PREOVERDUE.toString(), "1");
         }
-        headDataList.add(BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_ADDRESS_TABLE, customerTable));
+        customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, customerTable));
         
         // Borrower Barcode
         customerTable.clear();
         customerTable.put(BImportDBFieldTypes.BARCODE.toString(), c.get(CustomerFieldTypes.ID));
-        headDataList.add(BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));
+        customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));
         
         // Borrower bStat TODO
 //        customerTable.clear();
 //        customerTable.put(BImportDBFieldTypes.BARCODE.toString(), c.get(CustomerFieldTypes.ID));
-//        headDataList.add(BImportTable.getInstanceOBImportTable(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));
-        
+//        headDataList.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));     
+    }
+    
+    @Override
+    public List<String> getFormattedCustomer()
+    {
         List<String> customerList = new ArrayList<>();
-        for (BImportTable table: headDataList)
+        for (BImportTable table: this.customerAccount)
         {
             customerList.add(table.getData());
         }
+        // add the modification prefix to the start of the initial line.
+        if (customerList.size() > 0)
+        {
+            String initialEntry = "M- " + customerList.remove(0);
+            customerList.add(0, initialEntry);
+        }
         return customerList;
     }
+
+    @Override
+    public List<String> getFormattedHeader()
+    {
+        List<String> customerList = new ArrayList<>();
+        for (BImportTable table: this.customerAccount)
+        {
+            customerList.add(table.getHeader());
+        }
+        if (customerList.size() > 0)
+        {
+            String initialEntry = "x- " + customerList.remove(0);
+            customerList.add(0, initialEntry);
+        }
+        return customerList;
+    }
+
+    @Override
+    public boolean setValue(String key, String value)
+    {
+        for (BImportTable table: this.customerAccount)
+        {
+            // check if this table contains a key as provided since BImportTable will
+            // insert the value if it doesn't exist, and we don't want all the tables
+            // to have this value added. 
+            if (containsKey(key))
+            {
+                return table.setValue(key, value);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean containsKey(String key)
+    {
+        // searches all tables for entries.
+        boolean result = false;
+        for (BImportTable table: this.customerAccount)
+        {
+            if (table.getValue(key).isEmpty() == false)
+            {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public String getValue(String key)
+    {
+        StringBuilder result = new StringBuilder();
+        for (BImportTable table: this.customerAccount)
+        {
+            String value = table.getValue(key);
+            if (value.isEmpty() == false)
+            {
+                result.append(value);
+                result.append(" "); // separate duplicate values with a space.
+            }
+        }
+        return result.toString().trim();
+    }
     
-    /** 
+      /** 
      * Horizon has an additional required field, email name, which is just the 
      * user's email name (without the domain). We compute that here.
      * @param email
@@ -171,5 +185,27 @@ public class BImportFormatter implements CustomerFormatter
     {
         return email.split("@")[0];
     }
-    
+
+    /**
+     *
+     * @param formattedTable which is cast to BImport table here.
+     * @param index the value of index
+     */
+    @Override
+    public void insertTable(FormattedTable formattedTable, int index)
+    {
+        if (index > this.customerAccount.size())
+        {
+            this.customerAccount.add((BImportTable)formattedTable);
+        }
+        else if (index < 0)
+        {
+            this.customerAccount.add(0, (BImportTable)formattedTable);
+        }
+        else
+        {
+            this.customerAccount.add(index, (BImportTable)formattedTable);
+        }
+    }
+
 }

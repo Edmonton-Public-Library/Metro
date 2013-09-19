@@ -7,6 +7,7 @@ import java.util.List;
 import json.RequestDeserializer;
 import mecard.QueryTypes;
 import mecard.customer.Customer;
+import mecard.customer.FlatFormattedCustomer;
 import mecard.customer.FlatUserFormatter;
 import mecard.requestbuilder.ILSRequestBuilder;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class SymphonyRequestBuilderTest
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         Customer customer = request.getCustomer();
-        FlatUserFormatter formatter = new FlatUserFormatter();
+        FlatFormattedCustomer formatter = new FlatFormattedCustomer(customer);
         List<String> expResult = new ArrayList<String>();
         expResult.add("*** DOCUMENT BOUNDARY ***\n");
         expResult.add(".USER_ID.   |a21221012345678\n");
@@ -81,7 +82,7 @@ public class SymphonyRequestBuilderTest
         expResult.add(".EMAIL.   |ailsteam@epl.ca\n");
         expResult.add(".USER_ADDR1_END.\n");
 
-        List<String> result = formatter.setCustomer(customer);
+        List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
         {
             System.out.print("=>"+s);
@@ -89,7 +90,7 @@ public class SymphonyRequestBuilderTest
         
         ILSRequestBuilder api = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, true);
         Response response = new Response();
-        Command command = api.getCreateUserCommand(customer, response);
+        Command command = api.getCreateUserCommand(customer, response, null);
         System.out.println("CMD:" + command.toString());
         assertEquals(expResult, result);
     }
