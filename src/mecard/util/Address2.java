@@ -427,6 +427,7 @@ public class Address2
             if (matcher.find())
             {
                 this.value = matcher.group().toUpperCase();
+                this.value = this.value.replaceAll("\\s+", "");
                 return true;
             }
             return false;

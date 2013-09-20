@@ -104,10 +104,7 @@ public class Province
             this.province = ProvinceType.YUKON.toString();
             return;
         }
-        else
-        {
-            this.isValid = false;
-        }
+        this.isValid = false;
     }
     
     public boolean isValid()
