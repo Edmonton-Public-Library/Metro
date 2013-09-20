@@ -30,7 +30,6 @@ import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import mecard.config.PropertyReader;
 import mecard.config.MemberTypes;
-import mecard.customer.CustomerFormatter;
 import mecard.customer.FormattedCustomer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;

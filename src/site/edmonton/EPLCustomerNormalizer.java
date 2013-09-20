@@ -74,14 +74,5 @@ public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
             String value = defaultProps.get(key).toString();
             formattedCustomer.insertValue(FlatUserExtendedFieldTypes.USER.name(), key, value);
         }
-        // Next tidy up fields so they look nicer
-        // Phone
-        String phoneField = formattedCustomer.getValue(FlatUserFieldTypes.PHONE.name());
-        phoneField = Phone.formatPhone(phoneField);
-        formattedCustomer.setValue(FlatUserFieldTypes.PHONE.name(), phoneField);
-        // PCode
-        String postalCode = formattedCustomer.getValue(FlatUserFieldTypes.POSTALCODE.name());
-        postalCode = PostalCode.formatPostalCode(postalCode);
-        formattedCustomer.setValue(FlatUserFieldTypes.POSTALCODE.name(), postalCode);
     }
 }

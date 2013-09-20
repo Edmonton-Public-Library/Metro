@@ -52,7 +52,8 @@ public class PostalCode
         PostalCode code  = new PostalCode(postalCode);
         if (code.isValid)
         {
-            return postalCode.substring(0, 3) + " " + postalCode.substring(3);
+            String pCode = postalCode.replaceAll("\\s+", " ");
+            return pCode;
         }
         return postalCode;
     }

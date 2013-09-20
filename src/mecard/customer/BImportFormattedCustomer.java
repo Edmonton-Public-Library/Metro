@@ -20,12 +20,19 @@
  */
 package mecard.customer;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.util.DateComparer;
+import mecard.util.Phone;
+import mecard.util.PostalCode;
 
 /**
  * Instance of a customer formatted for loading.
@@ -46,9 +53,25 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerTable.put(BImportDBFieldTypes.NAME.toString(), (c.get(CustomerFieldTypes.LASTNAME) 
                 + ", " + c.get(CustomerFieldTypes.FIRSTNAME)));
         customerTable.put(BImportDBFieldTypes.EXPIRY.toString(), c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+        try
+        {
+            String expiry = DateComparer.ANSIToConfigDate(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+            customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), expiry);
+        } catch (ParseException ex)
+        {
+            System.out.println(new Date() + " unable to parse expiry '" 
+                    + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES) + "'");
+        }
         if (c.isEmpty(CustomerFieldTypes.DOB) == false)
         {
-            customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), c.get(CustomerFieldTypes.DOB));
+            try
+            {
+                String dobDate = DateComparer.ANSIToConfigDate(c.get(CustomerFieldTypes.DOB));
+                customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), dobDate);
+            } catch (ParseException ex)
+            {
+                System.out.println(new Date() + " unable to parse DOB '" + c.get(CustomerFieldTypes.DOB) + "'");
+            }
         }
         // This is checked because on update of a user account you can clear the
         // pin to protect that field from updating, and if the case where their EPL
@@ -65,7 +88,7 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         {
             customerTable.clear();
             customerTable.put(BImportDBFieldTypes.PHONE_TYPE.toString(), "h-noTC");
-            customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), c.get(CustomerFieldTypes.PHONE));
+            customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), Phone.formatPhone(c.get(CustomerFieldTypes.PHONE)));
             customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
         }
         
@@ -74,7 +97,7 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerTable.put(BImportDBFieldTypes.ADDRESS_1.toString(), c.get(CustomerFieldTypes.STREET));
         customerTable.put(BImportDBFieldTypes.ADDRESS_2.toString(), " "); // intentionally blank
         customerTable.put(BImportDBFieldTypes.CITY.toString(), c.get(CustomerFieldTypes.CITY));
-        customerTable.put(BImportDBFieldTypes.POSTAL_CODE.toString(), c.get(CustomerFieldTypes.POSTALCODE));
+        customerTable.put(BImportDBFieldTypes.POSTAL_CODE.toString(), PostalCode.formatPostalCode(c.get(CustomerFieldTypes.POSTALCODE)));
         String emailName = this.computeEmailName(c.get(CustomerFieldTypes.EMAIL));
         customerTable.put(BImportDBFieldTypes.EMAIL_NAME.toString(), emailName);
         customerTable.put(BImportDBFieldTypes.EMAIL_ADDRESS.toString(), c.get(CustomerFieldTypes.EMAIL));
@@ -87,12 +110,7 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         // Borrower Barcode
         customerTable.clear();
         customerTable.put(BImportDBFieldTypes.BARCODE.toString(), c.get(CustomerFieldTypes.ID));
-        customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));
-        
-        // Borrower bStat TODO
-//        customerTable.clear();
-//        customerTable.put(BImportDBFieldTypes.BARCODE.toString(), c.get(CustomerFieldTypes.ID));
-//        headDataList.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));     
+        customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));     
     }
     
     @Override

@@ -88,15 +88,6 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
-        // Next tidy up fields so they look nicer
-        // Phone
-        String phoneField = formattedCustomer.getValue(BImportDBFieldTypes.PHONE_NUMBER.name());
-        phoneField = Phone.formatPhone(phoneField);
-        formattedCustomer.setValue(BImportDBFieldTypes.PHONE_NUMBER.name(), phoneField);
-        // PCode
-        String postalCode = formattedCustomer.getValue(BImportDBFieldTypes.POSTAL_CODE.name());
-        postalCode = PostalCode.formatPostalCode(postalCode);
-        formattedCustomer.setValue(BImportDBFieldTypes.POSTAL_CODE.name(), postalCode);
         // STR has some special issues related to bStat.
         //        If the patron is 65 or older and their barcode starts with 23877, the bstat should be fssen
         //        If the patron is under 65 and their barcode starts with 23877, the bstat should be fsadu

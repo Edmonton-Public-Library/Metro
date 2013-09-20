@@ -42,35 +42,34 @@ public class FlatFormattedCustomer implements FormattedCustomer
     {
         this.customerAccount = new ArrayList<>();
         HashMap<String, String> customerTable = new HashMap<>();
-        customerTable.put(FlatUserFieldTypes.USER_ID.name(), customer.get(CustomerFieldTypes.ID));
-        customerTable.put(FlatUserFieldTypes.USER_PIN.name(), customer.get(CustomerFieldTypes.PIN));
-        customerTable.put(FlatUserFieldTypes.USER_FIRST_NAME.name(), customer.get(CustomerFieldTypes.FIRSTNAME));
-        customerTable.put(FlatUserFieldTypes.USER_LAST_NAME.name(), customer.get(CustomerFieldTypes.LASTNAME));
-        customerTable.put(FlatUserFieldTypes.USER_PREFERRED_NAME.name(), customer.get(CustomerFieldTypes.PREFEREDNAME));
+        customerTable.put(FlatUserFieldTypes.USER_ID.toString(), customer.get(CustomerFieldTypes.ID));
+        customerTable.put(FlatUserFieldTypes.USER_PIN.toString(), customer.get(CustomerFieldTypes.PIN));
+        customerTable.put(FlatUserFieldTypes.USER_FIRST_NAME.toString(), customer.get(CustomerFieldTypes.FIRSTNAME));
+        customerTable.put(FlatUserFieldTypes.USER_LAST_NAME.toString(), customer.get(CustomerFieldTypes.LASTNAME));
+        customerTable.put(FlatUserFieldTypes.USER_PREFERRED_NAME.toString(), customer.get(CustomerFieldTypes.PREFEREDNAME));
         customerTable.put(FlatUserFieldTypes.USER_BIRTH_DATE.name(), customer.get(CustomerFieldTypes.DOB));
-        customerTable.put(FlatUserFieldTypes.USER_PRIV_EXPIRES.name(), customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+        customerTable.put(FlatUserFieldTypes.USER_PRIV_EXPIRES.toString(), customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         // set todays date as the date privilege granted.
-        customerTable.put(FlatUserFieldTypes.USER_PRIV_GRANTED.name(), DateComparer.ANSIToday());
-        // Load optional fields.
-        if (customer.isEmpty(CustomerFieldTypes.PHONE) == false)
-        {
-            customerTable.put(FlatUserFieldTypes.PHONE.name(), Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
-        }
+        customerTable.put(FlatUserFieldTypes.USER_PRIV_GRANTED.toString(), DateComparer.ANSIToday());
         if (customer.isEmpty(CustomerFieldTypes.SEX) == false)
         {
-            customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.name(), customer.get(CustomerFieldTypes.SEX));
+            customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.toString(), customer.get(CustomerFieldTypes.SEX));
         }
         this.customerAccount.add(FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerTable));
-        // Address
+        // Address Table
         customerTable = new HashMap<>();
-        customerTable.put(FlatUserFieldTypes.STREET.name(), customer.get(CustomerFieldTypes.STREET));
+        customerTable.put(FlatUserFieldTypes.STREET.toString(), customer.get(CustomerFieldTypes.STREET));
+        if (customer.isEmpty(CustomerFieldTypes.PHONE) == false)
+        {
+            customerTable.put(FlatUserFieldTypes.PHONE.toString(), Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
+        }
         // Symphony uses CITY/STATE as a field (sigh)
         String city     = customer.get(CustomerFieldTypes.CITY);
         String province = customer.get(CustomerFieldTypes.PROVINCE);
-        customerTable.put(FlatUserFieldTypes.CITY_STATE.name(), (city + ", " + province.toUpperCase()));
-        customerTable.put(FlatUserFieldTypes.POSTALCODE.name(),
+        customerTable.put(FlatUserFieldTypes.CITY_STATE.toString(), (city + ", " + province.toUpperCase()));
+        customerTable.put(FlatUserFieldTypes.POSTALCODE.toString(),
                 PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
-        customerTable.put(FlatUserFieldTypes.EMAIL.name(), customer.get(CustomerFieldTypes.EMAIL));
+        customerTable.put(FlatUserFieldTypes.EMAIL.toString(), customer.get(CustomerFieldTypes.EMAIL));
         this.customerAccount.add(FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerTable));
     }
     

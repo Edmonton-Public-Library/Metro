@@ -71,15 +71,6 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
-        // Next tidy up fields so they look nicer
-        // Phone
-        String phoneField = formattedCustomer.getValue(BImportDBFieldTypes.PHONE_NUMBER.name());
-        phoneField = Phone.formatPhone(phoneField);
-        formattedCustomer.setValue(BImportDBFieldTypes.PHONE_NUMBER.name(), phoneField);
-        // PCode
-        String postalCode = formattedCustomer.getValue(BImportDBFieldTypes.POSTAL_CODE.name());
-        postalCode = PostalCode.formatPostalCode(postalCode);
-        formattedCustomer.setValue(BImportDBFieldTypes.POSTAL_CODE.name(), postalCode);
         // They also set bstat for sex
         if (unformattedCustomer.isEmpty(CustomerFieldTypes.SEX) == false)
         {

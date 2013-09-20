@@ -107,13 +107,11 @@ public class FlatTable implements FormattedTable
         case "USER_XINFO":
             out.append(".");
             out.append(this.name);
-            out.append("_BEGIN");
-            out.append(".\n");
+            out.append("_BEGIN.\n");
             out.append(data);
             out.append(".");
             out.append(this.name);
-            out.append("_END");
-            out.append(".\n");
+            out.append("_END.\n");
             break;
         case "USER":
             out.append(getHeader());
