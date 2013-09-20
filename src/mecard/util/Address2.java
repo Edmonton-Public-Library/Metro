@@ -174,7 +174,7 @@ public class Address2
     /**
      * Utility class for testable address field strings.
      */
-    protected abstract class AddressRecord
+    public abstract class AddressRecord
     {
         protected String value;
         public AddressRecord()
@@ -267,7 +267,7 @@ public class Address2
     /**
      * Utility class for testing place name strings.
      */
-    protected class City extends AddressRecord
+    public class City extends AddressRecord
     {
         private mecard.util.City city;
         private List<String> placeName; // store multiple selections.

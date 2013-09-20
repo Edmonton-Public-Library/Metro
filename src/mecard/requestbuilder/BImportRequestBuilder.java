@@ -170,7 +170,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // Since we use the same command for updating as creating we can do this:
-        return getCreateUserCommand(customer, response, null);
+        return getCreateUserCommand(customer, response, normalizer);
     }
 
     /**

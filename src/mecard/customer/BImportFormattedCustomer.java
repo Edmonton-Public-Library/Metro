@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.util.AlbertaCity;
+import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
@@ -52,11 +52,10 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ID));
         customerTable.put(BImportDBFieldTypes.NAME.toString(), (c.get(CustomerFieldTypes.LASTNAME) 
                 + ", " + c.get(CustomerFieldTypes.FIRSTNAME)));
-        customerTable.put(BImportDBFieldTypes.EXPIRY.toString(), c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         try
         {
             String expiry = DateComparer.ANSIToConfigDate(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
-            customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), expiry);
+            customerTable.put(BImportDBFieldTypes.EXPIRY.toString(), expiry);
         } catch (ParseException ex)
         {
             System.out.println(new Date() + " unable to parse expiry '" 
@@ -96,7 +95,10 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerTable.clear();
         customerTable.put(BImportDBFieldTypes.ADDRESS_1.toString(), c.get(CustomerFieldTypes.STREET));
         customerTable.put(BImportDBFieldTypes.ADDRESS_2.toString(), " "); // intentionally blank
-        customerTable.put(BImportDBFieldTypes.CITY.toString(), c.get(CustomerFieldTypes.CITY));
+        // look up the city name in bimport address.
+        City city  = AlbertaCity.getInstanceOf();
+        String cityCode = city.getCityCode(c.get(CustomerFieldTypes.CITY));
+        customerTable.put(BImportDBFieldTypes.CITY.toString(), cityCode);
         customerTable.put(BImportDBFieldTypes.POSTAL_CODE.toString(), PostalCode.formatPostalCode(c.get(CustomerFieldTypes.POSTALCODE)));
         String emailName = this.computeEmailName(c.get(CustomerFieldTypes.EMAIL));
         customerTable.put(BImportDBFieldTypes.EMAIL_NAME.toString(), emailName);

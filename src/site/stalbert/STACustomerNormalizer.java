@@ -24,15 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import mecard.Response;
 import mecard.ResponseTypes;
-import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.BImportTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;
-import mecard.util.Phone;
-import mecard.util.PostalCode;
 import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
@@ -99,7 +96,7 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
     {
         FormattedTable table = BImportTable.getInstanceOf(
                 BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
-        table.setValue(BImportTableTypes.BORROWER_BSTAT.toString(), value);
+        table.setValue("bstat; bstat", value + "; metro");
         formattedCustomer.insertTable(table, 99); // insert at the end.
     }
 }

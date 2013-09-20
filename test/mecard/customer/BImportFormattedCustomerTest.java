@@ -1,5 +1,4 @@
 package mecard.customer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import json.RequestDeserializer;
@@ -146,7 +145,7 @@ public class BImportFormattedCustomerTest
         BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
         String key = "birth_date";
         String result = instance.getValue(key);
-        assertTrue(result.compareTo("19750822") == 0);
+        assertTrue(result.compareTo("1975-08-22") == 0);
         key = "swan_song";
         result = instance.getValue(key);
         assertTrue(result.isEmpty());
