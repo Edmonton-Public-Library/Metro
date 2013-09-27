@@ -47,10 +47,13 @@ public class FlatFormattedCustomer implements FormattedCustomer
         customerTable.put(FlatUserFieldTypes.USER_FIRST_NAME.toString(), customer.get(CustomerFieldTypes.FIRSTNAME));
         customerTable.put(FlatUserFieldTypes.USER_LAST_NAME.toString(), customer.get(CustomerFieldTypes.LASTNAME));
         customerTable.put(FlatUserFieldTypes.USER_PREFERRED_NAME.toString(), customer.get(CustomerFieldTypes.PREFEREDNAME));
-        customerTable.put(FlatUserFieldTypes.USER_BIRTH_DATE.name(), customer.get(CustomerFieldTypes.DOB));
         customerTable.put(FlatUserFieldTypes.USER_PRIV_EXPIRES.toString(), customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         // set todays date as the date privilege granted.
         customerTable.put(FlatUserFieldTypes.USER_PRIV_GRANTED.toString(), DateComparer.ANSIToday());
+        if (customer.isEmpty(CustomerFieldTypes.DOB) == false)
+        {
+            customerTable.put(FlatUserFieldTypes.USER_BIRTH_DATE.name(), customer.get(CustomerFieldTypes.DOB));
+        }
         if (customer.isEmpty(CustomerFieldTypes.SEX) == false)
         {
             customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.toString(), customer.get(CustomerFieldTypes.SEX));
