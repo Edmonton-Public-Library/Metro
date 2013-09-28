@@ -63,26 +63,26 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
     public final static String DATA_FILE = "-data.txt";
-    private static final CharSequence SUCCESS_MARKER = "<ok>";
-    private String bimportDir;    // where bimport exe is located.
-    private String loadDir; // where to find the batch, header and data files.
-    private String serverName;
-    private String password;
-    private String userName;
-    private String database; // we may need another way to distinguish DBs on a server.
-    private String uniqueBorrowerTableKey;
-    private String bimportVersion; // like fm41
-    private String defaultBtype; // like bawb
-    private String mailType;
-    private String location; // branch? see 'lalap'
-    private String isIndexed; // "y = NOT indexed"
-    private String batFile;
-    private String headerFile;
-    private String dataFile;
-    private final Properties messageProperties;
-    private final boolean debug;
+    protected static final CharSequence SUCCESS_MARKER = "<ok>";
+    protected String bimportDir;    // where bimport exe is located.
+    protected String loadDir; // where to find the batch, header and data files.
+    protected String serverName;
+    protected String password;
+    protected String userName;
+    protected String database; // we may need another way to distinguish DBs on a server.
+    protected String uniqueBorrowerTableKey;
+    protected String bimportVersion; // like fm41
+    protected String defaultBtype; // like bawb
+    protected String mailType;
+    protected String location; // branch? see 'lalap'
+    protected String isIndexed; // "y = NOT indexed"
+    protected String batFile;
+    protected String headerFile;
+    protected String dataFile;
+    protected final Properties messageProperties;
+    protected final boolean debug;
     
-    BImportRequestBuilder(boolean debug)
+    public BImportRequestBuilder(boolean debug)
     {
         this.debug = debug;
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);

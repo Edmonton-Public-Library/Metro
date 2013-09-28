@@ -91,4 +91,13 @@ public class UserFile
         file = new File(name);
         return file;
     }
+
+    /**
+     * 
+     * @return true if there are no contents in this file and false otherwise.
+     */
+    public boolean isEmpty()
+    {
+        return this.data.isEmpty();
+    }
 }
