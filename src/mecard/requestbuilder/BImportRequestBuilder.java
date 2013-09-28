@@ -24,6 +24,7 @@ import mecard.customer.FormattedCustomer;
 import api.APICommand;
 import api.Command;
 import api.CommandStatus;
+import api.DummyCommand;
 import mecard.Response;
 import java.io.File;
 import java.util.ArrayList;
@@ -162,7 +163,11 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 .build();
         List<String> bimportBatExec = new ArrayList<>();
         batch.getCommandLine(bimportBatExec);
-        APICommand command = new APICommand.Builder().commandLine(bimportBatExec).build();
+//        APICommand command = new APICommand.Builder().commandLine(bimportBatExec).build();
+        Command command = new DummyCommand.Builder()
+                .setStatus(0)
+                .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
+                .build(); // empty command always returns success because BimportCustomerLoader loads on a timed event.
         return command;
     }
 
