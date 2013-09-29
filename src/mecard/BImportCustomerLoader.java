@@ -67,7 +67,6 @@ public class BImportCustomerLoader
     public BImportCustomerLoader()
     {
         this.loadRequestBuilder = new BImportLoadRequestBuilder(true);
-        // TODO you have to create a generic header for all the users.
     }
     
     /**
@@ -84,10 +83,10 @@ public class BImportCustomerLoader
                 this.loadRequestBuilder.getLoadDir(), 
                 BImportRequestBuilder.DATA_FILE);
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
-//        CommandStatus status = command.execute();
+        CommandStatus status = command.execute();
         clean(fileList); // get rid of the data files. All contents are in the main data file.
-//        System.out.println(new Date() + " LOAD_STDOUT:"+status.getStdout());
-//        System.out.println(new Date() + " LOAD_STDERR:"+status.getStderr());
+        System.out.println(new Date() + " LOAD_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " LOAD_STDERR:"+status.getStderr());
         fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
                 BImportRequestBuilder.BAT_FILE);
@@ -256,7 +255,6 @@ public class BImportCustomerLoader
                        bigListOfAllCustomerData.add(line);
                     }
                     br.close();
-//                    f.delete(); // all the contents are in the one big file so its ok to delete'em.
                 } 
                 catch (FileNotFoundException ex)
                 {
