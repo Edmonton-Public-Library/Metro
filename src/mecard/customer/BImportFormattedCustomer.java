@@ -56,21 +56,25 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         {
             String expiry = DateComparer.ANSIToConfigDate(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
             customerTable.put(BImportDBFieldTypes.EXPIRY.toString(), expiry);
-        } catch (ParseException ex)
+        } 
+        catch (ParseException ex)
         {
             System.out.println(new Date() + " unable to parse expiry '" 
                     + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES) + "'");
         }
-        if (c.isEmpty(CustomerFieldTypes.DOB) == false)
+        try
         {
-            try
+            String dobDate = "19000101";
+            if (c.isEmpty(CustomerFieldTypes.DOB) == false)
             {
-                String dobDate = DateComparer.ANSIToConfigDate(c.get(CustomerFieldTypes.DOB));
-                customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), dobDate);
-            } catch (ParseException ex)
-            {
-                System.out.println(new Date() + " unable to parse DOB '" + c.get(CustomerFieldTypes.DOB) + "'");
+                dobDate = c.get(CustomerFieldTypes.DOB);
             }
+            String insertDate = DateComparer.ANSIToConfigDate(dobDate);
+            customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), insertDate);
+        } 
+        catch (ParseException ex)
+        {
+            System.out.println(new Date() + " unable to parse DOB '" + c.get(CustomerFieldTypes.DOB) + "'");
         }
         // This is checked because on update of a user account you can clear the
         // pin to protect that field from updating, and if the case where their EPL
@@ -83,13 +87,15 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_TABLE, customerTable));
         
         // Next the phone table
+        customerTable.clear();
+        customerTable.put(BImportDBFieldTypes.PHONE_TYPE.toString(), "h-noTC");
+        String phone = "780-999-1234";
         if (c.isEmpty(CustomerFieldTypes.PHONE) == false)
         {
-            customerTable.clear();
-            customerTable.put(BImportDBFieldTypes.PHONE_TYPE.toString(), "h-noTC");
-            customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), Phone.formatPhone(c.get(CustomerFieldTypes.PHONE)));
-            customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
+            phone = Phone.formatPhone(c.get(CustomerFieldTypes.PHONE));
         }
+        customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), phone);
+        customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
         
         // Address
         customerTable.clear();

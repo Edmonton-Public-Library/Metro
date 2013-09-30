@@ -63,6 +63,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public final static String FILE_NAME_PREFIX = "metro-";
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
+    public final static String DATA_FILE_BIMPORT = "-bimport.txt";
     public final static String DATA_FILE = "-data.txt";
     protected static final CharSequence SUCCESS_MARKER = "<ok>";
     protected String bimportDir;    // where bimport exe is located.

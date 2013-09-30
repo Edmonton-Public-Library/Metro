@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.config.PropertyReader;
 import mecard.customer.BImportBat;
 import mecard.customer.UserFile;
 import mecard.exception.BImportException;
@@ -42,6 +43,11 @@ import static mecard.requestbuilder.BImportRequestBuilder.BAT_FILE;
 import static mecard.requestbuilder.BImportRequestBuilder.DATA_FILE;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import static mecard.requestbuilder.BImportRequestBuilder.HEADER_FILE;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * This class queues the bimport customers and, run as a timed process, will load 
@@ -59,11 +65,44 @@ public class BImportCustomerLoader
      */
     public static void main(String args[])
     {
-        BImportCustomerLoader loader = new BImportCustomerLoader();
-        loader.run();
+        // First get the valid options
+        Options options = new Options();
+        // add t option c to config directory true=arg required.
+        options.addOption("c", true, "configuration file directory path, include all sys dependant dir seperators like '/'.");
+        // add t option c to config directory true=arg required.
+        options.addOption("v", false, "Metro server version information.");
+        options.addOption("U", false, "execute upload of customer accounts, otherwise just cleans up the directory.");
+        try
+        {
+            // parse the command line.
+            CommandLineParser parser = new BasicParser();
+            CommandLine cmd;
+            cmd = parser.parse(options, args);
+            if (cmd.hasOption("v"))
+            {
+                System.out.println("Metro (MeCard) server version " + PropertyReader.VERSION);
+                return; // don't run if user just wants version.
+            }
+            if (cmd.hasOption("U"))
+            {
+                uploadCustomers = true;
+            }
+             // get c option value
+            String configDirectory = cmd.getOptionValue("c");
+            PropertyReader.setConfigDirectory(configDirectory);
+            BImportCustomerLoader loader = new BImportCustomerLoader();
+            loader.run();
+        } 
+        catch (ParseException ex)
+        {
+            String msg = new Date() + "Unable to parse command line option. Please check your service configuration.";
+            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+            System.exit(899); // 799 for mecard
+        }
     }
 
     private BImportLoadRequestBuilder loadRequestBuilder;
+    private static boolean uploadCustomers = false;
     
     public BImportCustomerLoader()
     {
@@ -87,11 +126,18 @@ public class BImportCustomerLoader
         fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
                 BImportRequestBuilder.DATA_FILE);
+        // This process needs to run to format the user data
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
-        CommandStatus status = command.execute();
+        if (uploadCustomers)
+        {
+            // But only run the command if the user requests.
+            CommandStatus status = command.execute();
+            String rpt = new Date() + " LOAD_STDOUT:" + status.getStdout() 
+                    + "\r\n LOAD_STDERR:" + status.getStderr() + "\r\n";
+            Logger.getLogger(MetroService.class.getName()).log(Level.INFO, rpt);
+            System.out.println(rpt);
+        }
         clean(fileList); // get rid of the data files. All contents are in the main data file.
-        System.out.println(new Date() + " LOAD_STDOUT:"+status.getStdout());
-        System.out.println(new Date() + " LOAD_STDERR:"+status.getStderr());
         fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
                 BImportRequestBuilder.BAT_FILE);
@@ -195,7 +241,7 @@ public class BImportCustomerLoader
             long longTime = today.getTime();
             batFile    = loadDir + FILE_NAME_PREFIX + longTime + BAT_FILE;
             headerFile = loadDir + FILE_NAME_PREFIX + longTime + HEADER_FILE;
-            dataFile   = loadDir + FILE_NAME_PREFIX + longTime + DATA_FILE;
+            dataFile   = loadDir + FILE_NAME_PREFIX + longTime + DATA_FILE_BIMPORT;
         }
         
         /**
@@ -231,12 +277,12 @@ public class BImportCustomerLoader
                 .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
                 .build(); // empty command always returns success
             }
-            fTest = new File(dataFile);
-            if (fTest.exists() == false)
-            {
-                throw new BImportException(BImportRequestBuilder.class.getName()
-                        + " Could not create data file: '" + dataFile + "'.");
-            }
+//            fTest = new File(dataFile);
+//            if (fTest.exists() == false)
+//            {
+//                throw new BImportException(BImportRequestBuilder.class.getName()
+//                        + " Could not create data file: '" + dataFile + "'.");
+//            }
             // Ok the goal is to get the path to the batch file here with the name.
             BImportBat batch = new BImportBat.Builder(batFile)
                     .setBimportPath(bimportDir)
@@ -278,7 +324,7 @@ public class BImportCustomerLoader
                     // add all the lines.
                     while ((line = br.readLine()) != null) 
                     {
-                       bigListOfAllCustomerData.add(line);
+                       bigListOfAllCustomerData.add(line + "\r\n");
                     }
                     br.close();
                 } 
