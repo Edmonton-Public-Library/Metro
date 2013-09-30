@@ -30,9 +30,11 @@ import mecard.exception.SIPException;
 import site.MeCardPolicy;
 
 /**
- * Implementation of MeCard's restriction policies as interpreted by the 
- * Edmonton Public Library. Every library translates their customer account information
- * into responses to the basic MeCard restriction policies:
+ * This class needs to be sub-classed by all libraries. All customer's must meet 
+ * the defined MeCard policy rules. They must be resident, not reciprocal, must
+ * be of minimum age of 18, must have an email address, must be in good standing
+ * with their home library, must have all mandatory account information present
+ * and valid (within reason), and all must have a valid membership expiry date.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class STRPolicy extends MeCardPolicy

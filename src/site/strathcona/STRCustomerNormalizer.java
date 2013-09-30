@@ -37,7 +37,9 @@ import site.CustomerLoadNormalizer;
 import static site.stalbert.STACustomerNormalizer.SENIOR;
 
 /**
- *
+ * Normalizes the customer's data before loading into the local library's ILS.
+ * The local library may require certain modifications to a customer account
+ * such as minimum PIN width, or application of a computed bStat value.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public final class STRCustomerNormalizer extends CustomerLoadNormalizer

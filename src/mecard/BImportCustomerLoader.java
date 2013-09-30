@@ -44,16 +44,17 @@ import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import static mecard.requestbuilder.BImportRequestBuilder.HEADER_FILE;
 
 /**
- * This class queues the bimport customers and, run as a timed event, will load 
+ * This class queues the bimport customers and, run as a timed process, will load 
  * all the customers found in the Customer directory since the last time it ran.
- * This is done because bimport is not meant to run concurrently.
+ * This is done because bimport cannot be run concurrently.
  * java -cp MeCard.jar mecard.BImportCustomerLoader
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class BImportCustomerLoader 
 {
     /**
-     * 
+     * Runs the entire process of loading customer bimport files as a timed 
+     * process such as cron or Windows scheduler.
      * @param args 
      */
     public static void main(String args[])
@@ -70,7 +71,11 @@ public class BImportCustomerLoader
     }
     
     /**
-     *
+     * Runs the BImport load and cleans the directory. The even if the bimport
+     * load cannot be run all but one existing header will be removed, all 
+     * batch files will be removed and all patron account files will be concatenated
+     * into one big bimport file. The header and bimport file always have unique
+     * names and are never removed in this process.
      */
     public void run()
     {
@@ -94,9 +99,11 @@ public class BImportCustomerLoader
     }
    
     /**
-     *
-     * @param loadDir the value of loadDir
-     * @param fileSuffix the value of fileSuffix
+     * Creates a list of strings of fully-qualified path names for files within
+     * a given directory that end with the argument file suffix.
+     * @param loadDir Specifies a directory to search.
+     * @param fileSuffix Specifies the type of files to search. The supplied string
+     * will be used in the {@link String#endsWith(java.lang.String) } method.
      */
     protected List<String> getFileList(String loadDir, String fileSuffix)
     {
@@ -155,6 +162,10 @@ public class BImportCustomerLoader
      */
     protected void clean(List<String> fileList)
     {
+        if (fileList == null)
+        {
+            return;
+        }
         for (String file: fileList)
         {
             File f = new File(file);
@@ -163,7 +174,8 @@ public class BImportCustomerLoader
     }
     
     /**
-     *
+     * This class is a specialization of BImportRequestBuilder whose job it is
+     * to load 
      */
     final class BImportLoadRequestBuilder extends BImportRequestBuilder
     {
@@ -186,11 +198,21 @@ public class BImportCustomerLoader
             dataFile   = loadDir + FILE_NAME_PREFIX + longTime + DATA_FILE;
         }
         
+        /**
+         * 
+         * @return The fully qualified path to the customer load directory 
+         * specified in the bimport.properties file.
+         */
         final String getLoadDir()
         {
             return this.loadDir;
         }
         
+        /**
+         * Prepares the command that will load the bimport file.
+         * @param files
+         * @return command that {@link BImportCustomerLoader} will run.
+         */
         final Command loadCustomers(List<String> files)
         {
             File fTest = new File(headerFile);
@@ -201,10 +223,13 @@ public class BImportCustomerLoader
             }
             UserFile bimportDataFile = new UserFile(dataFile);
             bimportDataFile.addUserData(getCustomerData(files));
-            // if there were no commands return a command that does nothing.
+            // if there were no customers to load return a command that does nothing.
             if (bimportDataFile.isEmpty())
             {
-                return new DummyCommand.Builder().setStatus(0).setStdout("Nothing to do.").build(); // empty command.
+                return new DummyCommand.Builder()
+                .setStatus(0)
+                .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
+                .build(); // empty command always returns success
             }
             fTest = new File(dataFile);
             if (fTest.exists() == false)
@@ -229,8 +254,9 @@ public class BImportCustomerLoader
         }
 
         /**
-         * 
-         * @param files
+         * Takes a list of files and concatenates the contents of all files into
+         * a big single bimport file.
+         * @param files list of customer data files with fully-qualified path.
          * @return List of the contents of all the files in argument files.
          */
         protected List<String> getCustomerData(List<String> files)
@@ -258,7 +284,9 @@ public class BImportCustomerLoader
                 } 
                 catch (FileNotFoundException ex)
                 {
-                    Logger.getLogger(BImportCustomerLoader.class.getName()).log(Level.SEVERE, null, ex);
+                    // a file may be missing but keep checking the others.
+                    System.out.println("'" + file + "' not found.");
+                    continue;
                 } 
                 catch (IOException ex)
                 {
@@ -278,6 +306,10 @@ public class BImportCustomerLoader
             return bigListOfAllCustomerData;
         }
 
+        /**
+         * 
+         * @return header file name.
+         */
         protected String getHeaderName()
         {
             return this.headerFile;

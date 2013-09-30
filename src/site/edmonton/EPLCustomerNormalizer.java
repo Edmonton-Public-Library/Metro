@@ -25,17 +25,19 @@ import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
-import mecard.config.FlatUserFieldTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import mecard.util.Phone;
-import mecard.util.PostalCode;
 import site.CustomerLoadNormalizer;
 
 /**
- *
+ * Normalizes the customer's data before loading into the local library's ILS.
+ * The local library may require certain modifications to a customer account
+ * such as minimum PIN width, or application of a computed bStat value.
+ * 
+ * For EPL the actions are to load the customer's default account information
+ * required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
@@ -55,8 +57,8 @@ public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
 
     /**
      *
-     * @param unformattedCustomer the value of unformattedCustomer
-     * @param formattedCustomer the value of formattedCustomer
+     * @param unformattedCustomer the raw MeCard customer account information.
+     * @param formattedCustomer the Flat formattedCustomer
      * @param response the value of response
      */
     @Override

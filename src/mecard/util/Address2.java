@@ -28,7 +28,11 @@ import java.util.regex.Pattern;
 import mecard.Protocol;
 
 /**
- * Replacement class for Address.
+ * Address2 replaces Address and provides a robust method of parsing address strings
+ * typically produced by SIP2. The algorithm typically works on string in the 
+ * form of <b>1234 56 Ave. St. Albert, AB T6Y 8M7 780-343-9908</b>, but is designed
+ * to be flexible enough to able to identify variations on each field and even if
+ * some of the fields are missing or damaged.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class Address2

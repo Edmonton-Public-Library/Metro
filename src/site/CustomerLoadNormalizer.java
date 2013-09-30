@@ -35,7 +35,9 @@ import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
 
 /**
- *
+ * Normalizes the customer's data before loading into the local library's ILS.
+ * The local library may require certain modifications to a customer account
+ * such as minimum PIN width, or application of a computed bStat value.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public abstract class CustomerLoadNormalizer 
@@ -57,7 +59,13 @@ public abstract class CustomerLoadNormalizer
      * last 4 digits of their EPL Pin saved.
      */
     public abstract ResponseTypes normalize(Customer c, StringBuilder r);
-            
+       
+    /**
+     * Returns an instance of the appropriate normalizer for the library specified
+     * in the environment.properties file.
+     * @param debug flat to signal debug mode to be set.
+     * @return the customer normalizer.
+     */
     public static CustomerLoadNormalizer getInstanceOf(boolean debug)
     {
         if (normalizer != null)
