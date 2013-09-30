@@ -21,7 +21,6 @@
 package mecard.requestbuilder;
 
 import mecard.customer.FormattedCustomer;
-import api.APICommand;
 import api.Command;
 import api.CommandStatus;
 import api.DummyCommand;

@@ -87,6 +87,7 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
                 addBStatTable(formattedCustomer, "unknown");
             }
         }
+        addBStatTable(formattedCustomer, "metro");
     }
 
     /**
@@ -98,7 +99,7 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
     {
         FormattedTable table = BImportTable.getInstanceOf(
                 BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
-        table.setValue("bstat; bstat", value + "; metro");
+        table.setValue("bstat", value);
         formattedCustomer.insertTable(table, 99); // insert at the end.
     }
 }

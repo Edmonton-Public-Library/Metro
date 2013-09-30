@@ -40,7 +40,6 @@ import mecard.customer.UserFile;
 import mecard.exception.BImportException;
 import mecard.requestbuilder.BImportRequestBuilder;
 import static mecard.requestbuilder.BImportRequestBuilder.BAT_FILE;
-import static mecard.requestbuilder.BImportRequestBuilder.DATA_FILE;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import static mecard.requestbuilder.BImportRequestBuilder.HEADER_FILE;
 import org.apache.commons.cli.BasicParser;
@@ -125,8 +124,12 @@ public class BImportCustomerLoader
         clean(fileList); // get rid of the header files.
         fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.DATA_FILE);
+                BImportRequestBuilder.BAT_FILE);
+        clean(fileList); // get rid of the bat files.
         // This process needs to run to format the user data
+        fileList = getFileList(
+                this.loadRequestBuilder.getLoadDir(), 
+                BImportRequestBuilder.DATA_FILE);
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
         if (uploadCustomers)
         {
@@ -137,11 +140,7 @@ public class BImportCustomerLoader
             Logger.getLogger(MetroService.class.getName()).log(Level.INFO, rpt);
             System.out.println(rpt);
         }
-        clean(fileList); // get rid of the data files. All contents are in the main data file.
-        fileList = getFileList(
-                this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.BAT_FILE);
-        clean(fileList); // get rid of the bat files.
+        clean(fileList); // get rid of the bat files. All contents are in the main data file.
     }
    
     /**
@@ -267,22 +266,17 @@ public class BImportCustomerLoader
                 throw new BImportException(BImportRequestBuilder.class.getName()
                         + " Could not create header file: '" + headerFile + "'.");
             }
-            UserFile bimportDataFile = new UserFile(dataFile);
-            bimportDataFile.addUserData(getCustomerData(files));
+            List<String> customersData = getCustomerData(files);
             // if there were no customers to load return a command that does nothing.
-            if (bimportDataFile.isEmpty())
+            if (customersData.isEmpty())
             {
                 return new DummyCommand.Builder()
                 .setStatus(0)
                 .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
                 .build(); // empty command always returns success
             }
-//            fTest = new File(dataFile);
-//            if (fTest.exists() == false)
-//            {
-//                throw new BImportException(BImportRequestBuilder.class.getName()
-//                        + " Could not create data file: '" + dataFile + "'.");
-//            }
+            UserFile bimportDataFile = new UserFile(dataFile);
+            bimportDataFile.addUserData(customersData);
             // Ok the goal is to get the path to the batch file here with the name.
             BImportBat batch = new BImportBat.Builder(batFile)
                     .setBimportPath(bimportDir)
@@ -295,7 +289,7 @@ public class BImportCustomerLoader
                     .build();
             List<String> bimportBatExec = new ArrayList<>();
             batch.getCommandLine(bimportBatExec);
-            APICommand command = new APICommand.Builder().commandLine(bimportBatExec).build();
+            Command command = new APICommand.Builder().commandLine(bimportBatExec).build();
             return command;
         }
 

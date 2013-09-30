@@ -109,10 +109,7 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         String emailName = this.computeEmailName(c.get(CustomerFieldTypes.EMAIL));
         customerTable.put(BImportDBFieldTypes.EMAIL_NAME.toString(), emailName);
         customerTable.put(BImportDBFieldTypes.EMAIL_ADDRESS.toString(), c.get(CustomerFieldTypes.EMAIL));
-        if (this.isSetDefaultSendPreoverdue == true)
-        {
-            customerTable.put(BImportDBFieldTypes.SEND_PREOVERDUE.toString(), "1");
-        }
+        customerTable.put(BImportDBFieldTypes.SEND_PREOVERDUE.toString(), "1");
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, customerTable));
         
         // Borrower Barcode
