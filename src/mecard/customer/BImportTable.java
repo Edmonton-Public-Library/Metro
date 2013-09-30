@@ -22,6 +22,8 @@ package mecard.customer;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import mecard.config.BImportTableTypes;
 
 /**
@@ -105,12 +107,18 @@ public class BImportTable implements FormattedTable
     {
         // x- borrower: second_id; name; expiration_date; birth_date
         String head = this.tableName + ": ";
-        for (String sKeys: this.columns.keySet())
+        Map<String, String> sortedColumns = getSortedMap(this.columns);
+        for (Map.Entry sKeys : sortedColumns.entrySet())
         {
-            head += sKeys + "; ";
+            head += sKeys.getKey() + "; ";
         }
         isPairAccessed = !isPairAccessed; 
         return finalizeLine(head);
+    }
+    
+    private Map<String, String> getSortedMap(HashMap<String, String> table)
+    {
+        return new TreeMap<>(table);
     }
     
     /**
@@ -122,9 +130,10 @@ public class BImportTable implements FormattedTable
     {
         // M- borrower: 21221012345677; Balzac, Billy; 04-15-2014; 01-31-1998
         String data = this.tableName + ": ";
-        for (String sKeys: this.columns.keySet())
+        Map<String, String> sortedColumns = getSortedMap(this.columns);
+        for (Map.Entry sKeys : sortedColumns.entrySet())
         {
-            data += this.columns.get(sKeys) + "; ";
+            data += this.columns.get(sKeys.getKey().toString()) + "; ";
         }
         isPairAccessed = !isPairAccessed;
         return finalizeLine(data);
