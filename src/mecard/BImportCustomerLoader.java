@@ -122,10 +122,6 @@ public class BImportCustomerLoader
                 BImportRequestBuilder.HEADER_FILE);
         touchHeader(fileList.get(0));
         clean(fileList); // get rid of the header files.
-        fileList = getFileList(
-                this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.BAT_FILE);
-        clean(fileList); // get rid of the bat files.
         // This process needs to run to format the user data
         fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
@@ -141,6 +137,10 @@ public class BImportCustomerLoader
             System.out.println(rpt);
         }
         clean(fileList); // get rid of the bat files. All contents are in the main data file.
+        fileList = getFileList(
+                this.loadRequestBuilder.getLoadDir(), 
+                BImportRequestBuilder.BAT_FILE);
+        clean(fileList); // get rid of the bat files.
     }
    
     /**

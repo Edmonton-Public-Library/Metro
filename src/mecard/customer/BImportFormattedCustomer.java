@@ -25,9 +25,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.PropertyReader;
+import mecard.requestbuilder.BImportRequestBuilder;
 import mecard.util.AlbertaCity;
 import mecard.util.City;
 import mecard.util.DateComparer;
@@ -41,7 +45,6 @@ import mecard.util.PostalCode;
 public final class BImportFormattedCustomer implements FormattedCustomer
 {
     private List<BImportTable> customerAccount;
-    private boolean isSetDefaultSendPreoverdue;
     
     public BImportFormattedCustomer(Customer c)
     {
@@ -94,6 +97,11 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         {
             phone = Phone.formatPhone(c.get(CustomerFieldTypes.PHONE));
         }
+        else
+        {
+            Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
+            phone = bimpProps.getProperty(BImportRequestBuilder.PHONE_TAG, "780-999-1234");
+        }
         customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), phone);
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
         
@@ -110,6 +118,7 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerTable.put(BImportDBFieldTypes.EMAIL_NAME.toString(), emailName);
         customerTable.put(BImportDBFieldTypes.EMAIL_ADDRESS.toString(), c.get(CustomerFieldTypes.EMAIL));
         customerTable.put(BImportDBFieldTypes.SEND_PREOVERDUE.toString(), "1");
+        customerTable.put(BImportDBFieldTypes.SEND_NOTICE_BY.toString(), "1");
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, customerTable));
         
         // Borrower Barcode

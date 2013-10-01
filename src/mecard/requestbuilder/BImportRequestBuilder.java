@@ -65,6 +65,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public final static String DATA_FILE_BIMPORT = "-bimport.txt";
     public final static String DATA_FILE = "-data.txt";
     protected static final CharSequence SUCCESS_MARKER = "<ok>";
+    public static final String PHONE_TAG = "default-phone";
     protected String bimportDir;    // where bimport exe is located.
     protected String loadDir; // where to find the batch, header and data files.
     protected String serverName;

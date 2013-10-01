@@ -41,7 +41,8 @@ public enum BImportDBFieldTypes
     BARCODE("bbarcode"), 
     EMAIL_NOTIFICATION("send_notice_by"),
     SEND_PREOVERDUE("send_preoverdue"),  // optional field, defaults to true.
-    BIRTH_DATE("birth_date");
+    BIRTH_DATE("birth_date"), 
+    SEND_NOTICE_BY("send_notice_by");
     
     private String type;
 
