@@ -39,9 +39,10 @@ import mecard.customer.BImportBat;
 import mecard.customer.UserFile;
 import mecard.exception.BImportException;
 import mecard.requestbuilder.BImportRequestBuilder;
-import static mecard.requestbuilder.BImportRequestBuilder.BAT_FILE;
+//import static mecard.requestbuilder.BImportRequestBuilder.BAT_FILE;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
-import static mecard.requestbuilder.BImportRequestBuilder.HEADER_FILE;
+import mecard.util.BImportResultParser;
+//import static mecard.requestbuilder.BImportRequestBuilder.HEADER_FILE;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -68,7 +69,7 @@ public class BImportCustomerLoader
         Options options = new Options();
         // add t option c to config directory true=arg required.
         options.addOption("c", true, "configuration file directory path, include all sys dependant dir seperators like '/'.");
-        // add t option c to config directory true=arg required.
+        // add v option v for server version.
         options.addOption("v", false, "Metro server version information.");
         options.addOption("U", false, "execute upload of customer accounts, otherwise just cleans up the directory.");
         try
@@ -117,13 +118,8 @@ public class BImportCustomerLoader
      */
     public void run()
     {
-        List<String> fileList = getFileList(
-                this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.HEADER_FILE);
-        touchHeader(fileList.get(0));
-        clean(fileList); // get rid of the header files.
         // This process needs to run to format the user data
-        fileList = getFileList(
+        List<String> fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
                 BImportRequestBuilder.DATA_FILE);
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
@@ -131,16 +127,13 @@ public class BImportCustomerLoader
         {
             // But only run the command if the user requests.
             CommandStatus status = command.execute();
+            this.loadRequestBuilder.isSuccessful(null, status, null);
             String rpt = new Date() + " LOAD_STDOUT:" + status.getStdout() 
                     + "\r\n LOAD_STDERR:" + status.getStderr() + "\r\n";
             Logger.getLogger(MetroService.class.getName()).log(Level.INFO, rpt);
             System.out.println(rpt);
         }
         clean(fileList); // get rid of the bat files. All contents are in the main data file.
-        fileList = getFileList(
-                this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.BAT_FILE);
-        clean(fileList); // get rid of the bat files.
     }
    
     /**
@@ -162,43 +155,6 @@ public class BImportCustomerLoader
             }
         }
         return textFiles;
-    }
-    
-    /**
-     * Removes any preexisting header file, creating a new one.
-     */
-    protected void deletePreExistingHeader()
-    {
-        // Get rid of the old header if it exists.
-        File fTest = new File(this.loadRequestBuilder.getHeaderName());
-        if (fTest.exists())
-        {
-            fTest.delete();
-        }
-    }
-
-    /**
-     * Creates a header file from the data in one of the existing headers. If no
-     * header files are present a FileNotFoundException is thrown.
-     * 
-     * @param fileName
-     */
-    protected void touchHeader(String fileName)
-    {
-        deletePreExistingHeader();
-        File fSrc  = new File(fileName);
-        File fDest = new File(this.loadRequestBuilder.getHeaderName());
-        if (fSrc.renameTo(fDest))
-        {
-            System.out.println("File '" + fDest.getAbsolutePath() + "' created.");
-        }
-        else
-        {
-            System.out.println("File '" + fileName + "' could not be moved to '" +
-                    fDest.getAbsolutePath() + "'\nThere must be a pre-existing header"
-                    + " to act as a template for the bimport header that matches"
-                    + " the customer's data files.");
-        }
     }
 
     /**
@@ -238,8 +194,8 @@ public class BImportCustomerLoader
             } 
             Date today = new Date();
             long longTime = today.getTime();
-            batFile    = loadDir + FILE_NAME_PREFIX + longTime + BAT_FILE;
-            headerFile = loadDir + FILE_NAME_PREFIX + longTime + HEADER_FILE;
+            batFile    = loadDir + FILE_NAME_PREFIX + "template" + BAT_FILE;
+            headerFile = loadDir + FILE_NAME_PREFIX + "template" + HEADER_FILE;
             dataFile   = loadDir + FILE_NAME_PREFIX + longTime + DATA_FILE_BIMPORT;
         }
         
@@ -278,7 +234,9 @@ public class BImportCustomerLoader
             UserFile bimportDataFile = new UserFile(dataFile);
             bimportDataFile.addUserData(customersData);
             // Ok the goal is to get the path to the batch file here with the name.
-            BImportBat batch = new BImportBat.Builder(batFile)
+            // Don't include a file name to just use the command line without creating a file.
+//            BImportBat batch = new BImportBat.Builder(batFile)
+            BImportBat batch = new BImportBat.Builder()
                     .setBimportPath(bimportDir)
                     .server(serverName).password(password)
                     .user(userName).database(database)
@@ -344,6 +302,23 @@ public class BImportCustomerLoader
                 }
             }
             return bigListOfAllCustomerData;
+        }
+        
+        @Override
+        public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
+        {
+            // the commandType doesn't matter and could be null, as could the response
+            // since this object doesn't respond to anything.
+            // This class will create a list of problematic customer files from 
+            // bimport's output.
+            BImportResultParser parser = new BImportResultParser(status.getStdout(), loadDir);
+            List<String> failedCustomerIds = parser.getFailedCustomerKeys();
+            for (String userId: failedCustomerIds)
+            {
+                UserFile touchKey = new UserFile(this.loadDir + userId + ".fail");
+                touchKey.addUserData(new ArrayList<String>());
+            }
+            return parser.getFailedCustomers() == 0;
         }
 
         /**

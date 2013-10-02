@@ -64,7 +64,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public final static String HEADER_FILE = "-header.txt";
     public final static String DATA_FILE_BIMPORT = "-bimport.txt";
     public final static String DATA_FILE = "-data.txt";
-    protected static final CharSequence SUCCESS_MARKER = "<ok>";
+    public static final CharSequence SUCCESS_MARKER = "<ok>";
     public static final String PHONE_TAG = "default-phone";
     protected String bimportDir;    // where bimport exe is located.
     protected String loadDir; // where to find the batch, header and data files.
@@ -115,7 +115,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     {
         // In this method on this class we create the data file and optionally
         // a batch file at the same time since all three files must have consistent
-        // nameing.
+        // naming.
         // First thing set up the file names for this customer.
         String transactionId = customer.get(CustomerFieldTypes.ID);
         // compute header and data file names.
@@ -123,48 +123,18 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         {
             loadDir += File.separator;
         }
-        if (bimportDir.endsWith(File.separator) == false)
-        {
-            bimportDir += File.separator;
-        }
-        // bat file name 
-        batFile    = loadDir + FILE_NAME_PREFIX + transactionId + BAT_FILE;
-        // header and data file names.
-        headerFile = loadDir + FILE_NAME_PREFIX + transactionId + HEADER_FILE;
         dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
         UserFile bimportDataFile = new UserFile(dataFile);
         FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
         // Make final changes to the formatted customer before loading as adding bstat.
         normalizer.finalize(customer, formattedCustomer, response);
         bimportDataFile.addUserData(formattedCustomer.getFormattedCustomer());
-        UserFile bimportHeaderFile = new UserFile(headerFile);
-        bimportHeaderFile.addUserData(formattedCustomer.getFormattedHeader());
-        File fTest = new File(headerFile);
-        if (fTest.exists() == false)
-        {
-            throw new BImportException(BImportRequestBuilder.class.getName()
-                    + " Could not create header file: '" + headerFile + "'.");
-        }
-        fTest = new File(dataFile);
+        File fTest = new File(dataFile);
         if (fTest.exists() == false)
         {
             throw new BImportException(BImportRequestBuilder.class.getName()
                     + " Could not create data file: '" + dataFile + "'.");
         }
-        // Ok the goal is to get the path to the batch file here with the name.
-        // The batch file and name have to be built at this time just like SymphonyRequestBuilder.
-        BImportBat batch = new BImportBat.Builder(batFile)
-                .setBimportPath(bimportDir)
-                .server(serverName).password(password)
-                .user(userName).database(database)
-                .header(headerFile).data(dataFile)
-                .borrowerTableKey(uniqueBorrowerTableKey).format(bimportVersion).bType(defaultBtype)
-                .mType(mailType).location(location).setIndexed(Boolean.valueOf(isIndexed))
-//                .setDebug(debug) // not used in class yet.
-                .build();
-        List<String> bimportBatExec = new ArrayList<>();
-        batch.getCommandLine(bimportBatExec);
-//        APICommand command = new APICommand.Builder().commandLine(bimportBatExec).build();
         Command command = new DummyCommand.Builder()
                 .setStatus(0)
                 .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
