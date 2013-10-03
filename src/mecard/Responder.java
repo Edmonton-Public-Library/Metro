@@ -223,6 +223,7 @@ public class Responder
     {
         Customer customer = request.getCustomer();
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
+        normalizer.normalizeOnCreate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response, normalizer);
         CommandStatus status = command.execute();
@@ -243,6 +244,7 @@ public class Responder
     {
         Customer customer = request.getCustomer();
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
+        normalizer.normalizeOnUpdate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
         Command command = requestBuilder.getUpdateUserCommand(customer, response, normalizer);
         CommandStatus status = command.execute();

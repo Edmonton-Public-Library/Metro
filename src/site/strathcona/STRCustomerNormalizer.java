@@ -32,9 +32,7 @@ import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;
 import mecard.util.DateComparer;
-import mecard.util.Text;
-import site.CustomerLoadNormalizer;
-import static site.stalbert.STACustomerNormalizer.SENIOR;
+import site.HorizonNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -42,9 +40,8 @@ import static site.stalbert.STACustomerNormalizer.SENIOR;
  * such as minimum PIN width, or application of a computed bStat value.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class STRCustomerNormalizer extends CustomerLoadNormalizer
+public final class STRCustomerNormalizer extends HorizonNormalizer
 {
-    public final static int MAXIMUM_PIN_WIDTH = 4;
     private final boolean debug;
     
     public STRCustomerNormalizer(boolean debug)
@@ -56,16 +53,6 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
     public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
     {
         ResponseTypes rType = ResponseTypes.SUCCESS;
-        String pin = c.get(CustomerFieldTypes.PIN);
-        if (Text.isMaximumDigits(pin, MAXIMUM_PIN_WIDTH) == false)
-        {
-            String newPin = Text.getNew4DigitPin();
-            responseStringBuilder.append(newPin); // Send back new PIN to melibraries.ca.
-            c.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println(new Date() + " Customer's PIN was not 4 digits as required by Horizon. Set to: '" 
-                    + newPin + "'.");
-            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
-        }
         // Strathcona use UPPERCASE Name and Address for their customers, to make
         // it easier to spot STR and FTS customers.
         // We change the first and last name, but note this does not effect PREFEREDNAME.
@@ -127,18 +114,5 @@ public final class STRCustomerNormalizer extends CustomerLoadNormalizer
                         + " STR normalizer couldn't parse dob: '" + dob + "'");
             }
         }
-    }
-
-    /**
-     * Creates and inserts a new table entry into the bimport file.
-     * @param formattedCustomer
-     * @param value 
-     */
-    private void addBStatTable(FormattedCustomer formattedCustomer, String value)
-    {
-        FormattedTable table = BImportTable.getInstanceOf(
-                BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
-        table.setValue("bstat", value);
-        formattedCustomer.insertTable(table, 99); // insert at the end.
     }
 }

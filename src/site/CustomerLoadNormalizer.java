@@ -103,6 +103,19 @@ public abstract class CustomerLoadNormalizer
      * @param formattedCustomer the value of formattedCustomer
      * @param response the value of response
      */
-    
     public abstract void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response);
+
+    /**
+     * Breaks out normalization procedures that are specific to creation process.
+     * @param customer
+     * @param response 
+     */
+    public abstract void normalizeOnCreate(Customer customer, Response response);
+
+    /**
+     * Breaks out normalization procedures that are specific to update process.
+     * @param customer
+     * @param response 
+     */
+    public abstract void normalizeOnUpdate(Customer customer, Response response);
 }

@@ -20,7 +20,6 @@
 */
 package site.stalbert;
 
-import java.util.Date;
 import java.util.HashMap;
 import mecard.Response;
 import mecard.ResponseTypes;
@@ -30,8 +29,7 @@ import mecard.customer.BImportTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;
-import mecard.util.Text;
-import site.CustomerLoadNormalizer;
+import site.HorizonNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -39,11 +37,10 @@ import site.CustomerLoadNormalizer;
  * such as minimum PIN width, or application of a computed bStat value.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class STACustomerNormalizer extends CustomerLoadNormalizer
+public final class STACustomerNormalizer extends HorizonNormalizer
 {
-    public final static int MAXIMUM_PIN_WIDTH = 4;
+    
     private final boolean debug;
-    public final static int SENIOR = 65;
     
     public STACustomerNormalizer(boolean debug)
     {
@@ -54,16 +51,6 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
     public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
     {
         ResponseTypes rType = ResponseTypes.SUCCESS;
-        String pin = c.get(CustomerFieldTypes.PIN);
-        if (Text.isMaximumDigits(pin, MAXIMUM_PIN_WIDTH) == false)
-        {
-            String newPin = Text.getNew4DigitPin();
-            responseStringBuilder.append(newPin); // send back the new PIN
-            c.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println(new Date() + " Customer's PIN was not 4 digits as required by Horizon. Set to: '" 
-                    + newPin + "'.");
-            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
-        }
         return rType;
     }
 
@@ -88,18 +75,5 @@ public final class STACustomerNormalizer extends CustomerLoadNormalizer
             }
         }
         addBStatTable(formattedCustomer, "metro");
-    }
-
-    /**
-     * Creates and inserts a new table entry into the bimport file.
-     * @param formattedCustomer
-     * @param value 
-     */
-    private void addBStatTable(FormattedCustomer formattedCustomer, String value)
-    {
-        FormattedTable table = BImportTable.getInstanceOf(
-                BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
-        table.setValue("bstat", value);
-        formattedCustomer.insertTable(table, 99); // insert at the end.
     }
 }

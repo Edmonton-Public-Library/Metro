@@ -29,7 +29,7 @@ import mecard.config.PropertyReader;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import site.CustomerLoadNormalizer;
+import site.SymphonyNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -40,7 +40,7 @@ import site.CustomerLoadNormalizer;
  * required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
+public final class EPLCustomerNormalizer extends SymphonyNormalizer
 {
     private final boolean debug;
     
@@ -76,5 +76,17 @@ public final class EPLCustomerNormalizer extends CustomerLoadNormalizer
             String value = defaultProps.get(key).toString();
             formattedCustomer.insertValue(FlatUserExtendedFieldTypes.USER.name(), key, value);
         }
+    }
+
+    @Override
+    public void normalizeOnCreate(Customer customer, Response response)
+    {
+        // No special action required at this time.
+    }
+
+    @Override
+    public void normalizeOnUpdate(Customer customer, Response response)
+    {
+        // No special action required at this time.
     }
 }
