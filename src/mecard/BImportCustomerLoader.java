@@ -39,10 +39,8 @@ import mecard.customer.BImportBat;
 import mecard.customer.UserFile;
 import mecard.exception.BImportException;
 import mecard.requestbuilder.BImportRequestBuilder;
-//import static mecard.requestbuilder.BImportRequestBuilder.BAT_FILE;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import mecard.util.BImportResultParser;
-//import static mecard.requestbuilder.BImportRequestBuilder.HEADER_FILE;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -68,10 +66,11 @@ public class BImportCustomerLoader
         // First get the valid options
         Options options = new Options();
         // add t option c to config directory true=arg required.
-        options.addOption("c", true, "configuration file directory path, include all sys dependant dir seperators like '/'.");
+        options.addOption("c", true, "Configuration file directory path, include all sys dependant dir seperators like '/'.");
         // add v option v for server version.
         options.addOption("v", false, "Metro server version information.");
-        options.addOption("U", false, "execute upload of customer accounts, otherwise just cleans up the directory.");
+        options.addOption("U", false, "Execute upload of customer accounts, otherwise just cleans up the directory.");
+        options.addOption("p", true, "Path to PID file. If present back off and wait for reschedule customer load.");
         try
         {
             // parse the command line.
@@ -87,11 +86,29 @@ public class BImportCustomerLoader
             {
                 uploadCustomers = true;
             }
+            if (cmd.hasOption("p")) // location of the pidFile, default is current directory (relative to jar location).
+            {
+                pidDir = cmd.getOptionValue("p");
+            }
+            // Should we run, if there is a pid back out without doing anything.
+            File lock;
+            if ((lock = getLockFile()) == null)
+            {
+                return;
+            }
+            
              // get c option value
             String configDirectory = cmd.getOptionValue("c");
             PropertyReader.setConfigDirectory(configDirectory);
             BImportCustomerLoader loader = new BImportCustomerLoader();
             loader.run();
+            if (! lock.delete())
+            {
+                String msg = new Date() + "unable to delete " + lock.getAbsolutePath() 
+                        + ", other loads won't run until this is removed. "
+                        + "Check for runaway bimport processes.";
+                Logger.getLogger(MetroService.class.getName()).log(Level.WARNING, msg);
+            }
         } 
         catch (ParseException ex)
         {
@@ -101,8 +118,31 @@ public class BImportCustomerLoader
         }
     }
 
+    /**
+     * 
+     * @return null if there is a bimport process running and a new lock file otherwise.
+     */
+    protected static File getLockFile()
+    {
+        if (pidDir.endsWith(File.separator) == false)
+        {
+            pidDir += File.separator;
+        }
+        // now test if there is a pid file and if so, exit because another 
+        // process is using bimport.
+        if (new File(pidDir + pidFile).exists())
+        {
+            return null;
+        }
+        UserFile pid = new UserFile(pidDir + pidFile);
+        pid.addUserData(new ArrayList<String>());
+        return new File(pidDir + pidFile);
+    }
+
     private BImportLoadRequestBuilder loadRequestBuilder;
     private static boolean uploadCustomers = false;
+    private static String pidDir           = ".";
+    private static final String pidFile    = "metro-load.pid";
     
     public BImportCustomerLoader()
     {

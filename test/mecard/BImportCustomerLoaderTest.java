@@ -20,13 +20,13 @@ public class BImportCustomerLoaderTest
     /**
      * Test of run method, of class BImportCustomerLoader.
      */
-    @Test
-    public void testRun()
-    {
-        System.out.println("==run==");
-        BImportCustomerLoader instance = new BImportCustomerLoader();
-        instance.run();
-    }
+//    @Test
+//    public void testRun()
+//    {
+//        System.out.println("==run==");
+//        BImportCustomerLoader instance = new BImportCustomerLoader();
+//        instance.run();
+//    }
 
 //    /**
 //     * Test of getFileList method, of class BImportCustomerLoader.
@@ -137,4 +137,24 @@ public class BImportCustomerLoaderTest
 //        result = instance.getFileList(loadDir, fileSuffix);
 //        assertTrue(result.isEmpty());
 //    }
+
+    /**
+     * Test of getLockFile method, of class BImportCustomerLoader.
+     */
+    @Test
+    public void testGetLockFile()
+    {
+        System.out.println("==getLockFile==");
+        
+        File result = BImportCustomerLoader.getLockFile();
+        assertTrue(result.exists());
+        File result2 = BImportCustomerLoader.getLockFile();
+        assertTrue(result2 == null);
+        result.delete();
+        result2 = BImportCustomerLoader.getLockFile();
+        assertTrue(result.exists());
+        result2.delete();
+        result = BImportCustomerLoader.getLockFile();
+        assertTrue(result.exists());
+    }
 }

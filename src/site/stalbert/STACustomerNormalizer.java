@@ -20,15 +20,11 @@
 */
 package site.stalbert;
 
-import java.util.HashMap;
 import mecard.Response;
 import mecard.ResponseTypes;
-import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.customer.BImportTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import mecard.customer.FormattedTable;
 import site.HorizonNormalizer;
 
 /**
@@ -73,6 +69,10 @@ public final class STACustomerNormalizer extends HorizonNormalizer
             {
                 addBStatTable(formattedCustomer, "unknown");
             }
+        }
+        else
+        {
+            addBStatTable(formattedCustomer, "unknown");
         }
         addBStatTable(formattedCustomer, "metro");
     }
