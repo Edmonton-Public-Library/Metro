@@ -22,15 +22,11 @@ package site.strathcona;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
 import mecard.Response;
 import mecard.ResponseTypes;
-import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.customer.BImportTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import mecard.customer.FormattedTable;
 import mecard.util.DateComparer;
 import site.HorizonNormalizer;
 
@@ -79,40 +75,26 @@ public final class STRCustomerNormalizer extends HorizonNormalizer
         //        If the patron is under 65 and their barcode starts with 23877, the bstat should be fsadu
         //
         //        If the patron is 65 or older and their barcode starts with 21974, the bstat should be s
-        //        If the patron is under 65 and their barcode starts with 21974, the bstat should be a 
+        //        If the patron is under 65 and their barcode starts with 21974, the bstat should be 'a'.
         if (unformattedCustomer.isEmpty(CustomerFieldTypes.DOB) == false)
         {
             String dob = unformattedCustomer.get(CustomerFieldTypes.DOB);
-            String userId = unformattedCustomer.get(CustomerFieldTypes.ID);
             try
             {
                 if (DateComparer.getYearsOld(dob) >= SENIOR)
                 {
-                    if (userId.startsWith("23877"))
-                    {
-                        addBStatTable(formattedCustomer, "fssen");
-                    }
-                    else if (userId.startsWith("21974"))
-                    {
-                        addBStatTable(formattedCustomer, "s");
-                    }
+                    addBStatTable(formattedCustomer, "s");
+                    return;
                 }
-                else // Regular adult account.
-                {
-                    if (userId.startsWith("23877"))
-                    {
-                        addBStatTable(formattedCustomer, "fsadu");
-                    }
-                    else if (userId.startsWith("21974"))
-                    {
-                        addBStatTable(formattedCustomer, "a");
-                    }
-                }
-            } catch (ParseException ex)
+            } 
+            catch (ParseException ex)
             {
                 System.out.println(new Date() 
                         + " STR normalizer couldn't parse dob: '" + dob + "'");
+                addBStatTable(formattedCustomer, "a");
+                return;
             }
         }
+        addBStatTable(formattedCustomer, "a");
     }
 }

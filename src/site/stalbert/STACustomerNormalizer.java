@@ -67,12 +67,12 @@ public final class STACustomerNormalizer extends HorizonNormalizer
             }
             else
             {
-                addBStatTable(formattedCustomer, "unknown");
+                addBStatTable(formattedCustomer, "u");
             }
         }
         else
         {
-            addBStatTable(formattedCustomer, "unknown");
+            addBStatTable(formattedCustomer, "u");
         }
         addBStatTable(formattedCustomer, "metro");
     }
