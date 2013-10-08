@@ -34,7 +34,7 @@ public class Customer //extends ProtocolPayload
     
     public Customer()
     {
-        customerFields = new EnumMap<CustomerFieldTypes, String>(CustomerFieldTypes.class);
+        customerFields = new EnumMap<>(CustomerFieldTypes.class);
         normalizeFields();
     }
 

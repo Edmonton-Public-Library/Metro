@@ -185,8 +185,7 @@ public abstract class MeCardPolicy
      */
     public boolean isMinimumAgeByDate(Customer customer, String meta, StringBuilder s)
     {
-        String dateOfBirth = customer.get(CustomerFieldTypes.DOB);
-        if (dateOfBirth.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        if (customer.isEmpty(CustomerFieldTypes.DOB))
         {
             if (DEBUG)
             {
@@ -196,6 +195,7 @@ public abstract class MeCardPolicy
             s.append("date of birth not set.");
             return false;
         }
+        String dateOfBirth = customer.get(CustomerFieldTypes.DOB);
         try
         {
             int yearsOld = DateComparer.getYearsOld(dateOfBirth);

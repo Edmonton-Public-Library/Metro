@@ -44,7 +44,7 @@ public class DateComparerTest
     {
         System.out.println("==getYearsOld==");
         String date = "19630822"; // "08/22/1963"
-        int expResult = 49;
+        int expResult = 50;
         int result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
@@ -60,6 +60,11 @@ public class DateComparerTest
         
         date = "20120408";
         expResult = 1;
+        result = DateComparer.getYearsOld(date);
+        assertEquals(expResult, result);
+        
+        date = "19980606";
+        expResult = 15;
         result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
     }
@@ -123,5 +128,49 @@ public class DateComparerTest
         result = DateComparer.getFutureDate(365);
         System.out.println("RESULT:"+result);
         assertTrue(expResult.compareTo(result) == 0);
+    }
+
+    /**
+     * Test of ANSIToday method, of class DateComparer.
+     */
+    @Test
+    public void testANSIToday()
+    {
+        System.out.println("ANSIToday");
+        String expResult = "";
+        String result = DateComparer.ANSIToday();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of ANSIToConfigDate method, of class DateComparer.
+     */
+    @Test
+    public void testANSIToConfigDate() throws Exception
+    {
+        System.out.println("ANSIToConfigDate");
+        String ANSIDate = "";
+        String expResult = "";
+        String result = DateComparer.ANSIToConfigDate(ANSIDate);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getFutureDate method, of class DateComparer.
+     */
+    @Test
+    public void testGetFutureDate()
+    {
+        System.out.println("getFutureDate");
+        int daysFromNow = 0;
+        String expResult = "";
+        String result = DateComparer.getFutureDate(daysFromNow);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

@@ -49,24 +49,6 @@ public class STRPolicy extends MeCardPolicy
     public STRPolicy(boolean debug)
     {
         this.debug = debug;
-        this.nonResidentBTypes = new ArrayList<String>();
-        this.nonResidentBTypes.add("nr");     // Non-resident
-        this.nonResidentBTypes.add("nrf");    // Non-resident family
-        this.nonResidentBTypes.add("oi");     // Outreach institution
-        this.nonResidentBTypes.add("tal");    // TAL MEMBER
-        this.nonResidentBTypes.add("tnr");    // visitor
-        this.nonResidentBTypes.add("hsr");    // self reg
-        
-        this.reciprocalBTypes = new ArrayList<String>();
-        this.reciprocalBTypes.add("rec");     // RECIPROCAL Edmonton 
-        this.reciprocalBTypes.add("recd");    // RECIPROCAL Devon
-        this.reciprocalBTypes.add("recsa");   // RECIPROCAL St Albert Lamont
-        this.reciprocalBTypes.add("rect");    // RECIPROCAL Tofield Leduc
-//        this.reciprocalBTypes.add("dept");  // Department head professional card.
-        
-        this.juvenile = new ArrayList<String>();
-        this.juvenile.add("nrf");            // NON-RESIDENT Family
-        
     }
 
     @Override
@@ -160,30 +142,14 @@ public class STRPolicy extends MeCardPolicy
     @Override
     public boolean isMinimumAge(Customer customer, String meta, StringBuilder responseError)
     {
-        // run through all the juv profile types and if one matches then
-        // no can do.
-        SIPCustomerMessage sipData;
-        try
+        // Sherwood park doesn't have policy types for juv. so we have to 
+        // do a test by date.
+        if (isMinimumAgeByDate(customer, meta, responseError) == false)
         {
-            sipData = new SIPCustomerMessage(meta);
-            String bType = sipData.getCustomerProfile();
-            for (String s: this.juvenile)
-            {
-                if (bType.compareTo(s) == 0) // if we match juv bType we are a minor.
-                {
-                    customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
-                    responseError.append(failMinAgeTest);
-                    return false;
-                }
-            }
-        }
-        catch (SIPException ex)
-        {
-            System.out.println(STRPolicy.class.getName() + " isMinimumAge test failed: " + ex.getMessage());
+            customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
             responseError.append(failMinAgeTest);
             return false;
         }
-        
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
         return true;
     }
