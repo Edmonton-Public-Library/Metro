@@ -31,7 +31,7 @@ import mecard.requestbuilder.BImportRequestBuilder;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class BImportResultParser
+public class BImportResultParser implements ResultParser
 {
     private int successfulCustomers;
     private int failedCustomers;

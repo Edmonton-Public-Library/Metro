@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class creates a file out of user data.
+ * This class creates a file out of user data, while all exceptions issues messages
+ * they don't stop the service.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class UserFile 

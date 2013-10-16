@@ -260,7 +260,7 @@ public class BImportCustomerLoader
             if (fTest.exists() == false)
             {
                 throw new BImportException(BImportRequestBuilder.class.getName()
-                        + " Could not create header file: '" + headerFile + "'.");
+                        + " Failed to find header file: '" + headerFile + "'.");
             }
             List<String> customersData = getCustomerData(files);
             // if there were no customers to load return a command that does nothing.
@@ -355,8 +355,12 @@ public class BImportCustomerLoader
             List<String> failedCustomerIds = parser.getFailedCustomerKeys();
             for (String userId: failedCustomerIds)
             {
-                UserFile touchKey = new UserFile(this.loadDir + userId + ".fail");
-                touchKey.addUserData(new ArrayList<String>());
+//                UserFile touchKey = new UserFile(this.loadDir + userId + ".fail");
+                UserFile touchKey = new UserFile("logs" + File.separator + userId + ".fail");
+                List<String> statusList = new ArrayList<>();
+                statusList.add(status.getStdout());
+                statusList.add(status.getStderr());
+                touchKey.addUserData(statusList);
             }
             return parser.getFailedCustomers() == 0;
         }

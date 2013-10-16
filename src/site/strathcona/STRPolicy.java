@@ -41,7 +41,6 @@ public class STRPolicy extends MeCardPolicy
 {
     private List<String> nonResidentBTypes;
     private List<String> reciprocalBTypes;
-    private List<String> juvenile;
     private final boolean debug;
     private final static String LOST_CARD = "LOSTCARD";
     
@@ -49,6 +48,20 @@ public class STRPolicy extends MeCardPolicy
     public STRPolicy(boolean debug)
     {
         this.debug = debug;
+        this.nonResidentBTypes = new ArrayList<>();
+        this.nonResidentBTypes.add("nr");     // Non-resident
+        this.nonResidentBTypes.add("nrf");    // Non-resident family
+        this.nonResidentBTypes.add("oi");     // Outreach institution
+        this.nonResidentBTypes.add("tal");    // TAL MEMBER
+        this.nonResidentBTypes.add("tnr");    // visitor
+        this.nonResidentBTypes.add("hsr");    // self reg
+        
+        this.reciprocalBTypes = new ArrayList<>();
+        this.reciprocalBTypes.add("rec");     // RECIPROCAL Edmonton 
+        this.reciprocalBTypes.add("recd");    // RECIPROCAL Devon
+        this.reciprocalBTypes.add("recsa");   // RECIPROCAL St Albert Lamont
+        this.reciprocalBTypes.add("rect");    // RECIPROCAL Tofield Leduc
+//        this.reciprocalBTypes.add("dept");  // Department head professional card.
     }
 
     @Override

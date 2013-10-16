@@ -37,6 +37,7 @@ import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.exception.LostCardException;
 import mecard.config.PropertyReader;
+import mecard.customer.UserFailFile;
 import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
@@ -231,6 +232,8 @@ public class Responder
         System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
         if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
         {
+            UserFailFile failFile = new UserFailFile(customer);
+            failFile.setStatus(status);
             throw new ConfigurationException();
         }
     }
@@ -252,6 +255,8 @@ public class Responder
         System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
         if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
         {
+            UserFailFile failFile = new UserFailFile(customer);
+            failFile.setStatus(status);
             throw new ConfigurationException();
         }
     }

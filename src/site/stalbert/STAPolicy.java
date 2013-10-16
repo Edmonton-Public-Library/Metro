@@ -49,7 +49,7 @@ public class STAPolicy extends MeCardPolicy
     public STAPolicy(boolean debug)
     {
         this.debug = debug;
-        this.nonResidentBTypes = new ArrayList<String>();
+        this.nonResidentBTypes = new ArrayList<>();
         this.nonResidentBTypes.add("ill");    // INTERNAL LIBRARY LOANS
         this.nonResidentBTypes.add("inter");  // INTERLIBRARY LOAN BORROWER
         this.nonResidentBTypes.add("mnra");   // MASTER MEMBER NON RESIDENT ADULT
@@ -63,10 +63,10 @@ public class STAPolicy extends MeCardPolicy
         this.nonResidentBTypes.add("RecipYA");// RECIPROCAL YOUNG ADULT
         this.nonResidentBTypes.add("tal");    // TAL MEMBER
         
-        this.reciprocalBTypes = new ArrayList<String>();
+        this.reciprocalBTypes = new ArrayList<>();
         this.reciprocalBTypes.add("recip");   // RECIPROCAL MEMBERSHIP
         
-        this.juvenile = new ArrayList<String>();
+        this.juvenile = new ArrayList<>();
         this.juvenile.add("nrj");            // NON-RESIDENT JUNIOR
         this.juvenile.add("nrya");           // NON-RESIDENT YOUNG ADULT
         this.juvenile.add("rj");             // RESIDENT JUNIOR

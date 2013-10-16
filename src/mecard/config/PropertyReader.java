@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.8_26"; // server version
+    public final static String VERSION           = "0.8.8_27"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -57,16 +57,19 @@ public class PropertyReader
      */
     public static void setConfigDirectory(String configDirectory)
     {
-        if(configDirectory != null) 
+        if(configDirectory != null && configDirectory.isEmpty() == false) 
         {
             if (configDirectory.endsWith(File.separator) == false)
             {
                 configDirectory += File.separator;
             }
             CONFIG_DIR = configDirectory;
-            String msg = new Date() + "CONFIG: dir set to "+CONFIG_DIR;
-            System.out.println(msg);
         }
+        else
+        {
+            CONFIG_DIR = "." + File.separator;
+        }
+        System.out.println(new Date() + "CONFIG: dir set to " + CONFIG_DIR);
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
         POLARIS_PROPERTY_FILE  = CONFIG_DIR + POLARIS_PROPERTY_FILE;
@@ -79,13 +82,21 @@ public class PropertyReader
     }
     
     /**
+     * Returns the configuration directory
+     * @return the configuration directory as a String.
+     */
+//    public static String getConfigDirectory()
+//    {
+//        return CONFIG_DIR;
+//    }
+    
+    /**
      * Gets specific properties from a configuration file.
      * @param type of configuration file to read, ie environment or bimport etc.
      * @return Java properties object filled with values read from the property file.
      */
     public static Properties getProperties(ConfigFileTypes type)
     {
-
         switch (type)
         {
             case SYMPHONY: // Additional properties that are given to a customer by default at creation time.
