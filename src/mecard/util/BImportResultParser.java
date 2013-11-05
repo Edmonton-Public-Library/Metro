@@ -111,6 +111,7 @@ public class BImportResultParser implements ResultParser
      * 
      * @return the number of successful customer loads.
      */
+    @Override
     public int getSuccessfulCustomers()
     {
         return successfulCustomers;
@@ -120,6 +121,7 @@ public class BImportResultParser implements ResultParser
      * 
      * @return the number of failed customer loads.
      */
+    @Override
     public int getFailedCustomers()
     {
         return failedCustomers;
@@ -129,6 +131,7 @@ public class BImportResultParser implements ResultParser
      * 
      * @return List of failed customer ids.
      */
+    @Override
     public List<String> getFailedCustomerKeys()
     {
         return this.loadFailedCustomers;
