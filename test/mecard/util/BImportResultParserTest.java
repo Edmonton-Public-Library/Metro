@@ -67,4 +67,48 @@ public class BImportResultParserTest
         File tKeyFile = new File("./23877000204705.fail");
         assertTrue(tKeyFile.exists());
     }
+
+    /**
+     * Test of getSuccessfulCustomers method, of class BImportResultParser.
+     */
+    @Test
+    public void testGetSuccessfulCustomers()
+    {
+        System.out.println("===getSuccessfulCustomers===");
+        String expResult = "23877000204705";
+        BImportResultParser instance = new BImportResultParser(resultString, "./");
+        String resultString = "     1      1 modify 23877000204705";
+        String result = instance.getUserId(resultString);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getFailedCustomers method, of class BImportResultParser.
+     */
+    @Test
+    public void testGetFailedCustomers()
+    {
+        System.out.println("getFailedCustomers");
+        BImportResultParser instance = null;
+        int expResult = 0;
+        int result = instance.getFailedCustomers();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getFailedCustomerKeys method, of class BImportResultParser.
+     */
+    @Test
+    public void testGetFailedCustomerKeys()
+    {
+        System.out.println("getFailedCustomerKeys");
+        BImportResultParser instance = null;
+        List expResult = null;
+        List result = instance.getFailedCustomerKeys();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 }

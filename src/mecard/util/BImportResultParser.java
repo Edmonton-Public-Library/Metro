@@ -28,7 +28,8 @@ import java.util.regex.Pattern;
 import mecard.requestbuilder.BImportRequestBuilder;
 
 /**
- *
+ * This class interprets results from the bimport process, received from 
+ * STDOUT (Windows) and parses the error message into a meaningful signal.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class BImportResultParser implements ResultParser
@@ -41,28 +42,32 @@ public class BImportResultParser implements ResultParser
     
     public BImportResultParser(String results, String reportDirPath)
     {
-//record line   action key(s)
-//------ ------ ------ ---------------------------------------------------------
-//     1      1 modify 23877000204705
-//               failed: DbxInsertRow failed: Database Error|Integrity trigger failed:
-//record line   action key(s)
-//------ ------ ------ ---------------------------------------------------------
-//     1      1 modify 21221005573552 <ok>
-//
-//statistics: 
-//  record           1
-//  modify           1
+        //record line   action key(s)
+        //------ ------ ------ ---------------------------------------------------------
+        //     1      1 modify 23877000204705
+        //               failed: DbxInsertRow failed: Database Error|Integrity trigger failed:
+        //record line   action key(s)
+        //------ ------ ------ ---------------------------------------------------------
+        //     1      1 modify 21221005573552 <ok>
+        //
+        //statistics: 
+        //  record           1
+        //  modify           1
         this.successfulCustomers = 0;
         this.failedCustomers     = 0;
         this.resultPattern       = Pattern.compile("^\\d{1,}\\s+\\d{1,}.*");
         this.cardPattern         = Pattern.compile("\\d{2,}");
         this.loadFailedCustomers = new ArrayList<>();
-        List<String> allLines = new ArrayList<>();
+        List<String> allLines    = new ArrayList<>();
         allLines.addAll(Arrays.asList(results.split("\n")));
+        // Look for the pattern of success
         for (String line: allLines)
         {
             line = line.trim();
             Matcher matcher = this.resultPattern.matcher(line);
+            // If you find the following line:
+            //     1      1 modify 23877000204705
+            // you have a report line.
             if (matcher.find())
             {
                 if (line.endsWith(BImportRequestBuilder.SUCCESS_MARKER.toString()))
@@ -71,6 +76,7 @@ public class BImportResultParser implements ResultParser
                 }
                 else
                 {
+                    // Try and set the user's id a fail file will be created later.
                     String userId = "99999012345678";
                     if (getUserId(line).isEmpty() == false)
                     {

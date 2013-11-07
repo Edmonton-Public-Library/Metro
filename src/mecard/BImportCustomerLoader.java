@@ -353,9 +353,9 @@ public class BImportCustomerLoader
             // bimport's output.
             BImportResultParser parser = new BImportResultParser(status.getStdout(), loadDir);
             List<String> failedCustomerIds = parser.getFailedCustomerKeys();
+            // for all the failed customers output a fail file.
             for (String userId: failedCustomerIds)
             {
-//                UserFile touchKey = new UserFile(this.loadDir + userId + ".fail");
                 UserFile touchKey = new UserFile("logs" + File.separator + userId + ".fail");
                 List<String> statusList = new ArrayList<>();
                 statusList.add(status.getStdout());
