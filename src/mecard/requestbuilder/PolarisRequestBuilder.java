@@ -16,31 +16,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- *
  */
-package mecard.config;
+package mecard.requestbuilder;
+
+import api.CommandStatus;
+import mecard.QueryTypes;
+import mecard.Response;
+import mecard.customer.CustomerFormatter;
 
 /**
- * Member types are the current members of Metro Federation.
+ *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum MemberTypes
+public class PolarisRequestBuilder extends ILSRequestBuilder
 {
-    EPL("edmonton"), // these values are used to map cities to codes in city_st.properties.
-    STA("st. albert"),
-    STR("sherwood park"), 
-    TRK("spruce grove");
-    
-    private String type;
 
-    private MemberTypes(String s)
+    @Override
+    public CustomerFormatter getFormatter()
     {
-        this.type = s;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String toString()
+    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        return this.type;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean tidy()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -33,6 +33,7 @@ import mecard.config.MemberTypes;
 import mecard.customer.FormattedCustomer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
+import site.trak.TRKCustomerNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -87,6 +88,10 @@ public abstract class CustomerLoadNormalizer
         else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
         {
             normalizer = new STRCustomerNormalizer(debug);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.TRK.name()))
+        {
+            normalizer = new TRKCustomerNormalizer(debug);
         }
         else
         {

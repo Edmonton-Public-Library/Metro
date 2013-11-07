@@ -91,7 +91,7 @@ public class SIPMessage
                     + "'" + sipMessage
                     + "' does not appear to be a SIP2 message.");
         }
-        this.fields = new HashMap<String, String>();
+        this.fields = new HashMap<>();
         // Split the fields
         String[] stringFields = sipMessage.split("\\|");
         try
@@ -150,7 +150,7 @@ public class SIPMessage
      */
     public final List<String> getFieldNames()
     {
-        List<String> myListOfKeys = new ArrayList<String>();
+        List<String> myListOfKeys = new ArrayList<>();
         Set<String> keySet = this.fields.keySet();
         for (String s : keySet)
         {

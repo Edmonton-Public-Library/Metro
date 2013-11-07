@@ -37,6 +37,7 @@ import mecard.config.PropertyReader;
 import mecard.util.Text;
 import site.stalbert.STAPolicy;
 import site.strathcona.STRPolicy;
+import site.trak.TRKPolicy;
 
 
 /**
@@ -89,6 +90,10 @@ public abstract class MeCardPolicy
         else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
         {
             return new STRPolicy(DEBUG);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.TRK.name()))
+        {
+            return new TRKPolicy(DEBUG);
         }
         else
         {

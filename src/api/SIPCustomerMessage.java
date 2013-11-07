@@ -23,7 +23,7 @@ package api;
 import mecard.exception.SIPException;
 
 /**
- *
+ * This class takes a raw SIP2 response and parses and packages the message.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SIPCustomerMessage extends SIPMessage
