@@ -90,6 +90,10 @@ public abstract class MeCardPolicy
         {
             return new STRPolicy(DEBUG);
         }
+        else if (libCode.equalsIgnoreCase(MemberTypes.PKL.name()))
+        {
+            return new STRPolicy(DEBUG);
+        }
         else
         {
             throw new UnsupportedLibraryException(libCode);
