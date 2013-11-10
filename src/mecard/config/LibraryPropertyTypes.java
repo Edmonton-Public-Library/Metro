@@ -35,7 +35,13 @@ public enum LibraryPropertyTypes
     LIBRARY_CODE("library-code"),
     DEBUG("debug"), 
     DATE_FORMAT("date-format"),
-    METRO_PORT("metro-port");
+    METRO_PORT("metro-port"),
+    NON_RESIDENT_TYPES("non-resident-types"), // May be empty ',' comma separated
+    RECIPROCAL_TYPES("reciprocal-types"), // May be empty
+    JUVENILE_TYPES("juvenile-types"), // May be empty: <entry key="juvenile">re,sp, stu</entry>
+    CUSTOMER_STANDING_SENTINEL("customer-standing-sentinel"), // Like barred or BLOCKED
+    LOST_CARD_SENTINEL("lost-card-sentinel"); // Profile or other indicator that use to
+    // determine if the customer's card is a lost card.
     
     private String type;
     private LibraryPropertyTypes(String s)

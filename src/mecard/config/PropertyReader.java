@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -21,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.8_27"; // server version
+    public final static String VERSION           = "0.8.9_p"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -49,6 +52,32 @@ public class PropertyReader
     private static Properties debugProperties;    // Optional config for debugging.
     private static Properties systemVariables;    // Optional no mandatory fields.
     private static Properties messagesProperties; // Messages tailored by local library.
+    
+    /**
+     * Parses a list of ',' comma separated types from a given entry in the 
+     * environment properties file and returns them as a list for testing.
+     *
+     * @param props the Java {@link Properties} file that contains the entry
+     * of delimited entries.
+     * @param libraryPropertyTypes the entry in the environment.properties file
+     * to be parsed into a list for returning.
+     * @param list the value of list 
+     */
+     
+    public static void loadDelimitedEntry(
+            Properties props, LibraryPropertyTypes libraryPropertyTypes, List<String> list)
+    {
+        if (list.size() > 0)
+        {
+            list.clear();
+        }
+        String stringTypes = props.getProperty(libraryPropertyTypes.toString());
+        String[] stringList = stringTypes.split(",");
+        for (String s: stringList)
+        {
+            list.add(s.trim());
+        }
+    }
     
     /**
      * Sets the config directory, the directory where all the config files can
@@ -154,14 +183,14 @@ public class PropertyReader
             case BIMPORT_CITY_MAPPING:
                 city = readPropertyFile(PropertyReader.BIMPORT_CITY_MAPPING);
                 // now check that all mandetory values are here.
-                for (MemberTypes mType : MemberTypes.values())
-                {
-                    if (city.get(mType.toString()) == null)
-                    {
-                        String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                    }
-                }
+//                for (MemberTypes mType : MemberTypes.values())
+//                {
+//                    if (city.get(mType.toString()) == null)
+//                    {
+//                        String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
+//                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+//                    }
+//                }
                 return city;
 
             case DEBUG:

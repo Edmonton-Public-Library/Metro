@@ -33,7 +33,7 @@ import site.MeCardPolicy;
  * and valid (within reason), and all must have a valid membership expiry date.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class EPLPolicy extends MeCardPolicy
+public class EPLPolicy //extends MeCardPolicy
 {
     private final static String EPL_RECIPROCAL = "EPL-RECIP";
     private final static String EPL_VISITOR    = "EPL-VISITR"; // Non resident
@@ -52,81 +52,81 @@ public class EPLPolicy extends MeCardPolicy
         this.debug = debug;
     }
 
-    @Override
+//    @Override
     public boolean isResident(Customer customer, String meta, StringBuilder s)
     {
-        if (meta.contains(EPL_VISITOR))
-        {
-            customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
-            if (debug) System.out.println("failed resident test");
-            s.append(failResidencyTest);
-            return false;
-        }
-        customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
+//        if (meta.contains(EPL_VISITOR))
+//        {
+//            customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
+//            if (debug) System.out.println("failed resident test");
+//            s.append(failResidencyTest);
+//            return false;
+//        }
+//        customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
         return true;
     }
 
-    @Override
+//    @Override
     public boolean isReciprocal(Customer customer, String meta, StringBuilder s)
     {
-        if (meta.contains(EPL_RECIPROCAL))
-        {
-            customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
-            if (debug) System.out.println("failed reciprocal test");
-            s.append(failReciprocalTest);
-            return true;
-        }
-        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE); 
+//        if (meta.contains(EPL_RECIPROCAL))
+//        {
+//            customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
+//            if (debug) System.out.println("failed reciprocal test");
+//            s.append(failReciprocalTest);
+//            return true;
+//        }
+//        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE); 
         return false;
     }
 
-    @Override
+//    @Override
     public boolean isInGoodStanding(Customer customer, String meta, StringBuilder s)
     {
         // because EPL uses SIP to get customer information we can assume that
         // meta will contain BARRED if the customer is not in good standing.
         // TODO: test against dumpflatuser data to see if this assumption holds.
-        if (meta.contains(INVALID_CONDITION))
-        {
-            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
-            if (debug) System.out.println("failed good-standing test");
-            s.append(failGoodstandingTest);
-            return false;
-        }
-        customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
+//        if (meta.contains(INVALID_CONDITION))
+//        {
+//            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+//            if (debug) System.out.println("failed good-standing test");
+//            s.append(failGoodstandingTest);
+//            return false;
+//        }
+//        customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
         return true;
     }
 
-    @Override
+//    @Override
     public boolean isMinimumAge(Customer customer, String meta, StringBuilder s)
     {
         // run through all the juv profile types and if one matches then
         // no can do.
-        for (int i = 0; i < JUV_PROFILE.length; i++)
-        {
-            if (meta.contains(JUV_PROFILE[i]))
-            {
-                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
-                if (debug) System.out.println("failed minimum age test");
-                s.append(failMinAgeTest);
-                return false;
-            }
-        }
-        customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
+//        for (int i = 0; i < JUV_PROFILE.length; i++)
+//        {
+//            if (meta.contains(JUV_PROFILE[i]))
+//            {
+//                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+//                if (debug) System.out.println("failed minimum age test");
+//                s.append(failMinAgeTest);
+//                return false;
+//            }
+//        }
+//        customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
         return true;
     }
 
-    @Override
+//    @Override
     public boolean isLostCard(Customer customer, String meta, StringBuilder s)
     {
-        if (meta.contains(LOST_CARD))
-        {
-            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
-            if (debug) System.out.println("passed lost card test");
-            s.append(failLostCardTest);
-            return true;
-        }
-        customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
+//        if (meta.contains(LOST_CARD))
+//        {
+//            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
+//            if (debug) System.out.println("passed lost card test");
+//            s.append(failLostCardTest);
+//            return true;
+//        }
+//        customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
         return false;
     }
 
