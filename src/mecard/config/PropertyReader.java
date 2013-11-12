@@ -69,7 +69,8 @@ public class PropertyReader
         {
             CONFIG_DIR = "." + File.separator;
         }
-        System.out.println(new Date() + "CONFIG: dir set to " + CONFIG_DIR);
+        System.out.println("Metro (MeCard) server version " + VERSION);
+        System.out.println(new Date() + " CONFIG: dir set to '" + CONFIG_DIR + "'");
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
         POLARIS_PROPERTY_FILE  = CONFIG_DIR + POLARIS_PROPERTY_FILE;
