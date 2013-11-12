@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MeCard Metro Server"
-#define MyAppVersion "0.8.8_28"
+#define MyAppVersion "0.8.9_p"
 #define MyAppPublisher "Edmonton Public Library"
 #define MyAppURL "https://github.com/anisbet/Metro"
 #define MyAppExeName "install.bat"
