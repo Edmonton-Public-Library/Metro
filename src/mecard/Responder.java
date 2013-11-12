@@ -185,6 +185,7 @@ public class Responder
         // and SIP2 does not return the pin.
         customer.set(CustomerFieldTypes.PIN, userPin);
         StringBuilder failedTests = new StringBuilder();
+        ////////////////////////////////////////////////
         // TODO use a factory method in ILSBuilder to return the correct message object type.
         CustomerMessage sipData = new SIPCustomerMessage(status.getStdout());
         if (meetsMeCardRequirements(customer, sipData, failedTests))

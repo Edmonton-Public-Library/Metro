@@ -39,7 +39,7 @@ public enum LibraryPropertyTypes
     NON_RESIDENT_TYPES("non-resident-types"), // May be empty ',' comma separated
     RECIPROCAL_TYPES("reciprocal-types"), // May be empty
     JUVENILE_TYPES("juvenile-types"), // May be empty: <entry key="juvenile">re,sp, stu</entry>
-    CUSTOMER_STANDING_SENTINEL("customer-standing-sentinel"), // Like barred or BLOCKED
+    CUSTOMER_STANDING_SENTINEL("fail-goodstanding-sentinel"), // Like barred or BLOCKED
     LOST_CARD_SENTINEL("lost-card-sentinel"); // Profile or other indicator that use to
     // determine if the customer's card is a lost card.
     
