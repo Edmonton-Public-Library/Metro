@@ -22,6 +22,8 @@ package mecard;
 
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
+import api.SIPCustomerMessage;
 import mecard.requestbuilder.ILSRequestBuilder;
 import java.util.Date;
 import java.util.Properties;
@@ -172,7 +174,7 @@ public class Responder
         requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
         // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
         // then interpretResults() further sets ISVALID to Protocol.FALSE.
-        if (customer.get(CustomerFieldTypes.ISVALID).compareTo(Protocol.FALSE) == 0)
+        if (customer.isEmpty(CustomerFieldTypes.ISVALID))
         {
             response.setCustomer(null);
             System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
@@ -183,7 +185,10 @@ public class Responder
         // and SIP2 does not return the pin.
         customer.set(CustomerFieldTypes.PIN, userPin);
         StringBuilder failedTests = new StringBuilder();
-        if (meetsMeCardRequirements(customer, status.getStdout(), failedTests))
+        ////////////////////////////////////////////////
+        // TODO use a factory method in ILSBuilder to return the correct message object type.
+        CustomerMessage sipData = new SIPCustomerMessage(status.getStdout());
+        if (meetsMeCardRequirements(customer, sipData, failedTests))
         {
             response.setCode(ResponseTypes.OK);
         }
@@ -315,7 +320,7 @@ public class Responder
      */
     protected boolean meetsMeCardRequirements(
             Customer customer, 
-            String additionalData, 
+            CustomerMessage additionalData, 
             StringBuilder failResponseMessage)
     {
         if (customer == null || additionalData == null)

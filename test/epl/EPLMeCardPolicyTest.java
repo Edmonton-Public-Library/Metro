@@ -20,6 +20,8 @@
  */
 package epl;
 
+import api.CustomerMessage;
+import api.SIPCustomerMessage;
 import mecard.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;
@@ -54,7 +56,9 @@ public class EPLMeCardPolicyTest
     {
         System.out.println("==isResident==");
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isResident(c, meta, null);
+        StringBuilder sb = new StringBuilder();
+        CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
+        boolean result = p.isResident(c, customerMessage, null);
         boolean expected= true;
         assertTrue(expected == result);
         String modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
@@ -66,7 +70,9 @@ public class EPLMeCardPolicyTest
         
 //        c = new Customer(custReq);
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isResident(c, modeMeta, null);
+        
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isResident(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
     }
@@ -79,7 +85,9 @@ public class EPLMeCardPolicyTest
     {
         System.out.println("==isReciprocal==");
         MeCardPolicy p = MeCardPolicy.getInstanceOf(true);
-        boolean result = p.isReciprocal(c, meta, null);
+        StringBuilder sb = new StringBuilder();
+        CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
+        boolean result = p.isReciprocal(c, customerMessage, sb);
 //        System.out.println(meta);
         boolean expected= false;
         assertTrue(expected == result);
@@ -92,7 +100,8 @@ public class EPLMeCardPolicyTest
         
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isReciprocal(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isReciprocal(c, customerMessage, sb);
         expected= true;
         assertTrue(expected == result);
     }
@@ -106,19 +115,22 @@ public class EPLMeCardPolicyTest
         System.out.println("==isInGoodStanding==");
         
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isInGoodStanding(c, meta, null);
-        boolean expected= false;
+        StringBuilder sb = new StringBuilder();
+        CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
+        boolean result = p.isInGoodStanding(c, customerMessage, sb);
+        boolean expected= true;
         assertTrue(expected == result);
         String modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
                 + "CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|"
                 + "BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|"
                 + "PCEPL-VISITR|"
-                + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
+                + "PFM|DB$0.00|DM$0.00|AFBARRED|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isInGoodStanding(c, modeMeta, null);
-        expected= true;
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isInGoodStanding(c, customerMessage, sb);
+        expected= false;
         assertTrue(expected == result);
     }
 
@@ -131,7 +143,9 @@ public class EPLMeCardPolicyTest
         System.out.println("==isMinimumAge==");
         
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isMinimumAge(c, meta, null);
+        StringBuilder sb = new StringBuilder();
+        CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
+        boolean result = p.isMinimumAge(c, customerMessage, sb);
         boolean expected= true;
         assertTrue(expected == result);
         
@@ -143,7 +157,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
         
@@ -155,7 +170,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
         
@@ -167,7 +183,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
         
@@ -179,7 +196,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
         
@@ -191,7 +209,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
         
@@ -203,7 +222,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
         
@@ -215,7 +235,8 @@ public class EPLMeCardPolicyTest
                 + "PFM|DB$0.00|DM$0.00|AFOk|AY0AZACC6";
         
         p = MeCardPolicy.getInstanceOf(false);
-        result = p.isMinimumAge(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAge(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
     

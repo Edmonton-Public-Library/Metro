@@ -20,23 +20,20 @@
  */
 package site;
 
-import site.edmonton.EPLPolicy;
+import api.CustomerMessage;
 import java.text.ParseException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import mecard.exception.UnsupportedLibraryException;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MemberTypes;
 import mecard.config.MessagesConfigTypes;
 import mecard.util.DateComparer;
 import mecard.config.PropertyReader;
 import mecard.util.Text;
-import site.stalbert.STAPolicy;
-import site.strathcona.STRPolicy;
 
 
 /**
@@ -47,7 +44,7 @@ import site.strathcona.STRPolicy;
  * and valid (within reason), and all must have a valid membership expiry date.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public abstract class MeCardPolicy
+public class MeCardPolicy
 {
 
     public final static int MINIMUM_YEARS_OF_AGE = 18;
@@ -62,10 +59,22 @@ public abstract class MeCardPolicy
     protected static String failExpiryTest;
     protected static String failCompletenessTest;
     protected static boolean DEBUG;
-
-    public static MeCardPolicy getInstanceOf(boolean debug)
+    
+    protected static List<String> nonResidentTypes;
+    protected static List<String> reciprocalTypes;
+    protected static List<String> juvenileTypes;
+    protected static List<String> notInGoodStandingStandingSentinal;
+    protected static List<String> lostCardSentinals;
+    private static MeCardPolicy mePolicy;
+    
+    private MeCardPolicy()
     {
-        DEBUG = debug;
+        nonResidentTypes         = new ArrayList<>();
+        reciprocalTypes          = new ArrayList<>();
+        juvenileTypes            = new ArrayList<>();
+        notInGoodStandingStandingSentinal = new ArrayList<>();
+        lostCardSentinals        = new ArrayList<>();
+        
         Properties messageProps     = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         failMinAgeTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_MIN_AGE_TEST.toString());
         failLostCardTest     = messageProps.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
@@ -75,25 +84,28 @@ public abstract class MeCardPolicy
         failEmailTest        = messageProps.getProperty(MessagesConfigTypes.FAIL_EMAIL_TEST.toString());
         failExpiryTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_EXPIRY_TEST.toString());
         failCompletenessTest = messageProps.getProperty(MessagesConfigTypes.FAIL_COMPLETENESS_TEST.toString());
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
-        String libCode = props.getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
-        if (DEBUG) System.out.println(new Date() + "LIB_CODE: '" + libCode + "'");
-        if (libCode.equalsIgnoreCase(MemberTypes.EPL.name()))
+        Properties props     = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        // TODO: If we find a reciprocal.properties, or non_resident.properties, or juvenile.properties
+        // load the types for testing.
+        // read optional fields from environment. Should be ',' separated.
+        // <entry key="reciprocal">EPL-RECIP</entry>
+        // <entry key="non-resident">NON-RES</entry>
+        // <entry key="juvenile">re,sp, stu, stu10, stu2, stu3</entry>
+        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.NON_RESIDENT_TYPES, nonResidentTypes);
+        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.RECIPROCAL_TYPES, reciprocalTypes);
+        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.JUVENILE_TYPES, juvenileTypes);
+        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.LOST_CARD_SENTINEL, lostCardSentinals);
+        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.CUSTOMER_STANDING_SENTINEL, notInGoodStandingStandingSentinal);
+    }
+
+    public static MeCardPolicy getInstanceOf(boolean debug)
+    {
+        if (mePolicy == null)
         {
-            return new EPLPolicy(DEBUG);
-        } 
-        else if (libCode.equalsIgnoreCase(MemberTypes.STA.name()))
-        {
-            return new STAPolicy(DEBUG);
+            mePolicy = new MeCardPolicy();
         }
-        else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
-        {
-            return new STRPolicy(DEBUG);
-        }
-        else
-        {
-            throw new UnsupportedLibraryException(libCode);
-        }
+        DEBUG = debug;
+        return mePolicy;
     }
     
     /**
@@ -119,13 +131,27 @@ public abstract class MeCardPolicy
      * customer.
      * 
      * @param customer
-     * @param meta any extra data about the customer account like a SIP response.
+     * @param message CustomerMessage any extra data about the customer account like a SIP response.
      * @param s the return message if the customer failed this test.
      * @return true if the customer is resident to their home library
      * and false otherwise.
      */
     
-    public abstract boolean isResident(Customer customer, String meta, StringBuilder s);
+    public boolean isResident(Customer customer, CustomerMessage message, StringBuilder s)
+    {
+        String customerType = message.getCustomerProfile();
+        for (String str: nonResidentTypes)
+        {
+            if (customerType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+            {
+                customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
+                s.append(failResidencyTest);
+                return false;
+            }
+        }
+        customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
+        return true;
+    }
 
     /**
      * Each library must decide how they compute if a customer is a reciprocal
@@ -138,19 +164,47 @@ public abstract class MeCardPolicy
      * @return true if the customer is a reciprocal member at their home library
      * and false otherwise.
      */
-    public abstract boolean isReciprocal(Customer customer, String meta, StringBuilder s);
+    public boolean isReciprocal(Customer customer, CustomerMessage meta, StringBuilder s)
+    {
+        String bType = meta.getCustomerProfile();
+        for (String str: reciprocalTypes)
+        {
+            if (bType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+            {
+                customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
+                return true;
+            }
+        }
+        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
+        s.append(failReciprocalTest);
+        return false;
+    }
 
     /**
      * Tests if the customer is in good standing at their home library. The 
      * definition of good standing is not restricted by Metro federation.
      * 
      * @param customer
-     * @param meta any extra data about the customer account like a SIP response.
+     * @param message any extra data about the customer account like a SIP response.
      * @param s the return message if the customer failed this test.
      * @return true if the customer is in good standing at home library and
      * false otherwise.
      */
-    public abstract boolean isInGoodStanding(Customer customer, String meta, StringBuilder s);
+    public boolean isInGoodStanding(Customer customer, CustomerMessage message, StringBuilder s)
+    {
+        // because EPL uses SIP to get customer information we can assume that
+        // meta will contain BARRED if the customer is not in good standing.
+        String standing = message.getStanding();
+        for (String str: notInGoodStandingStandingSentinal)
+        if (standing.contains(str)) // TODO Test with bad customers!!!.
+        {
+            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+            s.append(failGoodstandingTest);
+            return false;
+        }
+        customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
+        return true;
+    }
 
     /**
      * Another way to compute the customer age. If the library doesn't collect
@@ -168,7 +222,23 @@ public abstract class MeCardPolicy
      * @param s the return message if the customer failed this test.
      * @return true if customer is of minimum age and false otherwise.
      */
-    public abstract boolean isMinimumAge(Customer customer, String meta, StringBuilder s);
+    public boolean isMinimumAge(Customer customer, CustomerMessage meta, StringBuilder s)
+    {
+        // run through all the juv profile types and if one matches then
+        // no can do.
+        String customerType = meta.getCustomerProfile();
+        for (String str: juvenileTypes)
+        {
+            if (customerType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+            {
+                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+                s.append(failResidencyTest);
+                return false;
+            }
+        }
+        customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
+        return true;
+    }
 
     /**
      * Tests if the customer is of minimum age. If a date field is available
@@ -228,9 +298,9 @@ public abstract class MeCardPolicy
      * @param s the return message if the customer failed this test.
      * @return true if the customer has an email and false otherwise.
      */
-    public boolean isEmailable(Customer customer, String meta, StringBuilder s)
+    public boolean isEmailable(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        if (customer.isEmpty(CustomerFieldTypes.EMAIL))
         {
             if (DEBUG)
             {
@@ -346,15 +416,16 @@ public abstract class MeCardPolicy
     }
 
     /**
-     * Tests if the customer has a valid expiry time limit.
+     * Tests if the customer has a valid expiry date.
      *
      * @param customer
-    * @param meta any extra data about the customer account like a SIP response.
+     * @param meta the message received that contains additional customer information
+     * typically a SIP response.
      * @param s the return message if the customer failed this test.
      * @return true if customer's expiry is at least tomorrow and at most 365
      * days from now.
      */
-    public boolean isValidExpiryDate(Customer customer, String meta, StringBuilder s)
+    public boolean isValidExpiryDate(Customer customer, CustomerMessage meta, StringBuilder s)
     {
         String expiryDate = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
         try
@@ -371,6 +442,7 @@ public abstract class MeCardPolicy
                     customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, newExpiryOneYearFromNow);
                     System.out.println("customer expiry throttled to: '" + newExpiryOneYearFromNow + "'");
                 }
+                if (DEBUG) System.out.println("Customer passed privilege date.");
                 return true;
             }
         } catch (ParseException ex)
@@ -396,6 +468,26 @@ public abstract class MeCardPolicy
      * @return true if this account is a lost card.
      * @see mecard.customer.Customer
      */
-    public abstract boolean isLostCard(Customer customer, String meta, StringBuilder s);
-   
+    public boolean isLostCard(Customer customer, CustomerMessage meta, StringBuilder s)
+    {
+        if (customer.isEmpty(CustomerFieldTypes.ISLOSTCARD))
+        {
+            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
+            if (DEBUG) System.out.println("card is a lost card");
+            return true;
+        }
+        String profile = meta.getCustomerProfile();
+        for (String str: lostCardSentinals)
+        {
+            if (profile.equalsIgnoreCase(str))
+            {
+                customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
+                if (DEBUG) System.out.println("card is a lost card");
+                return true;
+            }
+        }
+        customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
+        s.append(failLostCardTest);
+        return false;
+    }
 }

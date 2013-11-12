@@ -22,4 +22,5 @@ after_install.txt
 windows/Output/
 windows/bimport/
 extlibs/
-/dist/
+/dist/*.properties
+*.properties

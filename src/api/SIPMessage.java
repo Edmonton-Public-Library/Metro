@@ -150,7 +150,7 @@ public class SIPMessage
      */
     public final List<String> getFieldNames()
     {
-        List<String> myListOfKeys = new ArrayList<String>();
+        List<String> myListOfKeys = new ArrayList<>();
         Set<String> keySet = this.fields.keySet();
         for (String s : keySet)
         {
