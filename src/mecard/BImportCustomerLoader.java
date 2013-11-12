@@ -356,7 +356,8 @@ public class BImportCustomerLoader
             // for all the failed customers output a fail file.
             for (String userId: failedCustomerIds)
             {
-                UserFile touchKey = new UserFile("logs" + File.separator + userId + ".fail");
+                UserFile touchKey = new UserFile(this.loadDir + userId + ".fail");
+//                UserFile touchKey = new UserFile("logs" + File.separator + userId + ".fail"); // NOT working.
                 List<String> statusList = new ArrayList<>();
                 statusList.add(status.getStdout());
                 statusList.add(status.getStderr());
