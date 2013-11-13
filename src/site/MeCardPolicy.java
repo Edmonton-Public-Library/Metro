@@ -344,69 +344,69 @@ public class MeCardPolicy
         try
         {
             // Test customer fields that they are somewhat valid.
-            if (customer.get(CustomerFieldTypes.ID).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.ID))
             {
                 if (DEBUG) System.out.println("customer failed barcode requirement.");
                 sBuff.append(":id");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.PIN).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.PIN))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed pin requirement.");
                 sBuff.append(":pin");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.EMAIL).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.EMAIL))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed email requirement.");
                 sBuff.append(":email");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.LASTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.LASTNAME))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed last name requirement.");
                 sBuff.append(":last name");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.FIRSTNAME).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.FIRSTNAME))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed first name requirement.");
                 sBuff.append(":first name");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed expiry requirement.");
                 sBuff.append(":privilege expiry");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.STREET).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.STREET))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed address: street requirement.");
                 sBuff.append(":street");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.CITY).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.CITY))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed address: city requirement.");
                 sBuff.append(":city");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.PROVINCE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.PROVINCE))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed address: province requirement.");
                 sBuff.append(":province");
                 returnValue = false;
             }
-            if (customer.get(CustomerFieldTypes.POSTALCODE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+            if (customer.isEmpty(CustomerFieldTypes.POSTALCODE))
             {
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed address: postal code requirement.");
