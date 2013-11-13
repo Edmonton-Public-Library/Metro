@@ -48,11 +48,12 @@ public class Phone
 
     /**
      * Formats a phone number from 7804366077 to 780[delim]436[delim]6077.
-     * @param p
+     * @param p Phone number suspect.
+     * @param debug
      * @return formatted phone number (area code)-(exchange)-(phone).
      */
     public static final String formatPhone(String p, boolean debug)
-    {
+    { 
         if (p == null)
         {
             return "";
@@ -62,8 +63,9 @@ public class Phone
         {
             return "";
         }
-        
-        if (p.contains(DEFAULT_PHONE_DELIMITER))
+        // any space delimited phone numbers should be converted.
+        phNum = phNum.replace(" ", "-");
+        if (phNum.contains(DEFAULT_PHONE_DELIMITER))
         {
             return phNum;
         }

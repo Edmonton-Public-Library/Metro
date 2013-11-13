@@ -138,7 +138,7 @@ public class SIPFormatter implements CustomerFormatter
         // Next careful, EPL gloms the phone on the end of the address, but if a lib returns
         // the phone in the correct field parsing this will erase the phone we already
         // collected.
-        if (customer.get(CustomerFieldTypes.PHONE).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        if (customer.isEmpty(CustomerFieldTypes.PHONE))
         {
             customer.set(CustomerFieldTypes.PHONE, address.getPhone());
         }
