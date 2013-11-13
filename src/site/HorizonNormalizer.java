@@ -41,6 +41,23 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
 {
     public final static int MAXIMUM_PIN_WIDTH = 4;
     public final static int SENIOR = 65;
+    
+    protected HorizonNormalizer(boolean debug)
+    {
+        super(debug);
+    }
+    
+    @Override
+    public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
+    {
+        ResponseTypes rType = ResponseTypes.SUCCESS;
+        return rType;
+    }
+    
+    @Override
+    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    {    }
+    
     @Override
     public void normalizeOnCreate(Customer c, Response response)
     {

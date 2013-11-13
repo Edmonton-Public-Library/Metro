@@ -34,46 +34,9 @@ import site.HorizonNormalizer;
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public final class PKLCustomerNormalizer extends HorizonNormalizer
-{
-    
-    private final boolean debug;
-    
+{    
     public PKLCustomerNormalizer(boolean debug)
     {
-        this.debug = debug;
-    }
-    
-    @Override
-    public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
-    {
-        ResponseTypes rType = ResponseTypes.SUCCESS;
-        return rType;
-    }
-
-    @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
-    {
-        // They also set bstat for sex
-//        if (unformattedCustomer.isEmpty(CustomerFieldTypes.SEX) == false)
-//        {
-//            String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
-//            if (sex.compareToIgnoreCase("M") == 0)
-//            {
-//                addBStatTable(formattedCustomer, "m");
-//            }
-//            else if (sex.compareToIgnoreCase("F") == 0)
-//            {
-//                addBStatTable(formattedCustomer, "f");
-//            }
-//            else
-//            {
-//                addBStatTable(formattedCustomer, "u");
-//            }
-//        }
-//        else
-//        {
-//            addBStatTable(formattedCustomer, "u");
-//        }
-//        addBStatTable(formattedCustomer, "metro");
+        super(debug);
     }
 }

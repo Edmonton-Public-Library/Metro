@@ -60,20 +60,20 @@ public class MeCardPolicy
     protected static String failCompletenessTest;
     protected static boolean DEBUG;
     
-    protected static List<String> nonResidentTypes;
-    protected static List<String> reciprocalTypes;
-    protected static List<String> juvenileTypes;
-    protected static List<String> notInGoodStandingStandingSentinal;
-    protected static List<String> lostCardSentinals;
+    protected List<String> nonResidentTypes;
+    protected List<String> reciprocalTypes;
+    protected List<String> juvenileTypes;
+    protected List<String> notInGoodStandingStandingSentinal;
+    protected List<String> lostCardSentinals;
     private static MeCardPolicy mePolicy;
     
     private MeCardPolicy()
     {
-        nonResidentTypes         = new ArrayList<>();
-        reciprocalTypes          = new ArrayList<>();
-        juvenileTypes            = new ArrayList<>();
-        notInGoodStandingStandingSentinal = new ArrayList<>();
-        lostCardSentinals        = new ArrayList<>();
+        this.nonResidentTypes         = new ArrayList<>();
+        this.reciprocalTypes          = new ArrayList<>();
+        this.juvenileTypes            = new ArrayList<>();
+        this.notInGoodStandingStandingSentinal = new ArrayList<>();
+        this.lostCardSentinals        = new ArrayList<>();
         
         Properties messageProps     = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         failMinAgeTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_MIN_AGE_TEST.toString());
@@ -166,17 +166,17 @@ public class MeCardPolicy
      */
     public boolean isReciprocal(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        String bType = meta.getCustomerProfile();
-        for (String str: reciprocalTypes)
+        String profileType = meta.getCustomerProfile();
+        for (String reciprocalProfileName: reciprocalTypes)
         {
-            if (bType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+            if (profileType.compareTo(reciprocalProfileName) == 0) // if we match on a non resident bType we aren't a resident.
             {
                 customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
+                s.append(failReciprocalTest);
                 return true;
             }
         }
         customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
-        s.append(failReciprocalTest);
         return false;
     }
 
@@ -224,16 +224,29 @@ public class MeCardPolicy
      */
     public boolean isMinimumAge(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        // run through all the juv profile types and if one matches then
-        // no can do.
-        String customerType = meta.getCustomerProfile();
-        for (String str: juvenileTypes)
+        if (juvenileTypes.isEmpty())
         {
-            if (customerType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+            // to get here the library doesn't have juvenile types so we need to compute by date.
+            if (this.isMinimumAgeByDate(customer, meta, s) == false)
             {
                 customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
-                s.append(failResidencyTest);
+                s.append(failMinAgeTest);
                 return false;
+            }
+        }
+        else
+        {
+            // run through all the juv profile types and if one matches then
+            // no can do.
+            String customerType = meta.getCustomerProfile();
+            for (String str: juvenileTypes)
+            {
+                if (customerType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+                {
+                    customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+                    s.append(failMinAgeTest);
+                    return false;
+                }
             }
         }
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
@@ -249,11 +262,11 @@ public class MeCardPolicy
      * @param customer
      * @param meta The extra customer data that the ILS returned when it was
      * queried with getCustomer, but is not required by MeCard customer
-     * creation. Things like PROFILE and bType.
+     * creation. Things like PROFILE and bType. Usually a SIP2 message.
      * @param s the return message if the customer failed this test.
      * @return true if the customer was of minimum age and false otherwise.
      */
-    public boolean isMinimumAgeByDate(Customer customer, String meta, StringBuilder s)
+    public boolean isMinimumAgeByDate(Customer customer, CustomerMessage meta, StringBuilder s)
     {
         if (customer.isEmpty(CustomerFieldTypes.DOB))
         {
@@ -470,12 +483,14 @@ public class MeCardPolicy
      */
     public boolean isLostCard(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        if (customer.isEmpty(CustomerFieldTypes.ISLOSTCARD))
+        // A library can set this on a customer's card. Check if it came preset.
+        if (customer.isEmpty(CustomerFieldTypes.ISLOSTCARD) == false)
         {
-            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
             if (DEBUG) System.out.println("card is a lost card");
+            s.append(failLostCardTest);
             return true;
         }
+        // Well let's see what the customer's meta information can tell us.
         String profile = meta.getCustomerProfile();
         for (String str: lostCardSentinals)
         {
@@ -483,11 +498,11 @@ public class MeCardPolicy
             {
                 customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
                 if (DEBUG) System.out.println("card is a lost card");
+                s.append(failLostCardTest);
                 return true;
             }
         }
         customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
-        s.append(failLostCardTest);
         return false;
     }
 }

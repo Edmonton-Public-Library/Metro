@@ -44,9 +44,12 @@ import site.strathcona.STRCustomerNormalizer;
 public abstract class CustomerLoadNormalizer 
 {
     private static CustomerLoadNormalizer normalizer;
-    protected CustomerLoadNormalizer()
+    protected boolean debug;
+    
+    protected CustomerLoadNormalizer(boolean debug)
     {
         normalizer = null;
+        this.debug = debug;
     }
     
     /**

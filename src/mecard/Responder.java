@@ -348,7 +348,7 @@ public class Responder
             System.out.println("Customer not minimum age.");
             return false;
         }
-        if (policy.isReciprocal(customer, additionalData, failResponseMessage))
+        if (policy.isReciprocal(customer, additionalData, failResponseMessage) == true)
         {
             System.out.println("Customer cannot join because they are a reciprocal customer.");
             return false;

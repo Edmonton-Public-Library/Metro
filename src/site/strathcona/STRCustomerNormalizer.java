@@ -38,11 +38,9 @@ import site.HorizonNormalizer;
  */
 public final class STRCustomerNormalizer extends HorizonNormalizer
 {
-    private final boolean debug;
-    
     public STRCustomerNormalizer(boolean debug)
     {
-        this.debug = debug;
+        super(debug);
     }
     
     @Override

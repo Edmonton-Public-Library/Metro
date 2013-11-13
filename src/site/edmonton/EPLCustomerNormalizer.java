@@ -20,13 +20,7 @@
 */
 package site.edmonton;
 
-import java.util.Properties;
 import mecard.Response;
-import mecard.ResponseTypes;
-import mecard.config.ConfigFileTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
-import mecard.config.PropertyReader;
-import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import site.SymphonyNormalizer;
@@ -42,17 +36,11 @@ import site.SymphonyNormalizer;
  */
 public final class EPLCustomerNormalizer extends SymphonyNormalizer
 {
-    private final boolean debug;
+//    private final boolean debug;
     
     public EPLCustomerNormalizer(boolean debug)
     {
-        this.debug = debug;
-    }
-    
-    @Override
-    public ResponseTypes normalize(Customer c, StringBuilder r)
-    {
-        return ResponseTypes.SUCCESS; // no special rules for EPL.
+        super(debug);
     }
 
     /**
@@ -64,29 +52,6 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
-        // Here we have to do all the final preparations to loading a customer
-        // Specifically we will be adding default values to the account
-        // like PROFILE etc.
-        Properties defaultProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
-        for (SymphonyPropertyTypes defaultType : SymphonyPropertyTypes.values())
-        {
-            // Since all the CURRENT default types are located in the USER section
-            // of the flat file, we don't need to create new FlatFormattedTable objects.
-            String key = defaultType.toString();
-            String value = defaultProps.get(key).toString();
-            formattedCustomer.insertValue(FlatUserExtendedFieldTypes.USER.name(), key, value);
-        }
-    }
-
-    @Override
-    public void normalizeOnCreate(Customer customer, Response response)
-    {
-        // No special action required at this time.
-    }
-
-    @Override
-    public void normalizeOnUpdate(Customer customer, Response response)
-    {
-        // No special action required at this time.
+        this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
     }
 }

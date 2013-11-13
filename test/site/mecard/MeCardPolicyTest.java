@@ -60,7 +60,8 @@ public class MeCardPolicyTest
         System.out.println("==isMinimumAge by Date String==");
         StringBuilder sb = new StringBuilder();
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isMinimumAgeByDate(c, meta, sb);
+        CustomerMessage customerMessage = new SIPCustomerMessage(meta);
+        boolean result = p.isMinimumAgeByDate(c, customerMessage, sb);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         boolean expected= true;
         assertTrue(expected == result);
@@ -73,7 +74,8 @@ public class MeCardPolicyTest
                 + "PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
         c.set(CustomerFieldTypes.DOB, "20050101");
-        result = p.isMinimumAgeByDate(c, modeMeta, sb);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAgeByDate(c, customerMessage, sb);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         
         assertTrue(false == result);

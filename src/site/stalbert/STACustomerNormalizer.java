@@ -36,18 +36,9 @@ import site.HorizonNormalizer;
 public final class STACustomerNormalizer extends HorizonNormalizer
 {
     
-    private final boolean debug;
-    
     public STACustomerNormalizer(boolean debug)
     {
-        this.debug = debug;
-    }
-    
-    @Override
-    public ResponseTypes normalize(Customer c, StringBuilder responseStringBuilder)
-    {
-        ResponseTypes rType = ResponseTypes.SUCCESS;
-        return rType;
+        super(debug);
     }
 
     @Override
