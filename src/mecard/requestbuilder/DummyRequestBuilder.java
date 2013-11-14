@@ -108,14 +108,15 @@ public class DummyRequestBuilder extends ILSRequestBuilder
         if (this.commandStatus == 0) 
         {
             response.setCode(ResponseTypes.SUCCESS);
+            response.setResponse(status.getStdout());
             result = true;
         }
         else
         {
             response.setCode(ResponseTypes.FAIL);
+            response.setResponse(status.getStderr());
             result = false;
         }
-        response.setResponse("DUMMY_RESPONSE: '" + status.getStdout() + "'");
         return result;
     }
     

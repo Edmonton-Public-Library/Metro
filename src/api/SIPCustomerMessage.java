@@ -20,6 +20,7 @@
  */
 package api;
 
+import mecard.config.MessagesConfigTypes;
 import mecard.exception.SIPException;
 
 /**
@@ -30,14 +31,15 @@ public class SIPCustomerMessage
     extends SIPMessage
     implements CustomerMessage
 {
+    
+    
     public SIPCustomerMessage(String message)
     {
         super(message);
         if (this.code.compareTo("64") != 0) // Not a customer response message
         {
-            throw new SIPException(SIPCustomerMessage.class.getName()
-                    + " This doesn't look like a SIP2 customer response: '" 
-                    + message + "'.");
+            throw new SIPException(this.messageProperties.getProperty(
+                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
         }
     }
     

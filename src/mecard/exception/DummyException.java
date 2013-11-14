@@ -27,8 +27,8 @@ package mecard.exception;
  */
 public class DummyException extends RuntimeException 
 {
-    private final static String initMessage = "DummyException thrown intentionally: ";
-    private final static String postMessage = " To stop this check and edit debug.properties.";
+    private final static String initMessage = "";
+    private final static String postMessage = " (code DE)";
     
     public DummyException()
     {

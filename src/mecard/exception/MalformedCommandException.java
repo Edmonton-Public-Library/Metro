@@ -28,7 +28,7 @@ package mecard.exception;
 public class MalformedCommandException extends RuntimeException 
 {
     private final static String initMessage = "The supplied command is malformed. ";
-    private final static String postMessage = "Please refer to the documentation.";
+    private final static String postMessage = ".";
     
     public MalformedCommandException()
     {
