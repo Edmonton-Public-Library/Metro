@@ -16,34 +16,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- *
  */
-package mecard.requestbuilder;
+package mecard.customer;
+
+import java.util.List;
 
 /**
- * Every command that Metro executes must have a strategy defined for how it will
- * execute that command. There are just four strategies for satisfying requests 
- * from the metro server. These values have to be entered in the environment configuration XML file
- * @author andrew
+ * Formats the {@link mecard.customer.Customer} into the Polaris favored JSON.
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum ResponderMethodTypes
+public class PolarisJSONCustomerFormatter implements CustomerFormatter
 {
-    SYMPHONY_API("symphony-api"), // SQL or API  
-    SIP2("sip2"),
-    BIMPORT("bimport"), 
-    DEBUG("dummy"), 
-    POLARIS_API("polaris-api"); // restful service.
-    
-    private String type;
-    
-    private ResponderMethodTypes(String t)
-    {
-        this.type = t;
-    }
-    
+
     @Override
-    public String toString()
+    public Customer getCustomer(List<String> list)
     {
-        return this.type;
+        return getCustomer(list.get(0)); 
     }
+
+    @Override
+    public Customer getCustomer(String s)
+    {
+        // Date conversion will be important
+//        Date Format when using JSON
+//        Because JSON does not have a standard way of describing dates, the following format must be used:
+//        "\/Date(1295352000000)\/"
+//        The number represents the number of milliseconds since January 1st 1970 UTC.
+//        1295352000000 represents Tuesday, January 18, 2011 7:00:00 AM.
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
 }

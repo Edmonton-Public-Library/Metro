@@ -125,6 +125,11 @@ public abstract class ILSRequestBuilder
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'DEBUG' (dummy) ");
             return new DummyRequestBuilder(debug);
         }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_API' ");
+            return new PolarisRequestBuilder(debug);
+        }
         else
         {
             throw new UnsupportedCommandException(configRequestedService + 
@@ -160,7 +165,6 @@ public abstract class ILSRequestBuilder
      * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to create a customer.
      */
-    
     public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         throw new UnsupportedCommandException("The requested protocol listed in "
@@ -175,7 +179,6 @@ public abstract class ILSRequestBuilder
      * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to update a customer.
      */
-    
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         throw new UnsupportedCommandException("The requested protocol listed in "

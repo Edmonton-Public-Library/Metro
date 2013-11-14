@@ -20,14 +20,10 @@
  */
 package mecard.customer;
 
-import mecard.config.FlatUserFieldTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import mecard.Protocol;
-import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
 

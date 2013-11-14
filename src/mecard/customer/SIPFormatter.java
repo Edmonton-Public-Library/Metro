@@ -24,7 +24,6 @@ import api.SIPCustomerMessage;
 import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
-import mecard.Protocol;
 import mecard.util.Address2;
 import mecard.util.Phone;
 
