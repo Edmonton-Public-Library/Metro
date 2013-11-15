@@ -212,7 +212,7 @@ public class PropertyReader
             case POLARIS:
                 polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
                 // now check that all mandetory values are here.
-                for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
+                for (PapiPropertyTypes pType : PapiPropertyTypes.values())
                 {
                     if (polaris.get(pType.toString()) == null)
                     {

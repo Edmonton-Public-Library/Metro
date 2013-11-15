@@ -89,7 +89,7 @@ public class APICommand implements Command
          */
         public Builder commandLine(List<String> arguments)
         {
-            this.args = new ArrayList<String>();
+            this.args = new ArrayList<>();
             this.args.addAll(arguments);
             return this;
         }
@@ -104,7 +104,7 @@ public class APICommand implements Command
         public Builder cat(List<String> data)
         {
             this.cmdFormat = APICommandTypes.CMD_PIPE;
-            this.stdinData = new ArrayList<String>();
+            this.stdinData = new ArrayList<>();
             this.stdinData.addAll(data);
             return this;
         }
@@ -119,7 +119,7 @@ public class APICommand implements Command
         public Builder echo(String stringIn)
         {
             this.cmdFormat = APICommandTypes.CMD_PIPE;
-            this.stdinData = new ArrayList<String>();
+            this.stdinData = new ArrayList<>();
             this.stdinData.add(stringIn);
             return this;
         }
@@ -135,7 +135,7 @@ public class APICommand implements Command
         {
             if (this.remoteSSHCommands != null)
             {
-                List<String> tmpList = new ArrayList<String>();
+                List<String> tmpList = new ArrayList<>();
                 tmpList.addAll(this.remoteSSHCommands);
                 // Now we may have to cat (or echo) what was sent to the commandLine command
                 if (this.cmdFormat == APICommandTypes.CMD_PIPE)

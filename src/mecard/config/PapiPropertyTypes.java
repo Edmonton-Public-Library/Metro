@@ -25,13 +25,22 @@ package mecard.config;
  * fields 
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum PolarisPropertyTypes
+public enum PapiPropertyTypes
 {
-    LOAD_DIR("load-dir");     // Directory where to find customer files to load.
+    LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
+    LOGIN_BRANCH_ID("login-branch-id"),
+    LOGIN_USER_ID("login-user-id"),
+    LOGIN_WORKSTATION_ID("login-workstation-id"),
+    PATRON_BRANCH_ID("patron-branch-id"),
+    HOST("host"), // host for PAPI service.
+    VERSION("version"), 
+    LANGUAGE_ID("language-id"), 
+    APP_ID("app-id"), 
+    ORG_ID("org-id");        
     
     private String type;
 
-    private PolarisPropertyTypes(String s)
+    private PapiPropertyTypes(String s)
     {
         this.type = s;
     }
