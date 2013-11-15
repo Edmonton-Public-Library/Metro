@@ -25,7 +25,7 @@ import java.util.List;
  * Formats the {@link mecard.customer.Customer} into the Polaris favored JSON.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class PolarisJSONCustomerFormatter implements CustomerFormatter
+public class PapiJSONCustomerFormatter implements CustomerFormatter
 {
 
     @Override

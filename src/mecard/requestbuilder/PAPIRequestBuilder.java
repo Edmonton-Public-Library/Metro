@@ -33,7 +33,7 @@ import mecard.config.PropertyReader;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.PolarisJSONCustomerFormatter;
+import mecard.customer.PapiJSONCustomerFormatter;
 import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
 
@@ -129,7 +129,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public final CustomerFormatter getFormatter()
     {
-        return new PolarisJSONCustomerFormatter(); // TODO finish this class
+        return new PapiJSONCustomerFormatter(); // TODO finish this class
     }
 
     @Override
