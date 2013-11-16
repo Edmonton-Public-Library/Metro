@@ -30,7 +30,6 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PapiPropertyTypes;
 import mecard.config.PropertyReader;
-import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.PapiJSONCustomerFormatter;
@@ -44,6 +43,7 @@ import site.CustomerLoadNormalizer;
  */
 public class PAPIRequestBuilder extends ILSRequestBuilder
 {
+    private static String POST = "POST";
     private final Properties messageProperties;
     private final String host;
     private final String loginBranchId;
@@ -96,6 +96,10 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     {
         Command patronRegistrationCreate = new PAPICommand.Builder()
                 .setURL(this.getUrlBase())
+                .setLoginBranchId(this.loginBranchId)
+                .setLoginUserId(this.loginUserId)
+                .setLoginStationId(this.loginStationId)
+                .setHTTPVerb(POST)
                 .build();
         return patronRegistrationCreate; 
     }
@@ -106,6 +110,10 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
         // http://host/PAPIServie/REST/public/v1/1033/100/1/patron/21221012345678
         Command patronAccountUpdate = new PAPICommand.Builder()
                 .setURL(this.getUrlBase() + "/" + customer.get(CustomerFieldTypes.ID))
+                .setLoginBranchId(this.loginBranchId)
+                .setLoginUserId(this.loginUserId)
+                .setLoginStationId(this.loginStationId)
+                .setHTTPVerb(POST)
                 .build();
         return patronAccountUpdate;
     }

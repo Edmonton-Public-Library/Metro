@@ -20,27 +20,33 @@
  */
 package api;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import mecard.exception.ConfigurationException;
+
 /**
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class PAPICommand implements Command
 {
-
+    private final URL url;
     
     public static class Builder
     {
         // optional
-        private String someValue;
+        private String url;
+        private String loginBranchId;
+        private String loginUserId;
+        private String loginStationId;
+        private String verb;
 
         /**
          * Constructor that insists that the command gets at least a status
          * object and a command.
          */
         public Builder()
-        {
-            this.someValue = "";
-        }
+        {  }
 
         /**
          * Builds the command and returns a reference to it.
@@ -52,15 +58,54 @@ public class PAPICommand implements Command
             return new PAPICommand(this);
         }
 
-        public Builder setURL(String urlBase)
+        /**
+         * Sets the URL of the PAPI command.
+         * @param url
+         * @return builder object.
+         */
+        public Builder setURL(String url)
         {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            this.url = url;
+            return this;
+        }
+
+        public Builder setLoginBranchId(String loginBranchId)
+        {
+            this.loginBranchId = loginBranchId;
+            return this;
+        }
+
+        public Builder setLoginUserId(String loginUserId)
+        {
+            this.loginUserId = loginUserId;
+            return this;
+        }
+
+        public Builder setLoginStationId(String loginStationId)
+        {
+            this.loginStationId = loginStationId;
+            return this;
+        }
+        
+        public Builder setHTTPVerb(String verb)
+        {
+            this.verb = verb;
+            return this;
         }
     }
     
     private PAPICommand(Builder papiBuilder)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            this.url = new URL(papiBuilder.url);
+        }
+        catch (MalformedURLException ex)
+        {
+            throw new ConfigurationException(PAPICommand.class.getName() + 
+                    "The PAPI URL is malformed. Please check "
+                    + "your configuration for errors.");
+        }
     }
 
     @Override
