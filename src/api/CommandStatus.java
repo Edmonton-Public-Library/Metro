@@ -25,15 +25,15 @@ import mecard.ResponseTypes;
 
 public class CommandStatus
 {
-    private ResponseTypes status;
-    private StringBuffer stdout;
-    private StringBuffer stderr;
+    protected ResponseTypes status;
+    protected StringBuffer stdout;
+    protected StringBuffer stderr;
     
     CommandStatus()
     { 
-        stdout = new StringBuffer();
-        stderr = new StringBuffer();
-        status = ResponseTypes.INIT;
+        this.stdout = new StringBuffer();
+        this.stderr = new StringBuffer();
+        this.status = ResponseTypes.INIT;
     }
     
     void setStarted()
@@ -59,7 +59,7 @@ public class CommandStatus
         this.stdout.append("\n");
         this.stderr.append(value);
         this.stderr.append("\n");
-        status = ResponseTypes.COMMAND_COMPLETED;
+        this.status = ResponseTypes.COMMAND_COMPLETED;
     }
 
     void setError(Throwable th)
@@ -70,16 +70,16 @@ public class CommandStatus
 
     public ResponseTypes getStatus() 
     {
-        return status;
+        return this.status;
     }
 
     public String getStdout() 
     {
-        return stdout.toString();
+        return this.stdout.toString();
     }
 
     public String getStderr() 
     {
-        return stderr.toString();
+        return this.stderr.toString();
     }
 }

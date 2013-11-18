@@ -26,8 +26,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.exception.ConfigurationException;
 
 /**
@@ -130,7 +128,7 @@ public class PAPICommand implements Command
     @Override
     public CommandStatus execute()
     {
-        CommandStatus status = new CommandStatus();
+        CommandStatus status = new HTTPCommandStatus();
         try
         {
             HttpURLConnection connection = (HttpURLConnection) this.url.openConnection();
@@ -142,13 +140,12 @@ public class PAPICommand implements Command
                 // Depending on the error we should return a more meaningful exception.
 //                throw new RuntimeException("Failed : HTTP error code : "
 //                        + connection.getResponseCode());
-                status.setStderr(String.valueOf(connection.getResponseCode()));
+                ((HTTPCommandStatus)status).setHttpCode(connection.getResponseCode());
             }
             else // Non-200 code returned.
             {
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        (connection.getInputStream())));
-
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()));
                 String output;
                 while ((output = br.readLine()) != null) 
                 {

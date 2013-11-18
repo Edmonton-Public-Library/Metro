@@ -22,10 +22,12 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
+import api.HTTPCommandStatus;
 import api.PAPICommand;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.Response;
+import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PapiPropertyTypes;
@@ -143,7 +145,18 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO PAPIRequestBuilder.isSuccessful() can check on the error code!
+        ResponseTypes responseType = status.getStatus();
+        boolean result = false;
+        switch(responseType)
+        {
+            case SUCCESS:
+                result = true;
+            default:
+                result = false;
+                break;
+        }
+        return result;
     }
 
     @Override
