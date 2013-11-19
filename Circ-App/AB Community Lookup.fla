@@ -1,0 +1,114 @@
+/// Classes for importing xml and using the datagrid component ///
+import fl.controls.DataGrid;
+import fl.controls.TextInput;
+import fl.controls.dataGridClasses.DataGridColumn;
+import fl.data.DataProvider;
+/// Create data source  ///
+var dp:DataProvider = new DataProvider();
+/// Check for XML File Online //// 
+//var loader = new URLLoader(new URLRequest("http://www.optionkey.ca/citycodes.xml"));
+var loader = new URLLoader();
+loader = new URLLoader(new URLRequest("http://www.optionkey.ca/citycodes.xml"));
+//var onError:Error = new Error("Encountered an error with the numUsers value", 99);
+/// Get The XML Doesn't Load Load the Local Version //// 
+loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
+try
+{
+//I can put something here
+}
+catch (err:Error)
+{
+//I can put something here
+}
+finally
+{
+	function onError(event:IOErrorEvent)
+	{
+		//Put error here if someone deletes the local file.
+		//trace("error");
+		var loader = new URLLoader(new URLRequest("citycodes.xml"));
+		//required to load local version of xml
+		loader.addEventListener(Event.COMPLETE, xmlDownloaded);
+	}
+	
+	//Required to load web version of xml
+	loader.addEventListener(Event.COMPLETE, xmlDownloaded);
+}
+/*function onError(event:IOErrorEvent)
+{
+//Put error here if someone deletes the local file.
+trace("error");
+var loader = new URLLoader(new URLRequest("citycodes.xml"));
+}
+*/
+///  Finish loading the XML File.  Put in Variable  ///
+
+
+///  Get Data out of Variable and put data into data grid  ///
+///  Variable has data in XML format  ///
+function xmlDownloaded(event:Event):void
+{
+	var xmlData:XML = new XML(event.target.data);
+	var myCheck:String = xmlData;
+
+	for each (var object:XML in xmlData.*)
+	{
+		if (object.name() == "entry")
+		{
+			var varPlace:String = object. @ key;
+			var varABCode:String = object;
+			dp.addItem({Code:varABCode, Place:varPlace});
+			addChild(myDataGrid);
+		}
+	}
+}
+
+
+
+/// Draw a search box on the stage ///
+var itemTextInput:TextInput = new TextInput();
+itemTextInput.move(10, 20);
+itemTextInput.width = 280;
+itemTextInput.addEventListener(Event.CHANGE, changeHandler);
+addChild(itemTextInput);
+
+///  Data Column called place.  attributes that only affect place go here  ///
+var placeCol:DataGridColumn = new DataGridColumn("Place");
+placeCol.width = 325;
+placeCol.headerText = "Place:";
+
+///  Data column called Code.  Attributes that only affect code go here  ///
+var codeCol:DataGridColumn = new DataGridColumn("Code");
+codeCol.headerText = "Code:";
+
+
+///  Draw the datagrid.  Make the width for both columns 280px and a row count of 12  ///
+var myDataGrid:DataGrid = new DataGrid();
+myDataGrid.addColumn(placeCol);
+myDataGrid.addColumn(codeCol);
+myDataGrid.dataProvider = dp;
+myDataGrid.width = 280;
+myDataGrid.rowCount = 12;
+myDataGrid.move(10, 50);
+addChild(myDataGrid);
+
+
+///  Fucntion for displaying filtered results  ///
+function changeHandler(event:Event):void
+{
+	var arr:Array = dp.toArray();
+	var filteredArr:Array = arr.filter(filterDataProvider);
+	myDataGrid.dataProvider = new DataProvider(filteredArr);
+}
+
+///  Function for typing in text feild and getting back results  ///
+function filterDataProvider(obj:Object, idx:int, arr:Array):Boolean
+{
+	var txt1:String = itemTextInput.text;
+	var txt2:String = obj.Place.substr(0,txt1.length);
+	if (txt1.toLowerCase() == txt2.toLowerCase())
+	{
+		return true;
+	}
+	return false;
+}
