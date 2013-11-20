@@ -52,6 +52,27 @@ public class MeCardPolicyTest
     }
 
     /**
+     * Test of isGoodStanding method, of class MeCardPolicy.
+     */
+    @Test
+    public void testIsGoodStanding()
+    {
+        String custReq =
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+        RequestDeserializer deserializer = new RequestDeserializer();
+        Request request = deserializer.getDeserializedRequest(custReq);
+        Customer c = request.getCustomer();
+        System.out.println("==isGoodStanding==");
+        StringBuilder sb = new StringBuilder();
+        MeCardPolicy policy = MeCardPolicy.getInstanceOf(false);
+        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AY1AZB304";
+        CustomerMessage customerMessage = new SIPCustomerMessage(msg);
+        boolean result = policy.isInGoodStanding(c, customerMessage, sb);
+        boolean expected= false;
+        assertTrue(expected == result);
+    }
+    
+    /**
      * Test of isMinimumAgeByDate method, of class MeCardPolicy.
      */
     @Test

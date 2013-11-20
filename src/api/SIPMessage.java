@@ -185,6 +185,11 @@ public class SIPMessage
         return returnValue;
     }
     
+    public boolean isEmpty(String field)
+    {
+        return getField(field).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0;
+    }
+    
    @Override
     public String toString()
     {

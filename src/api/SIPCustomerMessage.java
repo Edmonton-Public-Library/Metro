@@ -20,6 +20,7 @@
  */
 package api;
 
+import mecard.Protocol;
 import mecard.config.MessagesConfigTypes;
 import mecard.exception.SIPException;
 
@@ -80,6 +81,13 @@ public class SIPCustomerMessage
         // The AF field contains a message about standing usually 'barred' appears in it.
         // This method may need to be extended to account for other methods of packing
         // a status message or compute standing based on fines.
+        // Parklands reports their profile type as suspended
+        // so test if there is a message, if there is likely to have patron info
+        // in it, but if there isn't it will likely require a profile check.
+        if (this.isEmpty("AF")) // if the message field is empty use the profile.
+        {
+            return this.getCustomerProfile();
+        }
         return this.getMessage();
     }
 }

@@ -62,8 +62,8 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\city_st.pr
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\debug.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\environment.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sip2.properties"; DestDir: "{app}\config"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config" 
-
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

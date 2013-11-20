@@ -194,13 +194,16 @@ public class MeCardPolicy
     {
         // because EPL uses SIP to get customer information we can assume that
         // meta will contain BARRED if the customer is not in good standing.
-        String standing = message.getStanding();
-        for (String str: notInGoodStandingStandingSentinal)
-        if (standing.contains(str)) // TODO Test with bad customers!!!.
+        String standingMessage = message.getStanding();
+        for (String notGoodStandingType: notInGoodStandingStandingSentinal)
         {
-            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
-            s.append(failGoodstandingTest);
-            return false;
+            System.out.println("TESTING: '" + notGoodStandingType + "' against '"+standingMessage+"'");
+            if (standingMessage.contains(notGoodStandingType)) // TODO Test with bad customers!!!.
+            {
+                customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+                s.append(failGoodstandingTest);
+                return false;
+            }
         }
         customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
         return true;
