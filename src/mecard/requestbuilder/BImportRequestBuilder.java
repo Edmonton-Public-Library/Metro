@@ -132,6 +132,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
             throw new BImportException(BImportRequestBuilder.class.getName()
                     + " Could not create data file: '" + dataFile + "'.");
         }
+        // We use a scheduled loader to run BImport regularly on existing customer accounts
+        // because multiple BImport load requests will cause BImport instances to collide.
         Command command = new DummyCommand.Builder()
                 .setStatus(0)
                 .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
