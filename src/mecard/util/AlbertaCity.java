@@ -855,8 +855,8 @@ public final class AlbertaCity extends City
                 System.out.println(new Date() + 
                         " read '" + configKey + "' from city_st table but"
                         + " I don't recognize that as an official Alberta place name."
-                        + " Is there a spelling mistake, or some other error"
-                        + " or omission?");
+                        + " This can happen if the spelling in your city_st.properties file"
+                        + " does not (case insensitive) match the metro city table.");
             }
             cityMap.put(configKey, preferedCode);
         }
