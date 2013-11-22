@@ -116,6 +116,7 @@ public class BImportCustomerLoader
             Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
             System.exit(899); // 799 for mecard
         }
+        System.exit(0);
     }
 
     /**
@@ -139,7 +140,7 @@ public class BImportCustomerLoader
         return new File(pidDir + pidFile);
     }
 
-    private BImportLoadRequestBuilder loadRequestBuilder;
+    private final BImportLoadRequestBuilder loadRequestBuilder;
     private static boolean uploadCustomers = false;
     private static String pidDir           = ".";
     private static final String pidFile    = "metro-load.pid";

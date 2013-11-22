@@ -61,7 +61,7 @@ public final class AlbertaCity extends City
     {
         for (String fullPlaceName: cityMap.keySet())
         {
-            if (fullPlaceName.endsWith(placeNameFragment))
+            if (fullPlaceName.toLowerCase().endsWith(placeNameFragment.toLowerCase()))
             {
                 return fullPlaceName;
             }
@@ -72,11 +72,17 @@ public final class AlbertaCity extends City
     @Override
     public boolean isPlaceName(String placeName)
     {
-        if (cityMap.containsKey(placeName))
+        for (String fullPlaceName: cityMap.keySet())
         {
-            return true;
+            if (fullPlaceName.compareToIgnoreCase(placeName) == 0)
+            {
+                return true;
+            }
         }
         return false;
+        // This doesn't work because there are too many variations for 
+        // County [o|O]f Leduc etc.
+//        return cityMap.containsKey(placeName);
     }
     
     @Override
@@ -85,7 +91,7 @@ public final class AlbertaCity extends City
         List<String> listOfNames = new ArrayList<>();
         for (String fullPlaceName: cityMap.keySet())
         {
-            if (fullPlaceName.endsWith(place))
+            if (fullPlaceName.toLowerCase().endsWith(place.toLowerCase()))
             {
                 listOfNames.add(fullPlaceName);
             }
@@ -94,13 +100,15 @@ public final class AlbertaCity extends City
     }
     
     @Override
-    public String getCityCode(String ciyName)
+    public String getCityCode(String cityName)
     {
         String returnCity = Protocol.DEFAULT_FIELD_VALUE;
-        String testName = cityMap.get(ciyName);
-        if (testName != null && testName.isEmpty() == false)
+        for (String fullPlaceName: cityMap.keySet())
         {
-            returnCity = testName;
+            if (fullPlaceName.compareToIgnoreCase(cityName) == 0)
+            {
+                return cityMap.get(fullPlaceName); 
+            }
         }
         return returnCity;
     }
@@ -845,10 +853,10 @@ public final class AlbertaCity extends City
             if (cityMap.containsKey(configKey) == false)
             {
                 System.out.println(new Date() + 
-                        " read '" + configKey + "' from city_st table but "
-                        + "I don't recognize that as an official Alberta place name."
-                        + " Is there a spelling mistake, or some other error "
-                        + "or omission?");
+                        " read '" + configKey + "' from city_st table but"
+                        + " I don't recognize that as an official Alberta place name."
+                        + " Is there a spelling mistake, or some other error"
+                        + " or omission?");
             }
             cityMap.put(configKey, preferedCode);
         }
