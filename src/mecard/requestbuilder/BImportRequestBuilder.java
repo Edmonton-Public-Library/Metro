@@ -132,6 +132,15 @@ public class BImportRequestBuilder extends ILSRequestBuilder
             throw new BImportException(BImportRequestBuilder.class.getName()
                     + " Could not create data file: '" + dataFile + "'.");
         }
+        // We need to know if there is a header file and if not build one.
+        headerFile = loadDir + FILE_NAME_PREFIX + "template" + HEADER_FILE;
+        File headerTest = new File(headerFile);
+        // Check if it exists because some other metro process might be using it.
+        if (headerTest.exists() == false)
+        {
+            UserFile bimportHeaderFile = new UserFile(headerFile);
+            bimportHeaderFile.addUserData(formattedCustomer.getFormattedHeader());
+        }
         // We use a scheduled loader to run BImport regularly on existing customer accounts
         // because multiple BImport load requests will cause BImport instances to collide.
         Command command = new DummyCommand.Builder()

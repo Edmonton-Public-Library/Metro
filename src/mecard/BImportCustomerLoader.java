@@ -182,6 +182,7 @@ public class BImportCustomerLoader
      * @param loadDir Specifies a directory to search.
      * @param fileSuffix Specifies the type of files to search. The supplied string
      * will be used in the {@link String#endsWith(java.lang.String) } method.
+     * @return List of files.
      */
     protected List<String> getFileList(String loadDir, String fileSuffix)
     {

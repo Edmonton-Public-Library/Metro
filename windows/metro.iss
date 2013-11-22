@@ -64,6 +64,8 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\environmen
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sip2.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metroschedule.bat"; DestDir: "{app}\windows"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metro-template-header.txt"; DestDir: "{app}\windows"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

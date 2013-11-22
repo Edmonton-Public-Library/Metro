@@ -44,7 +44,7 @@ import mecard.util.PostalCode;
  */
 public final class BImportFormattedCustomer implements FormattedCustomer
 {
-    private List<BImportTable> customerAccount;
+    private final List<BImportTable> customerAccount;
     
     public BImportFormattedCustomer(Customer c)
     {
