@@ -20,6 +20,8 @@
  */
 package site.mecard;
 
+import api.CustomerMessage;
+import api.SIPCustomerMessage;
 import site.MeCardPolicy;
 import mecard.Request;
 import json.RequestDeserializer;
@@ -50,15 +52,37 @@ public class MeCardPolicyTest
     }
 
     /**
+     * Test of isGoodStanding method, of class MeCardPolicy.
+     */
+    @Test
+    public void testIsGoodStanding()
+    {
+        String custReq =
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+        RequestDeserializer deserializer = new RequestDeserializer();
+        Request request = deserializer.getDeserializedRequest(custReq);
+        Customer c = request.getCustomer();
+        System.out.println("==isGoodStanding==");
+        StringBuilder sb = new StringBuilder();
+        MeCardPolicy policy = MeCardPolicy.getInstanceOf(false);
+        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AY1AZB304";
+        CustomerMessage customerMessage = new SIPCustomerMessage(msg);
+        boolean result = policy.isInGoodStanding(c, customerMessage, sb);
+        boolean expected= false;
+        assertTrue(expected == result);
+    }
+    
+    /**
      * Test of isMinimumAgeByDate method, of class MeCardPolicy.
      */
     @Test
     public void testIsMinimumAgeByDate()
     {
         System.out.println("==isMinimumAge by Date String==");
-        
+        StringBuilder sb = new StringBuilder();
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isMinimumAgeByDate(c, meta, null);
+        CustomerMessage customerMessage = new SIPCustomerMessage(meta);
+        boolean result = p.isMinimumAgeByDate(c, customerMessage, sb);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         boolean expected= true;
         assertTrue(expected == result);
@@ -71,7 +95,8 @@ public class MeCardPolicyTest
                 + "PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
         c.set(CustomerFieldTypes.DOB, "20050101");
-        result = p.isMinimumAgeByDate(c, modeMeta, null);
+        customerMessage = new SIPCustomerMessage(modeMeta);
+        result = p.isMinimumAgeByDate(c, customerMessage, sb);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         
         assertTrue(false == result);
@@ -85,13 +110,14 @@ public class MeCardPolicyTest
     {
         System.out.println("==isEmailable==");
 
-        
+        StringBuilder sb = new StringBuilder();
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isEmailable(c, meta, null);
+        CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
+        boolean result = p.isEmailable(c, customerMessage, sb);
         assertTrue(true == result);
         
         c.set(CustomerFieldTypes.EMAIL, "X");
-        result = p.isEmailable(c, meta, null);
+        result = p.isEmailable(c, customerMessage, sb);
         
         assertTrue(false == result);
     }
@@ -105,12 +131,13 @@ public class MeCardPolicyTest
         System.out.println("==isValidCustomerData==");
 
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isValidCustomerData(c, null);
+        StringBuilder sb = new StringBuilder();
+        boolean result = p.isValidCustomerData(c, sb);
         boolean expected= true;
         assertTrue(expected == result);
 
         c.set(CustomerFieldTypes.POSTALCODE, "X");
-        result = p.isValidCustomerData(c, null);
+        result = p.isValidCustomerData(c, sb);
         assertTrue(result == false);
     }
 
@@ -121,14 +148,15 @@ public class MeCardPolicyTest
     public void testIsValidExpiryDate()
     {
         System.out.println("==isValidExpiryDate==");
-        
+        StringBuilder sb = new StringBuilder();
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
-        boolean result = p.isValidExpiryDate(c, meta, null);
+        CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
+        boolean result = p.isValidExpiryDate(c, customerMessage, sb);
         boolean expected= true;
         assertTrue(expected == result);
 
         c.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, "20120602");
-        result = p.isValidExpiryDate(c, meta, null);
+        result = p.isValidExpiryDate(c, customerMessage, sb);
         expected= false;
         assertTrue(expected == result);
     }

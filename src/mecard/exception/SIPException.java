@@ -28,7 +28,7 @@ package mecard.exception;
 public class SIPException extends RuntimeException 
 {
     private final static String initMessage = "SIP connection Error ";
-    private final static String postMessage = "Please refer to the documentation.";
+    private final static String postMessage = "";
     
     public SIPException()
     {

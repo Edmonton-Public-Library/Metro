@@ -35,12 +35,10 @@ import site.HorizonNormalizer;
  */
 public final class TRKCustomerNormalizer extends HorizonNormalizer
 {
-    
-    private final boolean debug;
-    
+
     public TRKCustomerNormalizer(boolean debug)
     {
-        this.debug = debug;
+        super(debug);
     }
     
     @Override

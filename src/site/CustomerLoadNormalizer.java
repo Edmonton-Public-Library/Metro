@@ -31,6 +31,7 @@ import mecard.exception.UnsupportedLibraryException;
 import mecard.config.PropertyReader;
 import mecard.config.MemberTypes;
 import mecard.customer.FormattedCustomer;
+import site.parklands.PKLCustomerNormalizer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
 import site.trak.TRKCustomerNormalizer;
@@ -44,9 +45,12 @@ import site.trak.TRKCustomerNormalizer;
 public abstract class CustomerLoadNormalizer 
 {
     private static CustomerLoadNormalizer normalizer;
-    protected CustomerLoadNormalizer()
+    protected boolean debug;
+    
+    protected CustomerLoadNormalizer(boolean debug)
     {
         normalizer = null;
+        this.debug = debug;
     }
     
     /**
@@ -92,6 +96,10 @@ public abstract class CustomerLoadNormalizer
         else if (libCode.equalsIgnoreCase(MemberTypes.TRK.name()))
         {
             normalizer = new TRKCustomerNormalizer(debug);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.PKL.name()))
+        {
+            normalizer = new PKLCustomerNormalizer(debug);
         }
         else
         {

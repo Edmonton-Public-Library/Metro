@@ -20,7 +20,9 @@
 */
 package mecard.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.junit.Test;
@@ -91,4 +93,54 @@ public class PropertyReaderTest
         }
         assertTrue(props.size() == 6);
     }
+
+    /**
+     * Test of loadDelimitedEntry method, of class PropertyReader.
+     */
+    @Test
+    public void testLoadDelimitedEntry()
+    {
+        System.out.println("==loadDelimitedEntry==");
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        props.list(System.out);
+        LibraryPropertyTypes libraryPropertyTypes = LibraryPropertyTypes.NON_RESIDENT_TYPES;
+        List<String> result = new ArrayList<>(); 
+        PropertyReader.loadDelimitedEntry(props, libraryPropertyTypes, result);
+        for (String s: result)
+        {
+            System.out.println("N:" + s);
+        }
+        libraryPropertyTypes = LibraryPropertyTypes.RECIPROCAL_TYPES;
+        PropertyReader.loadDelimitedEntry(props, libraryPropertyTypes, result);
+        for (String s: result)
+        {
+            System.out.println("R:" + s);
+        }
+        libraryPropertyTypes = LibraryPropertyTypes.JUVENILE_TYPES;
+        PropertyReader.loadDelimitedEntry(props, libraryPropertyTypes, result);
+        for (String s: result)
+        {
+            System.out.println("J:" + s);
+        }
+        libraryPropertyTypes = LibraryPropertyTypes.CUSTOMER_STANDING_SENTINEL;
+        PropertyReader.loadDelimitedEntry(props, libraryPropertyTypes, result);
+        for (String s: result)
+        {
+            System.out.println("GOOD_STANDING:" + s);
+        }
+        System.out.println("==loadDelimitedEntry==");
+    }
+
+    /**
+     * Test of setConfigDirectory method, of class PropertyReader.
+     */
+//    @Test
+//    public void testSetConfigDirectory()
+//    {
+//        System.out.println("setConfigDirectory");
+//        String configDirectory = "";
+//        PropertyReader.setConfigDirectory(configDirectory);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
 }

@@ -85,4 +85,19 @@ public class PhoneTest
         result = phone.toString();
         assertEquals(expResult, result);
     }
+
+    /**
+     * Test of formatPhone method, of class Phone.
+     */
+    @Test
+    public void testFormatPhone_String()
+    {
+        System.out.println("===formatPhone===");
+        String p = "780 436 6071";
+        String expResult = "780-436-6071";
+        String result = Phone.formatPhone(p);
+        assertTrue(expResult.compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        System.out.println("===formatPhone===");
+    }
 }

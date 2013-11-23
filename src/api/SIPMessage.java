@@ -23,8 +23,12 @@ package api;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import mecard.Protocol;
+import mecard.config.ConfigFileTypes;
+import mecard.config.MessagesConfigTypes;
+import mecard.config.PropertyReader;
 import mecard.exception.SIPException;
 
 /**
@@ -42,6 +46,7 @@ public class SIPMessage
     protected final String originalMessage;
     protected final String code;
     protected final String codeBits;
+    protected Properties messageProperties;
 
     /**
      * This method accepts a possible dateField and returns a clean date. 
@@ -81,15 +86,21 @@ public class SIPMessage
 //        return possibleDate.matches("\\d{8}");
     }
     
+    /**
+     * Constructor
+     * @param sipMessage SIP2 message string.
+     * @throws SIPException 
+     */
     public SIPMessage(String sipMessage)
             throws SIPException
     {
+        // If the message we get is broken, it is most likely that the ILS is down.
+        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.originalMessage = sipMessage;
         if (sipMessage.contains("|") == false)
         {
-            throw new SIPException(SIPMessage.class.getName()
-                    + "'" + sipMessage
-                    + "' does not appear to be a SIP2 message.");
+            throw new SIPException(this.messageProperties.getProperty(
+                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
         }
         this.fields = new HashMap<>();
         // Split the fields
@@ -172,6 +183,11 @@ public class SIPMessage
             return Protocol.DEFAULT_FIELD_VALUE;
         }
         return returnValue;
+    }
+    
+    public boolean isEmpty(String field)
+    {
+        return getField(field).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0;
     }
     
    @Override

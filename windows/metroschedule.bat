@@ -1,0 +1,1 @@
+start /b java -cp c:\metrosapl\dist\MeCard.jar mecard.BImportCustomerLoader -c "C:\metrosapl" -U -p "C:\Windows\Temp"

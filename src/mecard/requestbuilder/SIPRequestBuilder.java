@@ -26,6 +26,7 @@ import mecard.Response;
 import api.SIPCommand;
 import api.SIPConnector;
 import api.SIPStatusMessage;
+import java.util.Date;
 import java.util.Properties;
 import mecard.Protocol;
 import mecard.QueryTypes;
@@ -48,7 +49,7 @@ import mecard.config.PropertyReader;
 public class SIPRequestBuilder extends ILSRequestBuilder
 {
     private static SIPConnector sipServer;
-    private Properties messageProperties;
+    private final Properties messageProperties;
     /**
      *
      * @param debug the value of debug
@@ -76,7 +77,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getCustomerCommand(String userId, String userPin, Response response)
     {
-        Command command = new SIPCommand.Builder(this.sipServer)
+        Command command = new SIPCommand.Builder(SIPRequestBuilder.sipServer)
                 .setUser(userId, userPin)
                 .build();
         return command;       
@@ -91,7 +92,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getStatusCommand(Response response)
     {
-        Command command = new SIPCommand.Builder(this.sipServer)
+        Command command = new SIPCommand.Builder(SIPRequestBuilder.sipServer)
                 .isStatusRequest()
                 .build();
         return command;
@@ -137,10 +138,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
-                    System.out.println("We cannot find your account."
-                            + " If you are sure that your card number and pin "
-                            + "are correct, please contact your home library "
-                            + "for assistance.");
+                    System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
                     result = false;
                 }
                 else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN for station user") == 0)

@@ -18,40 +18,25 @@
 * MA 02110-1301, USA.
 *
 */
-package site.edmonton;
+package site.parklands;
 
 import mecard.Response;
+import mecard.ResponseTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import site.SymphonyNormalizer;
+import site.HorizonNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
- * 
- * For EPL the actions are to load the customer's default account information
- * required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class EPLCustomerNormalizer extends SymphonyNormalizer
-{
-//    private final boolean debug;
-    
-    public EPLCustomerNormalizer(boolean debug)
+public final class PKLCustomerNormalizer extends HorizonNormalizer
+{    
+    public PKLCustomerNormalizer(boolean debug)
     {
         super(debug);
-    }
-
-    /**
-     *
-     * @param unformattedCustomer the raw MeCard customer account information.
-     * @param formattedCustomer the Flat formattedCustomer
-     * @param response the value of response
-     */
-    @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
-    {
-        this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
     }
 }

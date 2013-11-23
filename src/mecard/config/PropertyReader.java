@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -67,6 +68,32 @@ public class PropertyReader
     private static Properties messagesProperties; // Messages tailored by local library.
     
     /**
+     * Parses a list of ',' comma separated types from a given entry in the 
+     * environment properties file and returns them as a list for testing.
+     *
+     * @param props the Java {@link Properties} file that contains the entry
+     * of delimited entries.
+     * @param libraryPropertyTypes the entry in the environment.properties file
+     * to be parsed into a list for returning.
+     * @param list the value of list 
+     */
+     
+    public static void loadDelimitedEntry(
+            Properties props, LibraryPropertyTypes libraryPropertyTypes, List<String> list)
+    {
+        if (list.size() > 0)
+        {
+            list.clear();
+        }
+        String stringTypes = props.getProperty(libraryPropertyTypes.toString());
+        String[] stringList = stringTypes.split(",");
+        for (String s: stringList)
+        {
+            list.add(s.trim());
+        }
+    }
+    
+    /**
      * Sets the config directory, the directory where all the config files can
      * be found.
      * @param configDirectory 
@@ -85,7 +112,8 @@ public class PropertyReader
         {
             CONFIG_DIR = "." + File.separator;
         }
-        System.out.println(new Date() + "CONFIG: dir set to " + CONFIG_DIR);
+        System.out.println("Metro (MeCard) server version " + VERSION);
+        System.out.println(new Date() + " CONFIG: dir set to '" + CONFIG_DIR + "'");
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
         POLARIS_PROPERTY_FILE  = CONFIG_DIR + POLARIS_PROPERTY_FILE;
@@ -170,14 +198,14 @@ public class PropertyReader
             case BIMPORT_CITY_MAPPING:
                 city = readPropertyFile(PropertyReader.BIMPORT_CITY_MAPPING);
                 // now check that all mandetory values are here.
-                for (MemberTypes mType : MemberTypes.values())
-                {
-                    if (city.get(mType.toString()) == null)
-                    {
-                        String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-                    }
-                }
+//                for (MemberTypes mType : MemberTypes.values())
+//                {
+//                    if (city.get(mType.toString()) == null)
+//                    {
+//                        String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
+//                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+//                    }
+//                }
                 return city;
 
             case DEBUG:

@@ -204,13 +204,14 @@ public class Address2
      */
     protected class Phone extends AddressRecord
     {
-        private Pattern phonePattern;
-        private Pattern partialPhonePattern;
+        private final Pattern phonePattern;
+        private final Pattern partialPhonePattern;
         public Phone()
         {
             super();
             // end of line matching important to avoid 209-1123 street matching.
-            this.phonePattern = Pattern.compile("\\d{3}-?\\d{3}-?\\d{4}$");
+//            this.phonePattern = Pattern.compile("\\d{3}[\\-| ]?\\d{3}-?\\d{4}$");
+            this.phonePattern = Pattern.compile("\\d{3}[-| ]\\d{3}[-| ]\\d{4}$");
             this.partialPhonePattern = Pattern.compile("\\d{3}-$");
         }
         
@@ -239,7 +240,7 @@ public class Address2
             Matcher matcher = phonePattern.matcher(testString);
             if (matcher.find())
             {
-                this.value = matcher.group();
+                this.value = mecard.util.Phone.formatPhone(matcher.group());
                 // if arg is a string builder we are supposed to modify it.
                 s.delete(matcher.start(), matcher.end());
                 return true;

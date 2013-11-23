@@ -27,14 +27,14 @@ import static org.junit.Assert.*;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
+
+
 public class SIPCustomerMessageTest
 {
-    private String message;
+    
     public SIPCustomerMessageTest()
     {
-//        63                               AO|AA29335002291042|AD2003|AY1AZF3B7
-//        recv:64              00120131107    134857000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEsthero@yrl.ab.ca|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY1AZ9FF9
-        this.message = "64              00120131107    134857000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEsthero@yrl.ab.ca|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY1AZ9FF9";
+
     }
 
     /**
@@ -58,17 +58,27 @@ public class SIPCustomerMessageTest
     @Test
     public void testGetMessage()
     {
-        System.out.println("==getMessage==");
-        SIPCustomerMessage instance = new SIPCustomerMessage(this.message);
-        String expResult = "Patron status is ok.";
+        System.out.println("getMessage");
+        SIPCustomerMessage instance = null;
+        String expResult = "";
         String result = instance.getMessage();
-        System.out.println("MESSAGE:" + result);
-        assertTrue(result.compareTo(expResult) == 0);
-        System.out.println("FIELD_NAMES:");
-        for (String fName: instance.getFieldNames())
-        {
-            System.out.println("F_NAME:" + fName + " VALUE:"+instance.getField(fName));
-        }
-        
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
+
+    /**
+     * Test of getStanding method, of class SIPCustomerMessage.
+     */
+    @Test
+    public void testGetStanding()
+    {
+        System.out.println("==getStanding==");
+        SIPCustomerMessage instance = null;
+        String expResult = "";
+        String result = instance.getStanding();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }  
 }

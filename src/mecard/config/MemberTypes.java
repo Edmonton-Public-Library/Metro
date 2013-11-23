@@ -26,21 +26,9 @@ package mecard.config;
  */
 public enum MemberTypes
 {
-    EPL("edmonton"), // these values are used to map cities to codes in city_st.properties.
-    STA("st. albert"),
-    STR("sherwood park"), 
-    TRK("spruce grove");
-    
-    private String type;
-
-    private MemberTypes(String s)
-    {
-        this.type = s;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.type;
-    }
+    EPL, // Edmonton Public Library
+    STA, // St. Alberta Public Library
+    STR, // Strathcona County Library / Fort Saskatchewan Public Library
+    PKL, // Parklands Regional Library
+    TRK;
 }

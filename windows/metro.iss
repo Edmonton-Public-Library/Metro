@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MeCard Metro Server"
-#define MyAppVersion "0.1"
+#define MyAppVersion "0.8.9_01"
 #define MyAppPublisher "Edmonton Public Library"
 #define MyAppURL "https://github.com/anisbet/Metro"
 #define MyAppExeName "install.bat"
@@ -62,8 +62,10 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\city_st.pr
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\debug.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\environment.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sip2.properties"; DestDir: "{app}\config"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config" 
-
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metroschedule.bat"; DestDir: "{app}\windows"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metro-template-header.txt"; DestDir: "{app}\windows"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
