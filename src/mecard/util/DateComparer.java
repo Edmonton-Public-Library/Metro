@@ -24,6 +24,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -46,6 +48,12 @@ public class DateComparer
             PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
             .getProperty(LibraryPropertyTypes.DATE_FORMAT.toString());
     public final static String ANSI_DATE_FORMAT = "yyyyMMdd";
+    public final static String RFC1123_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+    /**
+     * GMT timezone - all HTTP dates are on GMT
+     */
+    public final static TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+    public final static Locale LOCALE_US = Locale.US;
     public final static long MILLS_IN_SECOND = 1000L;
     public final static long SECONDS_IN_MINUTE = 60L;
     public final static long MINUTES_IN_HOUR = 60L;
@@ -140,5 +148,24 @@ public class DateComparer
         Date futureDate = new Date(daysInfuture);
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
         return dateFormat.format(futureDate);
+    }
+
+    /**
+     * Use HTTP Date format (RFC1123)
+     * ddd, dd MMM yyyy HH:mm:ss GMT
+     * Example:
+     * Wed, 17 Oct 2012 22:23:32 GMT
+     * 
+     * PolarisDate: ddd, dd MMM yyyy HH:mm:ss GMT
+     *              EEE, dd MMM yyyy HH:mm:ss zzz
+     * PolarisDate: Wed, 17 Oct 2012 22:23:32 GMT
+     * @return date string of time now.
+     */
+    public static String getRFC1123Date()
+    {
+        Date today = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.RFC1123_DATE_FORMAT, LOCALE_US);
+        dateFormat.setTimeZone(GMT_ZONE);
+        return dateFormat.format(today);
     }
 }

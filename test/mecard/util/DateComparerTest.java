@@ -145,32 +145,14 @@ public class DateComparerTest
     }
 
     /**
-     * Test of ANSIToConfigDate method, of class DateComparer.
+     * Test of getRFC1123Date method, of class DateComparer.
      */
     @Test
-    public void testANSIToConfigDate() throws Exception
+    public void testGetRFC1123Date()
     {
-        System.out.println("ANSIToConfigDate");
-        String ANSIDate = "";
-        String expResult = "";
-        String result = DateComparer.ANSIToConfigDate(ANSIDate);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getFutureDate method, of class DateComparer.
-     */
-    @Test
-    public void testGetFutureDate()
-    {
-        System.out.println("getFutureDate");
-        int daysFromNow = 0;
-        String expResult = "";
-        String result = DateComparer.getFutureDate(daysFromNow);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("==getRFC1123Date==");
+        
+        String result = DateComparer.getRFC1123Date();
+        System.out.println("TODAY_RFC1123: ddd, dd MMM yyyy HH:mm:ss GMT\nTODAY_RFC1123: "+result);
     }
 }

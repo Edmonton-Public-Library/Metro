@@ -29,9 +29,9 @@ import mecard.exception.DummyException;
  */
 public class DummyCommand implements Command
 {
-    private String stdoutResponse;
-    private String stderrResponse;
-    private int status;
+    private final String stdoutResponse;
+    private final String stderrResponse;
+    private final int status;
     
     public static class Builder
     {
@@ -42,7 +42,7 @@ public class DummyCommand implements Command
         public Builder()
         {
             this.status = 0;
-            this.stderr  = "";
+            this.stderr = "";
             this.stdout = "";
         }
         
