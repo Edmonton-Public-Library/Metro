@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  */
 public class BImportFormattedCustomerTest
 {
-    private Customer customer;
+    private final Customer customer;
     public BImportFormattedCustomerTest()
     {
         String custReq =
@@ -57,11 +57,11 @@ public class BImportFormattedCustomerTest
         boolean result = instance.setValue(key, value);
         assertTrue(result);
         List<String> resultList = instance.getFormattedCustomer();
-//        for (String s: resultList)
-//        {
-//            System.out.print("r>"+s);
-//        }
-//        System.out.println();
+        for (String s: resultList)
+        {
+            System.out.print("r>"+s);
+        }
+        System.out.println();
         
         key = "swan_song";
         value = "SHOULD NOT SEE ME";
@@ -186,4 +186,43 @@ public class BImportFormattedCustomerTest
             System.out.print("INSERT:\n"+s);
         }
     }
+
+    /**
+     * Test of getFormattedHeader method, of class BImportFormattedCustomer.
+     */
+    @Test
+    public void testGetFormattedHeader()
+    {
+        System.out.println("==getFormattedHeader==");
+        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        List<String> result = instance.getFormattedHeader();
+        for (String s: result)
+        {
+            System.out.print("r>"+s);
+        }
+        result = instance.getFormattedCustomer();
+        for (String s: result)
+        {
+            System.out.print("r>"+s);
+        }
+        System.out.println();
+    }
+
+    /**
+     * Test of insertValue method, of class BImportFormattedCustomer.
+     */
+//    @Test
+//    public void testInsertValue()
+//    {
+//        System.out.println("insertValue");
+//        String tableName = "";
+//        String key = "";
+//        String value = "";
+//        BImportFormattedCustomer instance = null;
+//        boolean expResult = false;
+//        boolean result = instance.insertValue(tableName, key, value);
+//        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
 }

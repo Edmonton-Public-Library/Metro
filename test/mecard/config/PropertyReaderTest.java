@@ -122,6 +122,12 @@ public class PropertyReaderTest
         {
             System.out.println("J:" + s);
         }
+        libraryPropertyTypes = LibraryPropertyTypes.CUSTOMER_STANDING_SENTINEL;
+        PropertyReader.loadDelimitedEntry(props, libraryPropertyTypes, result);
+        for (String s: result)
+        {
+            System.out.println("GOOD_STANDING:" + s);
+        }
         System.out.println("==loadDelimitedEntry==");
     }
 

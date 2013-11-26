@@ -218,4 +218,19 @@ public class SIPMessageTest
         boolean result = SIPMessage.isDate(possibleDate);
         assertEquals(expResult, result);
     }
+
+    /**
+     * Test of toString method, of class SIPMessage.
+     */
+    @Test
+    public void testToString()
+    {
+        System.out.println("toString");
+        SIPMessage instance = null;
+        String expResult = "";
+        String result = instance.toString();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 }
