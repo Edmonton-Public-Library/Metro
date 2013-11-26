@@ -20,16 +20,11 @@
  */
 package api;
 
-import mecard.Protocol;
 import mecard.config.MessagesConfigTypes;
 import mecard.exception.SIPException;
 
 /**
-<<<<<<< HEAD
- * This class takes a raw SIP2 response and parses and packages the message.
-=======
  * Parses SIP2 customer information into a generally usable format.
->>>>>>> master
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SIPCustomerMessage 
