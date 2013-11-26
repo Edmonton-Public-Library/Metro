@@ -20,7 +20,7 @@
  */
 package mecard.security;
 
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+import org.apache.commons.codec.binary.Base64;
 import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -92,7 +92,8 @@ public final class PAPISecurity
             
             // result = Base64.encodeToString(rawHmac, 0);
             // http://stackoverflow.com/questions/13109588/base64-encoding-in-java
-            result = Base64.encode(rawHmac);
+            // http://stackoverflow.com/questions/10744715/howto-base64-encode-an-java-object-using-org-apache-commons-codec-binary-base64
+            result = Base64.encodeBase64(rawHmac).toString();
         }
         catch (NoSuchAlgorithmException | InvalidKeyException e1) 
         {
