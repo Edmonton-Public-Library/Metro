@@ -93,7 +93,7 @@ public abstract class CustomerLoadNormalizer
         {
             normalizer = new STRCustomerNormalizer(debug);
         }
-        else if (libCode.equalsIgnoreCase(MemberTypes.TRK.name()))
+        else if (libCode.equalsIgnoreCase(MemberTypes.TRC.name()))
         {
             normalizer = new TRKCustomerNormalizer(debug);
         }

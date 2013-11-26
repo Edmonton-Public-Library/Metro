@@ -41,6 +41,7 @@ import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
 import mecard.customer.BImportFormattedCustomer;
 import mecard.customer.UserFile;
+import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -227,6 +228,20 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     {
         // TODO in the mature version use this method to clean up unwanted header, data and batch files.
         return true;
+    }
+
+    @Override
+    public Command getCustomerCommand(String userId, String userPin, Response response)
+    {
+        throw new ConfigurationException("BImport does not support account queries "
+                + "Please review your environment.properties configuration");
+    }
+
+    @Override
+    public Command getStatusCommand(Response response)
+    {
+        throw new ConfigurationException("BImport cannot test ILS status "
+                + "Please review your environment.properties configuration");
     }
 
 }

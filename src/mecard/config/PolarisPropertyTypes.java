@@ -27,8 +27,17 @@ package mecard.config;
  */
 public enum PolarisPropertyTypes
 {
-    LOAD_DIR("load-dir"),     // Directory where to find customer files to load.
-    PAPI_ACCESS_KEY_ID("access-key"); // PAPI Access key id used for authoriziation.
+    LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
+    PAPI_ACCESS_KEY_ID("access-key"), // PAPI Access key id used for authoriziation.
+    LOGIN_BRANCH_ID("login-branch-id"),
+    LOGIN_USER_ID("login-user-id"),
+    LOGIN_WORKSTATION_ID("login-workstation-id"),
+    PATRON_BRANCH_ID("patron-branch-id"),
+    HOST("host"), // host for PAPI service.
+    VERSION("version"), 
+    LANGUAGE_ID("language-id"), 
+    APP_ID("app-id"), 
+    ORG_ID("org-id");        
     
     private String type;
 

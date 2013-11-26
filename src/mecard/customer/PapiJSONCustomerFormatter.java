@@ -17,36 +17,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package mecard.requestbuilder;
+package mecard.customer;
 
-import api.CommandStatus;
-import mecard.QueryTypes;
-import mecard.Response;
-import mecard.customer.CustomerFormatter;
+import java.util.List;
 
 /**
- *
+ * Formats the {@link mecard.customer.Customer} into the Polaris favored JSON.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class PolarisRequestBuilder extends ILSRequestBuilder
+public class PapiJSONCustomerFormatter implements CustomerFormatter
 {
 
     @Override
-    public CustomerFormatter getFormatter()
+    public Customer getCustomer(List<String> list)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getCustomer(list.get(0)); 
     }
 
     @Override
-    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
+    public Customer getCustomer(String s)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean tidy()
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Date conversion will be important
+//        Date Format when using JSON
+//        Because JSON does not have a standard way of describing dates, the following format must be used:
+//        "\/Date(1295352000000)\/"
+//        The number represents the number of milliseconds since January 1st 1970 UTC.
+//        1295352000000 represents Tuesday, January 18, 2011 7:00:00 AM.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
 }

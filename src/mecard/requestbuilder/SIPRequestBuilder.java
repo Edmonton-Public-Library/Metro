@@ -40,6 +40,8 @@ import mecard.customer.CustomerFormatter;
 import mecard.customer.SIPFormatter;
 import mecard.exception.SIPException;
 import mecard.config.PropertyReader;
+import mecard.exception.ConfigurationException;
+import site.CustomerLoadNormalizer;
 
 /**
  * Helper class for formatting SIP requests.
@@ -200,5 +202,19 @@ public class SIPRequestBuilder extends ILSRequestBuilder
             return false;
         }
         return false;
+    }
+
+    @Override
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    {
+        throw new ConfigurationException("SIP2 does not support account creation "
+                + "Please review your environment.properties configuration");
+    }
+
+    @Override
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    {
+        throw new ConfigurationException("SIP2 does not support account update "
+                + "Please review your environment.properties configuration");
     }
 }

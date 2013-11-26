@@ -99,8 +99,6 @@ public abstract class ILSRequestBuilder
      * mistake in the environment.properties file wrt the Responder method types.
      * @see ResponderMethodTypes
      */
-    
-    
     private static ILSRequestBuilder mapBuilderType(
             String configRequestedService, boolean debug)
         throws UnsupportedCommandException
@@ -125,6 +123,11 @@ public abstract class ILSRequestBuilder
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'DEBUG' (dummy) ");
             return new DummyRequestBuilder(debug);
         }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_API' ");
+            return new PAPIRequestBuilder(debug);
+        }
         else
         {
             throw new UnsupportedCommandException(configRequestedService + 
@@ -145,12 +148,13 @@ public abstract class ILSRequestBuilder
      * @param userId the value of userId
      * @param userPin the value of userPin
      * @param response Buffer to contain useful response information.
+     * @return Command ready to run.
      */
-    public Command getCustomerCommand(String userId, String userPin, Response response)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support get customer information.");
-    }
+    public abstract Command getCustomerCommand(
+            String userId, 
+            String userPin, 
+            Response response
+    );
     
     /**
      * Creates a user based on the supplied customer, which must not be null.
@@ -160,12 +164,12 @@ public abstract class ILSRequestBuilder
      * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to create a customer.
      */
-    
-    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support customer creation.");
-    }
+    public abstract Command getCreateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer
+    );
+ 
 
     /**
      * Updates a user based on the supplied customer, which must not be null.
@@ -175,12 +179,11 @@ public abstract class ILSRequestBuilder
      * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to update a customer.
      */
-    
-    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support update customer.");
-    }
+    public abstract Command getUpdateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer
+    );
 
     /**
      * Gets the status of the ILS.
@@ -188,11 +191,7 @@ public abstract class ILSRequestBuilder
      * @param response
      * @return APICommand necessary to test the ILS status.
      */
-    public Command getStatusCommand(Response response)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support system status");
-    }
+    public abstract Command getStatusCommand(Response response);
     
     /**
      * Interprets the results of the ILS command into a meaningful message for
