@@ -44,22 +44,16 @@ public final class Protocol
     public final static String TERMINATE   = "XX0";
     public final static String ACKNOWLEDGE = "XK0";
     public final static String ERROR       = "XE0";
+    public final static String DEFAULT_DELIMITER = "\\a"; // Bell character which doesn't show but is a searchable delimiter.
     
-    private boolean debugMode;
+    private final boolean debugMode;
     
     
     public Protocol()
     { 
         String debug = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT)
                 .getProperty(LibraryPropertyTypes.DEBUG.toString());
-        if (debug.equalsIgnoreCase("false"))
-        {
-            debugMode = false;
-        }
-        else
-        {
-            debugMode = true;
-        }
+        debugMode = !debug.equalsIgnoreCase("false");
     }
 
     /**
