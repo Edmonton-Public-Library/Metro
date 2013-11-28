@@ -34,7 +34,7 @@ import mecard.customer.FormattedCustomer;
 import site.parklands.PKLCustomerNormalizer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
-import site.trak.TRKCustomerNormalizer;
+import site.trac.TRCCustomerNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -95,7 +95,7 @@ public abstract class CustomerLoadNormalizer
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.TRC.name()))
         {
-            normalizer = new TRKCustomerNormalizer(debug);
+            normalizer = new TRCCustomerNormalizer(debug);
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.PKL.name()))
         {

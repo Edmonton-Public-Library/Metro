@@ -22,7 +22,7 @@ package api;
 
 /**
  * This interface is used to generalize a message (usually a SIP2 customer
- * message). It is allows the {@link MeCardPolicy} object to ask for the profile
+ * message). It is allows the {@link site.MeCardPolicy} object to ask for the profile
  * information. Each Policy object performs similar tasks: checks the customer
  * against the policies of too young (juvenile), non-resident, and reciprocal.
  * This CustomerMessage object always knows how to get the profile of the customer response
