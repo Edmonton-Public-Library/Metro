@@ -25,3 +25,4 @@ extlibs/
 /dist/*.properties
 *.properties
 dist/javadoc/*
+dist/lib/junit-4.10.jar
