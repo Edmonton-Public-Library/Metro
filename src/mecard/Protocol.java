@@ -44,7 +44,7 @@ public final class Protocol
     public final static String TERMINATE   = "XX0";
     public final static String ACKNOWLEDGE = "XK0";
     public final static String ERROR       = "XE0";
-    public final static String DEFAULT_DELIMITER = "\\a"; // Bell character which doesn't show but is a searchable delimiter.
+    public final static String DEFAULT_DELIMITER = ":"; // Tab character which doesn't show but is a searchable delimiter.
     
     private final boolean debugMode;
     
