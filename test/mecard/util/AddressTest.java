@@ -170,5 +170,17 @@ public class AddressTest
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
         System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address13 (Lucky 13) ===");
+        // Confusing city parse looks like 'Box 20 Site 7 Rr1 Red'.
+        thisAddress = "BOX 20 SITE 7 RR1, Red Deer, AB, T4N 5E1";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }
