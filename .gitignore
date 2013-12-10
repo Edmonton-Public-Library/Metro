@@ -25,3 +25,7 @@ extlibs/
 /dist/*.properties
 *.properties
 dist/javadoc/*
+<<<<<<< HEAD
+=======
+dist/lib/junit-4.10.jar
+>>>>>>> master

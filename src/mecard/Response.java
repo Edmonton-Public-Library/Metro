@@ -58,7 +58,14 @@ public final class Response
      */
     public void setResponse(String s)
     {
-        this.responseMessage += s + " ";
+        if (this.responseMessage.length() > 0) // There  is already a message to be passed back so add to it.
+        {
+            this.responseMessage += Protocol.DEFAULT_DELIMITER + s;
+        }
+        else
+        {
+            this.responseMessage = s;
+        }
     }
     
     /**

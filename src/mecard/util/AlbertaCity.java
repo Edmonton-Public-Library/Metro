@@ -80,9 +80,6 @@ public final class AlbertaCity extends City
             }
         }
         return false;
-        // This doesn't work because there are too many variations for 
-        // County [o|O]f Leduc etc.
-//        return cityMap.containsKey(placeName);
     }
     
     @Override
@@ -841,24 +838,45 @@ public final class AlbertaCity extends City
         cityMap.put("Woodlands County", "0480");
         cityMap.put("Yellowhead County", "0482");
         
+        boolean hasDisplayedMessage = false;
         // Now we overlay place name records with config requested codes for BImport.
         Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
-        for(String cKey : properties.stringPropertyNames())
+        for(String customPlaceName : properties.stringPropertyNames())
         {
-            // The keys in the property files are stored in lower case. We can insist
-            // but just in case let's initial cap the city names there.
-            String configKey = Text.toDisplayCase(cKey);
-            // Get the place name with original case.
-            String preferedCode = properties.getProperty(cKey);
-            if (cityMap.containsKey(configKey) == false)
+            // Here we will check what the operator has put in the city_st table
+            // properties as names of places. We need to match more loosly since 
+            // it is so difficult to unify spelling with case consideratons.
+            // This next piece of code will check if this place is an official 
+            // place name of Alberta and if so will normalize it with the desired
+            // place-name code.
+            String placeNameTesting = this.getPlaceNameLike(customPlaceName);
+            if (placeNameTesting.length() == 0)
             {
-                System.out.println(new Date() + 
-                        " read '" + configKey + "' from city_st table but"
-                        + " I don't recognize that as an official Alberta place name."
-                        + " This can happen if the spelling in your city_st.properties file"
-                        + " does not (case insensitive) match the metro city table.");
+                // The keys in the property files are stored in lower case. We can insist
+                // but just in case let's initial cap the city names there. To get
+                // here we didn't match on an official place name, but we will add
+                // it anyway, so clean up the given name to insert as a key.
+                placeNameTesting = Text.toDisplayCase(customPlaceName);
             }
-            cityMap.put(configKey, preferedCode);
+            // Now get the property file's associated code for the given place name
+            // (real place name or otherwise).
+            String preferedCode = properties.getProperty(customPlaceName);
+            if (cityMap.containsKey(placeNameTesting) == false)
+            {
+                if (hasDisplayedMessage == false)
+                {
+                    System.out.println(new Date() +
+                            " The following not recognized as official "
+                            + "Alberta place name(s):\n"
+                            + "'" + customPlaceName + "::" + preferedCode + "'");
+                    hasDisplayedMessage = true;
+                }
+                else
+                {
+                    System.out.println("'" + customPlaceName + "::" + preferedCode + "'");
+                }
+            }
+            cityMap.put(placeNameTesting, preferedCode);
         }
     }
 }

@@ -70,49 +70,86 @@ public class Address2
         // Different approach. If we have taken care of the phone and pcode
         // then chop off each of the remaining elements and try to match
         // The next would be province.
-        String cleanAddress = supposedAddressBuilder.toString().replace(",", " ");
-        List<String> addressWords = new ArrayList<>();
-        addressWords.addAll(Arrays.asList(cleanAddress.split("\\s+")));
-        if (addressWords.size() > 0) // at least one word
+        // 
+        // Some addresses like 'BOX 20 SITE 7 RR1, Red Deer, AB, T4N 5E1'
+        // cause a problem that manifests as 'Box 20 Site 7 Rr1 Red, Red Deer, AB, T4N 5E1'
+        // There are two ways to deal with this split on the commas...
+        if (this.computedAddressCityAndProvinceSuccessfully(supposedAddressBuilder) == false)
         {
-            int lastWordPos = addressWords.size() -1;
-            if (this.province.test(addressWords.get(lastWordPos)))
+            String cleanAddress = supposedAddressBuilder.toString().replace(",", " ");
+            List<String> addressWords = new ArrayList<>();
+            addressWords.addAll(Arrays.asList(cleanAddress.split("\\s+")));
+            if (addressWords.size() > 0) // at least one word
             {
-                addressWords.remove(lastWordPos);
-            }
-        }
-        // next should be the city, or place name.
-        if (addressWords.size() > 0) // at least one word
-        {
-            // Grab the next word off the end of the array of address words and try
-            // and match it.
-            int lastWordPos = addressWords.size() -1;
-            String possiblePlaceName = addressWords.remove(lastWordPos);
-            if (! this.city.testGently(possiblePlaceName))
-            {
-                // There is still a chance that possiblePlaceName has too many selection
-                // if it was Valley, or County, so try the next word.
-                lastWordPos = addressWords.size() -1;
-                if (lastWordPos >= 0)
+                int lastWordPos = addressWords.size() -1;
+                if (this.province.test(addressWords.get(lastWordPos)))
                 {
-                    String nextWord = addressWords.remove(lastWordPos);
-                    if (! this.city.testGently(nextWord))
+                    addressWords.remove(lastWordPos);
+                }
+            }
+            // next should be the city, or place name.
+            if (addressWords.size() > 0) // at least one word
+            {
+                // Grab the next word off the end of the array of address words and try
+                // and match it.
+                int lastWordPos = addressWords.size() -1;
+                String possiblePlaceName = addressWords.remove(lastWordPos);
+                if (! this.city.testGently(possiblePlaceName))
+                {
+                    // There is still a chance that possiblePlaceName has too many selection
+                    // if it was Valley, or County, so try the next word.
+                    lastWordPos = addressWords.size() -1;
+                    if (lastWordPos >= 0)
                     {
-                        // ok we're barking up the wrong tree, this doesn't look 
-                        // like a valid place name so restore the address field.
-                        addressWords.add(nextWord);
-                        addressWords.add(possiblePlaceName);
+                        String nextWord = addressWords.remove(lastWordPos);
+                        if (! this.city.testGently(nextWord))
+                        {
+                            // ok we're barking up the wrong tree, this doesn't look 
+                            // like a valid place name so restore the address field.
+                            addressWords.add(nextWord);
+                            addressWords.add(possiblePlaceName);
+                        }
                     }
                 }
             }
+            // paste street back together.
+            String addressString = "";
+            for (String s: addressWords)
+            {
+                addressString += s + " ";
+            }
+            this.street.test(addressString.trim());
         }
-        // paste street back together.
-        String addressString = "";
-        for (String s: addressWords)
+    }
+    
+    /**
+     * There is a chance that the address is separated by ','s, and if so we have
+     * a good chance of getting street, city and province easily.
+     * @param supposedAddressBuilder
+     * @return true if the street city and province could be parsed out of the 
+     * input string and false otherwise.
+     */
+    private boolean computedAddressCityAndProvinceSuccessfully(StringBuilder supposedAddressBuilder)
+    {
+        if (supposedAddressBuilder.indexOf(", ") < 0)
         {
-            addressString += s + " ";
+            return false;
         }
-        this.street.test(addressString.trim());
+        // ok if that worked then let's split the string.
+        String[] addrValues = supposedAddressBuilder.toString().split(",\\s");
+        if (addrValues.length != 3) // we got some strange splitting.
+        {
+            return false;
+        }
+        if (this.province.test(addrValues[2]) == false)
+        {
+            return false;
+        }
+        if (this.city.test(addrValues[1]) == false)
+        {
+            return false;
+        }
+        return this.street.test(addrValues[0]);
     }
     
     /**
@@ -193,6 +230,7 @@ public class Address2
         public abstract boolean test(String s);
         public abstract boolean test(StringBuilder s);
         public boolean isSet() { return this.value.compareTo(Protocol.DEFAULT_FIELD_VALUE) != 0; }
+        @Override
         public String toString()
         {
             return this.value;
