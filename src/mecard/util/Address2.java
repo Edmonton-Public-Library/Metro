@@ -250,7 +250,10 @@ public class Address2
             // end of line matching important to avoid 209-1123 street matching.
 //            this.phonePattern = Pattern.compile("\\d{3}[\\-| ]?\\d{3}-?\\d{4}$");
             this.phonePattern = Pattern.compile("\\d{3}[-| ]\\d{3}[-| ]\\d{4}$");
-            this.partialPhonePattern = Pattern.compile("\\d{3}-$");
+//            this.partialPhonePattern = Pattern.compile("\\d{3}-$");
+            // A broken partial could look like this:
+            // 96-4058, 780-, (780-, and what about 780 555-1212
+            this.partialPhonePattern = Pattern.compile("[(|\\d{1,}][-|\\s{1,}|\\d{1,}]*$");
         }
         
         /**
