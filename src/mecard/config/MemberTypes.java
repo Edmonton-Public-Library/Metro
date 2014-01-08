@@ -29,5 +29,6 @@ public enum MemberTypes
     EPL, // Edmonton Public Library
     STA, // St. Alberta Public Library
     STR, // Strathcona County Library / Fort Saskatchewan Public Library
-    PKL; // Parklands Regional Library
+    PKL, // Parklands Regional Library
+    SLS; // Shortgrass Library System
 }

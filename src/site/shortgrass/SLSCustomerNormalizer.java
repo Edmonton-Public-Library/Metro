@@ -18,7 +18,7 @@
 * MA 02110-1301, USA.
 *
 */
-package site.edmonton;
+package site.shortgrass;
 
 import mecard.Response;
 import mecard.customer.Customer;
@@ -30,15 +30,15 @@ import site.SymphonyNormalizer;
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
  * 
- * For EPL the actions are to load the customer's default account information
+ * For Shortgrass Library System the actions are to load the customer's default account information
  * required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class EPLCustomerNormalizer extends SymphonyNormalizer
+public final class SLSCustomerNormalizer extends SymphonyNormalizer
 {
 //    private final boolean debug;
     
-    public EPLCustomerNormalizer(boolean debug)
+    public SLSCustomerNormalizer(boolean debug)
     {
         super(debug);
     }
