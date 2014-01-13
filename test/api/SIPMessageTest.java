@@ -3,7 +3,6 @@ package api;
 import java.util.ArrayList;
 import java.util.List;
 import mecard.exception.SIPException;
-import org.junit.Test;
 
 
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class SIPMessageTest
     {
         // // System.out.println("== getFieldNames ==");
         SIPMessage instance = new SIPMessage(responseTwo);
-        List<String> expResult = new ArrayList<String>();
+        List<String> expResult = new ArrayList<>();
         expResult.add("BX");
         expResult.add("AY");
         expResult.add("AM");
@@ -73,7 +72,7 @@ public class SIPMessageTest
         {
             SIPMessage instance = new SIPMessage(responseThree);
         }
-        catch(Exception ex)
+        catch(SIPException ex)
         {
             // // System.out.println(">>" + ex.getMessage());
             assertTrue(ex instanceof SIPException);
@@ -217,20 +216,5 @@ public class SIPMessageTest
         boolean expResult = true;
         boolean result = SIPMessage.isDate(possibleDate);
         assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of toString method, of class SIPMessage.
-     */
-    @Test
-    public void testToString()
-    {
-        System.out.println("toString");
-        SIPMessage instance = null;
-        String expResult = "";
-        String result = instance.toString();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 }
