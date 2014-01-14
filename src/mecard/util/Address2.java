@@ -147,9 +147,44 @@ public class Address2
         }
         if (this.city.test(addrValues[1]) == false)
         {
-            return false;
+            // Sometimes we get systems that place the apartment at the end between 
+            // the street and city name, you know who you are, so here let's test 
+            // if this failed because of an apartment number.
+            String[] possibleApartmentCityName = parsePossibleApartmentNumber(addrValues[1]);
+            if (possibleApartmentCityName.length < 2)
+            {
+                return false;
+            }
+            // value at [1] is the city place name(?)
+            if (this.city.test(possibleApartmentCityName[1]) == false)
+            {
+                return false;
+            }
+            // value at [0] is the apartment number which will be
+            addrValues[0] = possibleApartmentCityName[0] + "-" + addrValues[0];
         }
         return this.street.test(addrValues[0]);
+    }
+    
+    private String[] parsePossibleApartmentNumber(String string)
+    {
+        String retString = string.trim();
+        Pattern partialApartmentPattern = Pattern.compile("^[a|A]pt\\.? \\d{1,} ");
+        Matcher matcher = partialApartmentPattern.matcher(retString);
+        String[] retArray;
+        if (matcher.find())
+        {
+            retArray = new String[2];
+            retArray[0] = matcher.group().trim();
+            retArray[1] = retString.substring(matcher.end());
+        }
+        else
+        {
+            retArray = new String[1];
+            // no luck just return the entire string for reconsideration.
+            retArray[0] = retString;
+        } 
+        return retArray;
     }
     
     /**
@@ -212,6 +247,8 @@ public class Address2
         return out.toString();
     }
 
+    
+
     /**
      * Utility class for testable address field strings.
      */
@@ -249,7 +286,8 @@ public class Address2
             super();
             // end of line matching important to avoid 209-1123 street matching.
 //            this.phonePattern = Pattern.compile("\\d{3}[\\-| ]?\\d{3}-?\\d{4}$");
-            this.phonePattern = Pattern.compile("\\d{3}[-| ]\\d{3}[-| ]\\d{4}$");
+//            this.phonePattern = Pattern.compile("\\d{3}[-| ]\\d{3}[-| ]\\d{4}$");
+            this.phonePattern = Pattern.compile("\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
 //            this.partialPhonePattern = Pattern.compile("\\d{3}-$");
             // A broken partial could look like this:
             // 96-4058, 780-, (780-, and what about 780 555-1212
@@ -315,7 +353,7 @@ public class Address2
      */
     public class City extends AddressRecord
     {
-        private mecard.util.City city;
+        private final mecard.util.City city;
         private List<String> placeName; // store multiple selections.
         
         public City()
@@ -506,7 +544,7 @@ public class Address2
         public boolean test(String s)
         {
             // TODO this needs a static tester method.
-            mecard.util.Province province = new mecard.util.Province(s.toString());
+            mecard.util.Province province = new mecard.util.Province(s.toString().trim());
             if (province.isValid())
             {
                 this.value = province.toString();
