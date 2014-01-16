@@ -21,6 +21,9 @@
 package site.shortgrass;
 
 import mecard.Response;
+import mecard.config.CustomerFieldTypes;
+import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import site.SymphonyNormalizer;
@@ -44,14 +47,27 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
     }
 
     /**
-     *
-     * @param unformattedCustomer the raw MeCard customer account information.
-     * @param formattedCustomer the Flat formattedCustomer
+     * This method is used to add additional fields to the formatted customer
+     * before loading.
+     * @param unformattedCustomer the raw MeCard customer account information as
+     * provided by the host library.
+     * @param formattedCustomer the Flat formattedCustomer that will be loaded 
+     * by Symphony.
      * @param response the value of response
      */
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
+        // Currently Shortgrass uses USER_CATEGORY2 to store the 
+        // customer's age category but future versions of metro may be required to register 
+        // Juveniles. If that is the case you need only get the customers age from the 
+        // Minimum age flag or compute on DOB then set the formattedCustomer 
+        // field as: formattedCustomer.insertValue(
+        //            FlatUserExtendedFieldTypes.USER.name(), 
+        //            FlatUserFieldTypes.USER_CATEGORY2.toString(), 
+        //            "ADULT"); // or what ever
+        // Until that time it is sufficient to have the USER_CATEGORY2 listed in 
+        // the symphony.properties file with a value of "ADULT".
         this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
     }
 }

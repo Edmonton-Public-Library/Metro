@@ -1,7 +1,5 @@
 package mecard.customer;
-import java.util.List;
 import mecard.config.CustomerFieldTypes;
-import org.junit.Test;
 
 
 

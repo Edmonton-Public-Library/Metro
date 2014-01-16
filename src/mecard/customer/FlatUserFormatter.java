@@ -20,14 +20,10 @@
  */
 package mecard.customer;
 
-import mecard.config.FlatUserFieldTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import mecard.Protocol;
-import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
 
@@ -143,8 +139,13 @@ public class FlatUserFormatter implements CustomerFormatter
                 return CustomerFieldTypes.PRIVILEGE_EXPIRES;
             case "USER_BIRTH_DATE":
                 return CustomerFieldTypes.DOB;
-            case "USER_CATEGORY2":
-                return CustomerFieldTypes.SEX;
+                // USER_CATAGORY2 is used for all types of reasons depending on how
+                // the library has defined it.
+                // TODO We need to allow libraries to define these dynamically.
+                // Until then EPLs 'sex' will not get passed as a value to other libraries
+                // but I haven't seen another that collects that metric anyway.
+//            case "USER_CATEGORY2":
+//                return CustomerFieldTypes.SEX;
             case "STREET":
                 return CustomerFieldTypes.STREET;
             case "CITY/STATE":
