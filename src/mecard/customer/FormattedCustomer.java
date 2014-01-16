@@ -25,7 +25,8 @@ import java.util.List;
 /**
  * Class for coordinating customer normalization and formatting. This class is 
  * responsible for acquiring the correct formatter, formatting the customer and
- * managing the customer's record entries during the normalization process.
+ * managing the customer's record entries during the creation of a new record
+ * on the ILS.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public interface FormattedCustomer
