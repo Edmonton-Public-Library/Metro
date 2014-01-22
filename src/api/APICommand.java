@@ -137,15 +137,7 @@ public class APICommand implements Command
             {
                 List<String> tmpList = new ArrayList<>();
                 tmpList.addAll(this.remoteSSHCommands);
-                // Now we may have to cat (or echo) what was sent to the commandLine command
-                if (this.cmdFormat == APICommandTypes.CMD_PIPE)
-                {
-                    // this next command will act either as echo or cat.
-                    tmpList.add("cat"); // cat (or echo)
-                    tmpList.add("-"); // incoming stream from ssh
-                    tmpList.add("|"); // tested with '>' and '|'.
-                }
-                // else the command should just be run as remotely on the command line.
+                // Run the command should just be run as remotely on the command line.
                 tmpList.addAll(this.args);
                 this.args.clear();
                 this.args.addAll(tmpList);

@@ -65,8 +65,8 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
     private final String homeDirectory;
     private final String sshServer;
-    private final String exportVariables;
     private final Properties messageProperties;
+    private final boolean debug;
     
     public SymphonyRequestBuilder(boolean debug)
     {
@@ -78,54 +78,33 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // This is an optional tag that if included will run the commands remotely.
         // sshServer should now have either the name of the ssh server or "" if not defined.
         this.sshServer = symphonyProps.getProperty(PropertyReader.SSH_TAG, "");
-        // if you have an entry in your symphony.properties called 'export' 
-        // you can preface all your commands with export variables like
-        // "export PATH=usr/java/jdk1.7.0_21/bin:/s/sirsi/Unicorn/Bincustom:/s/sirsi/Unicorn/Bin:/s/sirsi/Unicorn/Search/Bin:/bin:/usr/bin:/etc:/usr/sbin:/usr/ccs/bin:/usr/ucb:/usr/sbin:/s/oracle/11g/bin;export UPATH=/s/sirsi/Unicorn/Config/upath;"
-        // then put on 'loadflatuser' or what have you.
-        this.exportVariables = symphonyProps.getProperty(PropertyReader.EXPORT, "");
-        
+        this.debug = debug;
         seluser = new ArrayList<>();
-        if (this.exportVariables.isEmpty() == false)
-        {
-            seluser.add(this.exportVariables);
-        }
         seluser.add("seluser");
         seluser.add("-iB"); // expects barcode.
         seluser.add("-oU"); // will output user key.
         // Dumpflatuser settings, ready for inclusion in the APICommand object.
         dumpflatuser = new ArrayList<>();
-        if (this.exportVariables.isEmpty() == false)
-        {
-            dumpflatuser.add(this.exportVariables);
-        }
         dumpflatuser.add("dumpflatuser");
         // loadflatuser settings, ready for inclusion in the APICommand object.
         loadFlatUserCreate = new ArrayList<>();
-        if (this.exportVariables.isEmpty() == false)
-        {
-            loadFlatUserCreate.add(this.exportVariables);
-        }
         // /s/sirsi/Unicorn/Bin/loadflatuser -aA -bA -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
         loadFlatUserCreate.add("loadflatuser");
         loadFlatUserCreate.add("-aA"); // Add base.
         loadFlatUserCreate.add("-bA"); // Add extended.
         loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
         loadFlatUserCreate.add("-mc"); // Create
-//        loadFlatUserCreate.add("-n"); // Turn off BRS checking.
+        loadFlatUserCreate.add("-n"); // Turn off BRS checking if -n is used.
         loadFlatUserCreate.add("-y\"" + homeLibrary + "\"");
         loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
         loadFlatUserUpdate = new ArrayList<>();
-        if (this.exportVariables.isEmpty() == false)
-        {
-            loadFlatUserUpdate.add(this.exportVariables);
-        }
         loadFlatUserUpdate.add("loadflatuser");
         loadFlatUserUpdate.add("-aR"); // replace base information
         loadFlatUserUpdate.add("-bR"); // Replace extended information
         loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\""); // User and station.
         loadFlatUserUpdate.add("-mu"); // update
-//        loadFlatUserUpdate.add("-n"); // turn off BRS checking.
+        loadFlatUserUpdate.add("-n"); // turn off BRS checking. // doesn't matter for EPL does matter for Shortgrass.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
     }
     

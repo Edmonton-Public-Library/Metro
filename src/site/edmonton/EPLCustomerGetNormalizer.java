@@ -94,7 +94,6 @@ public class EPLCustomerGetNormalizer extends CustomerGetNormalizer
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
         // here we will fill in the customer attributes with the contents of s- the SIP message.
-        // TODO: Shortgrass uses "PG" for "MALE" or "FEMALE"
         customer.set(CustomerFieldTypes.SEX, message.getField("PF"));
     }
 }
