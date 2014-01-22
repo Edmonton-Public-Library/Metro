@@ -21,6 +21,7 @@
 package site.shortgrass;
 
 import mecard.Response;
+import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
@@ -48,17 +49,17 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
     /**
      * This method is used to add additional fields to the formatted customer
      * before loading.
-     * @param unformattedCustomer the raw MeCard customer account information as
+     * @param rawCustomer the raw MeCard customer account information as
      * provided by the host library in GSON.
      * @param formattedCustomer the Flat formattedCustomer that will be loaded 
      * by Symphony.
      * @param response the value of response
      */
     @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer rawCustomer, FormattedCustomer formattedCustomer, Response response)
     {
         // This loads all the mandatory values on SymphonyPropertyTypes.
-        this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
+        this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
         // Currently Shortgrass uses USER_CATEGORY2 to store the 
         // customer's age category but future versions of metro may be required to register 
         // Juveniles. If that is the case you need only get the customers age from the 
@@ -69,5 +70,31 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
             FlatUserFieldTypes.USER_CATEGORY2.toString(), 
             "ADULT"
         );
+        // Here we will compute USER_CATEGORY3: sex. Test the 
+        // unformattedCustomer for sex and set it like you set USER_CATEGORY2
+        if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                "FEMALE"
+            );
+        }
+        else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                "MALE"
+            );
+        }
+        else
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                "UNKNOWN"
+            );
+        }
     }
 }

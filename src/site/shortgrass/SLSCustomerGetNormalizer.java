@@ -101,9 +101,17 @@ public class SLSCustomerGetNormalizer extends CustomerGetNormalizer
         String sex = message.getField("PG");
         if (sex.isEmpty() == false)
         {
-            // send the first letter, "M" or "F"
-            sex = sex.substring(0, 1);
-            customer.set(CustomerFieldTypes.SEX, sex.toUpperCase());
+            
+            if (sex.compareToIgnoreCase("MALE") == 0)
+            {
+                // send the first letter, "M" or "F"
+                customer.set(CustomerFieldTypes.SEX, "M");
+            }
+            else if (sex.compareToIgnoreCase("FEMALE") == 0)
+            {
+                // send the first letter, "M" or "F"
+                customer.set(CustomerFieldTypes.SEX, "F");
+            }
         }
     }
 }
