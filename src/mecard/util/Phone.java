@@ -64,6 +64,8 @@ public class Phone
             return "";
         }
         // any space delimited phone numbers should be converted.
+        phNum = phNum.replace("(", "");
+        phNum = phNum.replace(")", " ");
         phNum = phNum.replace(" ", "-");
         if (phNum.contains(DEFAULT_PHONE_DELIMITER))
         {

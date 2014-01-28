@@ -66,6 +66,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     private final String homeDirectory;
     private final String sshServer;
     private final Properties messageProperties;
+    private final boolean debug;
     
     public SymphonyRequestBuilder(boolean debug)
     {
@@ -77,7 +78,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // This is an optional tag that if included will run the commands remotely.
         // sshServer should now have either the name of the ssh server or "" if not defined.
         this.sshServer = symphonyProps.getProperty(PropertyReader.SSH_TAG, "");
-        
+        this.debug = debug;
         seluser = new ArrayList<>();
         seluser.add("seluser");
         seluser.add("-iB"); // expects barcode.
@@ -93,7 +94,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserCreate.add("-bA"); // Add extended.
         loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
         loadFlatUserCreate.add("-mc"); // Create
-//        loadFlatUserCreate.add("-n"); // Turn off BRS checking.
+        loadFlatUserCreate.add("-n"); // Turn off BRS checking if -n is used.
         loadFlatUserCreate.add("-y\"" + homeLibrary + "\"");
         loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
@@ -103,7 +104,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserUpdate.add("-bR"); // Replace extended information
         loadFlatUserUpdate.add("-l\"ADMIN|PCGUI-DISP\""); // User and station.
         loadFlatUserUpdate.add("-mu"); // update
-//        loadFlatUserUpdate.add("-n"); // turn off BRS checking.
+        loadFlatUserUpdate.add("-n"); // turn off BRS checking. // doesn't matter for EPL does matter for Shortgrass.
         loadFlatUserUpdate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
     }
     

@@ -182,5 +182,28 @@ public class AddressTest
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
         System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
+        
+        
+        System.out.println("=== Address14 ===");
+        thisAddress = "18 Appomattox Street, apt. 9 Medicine Hat, AB T1A 3N7";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address15 ===");
+        thisAddress = "31 Chansellorsville Street apt. 3 Medicine Hat, AB T1A 3N7";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }

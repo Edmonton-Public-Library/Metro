@@ -18,17 +18,15 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.config;
+package mecard.customer;
+
+import api.CustomerMessage;
 
 /**
- * Member types are the current members of Metro Federation.
+ *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum MemberTypes
+public interface Emitter
 {
-    EPL, // Edmonton Public Library
-    STA, // St. Alberta Public Library
-    STR, // Strathcona County Library / Fort Saskatchewan Public Library
-    PKL, // Parklands Regional Library
-    SLS; // Shortgrass Library System
+    public void setCustomerValuesFromSiteSpecificFields(Customer customer, CustomerMessage message);
 }

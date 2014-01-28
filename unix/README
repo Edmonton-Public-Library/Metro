@@ -1,0 +1,8 @@
+README notes
+------------
+The unix directory contains three script files. Once the metro
+server is installed, move the Makefile and check_metro_service.sh
+file to the metro home directory, then edit them to run in your
+environment.
+
+January 8, 2014

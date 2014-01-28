@@ -74,7 +74,7 @@ public class APICommand implements Command
         {
             this.cmdFormat = APICommandTypes.CMD_LINE;
             // since this is the constructor we can just add the ssh commands
-            this.remoteSSHCommands = new ArrayList<String>();
+            this.remoteSSHCommands = new ArrayList<>();
             this.remoteSSHCommands.add("ssh");
 //            ssh.add("sirsi@edpl-t.library.ualberta.ca");
             this.remoteSSHCommands.add(sshRemoteUserServer);
@@ -89,7 +89,7 @@ public class APICommand implements Command
          */
         public Builder commandLine(List<String> arguments)
         {
-            this.args = new ArrayList<String>();
+            this.args = new ArrayList<>();
             this.args.addAll(arguments);
             return this;
         }
@@ -104,7 +104,7 @@ public class APICommand implements Command
         public Builder cat(List<String> data)
         {
             this.cmdFormat = APICommandTypes.CMD_PIPE;
-            this.stdinData = new ArrayList<String>();
+            this.stdinData = new ArrayList<>();
             this.stdinData.addAll(data);
             return this;
         }
@@ -119,7 +119,7 @@ public class APICommand implements Command
         public Builder echo(String stringIn)
         {
             this.cmdFormat = APICommandTypes.CMD_PIPE;
-            this.stdinData = new ArrayList<String>();
+            this.stdinData = new ArrayList<>();
             this.stdinData.add(stringIn);
             return this;
         }
@@ -135,17 +135,9 @@ public class APICommand implements Command
         {
             if (this.remoteSSHCommands != null)
             {
-                List<String> tmpList = new ArrayList<String>();
+                List<String> tmpList = new ArrayList<>();
                 tmpList.addAll(this.remoteSSHCommands);
-                // Now we may have to cat (or echo) what was sent to the commandLine command
-                if (this.cmdFormat == APICommandTypes.CMD_PIPE)
-                {
-                    // this next command will act either as echo or cat.
-                    tmpList.add("cat"); // cat (or echo)
-                    tmpList.add("-"); // incoming stream from ssh
-                    tmpList.add("|"); // tested with '>' and '|'.
-                }
-                // else the command should just be run as remotely on the command line.
+                // Run the command should just be run as remotely on the command line.
                 tmpList.addAll(this.args);
                 this.args.clear();
                 this.args.addAll(tmpList);
@@ -170,6 +162,7 @@ public class APICommand implements Command
     /**
      * Wrapper that executes the command.
      *
+     * @return status of what happened when the command ran.
      */
     @Override
     public CommandStatus execute()
@@ -227,17 +220,16 @@ public class APICommand implements Command
             ProcessBuilder processBuilder = new ProcessBuilder(this.getCmd());
             setEnvironment(processBuilder);
             Process commandTwo = processBuilder.start();
-            BufferedWriter commandTwoInput = new BufferedWriter(new OutputStreamWriter(commandTwo.getOutputStream()));
-            // read each line from ls until there are no more
-            for (String lineReadFromCommandOne : stdinData)
+            try (BufferedWriter commandTwoInput = new BufferedWriter(new OutputStreamWriter(commandTwo.getOutputStream())))
             {
-                // and send them to stdin
-                commandTwoInput.write(lineReadFromCommandOne);
-                System.out.println("API_STDIN:'" + lineReadFromCommandOne + "'");
-                commandTwoInput.newLine();
+                for (String lineReadFromCommandOne : stdinData)
+                {
+                    // and send them to stdin
+                    commandTwoInput.write(lineReadFromCommandOne);
+                    System.out.println("API_STDIN:'" + lineReadFromCommandOne + "'");
+                    commandTwoInput.newLine();
+                }
             }
-            // send end-of-file signal to next process so it will terminate itself
-            commandTwoInput.close();
             processHandler = new CommandStatus();
             CommandWatcher commandWatcher = new CommandWatcher(commandTwo, processHandler);
             commandWatcher.start();
@@ -251,6 +243,10 @@ public class APICommand implements Command
         return processHandler;
     }
 
+    /**
+     * Sets any environment variables and sets the working directory.
+     * @param processBuilder 
+     */
     private void setEnvironment(ProcessBuilder processBuilder)
     {
         Map<String, String> env = processBuilder.environment();
