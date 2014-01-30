@@ -208,7 +208,7 @@ public class AddressTest
         
         System.out.println("=== Address16 ===");
         // 64              00020140115    115700000000000002000000000009AOalap|AA21000004869074|AEWOLBECK, DIXIE|AQahei|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDBOX 21, Heisler, AB, TOB 2A0|BEwolbeckd9@gmail.com|BF780 889-2114|DHDIXIE|DJWOLBECK|PCra|PE20140328    235900|PS20140328    235900|ZYra|AY1AZB5F8
-        thisAddress = "BOX 21, Heisler, AB, TOB 2A0";
+        thisAddress = "BOX 21, Heisler, AB, T0B 2A0";
         System.out.println("ADDR_COMPLETE:"+thisAddress);
         instance = new Address2(thisAddress);
         System.out.println("STREET:'"+instance.getStreet()+"'");
