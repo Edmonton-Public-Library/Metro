@@ -31,6 +31,7 @@ import mecard.config.PropertyReader;
 import mecard.util.Address2;
 import mecard.util.Phone;
 import site.CustomerGetNormalizer;
+import site.chinook.CARCustomerGetNormalizer;
 import site.edmonton.EPLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
 import site.strathcona.STRCustomerGetNormalizer;
@@ -55,6 +56,9 @@ public class SIPFormatter implements CustomerFormatter
                 break;
             case "SLS":
                 this.customMessageInterpreter = new SLSCustomerGetNormalizer();
+                break;
+            case "CAR":
+                this.customMessageInterpreter = new CARCustomerGetNormalizer();
                 break;
             case "STR":
                 this.customMessageInterpreter = new STRCustomerGetNormalizer();
