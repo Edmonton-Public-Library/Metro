@@ -46,21 +46,28 @@ public class BimportUserFile extends UserFile
         {
             // Here we fix an issue whereby a user registers on a Horizon system,
             // The system has not had time to load the customer, or there was a
-            // problem, then the customer tries to update their account. If we 
-            // don't rename the file we loose the original PIN for the customer.
-            // TODO: merge the two files?
-//            this.pin = this.savePin(file);
+            // problem, then the customer tries to update their account, we could
+            // loose the original PIN for the customer.
             File saveFile = new File(name + ".orig");
-            if (file.renameTo(saveFile))
+            if (saveFile.exists() == false)
             {
-                System.out.println("Saving file '" + name + "'.");
-            }
-            else
-            {
-                System.out.println("Unable to save customer's original file. "
-                        + "'" + name + "'"
-                        + "If the customer is updating their account after "
-                        + "registration their PIN may be missing.");
+                // if the original file exists keep it, and get rid of 
+                // the last update file, and replace it with the latest information.
+                if (file.renameTo(saveFile))
+                {
+                    System.out.println("Saving file '" + name + "'.");
+                }
+                else
+                {
+                    System.out.println("Unable to save customer's original file. "
+                            + "'" + name + "'"
+                            + "If the customer is updating their account after "
+                            + "registration their PIN may be missing. For best "
+                            + "customer service contact the customer and update "
+                            + "their record.");
+                    // Optionally we could throw an exception but that wouldn't
+                    // be great for customer service.
+                }
             }
             file.delete();
         }
@@ -68,20 +75,4 @@ public class BimportUserFile extends UserFile
         file = new File(name);
         return file;
     }
-    
-    /**
-     * This method tries to extract the user's pin if there is one. If there 
-     * wasn't a pin because the original is an update file, return true, if there
-     * was a pin 
-     * @param file
-     * @return PIN if found and empty string if not found..
-     */
-    protected String savePin(File file)
-    {
-        // Read the bimport file
-        // grab the borrower table line and split it.
-        // create a new BimportTable object and populate it
-        return "";
-    }
-
 }
