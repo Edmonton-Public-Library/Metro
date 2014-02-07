@@ -22,14 +22,14 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.11_08"; // server version
+    public final static String VERSION           = "0.8.11_09"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
      * you expect to run the commands on the ILS server itself.
      */
     public final static String SSH_TAG           = "ssh";
-    public final static String EXPORT            = "export"; // exporting PATH and UPATH for Unis Symphony
+    public final static String EXPORT            = "export"; // exporting PATH and UPATH for Unix Symphony
     public final static String LOAD_DIR          = "load-dir";
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";

@@ -35,7 +35,6 @@ import java.util.List;
 public class UserFile 
 {
     private final String filePath;
-    private final File dataFile;
     private final List<String> data;
     
     /**
@@ -45,8 +44,7 @@ public class UserFile
     public UserFile(String path)
     {
         this.filePath = path;
-        this.data     = new ArrayList<>();
-        this.dataFile = createFile(this.filePath);
+        this.data     = new ArrayList<>(); 
     }
     
     /**
@@ -63,11 +61,12 @@ public class UserFile
     
     private void writeContent()
     {
+        File dataFile = createFile(this.filePath);
         BufferedWriter bWriter;
         try
         {
             // write the builder contents to the file with the correct switches.
-            bWriter = new BufferedWriter(new FileWriter(this.dataFile));
+            bWriter = new BufferedWriter(new FileWriter(dataFile));
             for (String content: this.data)
             {
                 bWriter.write(content);
@@ -76,12 +75,17 @@ public class UserFile
         }
         catch (IOException ex)
         {
-            String msg = "unable to create '" + this.dataFile.getName() + "' file.";
+            String msg = "unable to create '" + dataFile.getName() + "' file.";
             System.out.println("IOException:" + msg);
         }
     }
     
-    private File createFile(String name)
+    /**
+     * Creates a new UserFile, deleting the old one if it exists.
+     * @param name - fully qualified file name.
+     * @return File handle to the user file.
+     */
+    protected File createFile(String name)
     {
         File file = new File(name);
         if (file.exists())
@@ -91,14 +95,5 @@ public class UserFile
         // create a new one.
         file = new File(name);
         return file;
-    }
-
-    /**
-     * 
-     * @return true if there are no contents in this file and false otherwise.
-     */
-    public boolean isEmpty()
-    {
-        return this.data.isEmpty();
     }
 }
