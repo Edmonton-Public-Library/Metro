@@ -35,6 +35,11 @@ public class STRCustomerGetNormalizerTest
         System.out.println("FNAME:'" + c.get(CustomerFieldTypes.FIRSTNAME)+"'");
         System.out.println("LNAME:'" + c.get(CustomerFieldTypes.LASTNAME)+"'");
         System.out.println("PNAME:'" + c.get(CustomerFieldTypes.PREFEREDNAME)+"'");
+        
+        // Remember when testing to set the environment.properties file library to STR!!
+        c = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESHERMAN, WILLIAM TECUMSEH|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 SAVANNAH STREET T1A 3N7|BEanton@shortgrass.ca|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AF#Incorrect password|AY1AZAC20");
+        System.out.println("RESERVED:'" + c.get(CustomerFieldTypes.RESERVED)+"'");
+        assertTrue(c.get(CustomerFieldTypes.RESERVED).compareTo("Invalid PIN for station user")==0);
     }
     
 }
