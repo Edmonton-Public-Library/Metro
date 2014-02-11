@@ -45,7 +45,7 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
     {
                 // parse the string appart.
 //        sent:63                               AO|AA21221012345678|AD64058|AY0AZF374
-//        recv:64YYYY      Y   00020130606    115820000000000000000100000000AO|AA21221012345678|AEBILLY, BALZAC|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 12.00|BD7 SIR WINSTON CHURCHILL SQUARE EDMONTON, AB T5J 2V4|BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6
+//        recv:64YYYY      Y   00020130606    115820000000000000000100000000AO|AA21221012345678|AEBILLY, BALZAC|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 12.00|BD7 SIR WINSTON CHURCHILL SQUARE EDMONTON, AB T5J 2V4|BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|DB$0.00|DM$0.00|AF#Incorrect password|AY0AZACC6
 //
 //        Response code:64
 //        Patron Information Response
@@ -94,6 +94,26 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
 //          (O) Screen Message:User BLOCKED
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
+        
+        // AF field will contain '#Incorrect password' if the customer enters an invalid pin
+        // This gets past from the SIP server if no validation is set.
+//        if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN for station user") == 0)
+        // which is tested in SIPRequestBuilder.
+        // Since all SIP servers seem to report incorrect password differently and SIPRequestBuilder
+        // specifically checks for the message: 'Invalid PIN for station user' we
+        // can translate it here so the check for correct pin will fail. Without it
+        // some SIP servers will return customer information without the correct pin
+        // because they have not been set up properly. If passed, someone could 
+        // get the user information with a barcode alone, and less seriously a
+        // registering customer would have an unexpected PIN set on their account
+        // at another library.
+        // TODO: customize message testing in SIPRequestBuilder to test a standard
+        // message or value, and have each emmitter test and set that value based
+        // on the message from the SIP server at the host library.
+        if (message.getField("AF").compareToIgnoreCase("#Incorrect password") == 0)
+        {
+            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
+        }
         // Strathcona has an issue that they emit data in 
         // UPPERCASE for customer names and addresses.
         String upperCaseFieldText = customer.get(CustomerFieldTypes.STREET);

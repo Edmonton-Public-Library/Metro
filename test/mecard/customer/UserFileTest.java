@@ -25,7 +25,7 @@ public class UserFileTest
     public void testAddUserData()
     {
         System.out.println("==create UserFile==");
-        List<String> data = new ArrayList<String>();
+        List<String> data = new ArrayList<>();
         data.add("*** DOCUMENT BOUNDARY ***\n");
 //        data.add("FORM=LDUSER\n");
         data.add(".USER_ID.   |a21221012345678\n");
@@ -52,10 +52,18 @@ public class UserFileTest
         data.add(".PHONE.   |a780-496-4058\n");
         data.add(".EMAIL.   |ailsteam@epl.ca\n");
         data.add(".USER_ADDR1_END.\n");
+        // If this failes delete the file.
+        if (new File(testFileName).exists() == false)
+        {
+            new File(testFileName).delete();
+        }
         UserFile userFile = new UserFile(testFileName);
         userFile.addUserData(data);
         File f = new File(this.testFileName);
         assertTrue(f.exists());
-        
+        UserFile repeatUserFile = new UserFile(testFileName);
+        repeatUserFile.addUserData(data);
+        File backup = new File(this.testFileName + ".orig");
+        assertFalse(backup.exists());
     }
 }

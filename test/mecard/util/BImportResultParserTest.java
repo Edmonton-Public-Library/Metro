@@ -15,6 +15,8 @@ import static org.junit.Assert.*;
 public class BImportResultParserTest
 {
     private String resultString;
+    private String bigTestString;
+    
     public BImportResultParserTest()
     {
         this.resultString = "//record line   action key(s)\n" +
@@ -28,6 +30,26 @@ public class BImportResultParserTest
 "statistics: \n" +
 "  record           1\n" +
 "  modify           1";
+        // TODO test against multiload.
+        this.bigTestString = "record line   action key(s)\n" +
+"------ ------ ------ ---------------------------------------------------------\n" +
+"     1      1 modify 21000004745878\n" +
+"               failed: DbxInsertRow failed: Database Error|Integrity trigger failed: \n" +
+"bad city_st in borrower_address\n" +
+"The transaction ended in the trigger. The batch has been aborted.\n" +
+"-- Database Error|Integrity trigger failed: \n" +
+"bad city_st in borrower_address\n" +
+"The transaction ended in the trigger. The batch has been a\n" +
+"     2      7 modify 21000006126960\n" +
+"               failed: DbxInsertRow failed: Database Error|Integrity trigger failed: \n" +
+"bad city_st in borrower_address\n" +
+"The transaction ended in the trigger. The batch has been aborted.\n" +
+"-- Database Error|Integrity trigger failed: \n" +
+"bad city_st in borrower_address\n" +
+"The transaction ended in the trigger. The batch has been a\n" +
+"     3     13 modify 21221002076310 <ok>\n" +
+"     4     19 modify 21221002129820 <ok>\n" +
+"     5     25 modify 21221009010767 <ok>";
     }
 
     @Test

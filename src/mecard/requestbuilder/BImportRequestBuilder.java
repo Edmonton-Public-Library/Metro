@@ -40,6 +40,7 @@ import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
 import mecard.customer.BImportFormattedCustomer;
+import mecard.customer.BimportUserFile;
 import mecard.customer.UserFile;
 import site.CustomerLoadNormalizer;
 
@@ -121,7 +122,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
             loadDir += File.separator;
         }
         dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
-        UserFile bimportDataFile = new UserFile(dataFile);
+        UserFile bimportDataFile = new BimportUserFile(dataFile);
         FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
         // Make final changes to the formatted customer before loading as adding bstat.
         normalizer.finalize(customer, formattedCustomer, response);
