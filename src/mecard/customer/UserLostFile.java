@@ -20,7 +20,6 @@
  */
 package mecard.customer;
 
-import api.CommandStatus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +51,9 @@ public class UserLostFile extends UserFile
         data.add(message);
         data.add("ALTERNATE IDS:");
         data.add(this.customer.get(CustomerFieldTypes.ALTERNATE_ID));
-        data.add("=== START user data ===");
+        data.add("\n=== START user data ===\n");
         data.add(this.customer.toString());
-        data.add("=== END user data ===");
+        data.add("\n=== END user data ===\n");
         this.addUserData(data);
     }
 }
