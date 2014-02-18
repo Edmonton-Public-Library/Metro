@@ -44,17 +44,17 @@ public class UserLostFile extends UserFile
 
     /**
      * Sets messages so they are saved as a fail file.
-     * @param status of the command that failed to create a user.
+     * @param message
      */
-    public void setStatus(CommandStatus status)
+    public void recordUserDataMessage(String message)
     {
         List<String> data = new ArrayList<>();
-        data.add("This customer has been flagged as a possible lost card.");
-        data.add("Their alternate id(s) are: ");
+        data.add(message);
+        data.add("ALTERNATE IDS:");
         data.add(this.customer.get(CustomerFieldTypes.ALTERNATE_ID));
-        data.add("\n");
-        data.add(status.getStdout());
-        data.add(status.getStderr());
+        data.add("=== START user data ===");
+        data.add(this.customer.toString());
+        data.add("=== END user data ===");
         this.addUserData(data);
     }
 }

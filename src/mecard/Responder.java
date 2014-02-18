@@ -40,6 +40,7 @@ import mecard.exception.DummyException;
 import mecard.exception.LostCardException;
 import mecard.config.PropertyReader;
 import mecard.customer.UserFailFile;
+import mecard.customer.UserLostFile;
 import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
@@ -55,7 +56,7 @@ public class Responder
     private final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     protected Request request;
     protected final boolean debug;
-    private final Properties props;
+    private final Properties messageProperties;
     
     /**
      *
@@ -66,7 +67,7 @@ public class Responder
     {
         this.debug = debugMode;
         this.request = cmd;
-        this.props = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         if (debug)
         {
             System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
@@ -196,7 +197,7 @@ public class Responder
         {
             // this can happen if the user is barred, underage, non-resident, reciprocal, lostcard.
             response.setCode(ResponseTypes.FAIL);
-            response.setResponse(props.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
+            response.setResponse(messageProperties.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
             response.setResponse(failedTests.toString());
             response.setCustomer(null);
         }
@@ -221,7 +222,15 @@ public class Responder
     /**
      * Converts the customer into a ILS-meaningful expression to create a 
      * customer, then executes the command, and populates the argument 
-     * response with the results.
+     * response with the results. During creation the customer information is
+     * checked for lost card status. This can be computed by the web site or
+     * from the originating ILS.
+     * 
+     * The web site should replace the customer's bar code in it's database 
+     * with the new bar code, once the metro server returns a successful message
+     * (ResponseTypes.LOST_CARD). The signal means the customer can't use the 
+     * card until they confirm with the guest library. Once done staff can run
+     * the 'lost card' process.
      * 
      * @param response object
      */
@@ -232,14 +241,31 @@ public class Responder
         normalizer.normalizeOnCreate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response, normalizer);
-        CommandStatus status = command.execute();
-        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
-        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
-        if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
+        // Don't create users that are lost cards. They have to be done manually by
+        // the 'lost card' process. Wait until here before testing because we can 
+        // normalize all the customer information and store it so it can be loaded 
+        // manually later.
+        if (customer.isLostCard())
         {
-            UserFailFile failFile = new UserFailFile(customer);
-            failFile.setStatus(status);
-            throw new ConfigurationException();
+            String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
+            UserLostFile failFile = new UserLostFile(customer);
+            failFile.recordUserDataMessage(message);
+            response.setCode(ResponseTypes.LOST_CARD);
+            response.setResponse(message);
+            System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
+        }
+        else // Regular customer registration.
+        {
+            CommandStatus status = command.execute();
+            System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
+            System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
+            if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
+            {
+                UserFailFile failFile = new UserFailFile(customer);
+                failFile.setStatus(status);
+                System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
+                throw new ConfigurationException();
+            }
         }
     }
 
@@ -262,6 +288,7 @@ public class Responder
         {
             UserFailFile failFile = new UserFailFile(customer);
             failFile.setStatus(status);
+            System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
             throw new ConfigurationException();
         }
     }
@@ -284,13 +311,6 @@ public class Responder
         if (customer == null)
         {
             throw new MalformedCommandException("Expected customer, but got null.");
-        }
-        if (customer.get(CustomerFieldTypes.ISLOSTCARD).compareTo(Protocol.TRUE) == 0)
-        {
-            String msg = "card is reported as a lost card. You can fix your account by calling your home library.";
-            System.out.println("refusing to load reported lost card: '" + 
-                    customer.get(CustomerFieldTypes.ID) + "'.");
-            throw new LostCardException(msg);
         }
         CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(debug);
         StringBuilder resultStringBuilder = new StringBuilder();

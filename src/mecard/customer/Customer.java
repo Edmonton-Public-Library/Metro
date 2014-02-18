@@ -150,4 +150,13 @@ public class Customer //extends ProtocolPayload
         }
         return (this.get(customerFieldTypes).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0);
     }
+    
+    /**
+     * Tests if the customer has been identified as a lost card.
+     * @return true if the customer's lost card field is set and false otherwise.
+     */
+    public boolean isLostCard()
+    {
+        return ! this.isEmpty(CustomerFieldTypes.ISLOSTCARD);
+    }
 }
