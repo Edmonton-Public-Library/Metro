@@ -20,42 +20,40 @@
  */
 package mecard.customer;
 
-import api.CommandStatus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import mecard.config.CustomerFieldTypes;
 
 /**
- * Creates a failed customer file in the configuration directory or the current
- * working directory relative to the MeCard.jar, if '-c' is not set when the 
- * server is started.
- * @author Andrew Nisbet <anisbet@epl.ca>
- */
-public class UserFailFile extends UserFile 
+* Creates a LOST customer file in the configuration directory or the current
+* working directory relative to the MeCard.jar, if '-c' is not set when the 
+* server is started.
+*/
+public class UserLostFile extends UserFile
 {
     private final static String path = "logs" + File.separator;
+    private Customer customer;
     
-    /**
-     * Creates a failed customer file in the configuration directory or the current
-     * working directory relative to the MeCard.jar, if '-c' is not set when the 
-     * server is started.
-     * @param customer customer that failed.
-     */
-    public UserFailFile(Customer customer)
+    public UserLostFile(Customer customer)
     {
-        super(path + customer.get(CustomerFieldTypes.ID) + ".fail");
+        super(path + customer.get(CustomerFieldTypes.ID) + ".lost");
+        this.customer = customer;
     }
-    
+
     /**
      * Sets messages so they are saved as a fail file.
-     * @param status of the command that failed to create a user.
+     * @param message
      */
-    public void setStatus(CommandStatus status)
+    public void recordUserDataMessage(String message)
     {
         List<String> data = new ArrayList<>();
-        data.add(status.getStdout());
-        data.add(status.getStderr());
+        data.add(message);
+        data.add("ALTERNATE IDS:");
+        data.add(this.customer.get(CustomerFieldTypes.ALTERNATE_ID));
+        data.add("\n=== START user data ===\n");
+        data.add(this.customer.toString());
+        data.add("\n=== END user data ===\n");
         this.addUserData(data);
     }
 }
