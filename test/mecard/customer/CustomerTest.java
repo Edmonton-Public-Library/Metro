@@ -73,6 +73,12 @@ public class CustomerTest
         instance.set(CustomerFieldTypes.ISLOSTCARD, "Y");
         boolean test = instance.isLostCard();
         assertTrue(instance.isLostCard());
+        
+        instance.set(CustomerFieldTypes.ISLOSTCARD, "X");
+        test = instance.isLostCard();
+        assertFalse(instance.isLostCard());
+        
+        assertTrue(instance.isEmpty(CustomerFieldTypes.ISLOSTCARD));
     }
 
 }
