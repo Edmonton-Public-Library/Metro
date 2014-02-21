@@ -44,6 +44,7 @@ public class SIPCustomerMessageTest
     private final String suspended;
     private final String nonResident;
     private final String expired;
+    private final String lost;
     
     public SIPCustomerMessageTest()
     {
@@ -52,6 +53,21 @@ public class SIPCustomerMessageTest
         this.juvenile     = "64              00020140113    151542000000000000000000000000AO|AA25021000719333|AEMcClellan, George|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD34 Potomac Ave., apt. 45 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD20051203|PCSGMEDCH|PEMEDICINEHA|PFCHILD|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZA637";
         this.nonResident  = "64              00020140113    151711000000000000000000000000AO|AA25021000719325|AEGrant, Hiram Ulysses|AQSGMED|BZ0050|CA0100|CB0999|BLY|CQY|BV 0.00|BD11 Shiloh Street Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD19690304|PCSGMEDNRI|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY2AZA5F7";
         this.expired      = "64YYYY          00020140113    151758000000000000000100000000AO|AA25021000719317|AELee, Robert Edward|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 5.00|BD18 Appomattox Street, apt. 9 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20120409    235900|PD19640119|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFYou membership has expired. To renew your membership, please contact your library.|AY3AZ84E4";
+        this.lost         = "64YYYYY         00020140220    094400000000000000000100000000AOst|AA22222000929152|AECirculation test #2|AQst|BZ0030|CA0100|CB0200|BLY|BHCAD|CC9.99|BD5 St. Anne Street, St. Albert, AB, T8N 3Z9|BEktroppmann@sapl.ca|BF780-459-1537|DJCirculation test #2|LG0|PB19510618|PCra|PE20140812    235900|PS20140812    235900|ZYra|AF#Lost card - please refer to the circulation desk.|AY0AZ954A";
+//        Charge Privileges Denied :          Y
+//        Renewal Privileges Denied :         Y
+//        Recall Privileges Denied :          Y
+//        Hold Privileges Denied:             Y
+//        Card Reported Lost :                Y
+//        Too Many Items Charged :             
+//        Too many Items Overdue :             
+//        Too Many Renewals :                  
+//        Too Many Claims Of Items Returned :  
+//        Too Many Items Lost :                
+//        Excessive Outstanding Fines :        
+//        Excessive Outstanding Fees :         
+//        Recall Overdue :                     
+//        Too Many Items Billed :
     }
 
     /**
@@ -134,5 +150,44 @@ public class SIPCustomerMessageTest
         // collected.
         System.out.println(CustomerFieldTypes.PHONE + ":" + address.getPhone());
         System.out.println("===ADDRESS===\n\n");
+    }
+
+    /**
+     * Test of getMessage method, of class SIPCustomerMessage.
+     */
+    @Test
+    public void testGetMessage()
+    {
+        System.out.println("==getMessage==");
+        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+        assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        sipMessage = new SIPCustomerMessage(this.lost);
+        assertTrue(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        assertTrue(sipMessage.isTrue(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        assertFalse(sipMessage.isFalse(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+    }
+
+    /**
+     * Test of getStanding method, of class SIPCustomerMessage.
+     */
+    @Test
+    public void testGetStanding()
+    {
+        System.out.println("getStanding");
+        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+        assertFalse(sipMessage.cardReportedLost());
+    }
+
+    /**
+     * Test of cardReportedLost method, of class SIPCustomerMessage.
+     */
+    @Test
+    public void testCardReportedLost()
+    {
+        System.out.println("==cardReportedLost==");
+        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+        assertFalse(sipMessage.cardReportedLost());
+        sipMessage = new SIPCustomerMessage(this.lost);
+        assertTrue(sipMessage.cardReportedLost());
     }
 }

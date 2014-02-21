@@ -478,32 +478,21 @@ public class MeCardPolicy
      * lost card flag should be set and it is upto the library what they do with it.
      *
      * @param customer The customer information as will be inserted into the guest ILS.
-     * @param meta additional information from the ILS that is not sent to the guest
+     * @param customerMessage additional information from the ILS that is not sent to the guest
      * library, stuff like their profile and number of holds etc.
      * @param s the return message if the customer failed this test.
      * @return true if this account is a lost card.
      * @see mecard.customer.Customer
      */
-    public boolean isLostCard(Customer customer, CustomerMessage meta, StringBuilder s)
+    public boolean isLostCard(Customer customer, CustomerMessage customerMessage, StringBuilder s)
     {
-        // A library can set this on a customer's card. Check if it came preset.
-        if (customer.isEmpty(CustomerFieldTypes.ISLOSTCARD) == false)
+        // Well let's see what the customer's meta information can tell us.
+        if (customerMessage.cardReportedLost())
         {
+            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
             if (DEBUG) System.out.println("card is a lost card");
             s.append(failLostCardTest);
             return true;
-        }
-        // Well let's see what the customer's meta information can tell us.
-        String profile = meta.getCustomerProfile();
-        for (String str: lostCardSentinals)
-        {
-            if (profile.equalsIgnoreCase(str))
-            {
-                customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
-                if (DEBUG) System.out.println("card is a lost card");
-                s.append(failLostCardTest);
-                return true;
-            }
         }
         customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
         return false;

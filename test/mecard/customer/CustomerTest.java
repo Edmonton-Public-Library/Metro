@@ -68,11 +68,32 @@ public class CustomerTest
     {
         System.out.println("===isLostCard===");
         String name = "Doe, John";
-        Customer instance = new Customer();
-        instance.setName(name);
-        instance.set(CustomerFieldTypes.ISLOSTCARD, "Y");
-        boolean test = instance.isLostCard();
-        assertTrue(instance.isLostCard());
+        Customer customer = new Customer();
+        customer.setName(name);
+        boolean test = customer.isLostCard();
+        assertFalse(customer.isLostCard());
+        assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISGOODSTANDING));
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "N");
+        assertTrue(customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD));
+        assertTrue(customer.isFlagSetFalse(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD));
+        test = customer.isLostCard();
+        assertFalse(customer.isLostCard());
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "Y");
+        assertTrue(customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD));
+        assertTrue(customer.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetFalse(CustomerFieldTypes.ISLOSTCARD));
+        test = customer.isLostCard();
+        assertTrue(customer.isLostCard());
+        
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "X");
+        assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetFalse(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD));
+        test = customer.isLostCard();
+        assertFalse(customer.isLostCard());
+        
+        assertTrue(customer.isEmpty(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISGOODSTANDING));
     }
-
 }
