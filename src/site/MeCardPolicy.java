@@ -489,10 +489,12 @@ public class MeCardPolicy
         // Well let's see what the customer's meta information can tell us.
         if (customerMessage.cardReportedLost())
         {
+            customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
             if (DEBUG) System.out.println("card is a lost card");
             s.append(failLostCardTest);
             return true;
         }
+        customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
         return false;
     }
 }
