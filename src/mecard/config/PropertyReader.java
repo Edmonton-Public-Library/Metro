@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.12_00"; // server version
+    public final static String VERSION           = "0.8.12_03"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -182,15 +182,6 @@ public class PropertyReader
 
             case BIMPORT_CITY_MAPPING:
                 city = readPropertyFile(PropertyReader.BIMPORT_CITY_MAPPING);
-                // now check that all mandetory values are here.
-//                for (MemberTypes mType : MemberTypes.values())
-//                {
-//                    if (city.get(mType.toString()) == null)
-//                    {
-//                        String msg = "'" + mType + "' unset in " + PropertyReader.BIMPORT_CITY_MAPPING;
-//                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
-//                    }
-//                }
                 return city;
 
             case DEBUG:
@@ -211,7 +202,7 @@ public class PropertyReader
                 return systemVariables;
                 
             case POLARIS:
-                polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
+                    polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
                 {
@@ -277,15 +268,39 @@ public class PropertyReader
         {
             FileInputStream fis = new FileInputStream(propertyFileName);
             properties.loadFromXML(fis);
-        } catch (FileNotFoundException ex)
+        }
+        catch (FileNotFoundException fnf)
         {
-            String msg = "Failed to find '" + propertyFileName + "'";
-            Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, ex);
-        } catch (NullPointerException npe)
+            // You can't move this to a test above because it is not possible 
+            // to handle these exceptions in your source. You do not have any 
+            // control over the initialization process and static{} blocks 
+            // cannot be called from your source so that you could surround 
+            // them with try-catch.
+            // Because you cannot handle any error, it was decided to disallow 
+            // exception-throwing in static blocks.
+            //
+            // Update: Thanks commenters for the correction. The static block 
+            // must not throw checked exceptions but still allows 
+            // unchecked/runtime-exceptions to be thrown. But according to above 
+            // reasons you would be unable to handle these either.
+            //
+            //
+            // Symphony sites don't require a city_st.properties file but classes
+            // like AlbertaCity check for city name preferences so let the caller
+            // determine if the file is required or not.
+            System.out.println("WARNING: " + propertyFileName + " "
+                    + "requested but not found in config directory."
+                    + "This some files are not required but this one "
+                    + "may be. Please consult documentation for more "
+                    + "information.");
+            return properties;
+        }
+        catch (NullPointerException npe)
         {
             String msg = "Failed to read messages config file. One must be defined.";
             Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, npe);
-        } catch (IOException ex)
+        } 
+        catch (IOException ex)
         {
             Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, null, ex);
         }
