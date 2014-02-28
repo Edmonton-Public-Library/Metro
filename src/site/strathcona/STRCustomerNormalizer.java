@@ -94,5 +94,7 @@ public final class STRCustomerNormalizer extends HorizonNormalizer
             }
         }
         addBStatTable(formattedCustomer, "a");
+        // At Jennifer's request add bstat 'nr' for all metro reg customers.
+        addBStatTable(formattedCustomer, "nr");
     }
 }
