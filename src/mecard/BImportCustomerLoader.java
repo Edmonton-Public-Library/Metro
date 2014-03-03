@@ -69,6 +69,7 @@ public class BImportCustomerLoader
         options.addOption("c", true, "Configuration file directory path, include all sys dependant dir seperators like '/'.");
         // add v option v for server version.
         options.addOption("v", false, "Metro server version information.");
+        options.addOption("d", false, "Outputs debug information about the customer load.");
         options.addOption("U", false, "Execute upload of customer accounts, otherwise just cleans up the directory.");
         options.addOption("p", true, "Path to PID file. If present back off and wait for reschedule customer load.");
         try
@@ -90,10 +91,18 @@ public class BImportCustomerLoader
             {
                 pidDir = cmd.getOptionValue("p");
             }
+            if (cmd.hasOption("d")) // debug.
+            {
+                debug = true;
+            }
             // Should we run, if there is a pid back out without doing anything.
             File lock;
             if ((lock = getLockFile()) == null)
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG: Could not get a lock file. Is another BImport process running?");           
+                }
                 return;
             }
             
@@ -107,12 +116,20 @@ public class BImportCustomerLoader
                 String msg = new Date() + "unable to delete " + lock.getAbsolutePath() 
                         + ", other loads won't run until this is removed. "
                         + "Check for runaway bimport processes.";
+                if (debug)
+                {
+                    System.out.println("DEBUG_WARN: " + msg);           
+                }
                 Logger.getLogger(MetroService.class.getName()).log(Level.WARNING, msg);
             }
         } 
         catch (ParseException ex)
         {
             String msg = new Date() + "Unable to parse command line option. Please check your service configuration.";
+            if (debug)
+            {
+                System.out.println("DEBUG: request for invalid command line option.");           
+            }
             Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
             System.exit(899); // 799 for mecard
         }
@@ -142,6 +159,7 @@ public class BImportCustomerLoader
 
     private final BImportLoadRequestBuilder loadRequestBuilder;
     private static boolean uploadCustomers = false;
+    private static boolean debug           = false;
     private static String pidDir           = ".";
     private static final String pidFile    = "metro-load.pid";
     
@@ -162,7 +180,14 @@ public class BImportCustomerLoader
         // This process needs to run to format the user data
         List<String> fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.DATA_FILE);
+                BImportRequestBuilder.DATA_FILE_BIMPORT);
+        if (debug)
+        {
+            System.out.println("DEBUG.run(): "
+                + "'" + fileList.size() + "'"
+                + " args: loadRequestBuilder.getLoadDir() : '" + this.loadRequestBuilder.getLoadDir() + "'"
+                + " BImportRequestBuilder.DATA_FILE: " + BImportRequestBuilder.DATA_FILE_BIMPORT);
+        }
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
         if (uploadCustomers)
         {
@@ -189,10 +214,20 @@ public class BImportCustomerLoader
     {
         List<String> textFiles = new ArrayList<>();
         File dir = new File(loadDir);
+        if (debug)
+        {
+            System.out.println("DEBUG.getFileList(): searching " + loadDir + " for "
+                + "files that end with: '" + fileSuffix + "'");
+        }
         for (File file : dir.listFiles()) 
         {
             if (file.getName().endsWith((fileSuffix))) 
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG: adding " + file.getAbsolutePath() 
+                            + " file " + file.getName());
+                }
                 textFiles.add(file.getAbsolutePath());
             }
         }
@@ -239,6 +274,12 @@ public class BImportCustomerLoader
             batFile    = loadDir + FILE_NAME_PREFIX + "template" + BAT_FILE;
             headerFile = loadDir + FILE_NAME_PREFIX + "template" + HEADER_FILE;
             dataFile   = loadDir + FILE_NAME_PREFIX + longTime + DATA_FILE_BIMPORT;
+            if (debug)
+            {
+                System.out.println("DEBUG: customer file is: "
+                    + "'" + dataFile + "'"
+                    + " and header: '" + headerFile + "'");
+            }
         }
         
         /**
@@ -264,10 +305,18 @@ public class BImportCustomerLoader
                 throw new BImportException(BImportRequestBuilder.class.getName()
                         + " Failed to find header file: '" + headerFile + "'.");
             }
+            if (debug)
+            {
+                System.out.println("DEBUG.loadCustomers() number of files in argument: " + files.size());
+            }
             List<String> customersData = getCustomerData(files);
             // if there were no customers to load return a command that does nothing.
             if (customersData.isEmpty())
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG: no customer data found.");
+                }
                 return new DummyCommand.Builder()
                 .setStatus(0)
                 .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
@@ -289,6 +338,10 @@ public class BImportCustomerLoader
                     .build();
             List<String> bimportBatExec = new ArrayList<>();
             batch.getCommandLine(bimportBatExec);
+            if (debug)
+            {
+                System.out.println("DEBUG: batch command: '" + batch.getCommandLine() + "'");
+            }
             Command command = new APICommand.Builder().commandLine(bimportBatExec).build();
             return command;
         }
@@ -303,8 +356,16 @@ public class BImportCustomerLoader
         {
             // for each file open it get the lines append them to the big list and close
             List<String> bigListOfAllCustomerData = new ArrayList<>();
+            if (debug)
+            {
+                System.out.println("DEBUG.getCustomerData() number of files in argument: " + files.size());
+            }
             for (String file: files)
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG.getCustomerData(): " + file);           
+                }
                 BufferedReader br = null;
                 try 
                 {
@@ -326,10 +387,18 @@ public class BImportCustomerLoader
                 {
                     // a file may be missing but keep checking the others.
                     System.out.println("'" + file + "' not found.");
+                    if (debug)
+                    {
+                        System.out.println("DEBUG: file not found!!" + file);           
+                    }
                     continue;
                 } 
                 catch (IOException ex)
                 {
+                    if (debug)
+                    {
+                        System.out.println("DEBUG: IOException reading " + file);           
+                    }
                     Logger.getLogger(BImportCustomerLoader.class.getName()).log(Level.SEVERE, null, ex);
                 } 
                 finally
@@ -339,9 +408,17 @@ public class BImportCustomerLoader
                         br.close();
                     } catch (IOException | NullPointerException ex)
                     {
+                        if (debug)
+                        {
+                            System.out.println("DEBUG: data list is null or there was an IOException!!");           
+                        }
                         return bigListOfAllCustomerData;
                     }
                 }
+            }
+            if (debug)
+            {
+                System.out.println("DEBUG: size of all customer data: " + bigListOfAllCustomerData.size());           
             }
             return bigListOfAllCustomerData;
         }
