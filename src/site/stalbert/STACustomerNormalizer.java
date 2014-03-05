@@ -21,7 +21,6 @@
 package site.stalbert;
 
 import mecard.Response;
-import mecard.ResponseTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
