@@ -131,6 +131,7 @@ public class Address2
      */
     private boolean computedAddressCityAndProvinceSuccessfully(StringBuilder supposedAddressBuilder)
     {
+        // This strategy works on the principle that the the address string has some sort of ', ' delimiter.
         if (supposedAddressBuilder.indexOf(", ") < 0)
         {
             return false;
@@ -405,9 +406,25 @@ public class Address2
             if (this.placeName.isEmpty())
             {
                 this.placeName = this.city.getPlaceNames(place);
-                if (this.placeName.isEmpty() || this.placeName.size() > 1)
+                if (this.placeName.isEmpty())
                 {
-                    return false; // we either didn't get any or we got too many.
+                    return false;
+                }
+                if (this.placeName.size() > 1)
+                {
+                    // we have a couple of choices let's see if one of them matches
+                    // exactly: find 'Lethbridge' from list of ['Lethbridge', 'County of Lethbridge']
+                    for (int i = 0; i < this.placeName.size(); i++)
+                    {
+                        String possibleName = this.placeName.get(i);
+                        if (possibleName.equalsIgnoreCase(place))
+                        {
+                            this.value = possibleName;
+                            this.placeName.clear();
+                            return true;
+                        }
+                    }
+                    return false; // No exact matches.
                 }
                 else // there must be 1 name.
                 {
