@@ -225,6 +225,7 @@ public class AddressTest
         instance = new Address2(thisAddress);
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
+        assertTrue(instance.getCity().compareTo("Lethbridge") == 0);
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
         System.out.println("PHONE:'"+instance.getPhone()+"'");
@@ -232,6 +233,19 @@ public class AddressTest
         
         System.out.println("=== Address18 ===");
         thisAddress = "BOX 43 DRAYTON VALLEY, ALBERTA T1J 3Y3 403-555-1234";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address19 ===");
+        // TODO this fails to find the right city in this case but the whole address 
+        // does get parsed.
+        thisAddress = "BOX 43 COUNTY OF LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234";
         System.out.println("ADDR_COMPLETE:"+thisAddress);
         instance = new Address2(thisAddress);
         System.out.println("STREET:'"+instance.getStreet()+"'");
