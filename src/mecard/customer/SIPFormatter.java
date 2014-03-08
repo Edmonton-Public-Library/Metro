@@ -28,7 +28,7 @@ import java.util.List;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
-import mecard.util.Address2;
+import mecard.util.Address3;
 import mecard.util.Phone;
 import site.CustomerGetNormalizer;
 import site.chinook.CARCustomerGetNormalizer;
@@ -160,7 +160,7 @@ public class SIPFormatter implements CustomerFormatter
         }
         // SEX now handled in CustomerGetNormalizer and subclasses.
         // Complete address
-        Address2 address = new Address2(sipMessage.getField("BD"));
+        Address3 address = new Address3(sipMessage.getField("BD"));
         customer.set(CustomerFieldTypes.STREET, address.getStreet());
         customer.set(CustomerFieldTypes.CITY, address.getCity());
         customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());

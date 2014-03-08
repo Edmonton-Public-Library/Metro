@@ -21,7 +21,7 @@
 package api;
 
 import mecard.config.CustomerFieldTypes;
-import mecard.util.Address2;
+import mecard.util.Address3;
 import mecard.util.Phone;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -151,7 +151,7 @@ public class SIPCustomerMessageTest
         // Complete address
         System.out.println("===ADDRESS===\nShould be in field BD>>"
                 + sipMessage.getField("BD") + "<<");
-        Address2 address = new Address2(sipMessage.getField("BD"));
+        Address3 address = new Address3(sipMessage.getField("BD"));
         System.out.println(CustomerFieldTypes.STREET + ":" + address.getStreet());
         System.out.println(CustomerFieldTypes.CITY + ":" + address.getCity());
         System.out.println(CustomerFieldTypes.PROVINCE + ":" + address.getProvince());
