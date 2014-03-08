@@ -237,6 +237,7 @@ public class AddressTest
         instance = new Address2(thisAddress);
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
+        assertTrue(instance.getCity().compareTo("Drayton Valley") == 0);
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
         System.out.println("PHONE:'"+instance.getPhone()+"'");
