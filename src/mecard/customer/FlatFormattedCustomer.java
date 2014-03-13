@@ -179,4 +179,16 @@ public class FlatFormattedCustomer implements FormattedCustomer
         return false;
     }
 
+    @Override
+    public boolean renameField(String tableName, String originalFieldName, String newFieldName)
+    {
+        for (FormattedTable table: this.customerAccount)
+        {
+            if (table.getName().compareTo(tableName) == 0)
+            {
+                return table.renameKey(originalFieldName, newFieldName);
+            }
+        }
+        return false;
+    }
 }

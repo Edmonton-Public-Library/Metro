@@ -494,6 +494,7 @@ public class MeCardPolicy
             s.append(failLostCardTest);
             return true;
         }
+        if (DEBUG) System.out.println("card passes lost card test.");
         customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
         return false;
     }

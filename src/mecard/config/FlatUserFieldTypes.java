@@ -56,6 +56,7 @@ public enum FlatUserFieldTypes
     USER_ADDR1_BEGIN("USER_ADDR1_BEGIN"),
     STREET("STREET"),//7 Sir Winston Churchill Square
     CITY_STATE("CITY/STATE"),//Edmonton(""), AB
+    CITY_PROVINCE("CITYPROV"), // Alternate for some libs.
     POSTALCODE("POSTALCODE"),//T5J 2V4
     PHONE("PHONE"),//780-496-4058
     EMAIL("EMAIL"),//ilsteam@epl.ca
@@ -70,7 +71,7 @@ public enum FlatUserFieldTypes
     RETRNMAIL("RETRNMAIL"),//YES
     USER_XINFO_END("USER_XINFO_END");
     
-    private String type;
+    private final String type;
 
     private FlatUserFieldTypes(String s)
     {

@@ -75,7 +75,8 @@ public class UserFile
         }
         catch (IOException ex)
         {
-            String msg = "unable to create '" + dataFile.getName() + "' file.";
+            String msg = "unable to create \n'" + dataFile.getPath() 
+                    + "' file.";
             System.out.println("IOException:" + msg);
         }
     }

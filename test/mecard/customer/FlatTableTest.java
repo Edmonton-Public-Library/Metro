@@ -147,6 +147,47 @@ public class FlatTableTest
         System.out.println("VALUE:" + value);
         assertTrue(value.compareTo("21221012345678") == 0);
     }
+    
+    /**
+     * Test of renameKey method, of class FlatTable.
+     */
+    @Test
+    public void testRenameKey()
+    {
+        System.out.println("==renameKey==");
+        String newKeyName = "CITYPROV";
+        String storedValue= "Edmonton, AB";
+        HashMap<String, String> customerData = new HashMap<>();
+        customerData.put(FlatUserFieldTypes.CITY_STATE.toString(), storedValue);
+        FlatTable flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+//        System.out.println("VALUE:\n" + flatTable.getData());
+        String value = flatTable.getValue(FlatUserFieldTypes.CITY_STATE.toString());
+        System.out.println("VALUE:" + value);
+        assertTrue(value.compareTo(storedValue) == 0);
+        assertTrue(flatTable.renameKey(FlatUserFieldTypes.CITY_STATE.toString(), FlatUserFieldTypes.CITY_PROVINCE.toString()));
+        value = flatTable.getValue(FlatUserFieldTypes.CITY_PROVINCE.toString());
+        assertTrue(value.compareTo(storedValue) == 0);
+        
+        // Try to rename a key that isn't in the table.
+        assertFalse(flatTable.renameKey(FlatUserFieldTypes.USER_ID.toString(), FlatUserFieldTypes.CITY_PROVINCE.toString()));
+        value = flatTable.getValue(FlatUserFieldTypes.CITY_PROVINCE.toString());
+        // Show that the original setting is untouched by trial.
+        assertTrue(value.compareTo(storedValue) == 0);
+        
+        // Add the city state key back in.
+        flatTable.setValue(FlatUserFieldTypes.CITY_STATE.toString(), storedValue + "eh");
+        System.out.println("before VALUE:\n" + flatTable.getData());
+        assertTrue(flatTable.getValue(FlatUserFieldTypes.CITY_STATE.toString()).compareTo(storedValue + "eh")==0);
+        value = flatTable.getValue(FlatUserFieldTypes.CITY_PROVINCE.toString());
+        assertTrue(value.compareTo(storedValue) == 0);
+        System.out.println("before VALUEs:\n" + flatTable.getData());
+        // now what happens when we try to rename a key to a key that already exists.
+        assertTrue(flatTable.renameKey(FlatUserFieldTypes.CITY_STATE.toString(), FlatUserFieldTypes.CITY_PROVINCE.toString()));
+        value = flatTable.getValue(FlatUserFieldTypes.CITY_PROVINCE.toString());
+        System.out.println("after  VALUEs:\n" + flatTable.getData());
+        assertTrue(value.compareTo(storedValue + "eh") == 0);
+        System.out.println("after  VALUEs:\n" + flatTable.getData());
+    }
 
     /**
      * Test of setValue method, of class FlatTable.

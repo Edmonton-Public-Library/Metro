@@ -201,4 +201,7 @@ public class SIPCustomerMessageTest
         sipMessage = new SIPCustomerMessage(this.lost);
         assertTrue(sipMessage.cardReportedLost());
     }
+
+
+
 }

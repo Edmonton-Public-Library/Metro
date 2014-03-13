@@ -96,5 +96,11 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
                 "UNKNOWN"
             );
         }
+        // Shortgrass uses CITYPROV instead of default CITY/STATE in the
+        // address 1 table so let's rename that field.
+        formattedCustomer.renameField(
+                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+                FlatUserFieldTypes.CITY_STATE.toString(),
+                FlatUserFieldTypes.CITY_PROVINCE.toString());
     }
 }
