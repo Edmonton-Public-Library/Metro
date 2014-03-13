@@ -21,7 +21,6 @@
 package mecard.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +34,7 @@ import mecard.Protocol;
  * some of the fields are missing or damaged.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Address2
+public class Address3
 {
     protected Street   street;
     protected City     city;
@@ -43,7 +42,7 @@ public class Address2
     protected PCode    postalCode;
     protected Province province;
     
-    public Address2(String supposedAddress)
+    public Address3(String supposedAddress)
     {
         this.city       = new City();
         this.phone      = new Phone();
@@ -55,8 +54,60 @@ public class Address2
         {
             return;
         }
+        
+        
+        // sometimes that's all there is at the end of the string so if it is
+        // let's clean any empty ", "
+        // Different approach. If we have taken care of the phone and pcode
+        // then chop off each of the remaining elements and try to match
+        // The next would be province.
+        // 
+        // Some addresses like 'BOX 20 SITE 7 RR1, Red Deer, AB, T4N 5E1'
+        // cause a problem that manifests as 'Box 20 Site 7 Rr1 Red, Red Deer, AB, T4N 5E1'
+        // There are two ways to deal with this split on the commas...
+        // TODO Fix since we shouldn't have 4 anymore.!!!!
+        // Split the address string into parts based on the delimiter of ', '
+        String[] addressParts = supposedAddress.split(",\\s");
+        if (addressParts.length == 4)
+        {
+            // Typical usage: BOX 21, Heisler, AB, T0B 2A0
+            setPCodePhoneProvince(addressParts[3].trim());
+            this.province.test(addressParts[2]);
+            this.city.test(addressParts[1].trim());
+            this.street.test(addressParts[0].trim());
+        }
+        else if (addressParts.length == 3)
+        {
+            // Usually a 3 part split splits at end of city on province pcode phone last.
+            boolean foundCity = setStreetCity(addressParts[0]);
+            if (! foundCity)
+            {
+                // sometimes there is a comma after apt., so concat [0]+[1] and try again.
+                String splitStreet = addressParts[0] + " " + addressParts[1];
+                foundCity = setStreetCity(splitStreet);
+                if (! foundCity)
+                {
+                    System.out.println("Address3: Failed to find valid place name in '" + addressParts[0] + "'");
+                    this.street.test(addressParts[0]);
+                }
+            }
+            setPCodePhoneProvince(addressParts[2]);
+        }
+        else if (addressParts.length == 2)
+        {
+            setStreetCity(addressParts[0]);
+            setPCodePhoneProvince(addressParts[1]);
+        }
+        else
+        {
+            System.out.println("Error Address3 reading address: '" + supposedAddress + "'");
+        }
+    }
+    
+    private void setPCodePhoneProvince(String s)
+    {
         // Low hanging fruit lets see if there is a postal code.
-        StringBuilder supposedAddressBuilder = new StringBuilder(supposedAddress);
+        StringBuilder supposedAddressBuilder = new StringBuilder(s);
         this.postalCode.test(supposedAddressBuilder);
         if (this.phone.test(supposedAddressBuilder) == false)
         {
@@ -66,126 +117,38 @@ public class Address2
             // clearly not valid. Let's test gently to get rid of this value.
             this.phone.testGently(supposedAddressBuilder);
         }
-        
-        // Different approach. If we have taken care of the phone and pcode
-        // then chop off each of the remaining elements and try to match
-        // The next would be province.
-        // 
-        // Some addresses like 'BOX 20 SITE 7 RR1, Red Deer, AB, T4N 5E1'
-        // cause a problem that manifests as 'Box 20 Site 7 Rr1 Red, Red Deer, AB, T4N 5E1'
-        // There are two ways to deal with this split on the commas...
-        if (this.computedAddressCityAndProvinceSuccessfully(supposedAddressBuilder) == false)
-        {
-            String cleanAddress = supposedAddressBuilder.toString().replace(",", " ");
-            List<String> addressWords = new ArrayList<>();
-            addressWords.addAll(Arrays.asList(cleanAddress.split("\\s+")));
-            if (addressWords.size() > 0) // at least one word
-            {
-                int lastWordPos = addressWords.size() -1;
-                if (this.province.test(addressWords.get(lastWordPos)))
-                {
-                    addressWords.remove(lastWordPos);
-                }
-            }
-            // next should be the city, or place name.
-            if (addressWords.size() > 0) // at least one word
-            {
-                // Grab the next word off the end of the array of address words and try
-                // and match it.
-                int lastWordPos = addressWords.size() -1;
-                String possiblePlaceName = addressWords.remove(lastWordPos);
-                if (! this.city.testGently(possiblePlaceName))
-                {
-                    // There is still a chance that possiblePlaceName has too many selection
-                    // if it was Valley, or County, so try the next word.
-                    lastWordPos = addressWords.size() -1;
-                    if (lastWordPos >= 0)
-                    {
-                        String nextWord = addressWords.remove(lastWordPos);
-                        if (! this.city.testGently(nextWord))
-                        {
-                            // ok we're barking up the wrong tree, this doesn't look 
-                            // like a valid place name so restore the address field.
-                            addressWords.add(nextWord);
-                            addressWords.add(possiblePlaceName);
-                        }
-                    }
-                }
-            }
-            // paste street back together.
-            String addressString = "";
-            for (String s: addressWords)
-            {
-                addressString += s + " ";
-            }
-            this.street.test(addressString.trim());
-        }
+        this.province.test(supposedAddressBuilder);
     }
     
     /**
-     * There is a chance that the address is separated by ','s, and if so we have
-     * a good chance of getting street, city and province easily.
-     * @param supposedAddressBuilder
-     * @return true if the street city and province could be parsed out of the 
-     * input string and false otherwise.
+     * Minimally sets street, but tests for place names and potentially province
+     * in the so-far-unseen case of street city province test data.
+     * @param streetCity 
+     * @return true if the city was found at the end of the string and false otherwise.
      */
-    private boolean computedAddressCityAndProvinceSuccessfully(StringBuilder supposedAddressBuilder)
+    private boolean setStreetCity(String streetCity)
     {
-        // This strategy works on the principle that the the address string has some sort of ', ' delimiter.
-        if (supposedAddressBuilder.indexOf(", ") < 0)
+        // 31 Chansellorsville Street apt. 3 Medicine Hat, AB T1A 3N7
+        // do best match city on addrValues[0]
+        // province on addrValues[1]
+        // The last value should be part of the city name and we could get multiple enties
+        // if the last word is 'County'.
+        String possiblePlaceName = Text.lastWord(streetCity);
+        // TODO move get instance of to City so we can scale this class to other provinces and states.
+        mecard.util.City myCity = mecard.util.AlbertaCity.getInstanceOf();
+        List<String> possiblePlaceMatches = myCity.getPlaceNames(possiblePlaceName);
+        String mostLikelyMatch = Text.longestMatch(possiblePlaceMatches, streetCity);
+        boolean gotCity = this.city.test(mostLikelyMatch);
+        if (gotCity)
         {
-            return false;
-        }
-        // ok if that worked then let's split the string.
-        String[] addrValues = supposedAddressBuilder.toString().split(",\\s");
-        if (addrValues.length != 3) // we got some strange splitting.
-        {
-            return false;
-        }
-        if (this.province.test(addrValues[2]) == false)
-        {
-            return false;
-        }
-        if (this.city.test(addrValues[1]) == false)
-        {
-            // Sometimes we get systems that place the apartment at the end between 
-            // the street and city name, you know who you are, so here let's test 
-            // if this failed because of an apartment number.
-            String[] possibleApartmentCityName = parsePossibleApartmentNumber(addrValues[1]);
-            if (possibleApartmentCityName.length < 2)
-            {
-                return false;
-            }
-            // value at [1] is the city place name(?)
-            if (this.city.test(possibleApartmentCityName[1]) == false)
-            {
-                return false;
-            }
-            // value at [0] is the apartment number which will be
-            addrValues[0] = possibleApartmentCityName[0] + "-" + addrValues[0];
-        }
-        return this.street.test(addrValues[0]);
-    }
-    
-    private String[] parsePossibleApartmentNumber(String string)
-    {
-        String retString = string.trim();
-        Pattern partialApartmentPattern = Pattern.compile("^[a|A]pt\\.? \\d{1,} ");
-        Matcher matcher = partialApartmentPattern.matcher(retString);
-        String[] retArray;
-        if (matcher.find())
-        {
-            retArray = new String[2];
-            retArray[0] = matcher.group().trim();
-            retArray[1] = retString.substring(matcher.end());
+            // the rest of the string will be address.
+            this.street.test(Text.chopOff(streetCity, mostLikelyMatch));
         }
         else
         {
-            retArray = new String[1];
-            // no luck just return the entire string for reconsideration.
-            retArray[0] = retString;
-        } 
-        return retArray;
+            this.street.test(streetCity); // captures everything safe, but not ideal.
+        }
+        return gotCity;
     }
     
     /**
@@ -286,10 +249,7 @@ public class Address2
         {
             super();
             // end of line matching important to avoid 209-1123 street matching.
-//            this.phonePattern = Pattern.compile("\\d{3}[\\-| ]?\\d{3}-?\\d{4}$");
-//            this.phonePattern = Pattern.compile("\\d{3}[-| ]\\d{3}[-| ]\\d{4}$");
             this.phonePattern = Pattern.compile("\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
-//            this.partialPhonePattern = Pattern.compile("\\d{3}-$");
             // A broken partial could look like this:
             // 96-4058, 780-, (780-, and what about 780 555-1212
             this.partialPhonePattern = Pattern.compile("[(|\\d{1,}][-|\\s{1,}|\\d{1,}]*$");
@@ -573,7 +533,17 @@ public class Address2
         @Override
         public boolean test(StringBuilder s)
         {
-            return this.test(s.toString());
+            String possibleProvince = Text.lastWord(s.toString().trim());
+            if (this.test(possibleProvince))
+            {
+                int pos = s.indexOf(possibleProvince);
+                if (pos >= 0)
+                {
+                    s.delete(pos, pos + possibleProvince.length());
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

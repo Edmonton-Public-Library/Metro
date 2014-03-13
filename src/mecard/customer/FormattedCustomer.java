@@ -85,4 +85,18 @@ public interface FormattedCustomer
      * @param index the value of index
      */
     public void insertTable(FormattedTable formattedTable, int index);
+    
+    /**
+     * Renames a field in a table. This can be useful when an ILS has customized
+     * customer field names. This would have limited value in Horizon but in 
+     * Symphony you could specify that the default field {@link mecard.config.FlatUserFieldTypes#CITY_STATE}
+     * could be renamed to {@link mecard.config.FlatUserFieldTypes#CITY_PROVINCE}.
+     * 
+     * @param tableName Name of the table that contains the field to be renamed.
+     * @param originalFieldName String - the original name of the field.
+     * @param newFieldName  String - the new name for the field.
+     * @return true if the specified field in the specified table could be found
+     * and it was renamed to newFieldName, and false otherwise.
+     */
+    public boolean renameField(String tableName, String originalFieldName, String newFieldName);
 }

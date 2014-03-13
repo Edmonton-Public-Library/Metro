@@ -18,7 +18,7 @@
 * MA 02110-1301, USA.
 *
 */
-package site.shortgrass;
+package site.chinook;
 
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
@@ -33,15 +33,15 @@ import site.SymphonyNormalizer;
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
  * 
- * For Shortgrass Library System the actions are to load the customer's default account information
- * required by Symphony.
+ * For Chinook Arch Library System the actions are to load the customer's 
+ * default account information required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class SLSCustomerNormalizer extends SymphonyNormalizer
+public final class CARCustomerNormalizer extends SymphonyNormalizer
 {
 //    private final boolean debug;
     
-    public SLSCustomerNormalizer(boolean debug)
+    public CARCustomerNormalizer(boolean debug)
     {
         super(debug);
     }
@@ -96,7 +96,8 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
                 "UNKNOWN"
             );
         }
-        // Shortgrass uses CITYPROV instead of default CITY/STATE in the
+        
+        // Chinook Arch uses CITYPROV instead of default CITY/STATE in the
         // address 1 table so let's rename that field.
         formattedCustomer.renameField(
                 FlatUserExtendedFieldTypes.USER_ADDR1.name(),

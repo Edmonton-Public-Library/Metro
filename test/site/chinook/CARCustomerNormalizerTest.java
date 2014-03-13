@@ -1,5 +1,5 @@
 
-package site.shortgrass;
+package site.chinook;
 
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
@@ -7,10 +7,9 @@ import mecard.customer.Customer;
 import mecard.customer.FlatFormattedCustomer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.SIPFormatter;
-
-
 import org.junit.Test;
 import static org.junit.Assert.*;
+import site.shortgrass.SLSCustomerNormalizer;
 
 /**
  *
@@ -18,15 +17,15 @@ import static org.junit.Assert.*;
  */
 
 
-public class SLSCustomerNormalizerTest
+public class CARCustomerNormalizerTest
 {
     
-    public SLSCustomerNormalizerTest()
+    public CARCustomerNormalizerTest()
     {
     }
 
     /**
-     * Test of finalize method, of class SLSCustomerNormalizer.
+     * Test of finalize method, of class CARCustomerNormalizer.
      */
     @Test
     public void testFinalize()

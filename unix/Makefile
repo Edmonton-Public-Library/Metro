@@ -39,3 +39,8 @@ check:
 	####################
 	ps aux | grep metro
 	-netstat -an | grep 2004
+outage:
+	cp ./environment.properties ./environment.properties.original
+	cp ./environment.properties.outage ./environment.properties
+restore:
+	cp ./environment.properties.original ./environment.properties

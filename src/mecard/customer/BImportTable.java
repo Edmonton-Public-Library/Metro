@@ -160,4 +160,10 @@ public class BImportTable implements FormattedTable
     {
         return this.tableName;
     }
+
+    @Override
+    public boolean renameKey(String originalkey, String replacementKey)
+    {
+        throw new UnsupportedOperationException("No requirement for this function yet.");
+    }
 }

@@ -63,5 +63,14 @@ public interface FormattedTable
      */
     boolean setValue(String key, String value);
     
+    /**
+     * Renames a key in the preserving the original stored value if any.
+     * @param originalkey the original key name
+     * @param replacementKey the new name for the key
+     * @return true if the key could be renamed and false if there was no 
+     * key found matching originalKey name. A false leaves the table unaltered.
+     */
+    boolean renameKey(String originalkey, String replacementKey);
+    
 }
 
