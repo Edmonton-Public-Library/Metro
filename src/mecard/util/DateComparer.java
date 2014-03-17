@@ -53,6 +53,7 @@ public class DateComparer
     public final static long DAYS_IN_YEAR = 365L;
     public final static long MILLISECONDS_PER_YEAR = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
     public final static long MILLISECONDS_PER_DAY = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY;
+    public final static long MILLISECONDS_PER_MINUTE = MILLS_IN_SECOND * SECONDS_IN_MINUTE;
 
     /**
      * Returns the absolute difference between date one (d1) and date two (d2)
@@ -140,5 +141,24 @@ public class DateComparer
         Date futureDate = new Date(daysInfuture);
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.ANSI_DATE_FORMAT);
         return dateFormat.format(futureDate);
+    }
+    
+    /**
+     * Computes if the long file modification time passed as argument two is older than
+     * argument 1 modification time in minutes.
+     * @param minutes time span of acceptable file age.
+     * @param fileModTime last modified time of a file in seconds since Jan 01, 1970.
+     * @return true if the fileModTime is greater than the argument minutes and 
+     * false otherwise.
+     */
+    public static boolean isGreaterThanMinutesOld(int minutes, long fileModTime)
+    {
+        long difference = new Date().getTime() - fileModTime;
+
+        if (difference < minutes * MILLISECONDS_PER_MINUTE) 
+        {
+            return true;
+        }
+        return false;
     }
 }
