@@ -41,6 +41,7 @@ import mecard.exception.BImportException;
 import mecard.requestbuilder.BImportRequestBuilder;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import mecard.util.BImportResultParser;
+import mecard.util.DateComparer;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -95,10 +96,23 @@ public class BImportCustomerLoader
             {
                 debug = true;
             }
+             // get c option value
+            String configDirectory = cmd.getOptionValue("c");
+            PropertyReader.setConfigDirectory(configDirectory);
             // Should we run, if there is a pid back out without doing anything.
             File lock;
             if ((lock = getLockFile()) == null)
             {
+                // and test how long that PID file has been there.
+                // Sometimes BImport crashes. Here we test the age of the file
+                // and if it is old we will output a fail file.
+                if (DateComparer.isGreaterThanMinutesOld(20, lock.lastModified()))
+                {
+                    UserFile pid = new UserFile(PropertyReader.getConfigDirectory() + "stale_pid.fail");
+                    List<String> msg = new ArrayList<>();
+                    msg.add("PID file is more than 20 minutes old. BImport may have crashed, please check processes and remove PID file in necessary.");
+                    pid.addUserData(msg);
+                }
                 if (debug)
                 {
                     System.out.println("DEBUG: Could not get a lock file. Is another BImport process running?");           
@@ -106,9 +120,6 @@ public class BImportCustomerLoader
                 return;
             }
             
-             // get c option value
-            String configDirectory = cmd.getOptionValue("c");
-            PropertyReader.setConfigDirectory(configDirectory);
             BImportCustomerLoader loader = new BImportCustomerLoader();
             loader.run();
             if (! lock.delete())

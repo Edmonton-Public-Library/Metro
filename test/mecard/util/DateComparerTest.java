@@ -22,6 +22,7 @@
 
 package mecard.util;
 
+import java.util.Date;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -159,18 +160,19 @@ public class DateComparerTest
         fail("The test case is a prototype.");
     }
 
+
     /**
-     * Test of getFutureDate method, of class DateComparer.
+     * Test of isGreaterThanMinutesOld method, of class DateComparer.
+     * Note for this test you will need a file some time in the future.
      */
     @Test
-    public void testGetFutureDate()
+    public void testIsMinutesOld()
     {
-        System.out.println("getFutureDate");
-        int daysFromNow = 0;
-        String expResult = "";
-        String result = DateComparer.getFutureDate(daysFromNow);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("==isMinutesOld==");
+        // 1395081104622
+        long justMade = new Date().getTime();
+        long olderThan = justMade - 16 * 60 * 1000;
+        assertTrue(DateComparer.isGreaterThanMinutesOld(15,  justMade));
+        assertFalse(DateComparer.isGreaterThanMinutesOld(15, olderThan));
     }
 }
