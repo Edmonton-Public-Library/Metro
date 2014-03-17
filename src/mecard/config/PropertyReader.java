@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.11_13j"; // server version
+    public final static String VERSION           = "0.8.11_13k"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -114,10 +114,10 @@ public class PropertyReader
      * Returns the configuration directory
      * @return the configuration directory as a String.
      */
-    public static String getConfigDirectory()
-    {
-        return CONFIG_DIR;
-    }
+//    public static String getConfigDirectory()
+//    {
+//        return CONFIG_DIR;
+//    }
     
     /**
      * Gets specific properties from a configuration file.
