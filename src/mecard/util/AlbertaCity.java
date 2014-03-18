@@ -837,6 +837,8 @@ public final class AlbertaCity extends City
         cityMap.put("Willow Creek", "0353");
         cityMap.put("Woodlands County", "0480");
         cityMap.put("Yellowhead County", "0482");
+        // Reservation for Chinook Arch.
+        cityMap.put("Standoff", "6000");
         
         boolean hasDisplayedMessage = false;
         // Now we overlay place name records with config requested codes for BImport.
