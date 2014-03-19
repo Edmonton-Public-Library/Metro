@@ -40,6 +40,7 @@ import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
 import mecard.customer.BImportFormattedCustomer;
+import mecard.customer.BimportUserFile;
 import mecard.customer.UserFile;
 import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
@@ -61,7 +62,6 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
     public final static String DATA_FILE_BIMPORT = "-bimport.txt";
-    public final static String DATA_FILE = "-data.txt";
     public static final CharSequence SUCCESS_MARKER = "<ok>";
     public static final String PHONE_TAG = "default-phone";
     protected String bimportDir;    // where bimport exe is located.
@@ -121,8 +121,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         {
             loadDir += File.separator;
         }
-        dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
-        UserFile bimportDataFile = new UserFile(dataFile);
+        dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE_BIMPORT;
+        UserFile bimportDataFile = new BimportUserFile(dataFile);
         FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
         // Make final changes to the formatted customer before loading as adding bstat.
         normalizer.finalize(customer, formattedCustomer, response);

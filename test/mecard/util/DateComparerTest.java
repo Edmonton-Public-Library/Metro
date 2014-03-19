@@ -22,6 +22,10 @@
 
 package mecard.util;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -150,9 +154,35 @@ public class DateComparerTest
     @Test
     public void testGetRFC1123Date()
     {
-        System.out.println("==getRFC1123Date==");
-        
-        String result = DateComparer.getRFC1123Date();
-        System.out.println("TODAY_RFC1123: ddd, dd MMM yyyy HH:mm:ss GMT\nTODAY_RFC1123: "+result);
+        System.out.println("ANSIToConfigDate");
+        String ANSIDate = "";
+        String expResult = "";
+        String result = "";
+        try
+        {
+            result = DateComparer.ANSIToConfigDate(ANSIDate);
+        } catch (ParseException ex)
+        {
+            Logger.getLogger(DateComparerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+
+    /**
+     * Test of isGreaterThanMinutesOld method, of class DateComparer.
+     * Note for this test you will need a file some time in the future.
+     */
+    @Test
+    public void testIsMinutesOld()
+    {
+        System.out.println("==isMinutesOld==");
+        // 1395081104622
+        long justMade = new Date().getTime();
+        long olderThan = justMade - 16 * 60 * 1000;
+        assertTrue(DateComparer.isGreaterThanMinutesOld(15,  justMade));
+        assertFalse(DateComparer.isGreaterThanMinutesOld(15, olderThan));
     }
 }

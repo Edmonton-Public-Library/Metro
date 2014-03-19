@@ -137,4 +137,53 @@ public class FlatFormattedCustomerTest
             System.out.print("INSERT:\n"+s);
         }
     }
+
+    /**
+     * Test of getFormattedHeader method, of class FlatFormattedCustomer.
+     */
+    @Test
+    public void testGetFormattedHeader()
+    {
+        System.out.println("getFormattedHeader");
+        FlatFormattedCustomer instance = null;
+        List<String> expResult = null;
+        List<String> result = instance.getFormattedHeader();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getValue method, of class FlatFormattedCustomer.
+     */
+    @Test
+    public void testGetValue()
+    {
+        System.out.println("getValue");
+        String key = "";
+        FlatFormattedCustomer instance = null;
+        String expResult = "";
+        String result = instance.getValue(key);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of insertValue method, of class FlatFormattedCustomer.
+     */
+    @Test
+    public void testInsertValue()
+    {
+        System.out.println("insertValue");
+        String tableName = "";
+        String key = "";
+        String value = "";
+        FlatFormattedCustomer instance = null;
+        boolean expResult = false;
+        boolean result = instance.insertValue(tableName, key, value);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 }

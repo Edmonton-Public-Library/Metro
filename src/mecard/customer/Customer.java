@@ -150,4 +150,49 @@ public class Customer //extends ProtocolPayload
         }
         return (this.get(customerFieldTypes).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0);
     }
+    
+    /**
+     * Since there are 3 states we have three functions to test with. This one
+     * tests if the customer flat is set to Me Card's definition of TRUE.
+     * @param flag customer flags start with IS...
+     * @return true if the flag is 'Y' and false if 'N' or 'X'.
+     */
+    public boolean isFlagSetTrue(CustomerFieldTypes flag)
+    {
+        String flagValue = this.get(flag);
+        return flagValue.compareTo(Protocol.TRUE) == 0;
+    }
+    
+    /**
+     * Since there are 3 states we have three functions to test with. This one
+     * tests if the customer flat is set to Me Card's definition of False.
+     * @param flag customer flags start with IS...
+     * @return true if the flag is 'N' and false if 'Y' or 'X'.
+     */
+    public boolean isFlagSetFalse(CustomerFieldTypes flag)
+    {
+        String flagValue = this.get(flag);
+        return flagValue.compareTo(Protocol.FALSE) == 0;
+    }
+    
+    /**
+     * Since there are 3 states we have three functions to test with. This one
+     * tests if the customer flat is set to Me Card's definition of {@link Protocol#DEFAULT_FIELD_VALUE}.
+     * @param flag customer flags start with IS...
+     * @return true if the flag is 'Y' and false if 'N' or 'X'.
+     */
+    public boolean isFlagDefined(CustomerFieldTypes flag)
+    {
+        String flagValue = this.get(flag);
+        return flagValue.compareTo(Protocol.DEFAULT_FIELD_VALUE) != 0;
+    }
+    
+    /**
+     * Tests if the customer has been identified as a lost card.
+     * @return true if the customer's lost card field is set and false otherwise.
+     */
+    public boolean isLostCard()
+    {
+        return this.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD);
+    }
 }

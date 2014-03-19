@@ -54,10 +54,10 @@ public class FlatFormattedCustomer implements FormattedCustomer
         {
             customerTable.put(FlatUserFieldTypes.USER_BIRTH_DATE.name(), customer.get(CustomerFieldTypes.DOB));
         }
-        if (customer.isEmpty(CustomerFieldTypes.SEX) == false)
-        {
-            customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.toString(), customer.get(CustomerFieldTypes.SEX));
-        }
+//        if (customer.isEmpty(CustomerFieldTypes.SEX) == false)
+//        {
+//            customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.toString(), customer.get(CustomerFieldTypes.SEX));
+//        }
         this.customerAccount.add(FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerTable));
         // Address Table
         customerTable = new HashMap<>();
@@ -179,4 +179,16 @@ public class FlatFormattedCustomer implements FormattedCustomer
         return false;
     }
 
+    @Override
+    public boolean renameField(String tableName, String originalFieldName, String newFieldName)
+    {
+        for (FormattedTable table: this.customerAccount)
+        {
+            if (table.getName().compareTo(tableName) == 0)
+            {
+                return table.renameKey(originalFieldName, newFieldName);
+            }
+        }
+        return false;
+    }
 }

@@ -41,6 +41,7 @@ import mecard.exception.BImportException;
 import mecard.requestbuilder.BImportRequestBuilder;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import mecard.util.BImportResultParser;
+import mecard.util.DateComparer;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -56,6 +57,15 @@ import org.apache.commons.cli.ParseException;
  */
 public class BImportCustomerLoader 
 {
+    
+    private final BImportLoadRequestBuilder loadRequestBuilder;
+    private static boolean uploadCustomers = false;
+    private static boolean debug           = false;
+    private static String pidDir           = ".";
+    private static final String pidFile    = "metro-load.pid";
+    private static int maxPIDAge           = 20; // In minutes, anything older gets a file created.
+    private static final String stalePid   = "metro-stale-PID.fail";
+    
     /**
      * Runs the entire process of loading customer bimport files as a timed 
      * process such as cron or Windows scheduler.
@@ -69,8 +79,10 @@ public class BImportCustomerLoader
         options.addOption("c", true, "Configuration file directory path, include all sys dependant dir seperators like '/'.");
         // add v option v for server version.
         options.addOption("v", false, "Metro server version information.");
+        options.addOption("d", false, "Outputs debug information about the customer load.");
         options.addOption("U", false, "Execute upload of customer accounts, otherwise just cleans up the directory.");
-        options.addOption("p", true, "Path to PID file. If present back off and wait for reschedule customer load.");
+        options.addOption("p", true,  "Path to PID file. If present back off and wait for reschedule customer load.");
+        options.addOption("a", false, "Maximum age of PID file before warning (in minutes).");
         try
         {
             // parse the command line.
@@ -90,31 +102,39 @@ public class BImportCustomerLoader
             {
                 pidDir = cmd.getOptionValue("p");
             }
-            // Should we run, if there is a pid back out without doing anything.
-            File lock;
-            if ((lock = getLockFile()) == null)
+            if (cmd.hasOption("d")) // debug.
             {
-                return;
+                debug = true;
             }
-            
-             // get c option value
+            if (cmd.hasOption("a"))
+            {
+                maxPIDAge = Integer.parseInt(cmd.getOptionValue("a"));
+            }
+            // get c option value
             String configDirectory = cmd.getOptionValue("c");
             PropertyReader.setConfigDirectory(configDirectory);
             BImportCustomerLoader loader = new BImportCustomerLoader();
             loader.run();
-            if (! lock.delete())
-            {
-                String msg = new Date() + "unable to delete " + lock.getAbsolutePath() 
-                        + ", other loads won't run until this is removed. "
-                        + "Check for runaway bimport processes.";
-                Logger.getLogger(MetroService.class.getName()).log(Level.WARNING, msg);
-            }
         } 
         catch (ParseException ex)
         {
             String msg = new Date() + "Unable to parse command line option. Please check your service configuration.";
+            if (debug)
+            {
+                System.out.println("DEBUG: request for invalid command line option.");           
+            }
             Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
             System.exit(899); // 799 for mecard
+        }
+        catch (NumberFormatException ex)
+        {
+            String msg = new Date() + "Request for invalid -a command line option.";
+            if (debug)
+            {
+                System.out.println("DEBUG: request for invalid -a command line option.");
+                System.out.println("DEBUG: value set to " + maxPIDAge);
+            }
+            Logger.getLogger(MetroService.class.getName()).log(Level.WARNING, msg, ex);
         }
         System.exit(0);
     }
@@ -123,7 +143,7 @@ public class BImportCustomerLoader
      * 
      * @return null if there is a bimport process running and a new lock file otherwise.
      */
-    protected static File getLockFile()
+    protected File getLockFile()
     {
         if (pidDir.endsWith(File.separator) == false)
         {
@@ -140,10 +160,6 @@ public class BImportCustomerLoader
         return new File(pidDir + pidFile);
     }
 
-    private final BImportLoadRequestBuilder loadRequestBuilder;
-    private static boolean uploadCustomers = false;
-    private static String pidDir           = ".";
-    private static final String pidFile    = "metro-load.pid";
     
     public BImportCustomerLoader()
     {
@@ -159,10 +175,38 @@ public class BImportCustomerLoader
      */
     public void run()
     {
+        // Should we run, if there is a pid back out without doing anything.
+        File lock;
+        if ((lock = getLockFile()) == null)
+        {
+            // and test how long that PID file has been there.
+            // Sometimes BImport crashes. Here we test the age of the file
+            // and if it is old we will output a fail file.
+            if (DateComparer.isGreaterThanMinutesOld(maxPIDAge, lock.lastModified()))
+            {
+                UserFile pid = new UserFile(this.loadRequestBuilder.getLoadDir() + stalePid);
+                List<String> msg = new ArrayList<>();
+                msg.add("PID file is more than " + String.valueOf(maxPIDAge) + " minutes old.");
+                msg.add("BImport may have crashed, please check processes and remove PID file in necessary.");
+                pid.addUserData(msg);
+            }
+            if (debug)
+            {
+                System.out.println("DEBUG: Could not get a lock file. Is another BImport process running?");           
+            }
+            return;
+        }
         // This process needs to run to format the user data
         List<String> fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.DATA_FILE);
+                BImportRequestBuilder.DATA_FILE_BIMPORT);
+        if (debug)
+        {
+            System.out.println("DEBUG.run(): "
+                + "'" + fileList.size() + "'"
+                + " args: loadRequestBuilder.getLoadDir() : '" + this.loadRequestBuilder.getLoadDir() + "'"
+                + " BImportRequestBuilder.DATA_FILE: " + BImportRequestBuilder.DATA_FILE_BIMPORT);
+        }
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
         if (uploadCustomers)
         {
@@ -175,6 +219,18 @@ public class BImportCustomerLoader
             System.out.println(rpt);
         }
         clean(fileList); // get rid of the bat files. All contents are in the main data file.
+        // now remove the lock file.
+        if (! lock.delete())
+        {
+            String msg = new Date() + "unable to delete " + lock.getAbsolutePath() 
+                    + ", other loads won't run until this is removed. "
+                    + "Check for runaway bimport processes.";
+            if (debug)
+            {
+                System.out.println("DEBUG_WARN: " + msg);           
+            }
+            Logger.getLogger(MetroService.class.getName()).log(Level.WARNING, msg);
+        }
     }
    
     /**
@@ -189,10 +245,20 @@ public class BImportCustomerLoader
     {
         List<String> textFiles = new ArrayList<>();
         File dir = new File(loadDir);
+        if (debug)
+        {
+            System.out.println("DEBUG.getFileList(): searching " + loadDir + " for "
+                + "files that end with: '" + fileSuffix + "'");
+        }
         for (File file : dir.listFiles()) 
         {
             if (file.getName().endsWith((fileSuffix))) 
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG: adding " + file.getAbsolutePath() 
+                            + " file " + file.getName());
+                }
                 textFiles.add(file.getAbsolutePath());
             }
         }
@@ -239,6 +305,12 @@ public class BImportCustomerLoader
             batFile    = loadDir + FILE_NAME_PREFIX + "template" + BAT_FILE;
             headerFile = loadDir + FILE_NAME_PREFIX + "template" + HEADER_FILE;
             dataFile   = loadDir + FILE_NAME_PREFIX + longTime + DATA_FILE_BIMPORT;
+            if (debug)
+            {
+                System.out.println("DEBUG: customer file is: "
+                    + "'" + dataFile + "'"
+                    + " and header: '" + headerFile + "'");
+            }
         }
         
         /**
@@ -264,10 +336,18 @@ public class BImportCustomerLoader
                 throw new BImportException(BImportRequestBuilder.class.getName()
                         + " Failed to find header file: '" + headerFile + "'.");
             }
+            if (debug)
+            {
+                System.out.println("DEBUG.loadCustomers() number of files in argument: " + files.size());
+            }
             List<String> customersData = getCustomerData(files);
             // if there were no customers to load return a command that does nothing.
             if (customersData.isEmpty())
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG: no customer data found.");
+                }
                 return new DummyCommand.Builder()
                 .setStatus(0)
                 .setStdout(BImportRequestBuilder.SUCCESS_MARKER.toString())
@@ -289,6 +369,10 @@ public class BImportCustomerLoader
                     .build();
             List<String> bimportBatExec = new ArrayList<>();
             batch.getCommandLine(bimportBatExec);
+            if (debug)
+            {
+                System.out.println("DEBUG: batch command: '" + batch.getCommandLine() + "'");
+            }
             Command command = new APICommand.Builder().commandLine(bimportBatExec).build();
             return command;
         }
@@ -303,8 +387,16 @@ public class BImportCustomerLoader
         {
             // for each file open it get the lines append them to the big list and close
             List<String> bigListOfAllCustomerData = new ArrayList<>();
+            if (debug)
+            {
+                System.out.println("DEBUG.getCustomerData() number of files in argument: " + files.size());
+            }
             for (String file: files)
             {
+                if (debug)
+                {
+                    System.out.println("DEBUG.getCustomerData(): " + file);           
+                }
                 BufferedReader br = null;
                 try 
                 {
@@ -326,10 +418,18 @@ public class BImportCustomerLoader
                 {
                     // a file may be missing but keep checking the others.
                     System.out.println("'" + file + "' not found.");
+                    if (debug)
+                    {
+                        System.out.println("DEBUG: file not found!!" + file);           
+                    }
                     continue;
                 } 
                 catch (IOException ex)
                 {
+                    if (debug)
+                    {
+                        System.out.println("DEBUG: IOException reading " + file);           
+                    }
                     Logger.getLogger(BImportCustomerLoader.class.getName()).log(Level.SEVERE, null, ex);
                 } 
                 finally
@@ -339,9 +439,17 @@ public class BImportCustomerLoader
                         br.close();
                     } catch (IOException | NullPointerException ex)
                     {
+                        if (debug)
+                        {
+                            System.out.println("DEBUG: data list is null or there was an IOException!!");           
+                        }
                         return bigListOfAllCustomerData;
                     }
                 }
+            }
+            if (debug)
+            {
+                System.out.println("DEBUG: size of all customer data: " + bigListOfAllCustomerData.size());           
             }
             return bigListOfAllCustomerData;
         }

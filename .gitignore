@@ -28,4 +28,8 @@ dist/javadoc/*
 <<<<<<< HEAD
 =======
 dist/lib/junit-4.10.jar
+<<<<<<< HEAD
+>>>>>>> master
+=======
+*.zip
 >>>>>>> master

@@ -30,22 +30,70 @@ public class CustomerTest
     }
 
     /**
-     * Test of set method, of class Customer.
+     * Test of toString method, of class Customer.
      */
     @Test
-    public void testSet()
+    public void testToString()
     {
-        System.out.println("== set ==");
-        CustomerFieldTypes ft = null;
-        String value = "value";
+        System.out.println("==toString==");
         Customer instance = new Customer();
-        
-        for (CustomerFieldTypes cTypes: CustomerFieldTypes.values())
-        {
-            instance.set(cTypes, value);
-            if (cTypes != CustomerFieldTypes.PREFEREDNAME)
-                assertTrue(instance.get(cTypes).compareTo(value) == 0);
-        }
+        String expResult = "[X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X]";
+        String result = instance.toString();
+        assertTrue(expResult.compareTo(result) == 0);
     }
 
+    /**
+     * Test of isEmpty method, of class Customer.
+     */
+    @Test
+    public void testIsEmpty()
+    {
+        System.out.println("==isEmpty==");
+        String name = "Doe, John";
+        Customer instance = new Customer();
+        instance.setName(name);
+        instance.set(CustomerFieldTypes.ISLOSTCARD, "Y");
+        boolean test = instance.isLostCard();
+        assertTrue(test);
+        instance.set(CustomerFieldTypes.ISLOSTCARD, "X");
+        test = instance.isLostCard();
+        assertFalse(test);
+    }
+
+    /**
+     * Test of isLostCard method, of class Customer.
+     */
+    @Test
+    public void testIsLostCard()
+    {
+        System.out.println("===isLostCard===");
+        String name = "Doe, John";
+        Customer customer = new Customer();
+        customer.setName(name);
+        boolean test = customer.isLostCard();
+        assertFalse(customer.isLostCard());
+        assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISGOODSTANDING));
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "N");
+        assertTrue(customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD));
+        assertTrue(customer.isFlagSetFalse(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD));
+        test = customer.isLostCard();
+        assertFalse(customer.isLostCard());
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "Y");
+        assertTrue(customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD));
+        assertTrue(customer.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetFalse(CustomerFieldTypes.ISLOSTCARD));
+        test = customer.isLostCard();
+        assertTrue(customer.isLostCard());
+        
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "X");
+        assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetFalse(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagSetTrue(CustomerFieldTypes.ISLOSTCARD));
+        test = customer.isLostCard();
+        assertFalse(customer.isLostCard());
+        
+        assertTrue(customer.isEmpty(CustomerFieldTypes.ISLOSTCARD));
+        assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISGOODSTANDING));
+    }
 }

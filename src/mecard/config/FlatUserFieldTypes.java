@@ -45,13 +45,18 @@ public enum FlatUserFieldTypes
     USER_PRIV_GRANTED("USER_PRIV_GRANTED"),//20120705
     USER_PRIV_EXPIRES("USER_PRIV_EXPIRES"),//20130705
     USER_BIRTH_DATE("USER_BIRTH_DATE"),//20050303
-    USER_CATEGORY2("USER_CATEGORY2"),//M - gender
+    USER_CATEGORY1("USER_CATEGORY1"),
+    USER_CATEGORY2("USER_CATEGORY2"),//M - gender, or age group at Shortgrass
+    USER_CATEGORY3("USER_CATEGORY3"),
+    USER_CATEGORY4("USER_CATEGORY4"),
+    USER_CATEGORY5("USER_CATEGORY5"),
     USER_ACCESS("USER_ACCESS"),//PUBLIC
     USER_ENVIRONMENT("USER_ENVIRONMENT"),//PUBLIC
     USER_MAILINGADDR("USER_MAILINGADDR"),//1
     USER_ADDR1_BEGIN("USER_ADDR1_BEGIN"),
     STREET("STREET"),//7 Sir Winston Churchill Square
     CITY_STATE("CITY/STATE"),//Edmonton(""), AB
+    CITY_PROVINCE("CITYPROV"), // Alternate for some libs.
     POSTALCODE("POSTALCODE"),//T5J 2V4
     PHONE("PHONE"),//780-496-4058
     EMAIL("EMAIL"),//ilsteam@epl.ca
@@ -66,7 +71,7 @@ public enum FlatUserFieldTypes
     RETRNMAIL("RETRNMAIL"),//YES
     USER_XINFO_END("USER_XINFO_END");
     
-    private String type;
+    private final String type;
 
     private FlatUserFieldTypes(String s)
     {

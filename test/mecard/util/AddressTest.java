@@ -182,5 +182,78 @@ public class AddressTest
         System.out.println("PROVINC:'"+instance.getProvince()+"'");
         System.out.println("PHONE:'"+instance.getPhone()+"'");
         System.out.println("CONTENT:'"+instance+"'");
+        
+        
+        System.out.println("=== Address14 ===");
+        thisAddress = "18 Appomattox Street, apt. 9 Medicine Hat, AB T1A 3N7";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address15 ===");
+        thisAddress = "31 Chansellorsville Street apt. 3 Medicine Hat, AB T1A 3N7";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address16 ===");
+        // 64              00020140115    115700000000000002000000000009AOalap|AA21000004869074|AEWOLBECK, DIXIE|AQahei|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDBOX 21, Heisler, AB, TOB 2A0|BEwolbeckd9@gmail.com|BF780 889-2114|DHDIXIE|DJWOLBECK|PCra|PE20140328    235900|PS20140328    235900|ZYra|AY1AZB5F8
+        thisAddress = "BOX 21, Heisler, AB, T0B 2A0";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        
+        System.out.println("=== Address17 ===");
+        thisAddress = "BOX 43 LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        assertTrue(instance.getCity().compareTo("Lethbridge") == 0);
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address18 ===");
+        thisAddress = "BOX 43 DRAYTON VALLEY, ALBERTA T1J 3Y3 403-555-1234";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        assertTrue(instance.getCity().compareTo("Drayton Valley") == 0);
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address19 ===");
+        // TODO this fails to find the right city in this case but the whole address 
+        // does get parsed.
+        thisAddress = "BOX 43 COUNTY OF LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address2(thisAddress);
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }

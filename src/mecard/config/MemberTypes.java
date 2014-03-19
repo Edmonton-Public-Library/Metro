@@ -30,5 +30,7 @@ public enum MemberTypes
     STA, // St. Alberta Public Library
     STR, // Strathcona County Library / Fort Saskatchewan Public Library
     PKL, // Parklands Regional Library
+    SLS, // Shortgrass Library System
+    CAR, // Chinook Arch Regional Library System
     TRC; // Trac including Yellowhead.
 }

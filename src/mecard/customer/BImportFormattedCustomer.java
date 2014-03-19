@@ -253,4 +253,10 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         }
         return false;
     }
+
+    @Override
+    public boolean renameField(String tableName, String originalFieldName, String newFieldName)
+    {
+        throw new UnsupportedOperationException("No requirement for this operation yet.");
+    }
 }

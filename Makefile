@@ -3,31 +3,24 @@
 # distribution to each participating library.
 ########################################################################
 
-VERSION=0.7
+VERSION=0.8.12_00
 ARCHIVE=Metro_${VERSION}
 CONFIGS=config_templates/*.properties
 WIN_SETUP=windows/Output/setup.exe
-WIN_DIR=windows/*.exe windows/*.dll
 UNIX_DIR=unix/*
 
-update: clean update_unix update_windows
+update: clean update_unix 
 install: clean dist_windows dist_unix
 
 update_unix:
 	tar cvf ${ARCHIVE}.tar dist/*
-update_windows:
-	cp ${WIN_SETUP} ./setup.e__
-	cp dist/MeCard.jar ./MeCard.j__
-	cp dist/MeCard.jar ./
 	
 dist_windows:
-	zip -r ${ARCHIVE}.z_ ${CONFIGS} dist/* ${WIN_DIR} logs/Customers
+	zip -r ${ARCHIVE}.zip ${CONFIGS} ${WIN_SETUP}
 dist_unix:
 	tar cvf ${ARCHIVE}.tar ${CONFIGS} dist/* ${UNIX_DIR} logs/Customers
 
 clean:
 	-rm ${ARCHIVE}.tar 
-	-rm ${ARCHIVE}.z_
-	-rm ./setup.e__
+	-rm ${ARCHIVE}.zip
 	-rm ./MeCard.jar
-	-rm ./MeCard.j__

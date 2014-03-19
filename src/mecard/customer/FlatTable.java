@@ -29,7 +29,7 @@ import mecard.config.FlatUserExtendedFieldTypes;
  */
 public class FlatTable implements FormattedTable
 {
-    private String name;
+    private final String name;
     private final HashMap<String, String> columns;
     public static FlatTable getInstanceOf(FlatUserExtendedFieldTypes type, HashMap<String, String> dataFields)
     {
@@ -95,6 +95,25 @@ public class FlatTable implements FormattedTable
             this.columns.put(key, value);
         }
         return response;
+    }
+    
+    /**
+     * Renames a key in the preserving the original stored value if any.
+     * @param originalkey the original key name
+     * @param replacementKey the new name for the key
+     * @return true if the key could be renamed and false if there was no 
+     * key found matching originalKey name. A false leaves the table unaltered.
+     */
+    @Override
+    public boolean renameKey(String originalkey, String replacementKey)
+    {
+        String originalValue = this.columns.remove(originalkey);
+        if (originalValue == null || originalValue.isEmpty())
+        {
+            return false;
+        }
+        this.columns.put(replacementKey, originalValue);
+        return true;
     }
 
     protected String finalizeTable(StringBuilder data)

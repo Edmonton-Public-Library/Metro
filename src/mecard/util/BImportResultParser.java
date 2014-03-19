@@ -56,7 +56,7 @@ public class BImportResultParser implements ResultParser
         this.successfulCustomers = 0;
         this.failedCustomers     = 0;
         this.resultPattern       = Pattern.compile("^\\d{1,}\\s+\\d{1,}.*");
-        this.cardPattern         = Pattern.compile("\\d{2,}");
+        this.cardPattern         = Pattern.compile("\\d{13,}"); // Lib cards at Universities have 13 digits, all others have 14.
         this.loadFailedCustomers = new ArrayList<>();
         List<String> allLines    = new ArrayList<>();
         allLines.addAll(Arrays.asList(results.split("\n")));
@@ -97,7 +97,8 @@ public class BImportResultParser implements ResultParser
     
     
     /**
-     * 
+     * Returns the user id from a line in the Bimport output message.
+     * Library cards come in the codabar or in 13 digit format for Universities.
      * @param resultString a line from the bimport results stdout that is fairly
      * clear should contain a user id ie, '     1      1 modify 21221005573552 <ok>'.
      * @return the user's id or an empty string if the id could not be found.

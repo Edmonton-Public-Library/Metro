@@ -55,7 +55,7 @@ public class UserFailFile extends UserFile
     {
         List<String> data = new ArrayList<>();
         data.add(status.getStdout());
-        data.add(status.getStdout());
+        data.add(status.getStderr());
         this.addUserData(data);
     }
 }

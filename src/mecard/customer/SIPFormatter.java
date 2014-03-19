@@ -20,22 +20,52 @@
  */
 package mecard.customer;
 
+import api.CustomerMessage;
 import api.SIPCustomerMessage;
 import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
-import mecard.util.Address2;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.util.Address3;
 import mecard.util.Phone;
+import site.CustomerGetNormalizer;
+import site.chinook.CARCustomerGetNormalizer;
+import site.edmonton.EPLCustomerGetNormalizer;
+import site.shortgrass.SLSCustomerGetNormalizer;
+import site.strathcona.STRCustomerGetNormalizer;
 
 /**
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class SIPFormatter implements CustomerFormatter
+public class SIPFormatter implements CustomerFormatter 
 {
-
+    protected CustomerGetNormalizer customMessageInterpreter = null;
+    
     public SIPFormatter()
     {
+        String libCode = PropertyReader.
+            getProperties(ConfigFileTypes.ENVIRONMENT).
+            getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
+        switch (libCode)
+        {
+            case "EPL":
+                this.customMessageInterpreter = new EPLCustomerGetNormalizer();
+                break;
+            case "SLS":
+                this.customMessageInterpreter = new SLSCustomerGetNormalizer();
+                break;
+            case "CAR":
+                this.customMessageInterpreter = new CARCustomerGetNormalizer();
+                break;
+            case "STR":
+                this.customMessageInterpreter = new STRCustomerGetNormalizer();
+                break;
+            default:
+                this.customMessageInterpreter = new CustomerGetNormalizer();
+        }
     }
 
     @Override
@@ -95,7 +125,7 @@ public class SIPFormatter implements CustomerFormatter
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
 // here we will fill in the customer attributes with the contents of s- the SIP message.
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(s);
+        CustomerMessage sipMessage = new SIPCustomerMessage(s);
         customer.set(CustomerFieldTypes.ID, sipMessage.getField("AA"));
         customer.set(CustomerFieldTypes.PREFEREDNAME, sipMessage.getField("AE"));
         customer.set(CustomerFieldTypes.RESERVED, sipMessage.getField("AF"));
@@ -117,6 +147,7 @@ public class SIPFormatter implements CustomerFormatter
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }
         // DOB same thing
+        // TODO: Added Strathcona CustomerGetNormalizer
         cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PB"));
         if (SIPMessage.isDate(cleanDate))
         {
@@ -127,9 +158,9 @@ public class SIPFormatter implements CustomerFormatter
             cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PD"));
             customer.set(CustomerFieldTypes.DOB, cleanDate);
         }
-        customer.set(CustomerFieldTypes.SEX, sipMessage.getField("PF"));
+        // SEX now handled in CustomerGetNormalizer and subclasses.
         // Complete address
-        Address2 address = new Address2(sipMessage.getField("BD"));
+        Address3 address = new Address3(sipMessage.getField("BD"));
         customer.set(CustomerFieldTypes.STREET, address.getStreet());
         customer.set(CustomerFieldTypes.CITY, address.getCity());
         customer.set(CustomerFieldTypes.PROVINCE, address.getProvince());
@@ -141,6 +172,7 @@ public class SIPFormatter implements CustomerFormatter
         {
             customer.set(CustomerFieldTypes.PHONE, address.getPhone());
         }
+        this.customMessageInterpreter.setCustomerValuesFromSiteSpecificFields(customer, sipMessage);
         return customer;
     }
 

@@ -21,6 +21,9 @@
 package site.edmonton;
 
 import mecard.Response;
+import mecard.config.CustomerFieldTypes;
+import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import site.SymphonyNormalizer;
@@ -44,14 +47,26 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
     }
 
     /**
-     *
-     * @param unformattedCustomer the raw MeCard customer account information.
-     * @param formattedCustomer the Flat formattedCustomer
+     * This method is used to add additional fields to the formatted customer
+     * before loading.
+     * @param unformattedCustomer the raw MeCard customer account information as
+     * provided by the host library.
+     * @param formattedCustomer the Flat formattedCustomer that will be loaded 
+     * by Symphony.
      * @param response the value of response
      */
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
+        // We use USER_CATEGORY2 for customer sex so if the sending library
+        // has included this information we can set the field.
+        if (unformattedCustomer.isEmpty(CustomerFieldTypes.SEX) == false)
+        {
+            formattedCustomer.insertValue(
+                    FlatUserExtendedFieldTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY2.toString(), 
+                    unformattedCustomer.get(CustomerFieldTypes.SEX));
+        }
         this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
     }
 }

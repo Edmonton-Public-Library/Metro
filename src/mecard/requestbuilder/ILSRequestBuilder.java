@@ -30,6 +30,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
+import mecard.customer.SIPFormatter;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -48,6 +49,7 @@ public abstract class ILSRequestBuilder
      *
      * @param queryType the value of queryType
      * @param debug the value of debug
+     * @return ILSRequestBuilder appropriate for the query.
      */
     public static ILSRequestBuilder getInstanceOf(QueryTypes queryType, boolean debug)
     {
@@ -137,6 +139,11 @@ public abstract class ILSRequestBuilder
     
     /**
      * Gets the CustomerFormatter related to the implementer of the subclass.
+     * A formatter can be tailored to a specific library to ensure proper 
+     * interpretation of request results, and non-standard field use. For example;
+     * consider that EPL uses the field "PF" to designate patron sex, but Shortgrass
+     * uses the field 'PF'. That being the case both libraries can subclass a 
+     * {@link SIPFormatter} for additional customized SIP2 result interpretation.
      * @return CustomerFormatter.
      */
     public abstract CustomerFormatter getFormatter();
@@ -148,7 +155,11 @@ public abstract class ILSRequestBuilder
      * @param userId the value of userId
      * @param userPin the value of userPin
      * @param response Buffer to contain useful response information.
+<<<<<<< HEAD
      * @return Command ready to run.
+=======
+     * @return Command for execution of this query type.
+>>>>>>> master
      */
     public abstract Command getCustomerCommand(
             String userId, 
