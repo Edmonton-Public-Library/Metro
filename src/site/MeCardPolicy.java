@@ -444,6 +444,18 @@ public class MeCardPolicy
     public boolean isValidExpiryDate(Customer customer, CustomerMessage meta, StringBuilder s)
     {
         String expiryDate = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
+        // Symphony systems will return 'NEVER' for lifetime members, however they are
+        // throttled to a year on another library system, which is only fair.
+        if (expiryDate.equalsIgnoreCase("NEVER"))
+        {
+            // set the customer's expiry to 365 days from now and output the message.
+            String newExpiryOneYearFromNow = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, newExpiryOneYearFromNow);
+            System.out.println("customer expiry throttled to: '" + newExpiryOneYearFromNow + "'");
+            return true;
+        }
+        // Still there could be an error in the way the date is entered or some 
+        // extraneous value has been entered so try and parse the value in the date field.
         try
         {
             int expiryDays = DateComparer.getDaysUntilExpiry(expiryDate);
@@ -461,7 +473,9 @@ public class MeCardPolicy
                 if (DEBUG) System.out.println("Customer passed privilege date.");
                 return true;
             }
-        } catch (ParseException ex)
+        } 
+        // To get here your expiry isn't 'NEVER' and not a valid date so... ?
+        catch (ParseException ex)
         {
             System.out.println("Error parsing date: '" + expiryDate + "'");
             s.append(failExpiryTest);
