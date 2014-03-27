@@ -31,5 +31,6 @@ public enum MemberTypes
     STR, // Strathcona County Library / Fort Saskatchewan Public Library
     PKL, // Parklands Regional Library
     SLS, // Shortgrass Library System
-    CAR; // Chinook Arch Regional Library System
+    CAR, // Chinook Arch Regional Library System
+    CPL; // Calgary Public Library.
 }
