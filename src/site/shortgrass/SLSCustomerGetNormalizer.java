@@ -118,10 +118,9 @@ public class SLSCustomerGetNormalizer extends CustomerGetNormalizer
         }
         // Shortgrass' SIP server doesn't return a 'PA', expiry date field for lifetime
         // memberships. Fix to something reasonable.
-        String expiry = message.getField("PA");
-        if (expiry.isEmpty())
+        if (message.isEmpty("PA"))
         {
-            expiry = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
+            String expiry = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
         }
     }

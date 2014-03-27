@@ -217,4 +217,10 @@ public class SIPCustomerMessage
         return this.isReported(PATRON_STATUS_FLAGS.CARD_REPORTED_LOST) 
                 && this.isTrue(PATRON_STATUS_FLAGS.CARD_REPORTED_LOST);
     }
+    
+    @Override
+    public boolean isEmpty(String fieldName)
+    {
+        return super.isEmpty(fieldName) || this.getMessage().isEmpty();
+    }
 }
