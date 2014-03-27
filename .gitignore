@@ -27,3 +27,4 @@ extlibs/
 dist/javadoc/*
 dist/lib/junit-4.10.jar
 *.zip
+/dist/

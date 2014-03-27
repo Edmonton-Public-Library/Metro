@@ -34,6 +34,7 @@ public interface CustomerMessage
 {
     public String getCustomerProfile();
     public String getField(String fieldName);
+    public boolean isEmpty(String fieldName);
     public String getStanding();
     public boolean cardReportedLost();
 }
