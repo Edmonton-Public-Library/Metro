@@ -197,15 +197,17 @@ public class BImportCustomerLoader
             return;
         }
         // This process needs to run to format the user data
+        // The process is find all the individual customer -data.txt files and 
+        // glom all that data together in a -bimport.txt file for bulk loading.
         List<String> fileList = getFileList(
                 this.loadRequestBuilder.getLoadDir(), 
-                BImportRequestBuilder.DATA_FILE_BIMPORT);
+                BImportRequestBuilder.DATA_FILE);
         if (debug)
         {
             System.out.println("DEBUG.run(): "
                 + "'" + fileList.size() + "'"
                 + " args: loadRequestBuilder.getLoadDir() : '" + this.loadRequestBuilder.getLoadDir() + "'"
-                + " BImportRequestBuilder.DATA_FILE: " + BImportRequestBuilder.DATA_FILE_BIMPORT);
+                + " BImportRequestBuilder.DATA_FILE: " + BImportRequestBuilder.DATA_FILE);
         }
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
         if (uploadCustomers)
