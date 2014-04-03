@@ -22,9 +22,11 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import mecard.Response;
 import api.SIPCommand;
 import api.SIPConnector;
+import api.SIPCustomerMessage;
 import api.SIPStatusMessage;
 import java.util.Date;
 import java.util.Properties;
@@ -200,5 +202,11 @@ public class SIPRequestBuilder extends ILSRequestBuilder
             return false;
         }
         return false;
+    }
+
+    @Override
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        return new SIPCustomerMessage(stdout);
     }
 }

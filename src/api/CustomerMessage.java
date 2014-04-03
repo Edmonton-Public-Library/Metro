@@ -37,4 +37,5 @@ public interface CustomerMessage
     public boolean isEmpty(String fieldName);
     public String getStanding();
     public boolean cardReportedLost();
+    public boolean isInGoodStanding();
 }

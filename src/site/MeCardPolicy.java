@@ -192,13 +192,23 @@ public class MeCardPolicy
      */
     public boolean isInGoodStanding(Customer customer, CustomerMessage message, StringBuilder s)
     {
+        // test if an explict value is available. This may shortcut testing below
+        // so that any value in the environment.properties file will have no effect.
+        if (message.isInGoodStanding() == false)
+        {
+            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+            s.append(failGoodstandingTest);
+            return false;
+        }
+        // But the above test is not reliable; many libraries use the status message
+        // as the means to signal customers are not in good standing.
         // because EPL uses SIP to get customer information we can assume that
         // meta will contain BARRED if the customer is not in good standing.
         String standingMessage = message.getStanding();
         for (String notGoodStandingType: notInGoodStandingStandingSentinal)
         {
             System.out.println("TESTING: '" + notGoodStandingType + "' against '"+standingMessage+"'");
-            if (standingMessage.contains(notGoodStandingType)) // TODO Test with bad customers!!!.
+            if (standingMessage.contains(notGoodStandingType))
             {
                 customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
                 s.append(failGoodstandingTest);

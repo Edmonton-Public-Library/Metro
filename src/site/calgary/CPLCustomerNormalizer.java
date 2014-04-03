@@ -21,7 +21,6 @@
 package site.calgary;
 
 import mecard.Response;
-import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
@@ -60,47 +59,15 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
     {
         // This loads all the mandatory values on SymphonyPropertyTypes.
         this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
-        // Currently Shortgrass uses USER_CATEGORY2 to store the 
-        // customer's age category but future versions of metro may be required to register 
-        // Juveniles. If that is the case you need only get the customers age from the 
-        // Minimum age flag or compute on DOB then set the formattedCustomer 
-        // field as: 
-//        formattedCustomer.insertValue(
-//            FlatUserExtendedFieldTypes.USER.name(), 
-//            FlatUserFieldTypes.USER_CATEGORY2.toString(), 
-//            "ADULT"
-//        );
-        // Here we will compute USER_CATEGORY3: sex. Test the 
-        // unformattedCustomer for sex and set it like you set USER_CATEGORY2
-//        if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
-//        {
-//            formattedCustomer.insertValue(
-//                FlatUserExtendedFieldTypes.USER.name(), 
-//                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-//                "FEMALE"
-//            );
-//        }
-//        else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
-//        {
-//            formattedCustomer.insertValue(
-//                FlatUserExtendedFieldTypes.USER.name(), 
-//                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-//                "MALE"
-//            );
-//        }
-//        else
-//        {
-//            formattedCustomer.insertValue(
-//                FlatUserExtendedFieldTypes.USER.name(), 
-//                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-//                "UNKNOWN"
-//            );
-//        }
-        // Shortgrass uses CITYPROV instead of default CITY/STATE in the
-        // address 1 table so let's rename that field.
-//        formattedCustomer.renameField(
-//                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
-//                FlatUserFieldTypes.CITY_STATE.toString(),
-//                FlatUserFieldTypes.CITY_PROVINCE.toString());
+        // Currently Calgary uses PHONE1 to store the customer's phone number: 
+        formattedCustomer.renameField(
+                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+                FlatUserFieldTypes.PHONE.toString(),
+                FlatUserFieldTypes.PHONE_1.toString());
+        // And yet another variation of "CITY/PROV" not "CITY/STATE".
+        formattedCustomer.renameField(
+                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+                FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
+                FlatUserFieldTypes.CITY_SLASH_PROV.toString());
     }
 }

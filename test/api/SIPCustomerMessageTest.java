@@ -184,9 +184,19 @@ public class SIPCustomerMessageTest
     @Test
     public void testGetStanding()
     {
-        System.out.println("getStanding");
+        System.out.println("==getStanding==");
         SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
         assertFalse(sipMessage.cardReportedLost());
+        sipMessage = new SIPCustomerMessage(this.suspended);
+        assertFalse(sipMessage.isInGoodStanding());
+        sipMessage = new SIPCustomerMessage(this.expired);
+        assertFalse(sipMessage.isInGoodStanding());
+        sipMessage = new SIPCustomerMessage(this.lost);
+        assertFalse(sipMessage.isInGoodStanding());
+        sipMessage = new SIPCustomerMessage(this.goodStanding);
+        assertTrue(sipMessage.isInGoodStanding());
+        sipMessage = new SIPCustomerMessage(this.nonResident);
+        assertTrue(sipMessage.isInGoodStanding());
     }
 
     /**

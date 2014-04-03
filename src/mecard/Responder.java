@@ -188,6 +188,7 @@ public class Responder
         StringBuilder failedTests = new StringBuilder();
         ////////////////////////////////////////////////
         // TODO use a factory method in ILSBuilder to return the correct message object type.
+        CustomerMessage returnedCustomerMessage = requestBuilder.getCustomerMessage(status.getStdout());
         CustomerMessage sipData = new SIPCustomerMessage(status.getStdout());
         if (meetsMeCardRequirements(customer, sipData, failedTests))
         {

@@ -223,4 +223,13 @@ public class SIPCustomerMessage
     {
         return super.isEmpty(fieldName) || this.getMessage().isEmpty();
     }
+    
+    @Override
+    public boolean isInGoodStanding()
+    {
+        // if the value is set to 'Y', or true, the customer is NOT in good standing.
+        // By reverse logic, if the field is empty or 'N' (never seen yet) then the 
+        // customer IS in good standing.
+        return ! this.isTrue(PATRON_STATUS_FLAGS.CHARGE_PRIVILEGES_DENIED);
+    }
 }

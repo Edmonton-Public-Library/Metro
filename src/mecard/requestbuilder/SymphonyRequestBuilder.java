@@ -22,6 +22,7 @@ package mecard.requestbuilder;
 import api.APICommand;
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import mecard.Response;
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import mecard.customer.CustomerFormatter;
 import mecard.customer.FlatUserFormatter;
 import mecard.customer.UserFile;
 import mecard.config.PropertyReader;
+import mecard.customer.FlatCustomerMessage;
 import mecard.customer.FlatFormattedCustomer;
 import mecard.customer.FormattedCustomer;
 import site.CustomerLoadNormalizer;
@@ -277,5 +279,11 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 + ".flat";
         UserFile userFile = new UserFile(userDataFileName);
         userFile.addUserData(flatUser);
+    }
+
+    @Override
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        return new FlatCustomerMessage(stdout);
     }
 }

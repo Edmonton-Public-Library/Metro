@@ -22,6 +22,7 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import api.DummyCommand;
 import mecard.Response;
 import java.util.Properties;
@@ -159,5 +160,12 @@ public class DummyRequestBuilder extends ILSRequestBuilder
                 .setStderr(this.stderr)
                 .build();
         return command;
+    }
+
+    @Override
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        // You could respond by creating a new canned CustomerMessage type.
+        throw new UnsupportedOperationException("Not supported in Dummy command.");
     }
 }
