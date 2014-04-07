@@ -199,8 +199,7 @@ public class FlatFormattedCustomer implements FormattedCustomer
         {
             if (table.getName().compareTo(tableName) == 0)
             {
-                table.deleteValue(fieldName);
-                return true;
+                return table.deleteValue(fieldName);
             }
         }
         return false;
