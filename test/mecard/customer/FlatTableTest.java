@@ -234,4 +234,24 @@ public class FlatTableTest
         table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
     }
+
+    /**
+     * Test of deleteValue method, of class FlatTable.
+     */
+    @Test
+    public void testDeleteValue()
+    {
+        System.out.println("==***deleteValue***==");
+        HashMap<String, String> customerData = new HashMap<>();
+        customerData.put("USER_ID", "21221012345678");
+        FlatTable table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+//        System.out.println("VALUE:\n" + table.getData());
+        String value = table.getValue(FlatUserFieldTypes.USER_ID.name());
+        System.out.println("before VALUE:" + value);
+        assertTrue(value.compareTo("21221012345678") == 0);
+        assertTrue(table.deleteValue("USER_ID"));
+        value = table.getValue(FlatUserFieldTypes.USER_ID.name());
+        System.out.println("after VALUE:" + value);
+        assertFalse(table.deleteValue("USER_ID"));
+    }
 }

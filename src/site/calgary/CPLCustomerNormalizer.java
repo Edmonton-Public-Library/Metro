@@ -21,6 +21,7 @@
 package site.calgary;
 
 import mecard.Response;
+import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
@@ -69,5 +70,38 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
                 FlatUserExtendedFieldTypes.USER_ADDR1.name(),
                 FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
                 FlatUserFieldTypes.CITY_SLASH_PROV.toString());
+        
+        // Here we will compute USER_CATEGORY3: sex. Test the 
+        // unformattedCustomer for sex and set it like you set USER_CATEGORY2
+        if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                "FEMALE"
+            );
+        }
+        else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                "MALE"
+            );
+        }
+        else
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                "UNKNOWN"
+            );
+        }
+        
+        // Suppress preferred user name.
+        formattedCustomer.removeField(
+            FlatUserExtendedFieldTypes.USER.name(),
+            FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
+        );
     }
 }

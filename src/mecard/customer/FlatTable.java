@@ -143,4 +143,14 @@ public class FlatTable implements FormattedTable
         return out.toString();
     }
 
+    @Override
+    public boolean deleteValue(String key)
+    {
+        if (this.columns.containsKey(key))
+        {
+            this.columns.remove(key);
+            return true;
+        }
+        return false;
+    }
 }

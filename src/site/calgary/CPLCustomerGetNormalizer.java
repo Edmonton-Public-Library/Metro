@@ -171,5 +171,21 @@ public class CPLCustomerGetNormalizer extends CustomerGetNormalizer
         }
         
         // TODO CPL does not use LOSTCARD wizard for lost cards. What field do they use??
+        // USER_CATAGORY3 sex PGFEMALE
+        String sex = message.getField("PG");
+        if (sex.isEmpty() == false)
+        {
+            
+            if (sex.compareToIgnoreCase("MALE") == 0)
+            {
+                // send the first letter, "M" or "F"
+                customer.set(CustomerFieldTypes.SEX, "M");
+            }
+            else if (sex.compareToIgnoreCase("FEMALE") == 0)
+            {
+                // send the first letter, "M" or "F"
+                customer.set(CustomerFieldTypes.SEX, "F");
+            }
+        }
     }
 }

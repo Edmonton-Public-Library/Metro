@@ -191,4 +191,18 @@ public class FlatFormattedCustomer implements FormattedCustomer
         }
         return false;
     }
+
+    @Override
+    public boolean removeField(String tableName, String fieldName)
+    {
+        for (FormattedTable table: this.customerAccount)
+        {
+            if (table.getName().compareTo(tableName) == 0)
+            {
+                table.deleteValue(fieldName);
+                return true;
+            }
+        }
+        return false;
+    }
 }
