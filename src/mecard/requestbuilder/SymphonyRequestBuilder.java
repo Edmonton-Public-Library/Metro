@@ -91,9 +91,11 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // loadflatuser settings, ready for inclusion in the APICommand object.
         loadFlatUserCreate = new ArrayList<>();
         // /s/sirsi/Unicorn/Bin/loadflatuser -aA -bA -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
+        // This also works in testing and is more forgiving.
+        // /s/sirsi/Unicorn/Bin/loadflatuser -aU -bU -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
         loadFlatUserCreate.add("loadflatuser");
-        loadFlatUserCreate.add("-aA"); // Add base.
-        loadFlatUserCreate.add("-bA"); // Add extended.
+        loadFlatUserCreate.add("-aU"); // Add base.
+        loadFlatUserCreate.add("-bU"); // Add extended.
         loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
         loadFlatUserCreate.add("-mc"); // Create
         loadFlatUserCreate.add("-n"); // Turn off BRS checking if -n is used.

@@ -98,6 +98,12 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
             );
         }
         
+        formattedCustomer.insertValue(
+            FlatUserExtendedFieldTypes.USER.name(),
+            FlatUserFieldTypes.USER_CATEGORY1.toString(),
+            "CPLAWB" // TODO test for default load.
+        );
+        
         // Suppress preferred user name.
         formattedCustomer.removeField(
             FlatUserExtendedFieldTypes.USER.name(),
