@@ -22,6 +22,7 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import api.HTTPCommandStatus;
 import api.PAPICommand;
 import java.util.Properties;
@@ -171,4 +172,9 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
         return this.getUrlBase();
     }
 
+    @Override
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

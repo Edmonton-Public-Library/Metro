@@ -166,4 +166,10 @@ public class BImportTable implements FormattedTable
     {
         throw new UnsupportedOperationException("No requirement for this function yet.");
     }
+
+    @Override
+    public boolean deleteValue(String key)
+    {
+        throw new UnsupportedOperationException("No requirement for this function yet.");
+    }
 }

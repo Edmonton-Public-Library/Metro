@@ -22,9 +22,11 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import mecard.Response;
 import api.SIPCommand;
 import api.SIPConnector;
+import api.SIPCustomerMessage;
 import api.SIPStatusMessage;
 import java.util.Date;
 import java.util.Properties;
@@ -216,5 +218,11 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     {
         throw new ConfigurationException("SIP2 does not support account update "
                 + "Please review your environment.properties configuration");
+    }
+    
+    @Override
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        return new SIPCustomerMessage(stdout);
     }
 }

@@ -23,6 +23,7 @@ package mecard.requestbuilder;
 import mecard.customer.FormattedCustomer;
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import api.DummyCommand;
 import mecard.Response;
 import java.io.File;
@@ -61,7 +62,12 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public final static String FILE_NAME_PREFIX = "metro-";
     public final static String BAT_FILE = "-bimp.bat";
     public final static String HEADER_FILE = "-header.txt";
+    // This name extension is used by the customer loader; it contains all customer
+    // data that has arrived since the last time the customer loader last ran and
+    // gloms it all into one file for bulk loading.
     public final static String DATA_FILE_BIMPORT = "-bimport.txt";
+    // Used for an individual's data. Never loaded directly although technically you could.
+    public final static String DATA_FILE = "-data.txt";
     public static final CharSequence SUCCESS_MARKER = "<ok>";
     public static final String PHONE_TAG = "default-phone";
     protected String bimportDir;    // where bimport exe is located.
@@ -121,7 +127,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         {
             loadDir += File.separator;
         }
-        dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE_BIMPORT;
+        dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
         UserFile bimportDataFile = new BimportUserFile(dataFile);
         FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
         // Make final changes to the formatted customer before loading as adding bstat.
@@ -243,5 +249,10 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         throw new ConfigurationException("BImport cannot test ILS status "
                 + "Please review your environment.properties configuration");
     }
-
+    
+    @Override
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        throw new UnsupportedOperationException("Not supported in BImport.");
+    }
 }

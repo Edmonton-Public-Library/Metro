@@ -531,5 +531,93 @@ public class Address3Test
         assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
         assertTrue(instance.getPhone().compareTo(PHONE) == 0);
         System.out.println("CONTENT:'"+instance+"'");
+        
+        // And all good libraries throw us a new bone..
+        //
+        System.out.println("=== Address20 ===");
+        thisAddress = "123 Aisforapple Drive Calgary AB X0X 0X0";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "123 Aisforapple Drive";
+        CITY = "Calgary";
+        POSTALC = "X0X 0X0";
+        PROVINC = "AB";
+        PHONE = "X";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address21 ===");
+        thisAddress = "616 MacLeod Trail SE Calgary AB T2G 2M2";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "616 Macleod Trail Se";
+        CITY = "Calgary";
+        POSTALC = "T2G 2M2";
+        PROVINC = "AB";
+        PHONE = "X";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address22 ===");
+        thisAddress = "616 MacLeod Trail SE Calgary AB T2G 2M2 403-233-1234";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "616 Macleod Trail Se";
+        CITY = "Calgary";
+        POSTALC = "T2G 2M2";
+        PROVINC = "AB";
+        PHONE = "403-233-1234";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        
+        
+        System.out.println("=== Address22 ===");
+        thisAddress = "22 Hidden Valley Garden NW Calgary AB T3A 5X3";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "22 Hidden Valley Garden Nw";
+        CITY = "Calgary";
+        POSTALC = "T3A 5X3";
+        PROVINC = "AB";
+        PHONE = "X";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }

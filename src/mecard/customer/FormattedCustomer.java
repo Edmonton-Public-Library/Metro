@@ -99,4 +99,12 @@ public interface FormattedCustomer
      * and it was renamed to newFieldName, and false otherwise.
      */
     public boolean renameField(String tableName, String originalFieldName, String newFieldName);
+    
+    /**
+     * Removes unused fields from user data before loading.
+     * @param tableName table where the field can be found.
+     * @param fieldName name of the field to user case sensitive.
+     * @return true if the field was removed and false if it couldn't be found.
+     */
+    public boolean removeField(String tableName, String fieldName);
 }

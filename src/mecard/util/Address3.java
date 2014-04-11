@@ -20,7 +20,6 @@
  */
 package mecard.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +33,7 @@ import mecard.Protocol;
  * some of the fields are missing or damaged.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class Address3
+public final class Address3
 {
     protected Street   street;
     protected City     city;
@@ -100,7 +99,17 @@ public class Address3
         }
         else
         {
-            System.out.println("Error Address3 reading address: '" + supposedAddress + "'");
+            // to get here we have an address without ',' like:
+            // 123 Aisforapple Drive Calgary AB X0X 0X0
+            StringBuilder sbAddress = new StringBuilder(supposedAddress);
+            if (phone.test(supposedAddress))
+            {
+                String remaining = supposedAddress.substring(0,supposedAddress.indexOf(this.getPhone()));
+                sbAddress = new StringBuilder(remaining);
+            }
+            postalCode.test(sbAddress);
+            province.test(sbAddress);
+            setStreetCity(sbAddress.toString());
         }
     }
     
@@ -252,7 +261,7 @@ public class Address3
             this.phonePattern = Pattern.compile("\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
             // A broken partial could look like this:
             // 96-4058, 780-, (780-, and what about 780 555-1212
-            this.partialPhonePattern = Pattern.compile("[(|\\d{1,}][-|\\s{1,}|\\d{1,}]*$");
+            this.partialPhonePattern = Pattern.compile("[(|\\d{2,}][-|\\s{1,}|\\d{2,}]*$");
         }
         
         /**
@@ -315,12 +324,10 @@ public class Address3
     public class City extends AddressRecord
     {
         private final mecard.util.City city;
-        private List<String> placeName; // store multiple selections.
-        
+                
         public City()
         {
             this.city = AlbertaCity.getInstanceOf();
-            this.placeName = new ArrayList<>();
         }
         
         /**
@@ -353,74 +360,6 @@ public class Address3
         public boolean test(StringBuilder s)
         {
             return this.test(s.toString());
-        }
-
-        private boolean testGently(String s)
-        {
-            String place = Text.toDisplayCase(s.trim());
-            // so sometimes the name will end in a common term like: Valley, 
-            // Lake or County. Here we will first check how big the selection
-            // set is. If it is more than 1 then return false.
-            // The first time this method is hit we populate the List of potential
-            // names
-            if (this.placeName.isEmpty())
-            {
-                this.placeName = this.city.getPlaceNames(place);
-                if (this.placeName.isEmpty())
-                {
-                    return false;
-                }
-                if (this.placeName.size() > 1)
-                {
-                    // we have a couple of choices let's see if one of them matches
-                    // exactly: find 'Lethbridge' from list of ['Lethbridge', 'County of Lethbridge']
-                    for (int i = 0; i < this.placeName.size(); i++)
-                    {
-                        String possibleName = this.placeName.get(i);
-                        if (possibleName.equalsIgnoreCase(place))
-                        {
-                            this.value = possibleName;
-                            this.placeName.clear();
-                            return true;
-                        }
-                    }
-                    return false; // No exact matches.
-                }
-                else // there must be 1 name.
-                {
-                    this.value = this.placeName.get(0);
-                    this.placeName.clear();
-                    return true;
-                }
-            }
-            else // The list is not empty so a previous call must have filled it.
-            {
-                for (int i = 0; i < this.placeName.size(); i++)
-                {
-                    String possibleName = this.placeName.get(i);
-                    if (possibleName.contains(place))
-                    {
-                        this.value = possibleName;
-                        this.placeName.clear();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Computes and returns the size of the city name. If the city has 
-         * not been set it returns 0;
-         * @return number of words in the place name.
-         */
-        private int getWordCount()
-        {
-            if (this.value.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-            {
-                return 0;
-            }
-            return this.value.split("\\s+").length;
         }
     }
     

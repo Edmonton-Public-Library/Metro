@@ -100,7 +100,7 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
         // address 1 table so let's rename that field.
         formattedCustomer.renameField(
                 FlatUserExtendedFieldTypes.USER_ADDR1.name(),
-                FlatUserFieldTypes.CITY_STATE.toString(),
-                FlatUserFieldTypes.CITY_PROVINCE.toString());
+                FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
+                FlatUserFieldTypes.CITY_PROV.toString());
     }
 }

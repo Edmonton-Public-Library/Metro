@@ -31,9 +31,11 @@ import mecard.config.PropertyReader;
 import mecard.util.Address3;
 import mecard.util.Phone;
 import site.CustomerGetNormalizer;
+import site.calgary.CPLCustomerGetNormalizer;
 import site.chinook.CARCustomerGetNormalizer;
 import site.edmonton.EPLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
+import site.stalbert.STACustomerGetNormalizer;
 import site.strathcona.STRCustomerGetNormalizer;
 
 /**
@@ -62,6 +64,12 @@ public class SIPFormatter implements CustomerFormatter
                 break;
             case "STR":
                 this.customMessageInterpreter = new STRCustomerGetNormalizer();
+                break;
+            case "STA":
+                this.customMessageInterpreter = new STACustomerGetNormalizer();
+                break;
+            case "CPL":
+                this.customMessageInterpreter = new CPLCustomerGetNormalizer();
                 break;
             default:
                 this.customMessageInterpreter = new CustomerGetNormalizer();
@@ -135,28 +143,15 @@ public class SIPFormatter implements CustomerFormatter
         customer.set(CustomerFieldTypes.PHONE, phone.getUnformattedPhone());
         // Privilege date dates: horizon uses PE and puts profile in PA.
         // The test is slightly less expensive 
-        String cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PA"));
-        if (SIPMessage.isDate(cleanDate))
+        String expireDate = SIPMessage.cleanDateTime(sipMessage.getField("PA"));
+        if (SIPMessage.isDate(expireDate))
         {
-            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expireDate);
         }
-        // PE can also be privilege expires, so if PA fails try this field.
-        else
+        String birthDate = SIPMessage.cleanDateTime(sipMessage.getField("PD"));
+        if (SIPMessage.isDate(birthDate))
         {
-            cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PE"));
-            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
-        }
-        // DOB same thing
-        // TODO: Added Strathcona CustomerGetNormalizer
-        cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PB"));
-        if (SIPMessage.isDate(cleanDate))
-        {
-            customer.set(CustomerFieldTypes.DOB, SIPMessage.cleanDateTime(sipMessage.getField("PB"))); // Strathcona.
-        }
-        else
-        {
-            cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PD"));
-            customer.set(CustomerFieldTypes.DOB, cleanDate);
+            customer.set(CustomerFieldTypes.DOB, birthDate);
         }
         // SEX now handled in CustomerGetNormalizer and subclasses.
         // Complete address

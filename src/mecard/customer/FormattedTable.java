@@ -72,5 +72,14 @@ public interface FormattedTable
      */
     boolean renameKey(String originalkey, String replacementKey);
     
+    /**
+     * Removes an entry from the user table. Specially used for libraries that 
+     * don't use USER_PREFERED_NAME and the like. This method stops the key and 
+     * value from being written in the table by removing them.
+     * @param key
+     * @return true if the key was found, and false otherwise. Any value stored 
+     * at the key will be deleted from the table.
+     */
+    boolean deleteValue(String key);
 }
 

@@ -69,7 +69,7 @@ public class FlatFormattedCustomer implements FormattedCustomer
         // Symphony uses CITY/STATE as a field (sigh)
         String city     = customer.get(CustomerFieldTypes.CITY);
         String province = customer.get(CustomerFieldTypes.PROVINCE);
-        customerTable.put(FlatUserFieldTypes.CITY_STATE.toString(), (city + ", " + province.toUpperCase()));
+        customerTable.put(FlatUserFieldTypes.CITY_SLASH_STATE.toString(), (city + ", " + province.toUpperCase()));
         customerTable.put(FlatUserFieldTypes.POSTALCODE.toString(),
                 PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
         customerTable.put(FlatUserFieldTypes.EMAIL.toString(), customer.get(CustomerFieldTypes.EMAIL));
@@ -187,6 +187,19 @@ public class FlatFormattedCustomer implements FormattedCustomer
             if (table.getName().compareTo(tableName) == 0)
             {
                 return table.renameKey(originalFieldName, newFieldName);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeField(String tableName, String fieldName)
+    {
+        for (FormattedTable table: this.customerAccount)
+        {
+            if (table.getName().compareTo(tableName) == 0)
+            {
+                return table.deleteValue(fieldName);
             }
         }
         return false;

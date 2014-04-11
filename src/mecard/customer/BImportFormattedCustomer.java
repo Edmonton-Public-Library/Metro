@@ -259,4 +259,10 @@ public final class BImportFormattedCustomer implements FormattedCustomer
     {
         throw new UnsupportedOperationException("No requirement for this operation yet.");
     }
+
+    @Override
+    public boolean removeField(String tableName, String fieldName)
+    {
+        throw new UnsupportedOperationException("No requirement for this operation yet.");
+    }
 }

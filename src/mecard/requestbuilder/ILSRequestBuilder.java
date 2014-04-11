@@ -22,6 +22,7 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
+import api.CustomerMessage;
 import mecard.Response;
 import mecard.QueryTypes;
 import mecard.config.ConfigFileTypes;
@@ -221,4 +222,11 @@ public abstract class ILSRequestBuilder
      * @return true if the tidy operation was successful and false otherwise.
      */
     public abstract boolean tidy();
+
+    /**
+     * 
+     * @param stdout The data returned from getCustomer request as output from the ILS.
+     * @return customer data from the original source in a universally query-able form.
+     */
+    public abstract CustomerMessage getCustomerMessage(String stdout);
 }

@@ -23,7 +23,9 @@ package site.shortgrass;
 import api.CustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
+import site.MeCardPolicy;
 
 /**
  *
@@ -112,6 +114,13 @@ public class SLSCustomerGetNormalizer extends CustomerGetNormalizer
                 // send the first letter, "M" or "F"
                 customer.set(CustomerFieldTypes.SEX, "F");
             }
+        }
+        // Shortgrass' SIP server doesn't return a 'PA', expiry date field for lifetime
+        // memberships. Fix to something reasonable.
+        if (message.isEmpty("PA"))
+        {
+            String expiry = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
         }
     }
 }

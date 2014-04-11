@@ -55,10 +55,12 @@ public enum FlatUserFieldTypes
     USER_MAILINGADDR("USER_MAILINGADDR"),//1
     USER_ADDR1_BEGIN("USER_ADDR1_BEGIN"),
     STREET("STREET"),//7 Sir Winston Churchill Square
-    CITY_STATE("CITY/STATE"),//Edmonton(""), AB
-    CITY_PROVINCE("CITYPROV"), // Alternate for some libs.
+    CITY_SLASH_STATE("CITY/STATE"),//Edmonton(""), AB
+    CITY_PROV("CITYPROV"), // Alternate for some libs.
+    CITY_SLASH_PROV("CITY/PROV"),
     POSTALCODE("POSTALCODE"),//T5J 2V4
-    PHONE("PHONE"),//780-496-4058
+    PHONE("PHONE"),// 780-496-4058
+    PHONE_1("PHONE1"), // 403-496-4058
     EMAIL("EMAIL"),//ilsteam@epl.ca
     USER_ADDR1_END("USER_ADDR1_END"),
     USER_ADDR2_BEGIN("USER_ADDR2_BEGIN"),

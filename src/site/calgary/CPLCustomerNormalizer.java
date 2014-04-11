@@ -18,7 +18,7 @@
 * MA 02110-1301, USA.
 *
 */
-package site.chinook;
+package site.calgary;
 
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
@@ -33,15 +33,15 @@ import site.SymphonyNormalizer;
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
  * 
- * For Chinook Arch Library System the actions are to load the customer's 
- * default account information required by Symphony.
+ * For Shortgrass Library System the actions are to load the customer's default account information
+ * required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class CARCustomerNormalizer extends SymphonyNormalizer
+public final class CPLCustomerNormalizer extends SymphonyNormalizer
 {
 //    private final boolean debug;
     
-    public CARCustomerNormalizer(boolean debug)
+    public CPLCustomerNormalizer(boolean debug)
     {
         super(debug);
     }
@@ -60,16 +60,17 @@ public final class CARCustomerNormalizer extends SymphonyNormalizer
     {
         // This loads all the mandatory values on SymphonyPropertyTypes.
         this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
-        // Currently Shortgrass uses USER_CATEGORY2 to store the 
-        // customer's age category but future versions of metro may be required to register 
-        // Juveniles. If that is the case you need only get the customers age from the 
-        // Minimum age flag or compute on DOB then set the formattedCustomer 
-        // field as: 
-        formattedCustomer.insertValue(
-            FlatUserExtendedFieldTypes.USER.name(), 
-            FlatUserFieldTypes.USER_CATEGORY2.toString(), 
-            "ADULT"
-        );
+        // Currently Calgary uses PHONE1 to store the customer's phone number: 
+        formattedCustomer.renameField(
+                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+                FlatUserFieldTypes.PHONE.toString(),
+                FlatUserFieldTypes.PHONE_1.toString());
+        // And yet another variation of "CITY/PROV" not "CITY/STATE".
+        formattedCustomer.renameField(
+                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+                FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
+                FlatUserFieldTypes.CITY_SLASH_PROV.toString());
+        
         // Here we will compute USER_CATEGORY3: sex. Test the 
         // unformattedCustomer for sex and set it like you set USER_CATEGORY2
         if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
@@ -97,11 +98,16 @@ public final class CARCustomerNormalizer extends SymphonyNormalizer
             );
         }
         
-        // Chinook Arch uses CITYPROV instead of default CITY/STATE in the
-        // address 1 table so let's rename that field.
-        formattedCustomer.renameField(
-                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
-                FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
-                FlatUserFieldTypes.CITY_PROV.toString());
+        formattedCustomer.insertValue(
+            FlatUserExtendedFieldTypes.USER.name(),
+            FlatUserFieldTypes.USER_CATEGORY1.toString(),
+            "CPLAWB" // TODO test for default load.
+        );
+        
+        // Suppress preferred user name.
+        formattedCustomer.removeField(
+            FlatUserExtendedFieldTypes.USER.name(),
+            FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
+        );
     }
 }

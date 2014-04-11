@@ -185,6 +185,11 @@ public class SIPMessage
         return returnValue;
     }
     
+    /**
+     * @param field name as String like 'PA'.
+     * @return true if the field contains {@link Protocol.DEFAULT_FIELD_VALUE}
+     * and false otherwise.
+     */
     public boolean isEmpty(String field)
     {
         return getField(field).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0;

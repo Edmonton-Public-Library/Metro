@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package site.strathcona;
+package site.stalbert;
 
 import api.CustomerMessage;
 import api.SIPMessage;
@@ -31,7 +31,7 @@ import site.CustomerGetNormalizer;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class STRCustomerGetNormalizer extends CustomerGetNormalizer
+public class STACustomerGetNormalizer extends CustomerGetNormalizer
 {
     /**
      * This is the default class for a library that does not require custom
@@ -115,31 +115,15 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
         {
             customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
         }
-        // Strathcona has an issue that they emit data in 
-        // UPPERCASE for customer names and addresses.
-        String upperCaseFieldText = customer.get(CustomerFieldTypes.STREET);
-        upperCaseFieldText = Text.toDisplayCase(upperCaseFieldText);
-        customer.set(CustomerFieldTypes.STREET, upperCaseFieldText);
-        // First Name
-        upperCaseFieldText = customer.get(CustomerFieldTypes.FIRSTNAME);
-        upperCaseFieldText = Text.toDisplayCase(upperCaseFieldText);
-        customer.set(CustomerFieldTypes.FIRSTNAME, upperCaseFieldText);
-        // Last Name
-        upperCaseFieldText = customer.get(CustomerFieldTypes.LASTNAME);
-        upperCaseFieldText = Text.toDisplayCase(upperCaseFieldText);
-        customer.set(CustomerFieldTypes.LASTNAME, upperCaseFieldText);
-        // prefered name
-        upperCaseFieldText = customer.get(CustomerFieldTypes.PREFEREDNAME);
-        upperCaseFieldText = Text.toDisplayCase(upperCaseFieldText);
-        customer.set(CustomerFieldTypes.PREFEREDNAME, upperCaseFieldText);
-        
+                
         // Date of birth in SIP PB not per standard.
-        String DOBDate = SIPMessage.cleanDateTime(message.getField("PB"));
-        if (SIPMessage.isDate(DOBDate))
+        String birthDate = SIPMessage.cleanDateTime(message.getField("PB"));
+        if (SIPMessage.isDate(birthDate))
         {
-            customer.set(CustomerFieldTypes.DOB, DOBDate); // Strathcona.
+            customer.set(CustomerFieldTypes.DOB, birthDate); // St. Albert.
         }
-        // Now we know that STR uses 'PE' for expiry but 'PA' is the industrial 
+        
+        // Now we know that STA uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
         String cleanDate = SIPMessage.cleanDateTime(message.getField("PE"));
         if (SIPMessage.isDate(cleanDate))

@@ -32,5 +32,6 @@ public enum MemberTypes
     PKL, // Parklands Regional Library
     SLS, // Shortgrass Library System
     CAR, // Chinook Arch Regional Library System
-    TRC; // Trac including Yellowhead.
+    TRC, // Trac including Yellowhead.
+    CPL; // Calgary Public Library.
 }
