@@ -41,8 +41,10 @@ import mecard.util.DateComparer;
 public final class PAPISecurity 
 {
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-    public static final String AUTHORIZATION_PREFIX = "PWS";
-    private final String securityKey;
+//    // Standard prefix for the 'Authentication:' header.
+//    public static final String AUTHORIZATION_PREFIX = "PWS";
+    // Value supplied by Polaris used in the 'Authentication:' header.
+    private final String PAPIAccessKeyId;
     
     public static PAPISecurity getInstanceOf()
     {
@@ -52,20 +54,21 @@ public final class PAPISecurity
     private PAPISecurity()
     {
         Properties props = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
-        this.securityKey = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_KEY_ID.toString());
+        this.PAPIAccessKeyId = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_KEY_ID.toString());
     }
     
     /**
      * Computes the PAPI hash signature.
-     * @param accessKey
+     * @param accessKey 
      * @param httpMethod
      * @param uri
      * @param httpDate @see #getPolarisDate() 
-     * @param patronPassword which may be empty but not null.
+     * @param patronPassword which may be empty, in the case where you are 
+     * performing the operation as a staff member, but not null.
      * @return hash prepared from code taken from Polaris API manual.
      */
     String getPAPIHash(
-        String accessKey,
+        String accessKey, // TODO Is this the PAPI access key ID without the 'PWS '?
         String httpMethod,
         String uri,
         String httpDate,
@@ -83,9 +86,13 @@ public final class PAPISecurity
             mac.init(signingKey);
             String data;
             if (patronPassword.length() > 0)
+            {
                 data = httpMethod + uri + httpDate + patronPassword;
+            }
             else
+            {
                 data = httpMethod + uri + httpDate;
+            }
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(data.getBytes());
             // Convert raw bytes to Hex
@@ -104,15 +111,13 @@ public final class PAPISecurity
     }
     
     /**
-     * Returns the authorization string that must be passed into the HTTP
-     * header for privileged operations.
-     * @param HTTPMethod
-     * @param uri
-     * @param patronPassword
-     * @return Authorization string - 'PWS [PAPIAccessKeyID]:[Signature]'
-     * See pg. 69 HTTP Pocket Reference O'Reilly.
+     * 
+     * @param HTTPMethod POST, or GET
+     * @param uri the authentication URI, like /protected/v1/1033/100/1/authenticator/staff
+     * @param accessSecret
+     * @return the signature used on the end of the Authorization HTTP header.
      */
-    public String getAuthorization(String HTTPMethod, URI uri, String patronPassword)
+    public String getCommandSignature(String HTTPMethod, URI uri, String accessSecret)
     {
         // Authorization - PWS [PAPIAccessKeyID]:[Signature]
         // •PWS must be in caps
@@ -121,22 +126,39 @@ public final class PAPISecurity
         // •[Signature] - The signature is the following, encoded with SHA1 UTF-8:
         // [HTTPMethod][URI][Date][PatronPassword]
         String signature = this.getPAPIHash(
-                this.securityKey,
+                this.PAPIAccessKeyId,
                 HTTPMethod, 
                 uri.toASCIIString(), 
                 this.getPolarisDate(), 
-                this.getPatronPassword()
+                accessSecret
         );
-        return AUTHORIZATION_PREFIX + " " + this.securityKey + ":" + signature;
+        return signature;
     }
     
     /**
-     * 
-     * @return Patron password (if required).
+     * Returns the authorization signature string used in the HTTP
+     * header, to get the access token (good for 24 hours, but compute each time)
+     * that is required for privileged operations.
+     * @param HTTPMethod POST usually.
+     * @param uri of the WS operation either patron create or update.
+     * @return Authorization string used to compute initial login Authentication header value.
      */
-    String getPatronPassword()
+    public String getAuthenticationSignature(String HTTPMethod, URI uri)
     {
-        return "";
+        // Authorization - PWS [PAPIAccessKeyID]:[Signature]
+        // •PWS must be in caps
+        // •No space before or after :
+        // •[PAPIAccessKeyID] - Assigned by Polaris
+        // •[Signature] - The signature is the following, encoded with SHA1 UTF-8:
+        // [HTTPMethod][URI][Date][PatronPassword]
+        String signature = this.getPAPIHash(
+                this.PAPIAccessKeyId,
+                HTTPMethod, 
+                uri.toASCIIString(), 
+                this.getPolarisDate(), 
+                ""
+        );
+        return signature;
     }
     
     /**

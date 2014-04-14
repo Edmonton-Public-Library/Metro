@@ -23,7 +23,6 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.HTTPCommandStatus;
 import api.PAPICommand;
 import java.util.Properties;
 import mecard.QueryTypes;
@@ -49,9 +48,9 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     private static String POST = "POST";
     private final Properties messageProperties;
     private final String host;
-    private final String loginBranchId;
-    private final String loginUserId;
-    private final String loginStationId;
+    private final String authenticationDomain;
+    private final String authenticationUserName;
+    private final String authenticationPassword;
     private final String patronBranchId;
     private final String version;
     private final String languageId;
@@ -63,21 +62,23 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     PAPIRequestBuilder(boolean debug)
     {
         // read all the properties from the Polaris table
-        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        Properties papiProps   = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
-        this.host              = papiProps.getProperty(PolarisPropertyTypes.HOST.toString());
-        this.loginBranchId     = papiProps.getProperty(PolarisPropertyTypes.LOGIN_BRANCH_ID.toString());
-        this.loginUserId       = papiProps.getProperty(PolarisPropertyTypes.LOGIN_USER_ID.toString());
-        this.loginStationId    = papiProps.getProperty(PolarisPropertyTypes.LOGIN_WORKSTATION_ID.toString());
-        this.patronBranchId    = papiProps.getProperty(PolarisPropertyTypes.PATRON_BRANCH_ID.toString());
-        this.version           = papiProps.getProperty(PolarisPropertyTypes.VERSION.toString());
-        this.languageId        = papiProps.getProperty(PolarisPropertyTypes.LANGUAGE_ID.toString());
-        this.appId             = papiProps.getProperty(PolarisPropertyTypes.APP_ID.toString());
-        this.orgId             = papiProps.getProperty(PolarisPropertyTypes.ORG_ID.toString());
+        this.messageProperties      = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        Properties papiProps        = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        this.host                   = papiProps.getProperty(PolarisPropertyTypes.HOST.toString());
+        this.authenticationDomain   = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_DOMAIN.toString());
+        this.authenticationUserName = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_USERNAME.toString());
+        this.authenticationPassword = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_PASSWORD.toString());
+        this.patronBranchId         = papiProps.getProperty(PolarisPropertyTypes.PATRON_BRANCH_ID.toString());
+        this.version                = papiProps.getProperty(PolarisPropertyTypes.VERSION.toString());
+        this.languageId             = papiProps.getProperty(PolarisPropertyTypes.LANGUAGE_ID.toString());
+        this.appId                  = papiProps.getProperty(PolarisPropertyTypes.APP_ID.toString());
+        this.orgId                  = papiProps.getProperty(PolarisPropertyTypes.ORG_ID.toString());
     }
     
     /**
      * Gets the base URL for PAPI requests.
+     * Example: http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron/29335002291059/messages
+     * 
      * @return URL string like:http://host/PAPIServie/REST/public/v1/1033/100/1/patron
      */
     private String getUrlBase()
@@ -97,11 +98,13 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
      @Override
     public final Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
+//        TODO: 'PWS [PAPIAccessKeyID]:[Signature]'
+//     * See pg. 69 HTTP Pocket Reference O'Reilly.
         Command patronRegistrationCreate = new PAPICommand.Builder()
                 .setURL(this.getUrlBase())
-                .setLoginBranchId(this.loginBranchId)
-                .setLoginUserId(this.loginUserId)
-                .setLoginStationId(this.loginStationId)
+                .setLoginBranchId(this.authenticationDomain)
+                .setLoginUserId(this.authenticationUserName)
+                .setLoginStationId(this.authenticationPassword)
                 .setHTTPVerb(POST)
                 .build();
         return patronRegistrationCreate; 
@@ -111,11 +114,13 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     public final Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // http://host/PAPIServie/REST/public/v1/1033/100/1/patron/21221012345678
+        // and
+        // http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron/29335002291059/messages
         Command patronAccountUpdate = new PAPICommand.Builder()
                 .setURL(this.getUrlBase() + "/" + customer.get(CustomerFieldTypes.ID))
-                .setLoginBranchId(this.loginBranchId)
-                .setLoginUserId(this.loginUserId)
-                .setLoginStationId(this.loginStationId)
+                .setLoginBranchId(this.authenticationDomain)
+                .setLoginUserId(this.authenticationUserName)
+                .setLoginStationId(this.authenticationPassword)
                 .setHTTPVerb(POST)
                 .build();
         return patronAccountUpdate;
@@ -146,7 +151,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        // TODO PAPIRequestBuilder.isSuccessful() can check on the error code!
+        // TODO instead let's parse the returning XML message in a new object type.
         ResponseTypes responseType = status.getStatus();
         boolean result = false;
         switch(responseType)
@@ -175,6 +180,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
+        // TODO this will be an XML customer response message.
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

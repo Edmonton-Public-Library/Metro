@@ -58,4 +58,14 @@ public class HTTPCommandStatus extends CommandStatus
         }
         System.out.println("HTTP_CODE:" + this.httpCode);
     }
+    
+    /**
+     * 
+     * @return the content of the page returned, which could be XML, and 
+     * parsed for determining status.
+     */
+    public String getContent()
+    {
+        return this.getStdout(); 
+    }
 }

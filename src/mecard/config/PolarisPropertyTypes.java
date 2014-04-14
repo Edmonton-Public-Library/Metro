@@ -27,12 +27,26 @@ package mecard.config;
  */
 public enum PolarisPropertyTypes
 {
+    // local directory where the customers will be stored before loading.
     LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
-    PAPI_ACCESS_KEY_ID("access-key"), // PAPI Access key id used for authoriziation.
+    // These are used to authenticate as if the metro server were a staff member.
+    AUTHENTICATE_DOMAIN("domain"),
+    AUTHENTICATE_USERNAME("username"),
+    AUTHENTICATE_PASSWORD("password"),
+    
+    // PAPI Access key id used for authoriziation supplied by Polaris and used
+    // in the HTTP header 'Authorization: PWS [papi-access-key-id]:[signature]
+    PAPI_ACCESS_KEY_ID("papi-access-key"), 
+    
+    // these are default values applied to a patron on creation
     LOGIN_BRANCH_ID("login-branch-id"),
     LOGIN_USER_ID("login-user-id"),
     LOGIN_WORKSTATION_ID("login-workstation-id"),
+    DELIVERY_OPTION_ID("delivery-option-id"),
+    ERECEIPT_OPTION_ID("ereceipt-option-id"),
     PATRON_BRANCH_ID("patron-branch-id"),
+    
+    // These are URI components that need to be set in advance.
     HOST("host"), // host for PAPI service.
     VERSION("version"), 
     LANGUAGE_ID("language-id"), 

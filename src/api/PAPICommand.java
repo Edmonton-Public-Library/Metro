@@ -34,6 +34,7 @@ import mecard.exception.ConfigurationException;
  */
 public class PAPICommand implements Command
 {
+    // TODO change this to an HTTP builder command, can be reused for any WS.
     private final URL url;
     private String httpVerb;
     private String contentType;

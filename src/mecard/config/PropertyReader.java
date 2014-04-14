@@ -218,7 +218,7 @@ public class PropertyReader
                 return systemVariables;
                 
             case POLARIS:
-                    polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
+                polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
                 {
