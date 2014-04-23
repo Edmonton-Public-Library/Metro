@@ -224,7 +224,7 @@ public abstract class ILSRequestBuilder
     public abstract boolean tidy();
 
     /**
-     * 
+     * Retrieves the customer message object for analysis in a service-agnostic format.
      * @param stdout The data returned from getCustomer request as output from the ILS.
      * @return customer data from the original source in a universally query-able form.
      */

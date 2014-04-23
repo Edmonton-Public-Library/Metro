@@ -72,8 +72,24 @@ public final class PAPISecurity
         String httpMethod,
         String uri,
         String httpDate,
-        String patronPassword
-    ){
+        String patronPassword // optional
+    )
+    {
+        String data;
+        if (patronPassword.length() > 0)
+        {
+            data = httpMethod + uri + httpDate + patronPassword;
+        }
+        else
+        {
+            data = httpMethod + uri + httpDate;
+        }
+        System.out.println("DATA-=> '"+data+"'");
+        return this.getHash(accessKey, data);
+    }
+    
+    String getHash(String accessKey, String data)
+    {
         String result = "";
         // Get an hmac_sha1 key from the raw key bytes
         byte[] secretBytes = accessKey.getBytes();
@@ -84,23 +100,11 @@ public final class PAPISecurity
             Mac mac;
             mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
             mac.init(signingKey);
-            String data;
-            if (patronPassword.length() > 0)
-            {
-                data = httpMethod + uri + httpDate + patronPassword;
-            }
-            else
-            {
-                data = httpMethod + uri + httpDate;
-            }
+            
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(data.getBytes());
             // Convert raw bytes to Hex
-            
-            // result = Base64.encodeToString(rawHmac, 0);
-            // http://stackoverflow.com/questions/13109588/base64-encoding-in-java
-            // http://stackoverflow.com/questions/10744715/howto-base64-encode-an-java-object-using-org-apache-commons-codec-binary-base64
-            result = Base64.encodeBase64(rawHmac).toString();
+            result = Base64.encodeBase64String(rawHmac);
         }
         catch (NoSuchAlgorithmException | InvalidKeyException e1) 
         {
@@ -114,10 +118,10 @@ public final class PAPISecurity
      * 
      * @param HTTPMethod POST, or GET
      * @param uri the authentication URI, like /protected/v1/1033/100/1/authenticator/staff
-     * @param accessSecret
+     * @param patronPassword
      * @return the signature used on the end of the Authorization HTTP header.
      */
-    public String getCommandSignature(String HTTPMethod, URI uri, String accessSecret)
+    public String getCommandSignature(String HTTPMethod, URI uri, String patronPassword)
     {
         // Authorization - PWS [PAPIAccessKeyID]:[Signature]
         // •PWS must be in caps
@@ -126,11 +130,11 @@ public final class PAPISecurity
         // •[Signature] - The signature is the following, encoded with SHA1 UTF-8:
         // [HTTPMethod][URI][Date][PatronPassword]
         String signature = this.getPAPIHash(
-                this.PAPIAccessKeyId,
+                this.PAPIAccessKeyId, // From the properties file.
                 HTTPMethod, 
                 uri.toASCIIString(), 
                 this.getPolarisDate(), 
-                accessSecret
+                patronPassword // Optional, may be empty.
         );
         return signature;
     }

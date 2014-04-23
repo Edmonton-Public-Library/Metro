@@ -22,10 +22,13 @@ package mecard.customer;
 import java.util.List;
 
 /**
- * Formats the {@link mecard.customer.Customer} into the Polaris favored JSON.
+ * Formats the {@link mecard.customer.Customer} into the Polaris consumable form.
+ * The form of a customer is outlined in the Polaris API manual and can be submitted
+ * as either JSON or XML. This class will handle the TRAC version, but with enough
+ * wiggle room to handle the other.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class PapiJSONCustomerFormatter implements CustomerFormatter
+public class PAPICustomerFormatter implements CustomerFormatter
 {
 
     @Override

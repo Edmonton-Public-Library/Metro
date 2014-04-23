@@ -24,6 +24,7 @@ import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
 import api.PAPICommand;
+import api.PAPICustomerMessage;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.Response;
@@ -34,7 +35,7 @@ import mecard.config.PolarisPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.PapiJSONCustomerFormatter;
+import mecard.customer.PAPICustomerFormatter;
 import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
 
@@ -145,7 +146,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public final CustomerFormatter getFormatter()
     {
-        return new PapiJSONCustomerFormatter(); // TODO finish this class
+        return new PAPICustomerFormatter(); // TODO finish this class
     }
 
     @Override
@@ -181,6 +182,6 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     public CustomerMessage getCustomerMessage(String stdout)
     {
         // TODO this will be an XML customer response message.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new PAPICustomerMessage(stdout, true);
     }
 }
