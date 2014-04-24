@@ -172,10 +172,13 @@ public class Responder
         CustomerFormatter customerFormatter = requestBuilder.getFormatter();
         Customer customer = customerFormatter.getCustomer(status.getStdout());
         response.setCustomer(customer);
+        // we let the isSuccessful method test and set the customer validity.
+        // The response must have some customer data to check certain basic tests
+        // so leave this method call here.
         requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
         // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
         // then interpretResults() further sets ISVALID to Protocol.FALSE.
-        if (customer.isEmpty(CustomerFieldTypes.ISVALID))
+        if (customer.isFlagSetFalse(CustomerFieldTypes.ISVALID))
         {
             response.setCustomer(null);
             System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
@@ -188,9 +191,9 @@ public class Responder
         StringBuilder failedTests = new StringBuilder();
         ////////////////////////////////////////////////
         // TODO use a factory method in ILSBuilder to return the correct message object type.
-        CustomerMessage returnedCustomerMessage = requestBuilder.getCustomerMessage(status.getStdout());
-        CustomerMessage sipData = new SIPCustomerMessage(status.getStdout());
-        if (meetsMeCardRequirements(customer, sipData, failedTests))
+        CustomerMessage customerMessage = requestBuilder.getCustomerMessage(status.getStdout());
+//        CustomerMessage customerMessage = new SIPCustomerMessage(status.getStdout());
+        if (meetsMeCardRequirements(customer, customerMessage, failedTests))
         {
             response.setCode(ResponseTypes.OK);
         }
@@ -407,13 +410,13 @@ public class Responder
      * @param customer the value of customer
      * @return true if the user is authorized and false otherwise.
      */
-    public boolean isAuthorized(String suppliedPin, Customer customer)
-    {
-        // TODO this should be moved to the appropriate RequestBuilder.
-        if (suppliedPin.contains(SIP_AUTHORIZATION_FAILURE))
-        {
-            return false;
-        }
-        return true;
-    }
+//    public boolean isAuthorized(String suppliedPin, Customer customer)
+//    {
+//        // TODO this should be moved to the appropriate RequestBuilder.
+//        if (suppliedPin.contains(SIP_AUTHORIZATION_FAILURE))
+//        {
+//            return false;
+//        }
+//        return true;
+//    }
 }
