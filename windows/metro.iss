@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MeCard Metro Server"
-#define MyAppVersion "0.8.9_01"
+#define MyAppVersion "0.8.13_06e"
 #define MyAppPublisher "Edmonton Public Library"
-#define MyAppURL "https://github.com/anisbet/Metro"
+#define MyAppURL "https://github.com/Edmonton_Public_Library/Metro"
 #define MyAppExeName "install.bat"
 
 
@@ -45,6 +45,8 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\README.TXT"; DestDir: 
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-cli-1.2.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-daemon-1.0.15.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\gson-2.2.4.jar"; DestDir: "{app}\dist\lib"
+; Once Polaris comes on line we need to include this lib for PAPI security.
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-codec-1.8.jar"; DestDir: "{app}\dist\lib"
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\manager.bat"; DestDir: "{app}\windows"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\prunmgr.exe"; DestDir: "{app}\windows"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\prunsrv.exe"; DestDir: "{app}\windows"
@@ -63,9 +65,9 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\debug.prop
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\environment.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sip2.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metroschedule.bat"; DestDir: "{app}\windows"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metro-template-header.txt"; DestDir: "{app}\windows"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metro-template-header.txt"; DestDir: "{app}\windows"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

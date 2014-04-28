@@ -1,6 +1,0 @@
-x- borrower: birth_date; expiration_date; name; pin#; second_id
-borrower_phone: phone_no; phone_type
-borrower_address: address1; address2; city_st; email_address; email_name; postal_code; send_notice_by; send_preoverdue
-borrower_barcode: bbarcode
-borrower_bstat: bstat
-borrower_bstat: bstat
