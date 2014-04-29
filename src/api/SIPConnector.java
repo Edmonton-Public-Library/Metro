@@ -227,20 +227,14 @@ public class SIPConnector
         //  (R) Sequence Number : 1 :  matches what was sent
         //  (R) Checksum : E80C : Checksum OK
         openConnection();
-        String results = sendReceive("990   2.00AY1AZFCD8");
+        String testMessage = "990   2.00AY1AZ";
+        String results = sendReceive(testMessage + SIPConnector.getCheckSum(testMessage));
         closeConnection();
-        // we check the 64 character, if it isn't that long
-        // an exception will be thrown, but the test should 
-        // return false without an exception.
-        if (results.length() > 64)
+        SIPMessage m = new SIPMessage(results);
+        // On-line Status:    Y
+        if (m.getCodeMessage().startsWith("Y"))
         {
-            //recv:98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C
-            // We need to check that the values at position 2 (online status) 
-            // and 56 (Patron Information) are both 'Y'
-            if (results.charAt(2) == 'Y' && results.charAt(63) == 'Y') // zero indexed don't forget.
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -278,6 +272,12 @@ public class SIPConnector
     private boolean login()
     {
         // 93  CNadmin|COsomepassword|CP|AY2AZF393
+//        sent:93  CNuserid|COpassword|CP|AY1AZF5D2
+//        recv:941AY1AZFDFC
+//
+//        Response code:94
+//        Login Response
+//          (F) OK:1
         StringBuilder sb = new StringBuilder();
         sb.append("93  CN");
         sb.append(sipUser);
@@ -285,6 +285,13 @@ public class SIPConnector
         sb.append(sipPassword);
         sb.append("CP|AY");
         sb.append(SIPConnector.getCheckSum(sb.toString()));
+        // Now do the actual login:
+        String results = sendReceive(sb.toString());
+        SIPMessage m = new SIPMessage(results);
+        if (m.getCodeMessage().compareTo("1") != 0)
+        {
+            return false;
+        }
         return true;
     }
 

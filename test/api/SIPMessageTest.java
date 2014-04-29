@@ -17,12 +17,14 @@ public class SIPMessageTest
     private final String responseTwo;
     private final String responseOne;
     private final String responseThree;
+    private final String responseLogin;
     
     public SIPMessageTest()
     {
         this.responseOne = "98YYYYNN01000320130808    1509002.00AOst|AMSt. Albert Public Library|BXYYYYYYYYYYYYYYYY|ANUnassigned|VNSIP 2.00.106 SirsiDynix Inc. 7.5.074.40|AY1AZD3FA";
         this.responseTwo = "98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C";
         this.responseThree = "B|";
+        this.responseLogin = "941AY1AZFDFC";
     }
 
     /**
@@ -216,5 +218,18 @@ public class SIPMessageTest
         boolean expResult = true;
         boolean result = SIPMessage.isDate(possibleDate);
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of isEmpty method, of class SIPMessage.
+     */
+    @Test
+    public void testLogin()
+    {
+        System.out.println("== Login ==");
+        SIPMessage instance = new SIPMessage(this.responseLogin);
+        String result = instance.getCodeMessage();
+        System.out.println("LOGIN_RESULT: '" + result +"'");
+        assertTrue("1".compareTo(result) == 0);
     }
 }

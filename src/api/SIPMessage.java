@@ -97,14 +97,26 @@ public class SIPMessage
         // If the message we get is broken, it is most likely that the ILS is down.
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.originalMessage = sipMessage;
-        if (sipMessage.contains("|") == false)
+        String[] stringFields;
+        if (sipMessage.contains("|"))
         {
-            throw new SIPException(this.messageProperties.getProperty(
+            // Split the fields
+            stringFields = sipMessage.split("\\|");
+        }
+        else
+        {
+            // The login response contains no pipe, just the code, result bit, and checksum
+            if (sipMessage.contains("AY"))
+            {
+                stringFields = sipMessage.split("AY");
+            }
+            else // not a sip message.
+            {
+                throw new SIPException(this.messageProperties.getProperty(
                     MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+            }
         }
         this.fields = new HashMap<>();
-        // Split the fields
-        String[] stringFields = sipMessage.split("\\|");
         try
         {
             this.code = stringFields[0].substring(0, 2);
