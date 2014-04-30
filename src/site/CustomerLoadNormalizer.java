@@ -33,6 +33,7 @@ import mecard.config.MemberTypes;
 import mecard.customer.FormattedCustomer;
 import site.calgary.CPLCustomerNormalizer;
 import site.chinook.CARCustomerNormalizer;
+import site.ftmcmurray.FMPLCustomerNormalizer;
 import site.parklands.PKLCustomerNormalizer;
 import site.shortgrass.SLSCustomerNormalizer;
 import site.stalbert.STACustomerNormalizer;
@@ -110,6 +111,10 @@ public abstract class CustomerLoadNormalizer
         else if (libCode.equalsIgnoreCase(MemberTypes.CPL.name()))
         {
             normalizer = new CPLCustomerNormalizer(debug);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.FMPL.name()))
+        {
+            normalizer = new FMPLCustomerNormalizer(debug);
         }
         else
         {

@@ -32,5 +32,6 @@ public enum MemberTypes
     PKL, // Parklands Regional Library
     SLS, // Shortgrass Library System
     CAR, // Chinook Arch Regional Library System
-    CPL; // Calgary Public Library.
+    CPL, // Calgary Public Library.
+    FMPL; // Fort McMurray Public Library
 }
