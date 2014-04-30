@@ -258,10 +258,12 @@ public final class Address3
         {
             super();
             // end of line matching important to avoid 209-1123 street matching.
-            this.phonePattern = Pattern.compile("\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
+            // I added the optional 'T' because a library prefixes textable phone numbers 
+            // with 'T', yeah I know right?
+            this.phonePattern = Pattern.compile("T?\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
             // A broken partial could look like this:
             // 96-4058, 780-, (780-, and what about 780 555-1212
-            this.partialPhonePattern = Pattern.compile("[(|\\d{2,}][-|\\s{1,}|\\d{2,}]*$");
+            this.partialPhonePattern = Pattern.compile("T?[(|\\d{2,}][-|\\s{1,}|\\d{2,}]*$");
         }
         
         /**
@@ -280,6 +282,15 @@ public final class Address3
                 return true;
             }
             return false;
+        }
+        
+        @Override
+        public String toString()
+        {
+            // This to get rid of stored 'T', which is annoying as I've said.
+            // you have to do it here or it upsets the indexing of other elements
+            // like postal code and province.
+            return this.value.replaceAll("T", "");
         }
 
         @Override
