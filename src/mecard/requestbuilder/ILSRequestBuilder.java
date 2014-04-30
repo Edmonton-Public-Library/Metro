@@ -156,11 +156,7 @@ public abstract class ILSRequestBuilder
      * @param userId the value of userId
      * @param userPin the value of userPin
      * @param response Buffer to contain useful response information.
-<<<<<<< HEAD
-     * @return Command ready to run.
-=======
      * @return Command for execution of this query type.
->>>>>>> master
      */
     public abstract Command getCustomerCommand(
             String userId, 

@@ -20,11 +20,6 @@
 */
 package site.parklands;
 
-import mecard.Response;
-import mecard.ResponseTypes;
-import mecard.config.CustomerFieldTypes;
-import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import site.HorizonNormalizer;
 
 /**

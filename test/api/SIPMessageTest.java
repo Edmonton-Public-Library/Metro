@@ -2,6 +2,9 @@
 package api;
 import java.util.ArrayList;
 import java.util.List;
+import mecard.config.CustomerFieldTypes;
+import mecard.customer.Customer;
+import mecard.customer.SIPFormatter;
 import mecard.exception.SIPException;
 
 
@@ -177,6 +180,22 @@ public class SIPMessageTest
         result = SIPMessage.cleanDateTime(possibleDate);
         expResult = "20140903";
         assertTrue(expResult.compareTo(result) == 0);
+        
+        SIPFormatter formatter = new SIPFormatter();
+        Customer c = formatter.getCustomer("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PA20140903    235900STAFF|PB19680920|PCs|PS20140903    235900STAFF|ZYs|AY1AZA949");
+        System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
+        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20140903") == 0);
+        
+//        formatter = new SIPFormatter();
+//        c = formatter.getCustomer("64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB");
+//        System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
+//        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20140903") == 0);
+        
+        String cm = "64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB";
+        instance = new SIPCustomerMessage(cm);
+        String cleanDate = SIPMessage.cleanDateTime(instance.getField("PE"));
+        System.out.println("...CLEAN_DATE: '" + cleanDate + "'");
+        assertTrue(cleanDate.equalsIgnoreCase("20150430"));
     }
 
     /**
@@ -214,15 +233,11 @@ public class SIPMessageTest
     public void testIsDate()
     {
         System.out.println("===isDate===");
-        String possibleDate = "20131231";
-        boolean expResult = true;
-        boolean result = SIPMessage.isDate(possibleDate);
-        assertEquals(expResult, result);
+        assertTrue(SIPMessage.isDate("20010101"));
+        assertFalse(SIPMessage.isDate("20150430    235900"));
+        assertTrue(SIPMessage.isDate("20150430"));
     }
 
-    /**
-     * Test of isEmpty method, of class SIPMessage.
-     */
     @Test
     public void testLogin()
     {
@@ -232,4 +247,17 @@ public class SIPMessageTest
         System.out.println("LOGIN_RESULT: '" + result +"'");
         assertTrue("1".compareTo(result) == 0);
     }
+
+//    @Test
+//    public void testIsEmpty()
+//    {
+//        System.out.println("isEmpty");
+//        String field = "";
+//        SIPMessage instance = null;
+//        boolean expResult = false;
+//        boolean result = instance.isEmpty(field);
+//        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
 }
