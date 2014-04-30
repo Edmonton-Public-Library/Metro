@@ -337,17 +337,17 @@ public class Responder
      * </ul>
      *
      * @param customer
-     * @param additionalData
+     * @param originalMessage
      * @param failResponseMessage buffer to add any fail messages.
      * @return true if the customer meets the MeCard participation requirements
      * and false otherwise.
      */
     protected boolean meetsMeCardRequirements(
             Customer customer, 
-            CustomerMessage additionalData, 
+            CustomerMessage originalMessage, 
             StringBuilder failResponseMessage)
     {
-        if (customer == null || additionalData == null)
+        if (customer == null || originalMessage == null)
         {
             return false;
         }
@@ -357,27 +357,27 @@ public class Responder
         // know who you are, so we standardize important fields for loading on 
         // a regular ILS.
         policy.normalizeCustomerFields(customer);
-        if (policy.isEmailable(customer, additionalData, failResponseMessage) == false) 
+        if (policy.isEmailable(customer, originalMessage, failResponseMessage) == false) 
         {
             System.out.println("Customer not emailable.");
             return false;
         }
-        if (policy.isInGoodStanding(customer, additionalData, failResponseMessage) == false)
+        if (policy.isInGoodStanding(customer, originalMessage, failResponseMessage) == false)
         {
             System.out.println("Customer not in good standing.");
             return false;
         }
-        if (policy.isMinimumAge(customer, additionalData, failResponseMessage) == false)
+        if (policy.isMinimumAge(customer, originalMessage, failResponseMessage) == false)
         {
             System.out.println("Customer not minimum age.");
             return false;
         }
-        if (policy.isReciprocal(customer, additionalData, failResponseMessage) == true)
+        if (policy.isReciprocal(customer, originalMessage, failResponseMessage) == true)
         {
             System.out.println("Customer cannot join because they are a reciprocal customer.");
             return false;
         } // reciprocals not allowed.
-        if (policy.isResident(customer, additionalData, failResponseMessage) == false) 
+        if (policy.isResident(customer, originalMessage, failResponseMessage) == false) 
         {
             System.out.println("Customer is not resident.");
             return false;
@@ -387,12 +387,12 @@ public class Responder
             System.out.println("Customer's data is not valid.");
             return false;
         }
-        if (policy.isValidExpiryDate(customer, additionalData, failResponseMessage) == false) 
+        if (policy.isValidExpiryDate(customer, originalMessage, failResponseMessage) == false) 
         {
             System.out.println("Customer does not have a valid privilege date.");
             return false;
         }
-        if (policy.isLostCard(customer, additionalData, failResponseMessage)) 
+        if (policy.isLostCard(customer, originalMessage, failResponseMessage)) 
         {
             System.out.println("Customer's card reported as lost.");
             return false;

@@ -34,6 +34,7 @@ import site.CustomerGetNormalizer;
 import site.calgary.CPLCustomerGetNormalizer;
 import site.chinook.CARCustomerGetNormalizer;
 import site.edmonton.EPLCustomerGetNormalizer;
+import site.parklands.PKLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
 import site.stalbert.STACustomerGetNormalizer;
 import site.strathcona.STRCustomerGetNormalizer;
@@ -70,6 +71,9 @@ public class SIPFormatter implements CustomerFormatter
                 break;
             case "CPL":
                 this.customMessageInterpreter = new CPLCustomerGetNormalizer();
+                break;
+            case "PKL":
+                this.customMessageInterpreter = new PKLCustomerGetNormalizer();
                 break;
             default:
                 this.customMessageInterpreter = new CustomerGetNormalizer();
