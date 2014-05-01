@@ -38,7 +38,7 @@ import site.parklands.PKLCustomerNormalizer;
 import site.shortgrass.SLSCustomerNormalizer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
-import site.trac.TRCCustomerNormalizer;
+import site.trac.TRACCustomerNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -99,7 +99,7 @@ public abstract class CustomerLoadNormalizer
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.TRAC.name()))
         {
-            normalizer = new TRCCustomerNormalizer(debug);
+            normalizer = new TRACCustomerNormalizer(debug);
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.PKL.name()))
         {

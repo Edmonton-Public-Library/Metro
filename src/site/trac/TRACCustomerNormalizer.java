@@ -31,10 +31,10 @@ import site.HorizonNormalizer;
  * such as minimum PIN width, or application of a computed bStat value.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class TRCCustomerNormalizer extends HorizonNormalizer
+public final class TRACCustomerNormalizer extends HorizonNormalizer
 {
     
-    public TRCCustomerNormalizer(boolean debug)
+    public TRACCustomerNormalizer(boolean debug)
     {
         super(debug);
     }

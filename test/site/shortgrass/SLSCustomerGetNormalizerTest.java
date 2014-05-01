@@ -1,7 +1,6 @@
 
 package site.shortgrass;
 
-import api.CustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.SIPFormatter;

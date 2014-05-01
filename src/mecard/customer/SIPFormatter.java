@@ -39,6 +39,7 @@ import site.parklands.PKLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
 import site.stalbert.STACustomerGetNormalizer;
 import site.strathcona.STRCustomerGetNormalizer;
+import site.trac.TRACCustomerGetNormalizer;
 
 /**
  *
@@ -66,6 +67,9 @@ public class SIPFormatter implements CustomerFormatter
                 break;
             case "STR":
                 this.customMessageInterpreter = new STRCustomerGetNormalizer();
+                break;
+            case "TRAC":
+                this.customMessageInterpreter = new TRACCustomerGetNormalizer();
                 break;
             case "STA":
                 this.customMessageInterpreter = new STACustomerGetNormalizer();
