@@ -283,7 +283,7 @@ public class SIPConnector
         sb.append(sipUser);
         sb.append("|CO");
         sb.append(sipPassword);
-        sb.append("CP|AY");
+        sb.append("|CP|AY");
         sb.append(SIPConnector.getCheckSum(sb.toString()));
         // Now do the actual login:
         String results = sendReceive(sb.toString());

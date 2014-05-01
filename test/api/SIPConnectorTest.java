@@ -14,19 +14,19 @@ public class SIPConnectorTest
 {
     private final String port;
     private final String host;
-    private String institution;
-    private String user;
-    private String password;
-    private String timeout;
+    private final String institution;
+    private final String timeout;
+    private final String user;
+    private final String password;
     
     public SIPConnectorTest()
     {
         host = "207.167.28.31";
         port = "6197";     // TRAC
         timeout = "5000";
+        user = "3MLogin";
+        password = "3MLogin";
         institution = "";
-        user = "";
-        password = "";
     }
 
     /**
@@ -38,16 +38,27 @@ public class SIPConnectorTest
         System.out.println("==test==");
         SIPConnector instance = new SIPConnector
                 .Builder(host, port)
-                .sipUser(user)
-                .password(password)
+                .sipUser("")
+                .password("")
                 .institution(institution)
-                .sipUser(user)
                 .timeout(timeout)
                 .build();
         boolean expResult = true; // If online.
         boolean result = instance.test();
         assertEquals(expResult, result);
-        // TODO test login with getting customer information.
+        
+        instance = new SIPConnector
+                .Builder(host, port)
+                .sipUser(user)
+                .password(password)
+                .institution(institution)
+                .timeout(timeout)
+                .build();
+        // should be sending: '93  CN3MLogin|CO3MLogin|CP|AY0AZF5D3'
+        String returnString = instance.send("63                               AO|AA29335002291042|AD2003|AY2AZF3B6");
+        SIPCustomerMessage customerMessage = new SIPCustomerMessage(returnString);
+        System.out.println("recv:'" + returnString + "'");
+        assertTrue(customerMessage.getCode().compareTo("64") == 0);
     }
     
 }
