@@ -599,7 +599,7 @@ public class Address3Test
         
         
         
-        System.out.println("=== Address22 ===");
+        System.out.println("=== Address23 ===");
         thisAddress = "22 Hidden Valley Garden NW Calgary AB T3A 5X3";
         System.out.println("ADDR_COMPLETE:"+thisAddress);
         instance = new Address3(thisAddress);
@@ -608,6 +608,27 @@ public class Address3Test
         POSTALC = "T3A 5X3";
         PROVINC = "AB";
         PHONE = "X";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address24 ===");
+        thisAddress = "42 QUEENS RD W LETHBRIDGE, ALBERTA T1K 3W2 T403-382-9749";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "42 Queens Rd W";
+        CITY = "Lethbridge";
+        POSTALC = "T1K 3W2";
+        PROVINC = "AB";
+        PHONE = "403-382-9749";
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
