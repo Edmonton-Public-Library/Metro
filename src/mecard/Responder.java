@@ -23,7 +23,6 @@ package mecard;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.SIPCustomerMessage;
 import mecard.requestbuilder.ILSRequestBuilder;
 import java.util.Date;
 import java.util.Properties;
@@ -37,7 +36,6 @@ import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
-import mecard.exception.LostCardException;
 import mecard.config.PropertyReader;
 import mecard.customer.UserFailFile;
 import mecard.customer.UserLostFile;
@@ -92,10 +90,6 @@ public class Responder
         else if (ex instanceof MalformedCommandException)
         {
             response = new Response(ResponseTypes.ERROR);
-        }
-        else if (ex instanceof LostCardException)
-        {
-            response = new Response(ResponseTypes.LOST_CARD);
         }
         else if (ex instanceof ConfigurationException)
         {
@@ -175,10 +169,10 @@ public class Responder
         // we let the isSuccessful method test and set the customer validity.
         // The response must have some customer data to check certain basic tests
         // so leave this method call here.
-        requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
         // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
         // then interpretResults() further sets ISVALID to Protocol.FALSE.
-        if (customer.isFlagSetFalse(CustomerFieldTypes.ISVALID))
+        if (! requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response) ||
+                customer.isFlagSetFalse(CustomerFieldTypes.ISVALID))
         {
             response.setCustomer(null);
             System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
