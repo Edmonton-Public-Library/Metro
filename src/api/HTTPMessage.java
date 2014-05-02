@@ -20,29 +20,30 @@
  */
 package api;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
+
 /**
  * This represents a raw http message response. This class can return the http
- * code and content.
+ * code and content parsed into a useful format.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class HTTPMessage
 {
-    private int httpCode;
-    private String message;
+    protected String message;
     
-    public HTTPMessage(String msg, boolean debug)
+    public HTTPMessage(String content, boolean debug)
     {
-        // parse the response including the content.
-    }
-    
-    public int getHTTPCode()
-    {
-        return this.httpCode;
+
     }
     
     @Override
     public String toString()
     {
-        return this.message;
+        return "SOME DATA CORRECTLY FORMED BASED ON ENTITY'S CONTENT TYPE";
     }
 }

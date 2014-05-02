@@ -28,7 +28,7 @@ package api;
  * 
  * @author anisbet
  */
-public class PAPICustomerMessage
+public class PAPIXMLCustomerMessage
     implements CustomerMessage
 {
 
@@ -37,7 +37,7 @@ public class PAPICustomerMessage
      * @param msg XML(?) input message.
      * @param debug 
      */
-    public PAPICustomerMessage(String msg, boolean debug)
+    public PAPIXMLCustomerMessage(String msg, boolean debug)
     {
         
     }

@@ -23,8 +23,8 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.PAPICommand;
-import api.PAPICustomerMessage;
+import api.WebServiceCommand;
+import api.PAPIXMLCustomerMessage;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.Response;
@@ -82,33 +82,20 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
      * 
      * @return URL string like:http://host/PAPIServie/REST/public/v1/1033/100/1/patron
      */
-    private String getUrlBase()
-    {
-        // looks like:
-        // http://host/PAPIServie/REST/public/v1/1033/100/1/patron
-        return "http://" + 
-                this.host + "/" +
-                URL_PREFIX + "/" +
-                this.version + "/" +
-                this.languageId + "/" +
-                this.appId + "/" +
-                this.orgId + "/" +
-                URL_SUFFIX;
-    }
-    
      @Override
     public final Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
 //        TODO: 'PWS [PAPIAccessKeyID]:[Signature]'
 //     * See pg. 69 HTTP Pocket Reference O'Reilly.
-        Command patronRegistrationCreate = new PAPICommand.Builder()
-                .setURL(this.getUrlBase())
-                .setLoginBranchId(this.authenticationDomain)
-                .setLoginUserId(this.authenticationUserName)
-                .setLoginStationId(this.authenticationPassword)
-                .setHTTPVerb(POST)
-                .build();
-        return patronRegistrationCreate; 
+        // Here we will need to authenticate then 
+//        Command patronRegistrationCreate = new WebServiceCommand.Builder()
+//                .setURL(this.getUrlBase())
+//                .setLoginBranchId(this.authenticationDomain)
+//                .setLoginUserId(this.authenticationUserName)
+//                .setLoginStationId(this.authenticationPassword)
+//                .setHTTPVerb(POST)
+//                .build();
+        return null; 
     }
     
     @Override
@@ -117,14 +104,14 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
         // http://host/PAPIServie/REST/public/v1/1033/100/1/patron/21221012345678
         // and
         // http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron/29335002291059/messages
-        Command patronAccountUpdate = new PAPICommand.Builder()
-                .setURL(this.getUrlBase() + "/" + customer.get(CustomerFieldTypes.ID))
-                .setLoginBranchId(this.authenticationDomain)
-                .setLoginUserId(this.authenticationUserName)
-                .setLoginStationId(this.authenticationPassword)
-                .setHTTPVerb(POST)
-                .build();
-        return patronAccountUpdate;
+//        Command patronAccountUpdate = new WebServiceCommand.Builder()
+//                .setURL(this.getUrlBase() + "/" + customer.get(CustomerFieldTypes.ID))
+//                .setLoginBranchId(this.authenticationDomain)
+//                .setLoginUserId(this.authenticationUserName)
+//                .setLoginStationId(this.authenticationPassword)
+//                .setHTTPVerb(POST)
+//                .build();
+        return null;
     }
     
     @Override
@@ -175,13 +162,14 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public String toString()
     {
-        return this.getUrlBase();
+        return "";
     }
 
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        // TODO this will be an XML customer response message.
-        return new PAPICustomerMessage(stdout, true);
+        // TODO this will be an XML customer response message. Since each ILS 
+        // that returns XML customer content will be different.
+        return new PAPIXMLCustomerMessage(stdout, true);
     }
 }

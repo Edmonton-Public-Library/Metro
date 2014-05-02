@@ -20,7 +20,13 @@
  */
 package api;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mecard.ResponseTypes;
+import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Used to interpret HTTP codes into meaningful Metro response codes.
@@ -33,7 +39,7 @@ public class HTTPCommandStatus extends CommandStatus
     public HTTPCommandStatus()
     {
         super();
-        this.httpCode = 200;
+        this.httpCode = 100;
     }
 
     public int getHttpCode()
@@ -44,13 +50,17 @@ public class HTTPCommandStatus extends CommandStatus
     public void setHttpCode(int httpCode)
     {
         this.httpCode = httpCode;
-        if (this.httpCode == 200)
-        {
-            this.status = ResponseTypes.SUCCESS;
-        }
-        else if (this.httpCode >= 500)
+        if (this.httpCode >= 500)
         {
             this.status = ResponseTypes.UNAVAILABLE;
+        }
+        else if (this.httpCode >= 400)
+        {
+            this.status = ResponseTypes.CONFIG_ERROR;
+        }
+        else if (this.httpCode >= 200)
+        {
+            this.status = ResponseTypes.SUCCESS;
         }
         else
         {
@@ -60,12 +70,26 @@ public class HTTPCommandStatus extends CommandStatus
     }
     
     /**
-     * 
-     * @return the content of the page returned, which could be XML, and 
-     * parsed for determining status.
+     * Set the content from the web service.
+     * @param entity can be JSON, XML plain text what have you.
      */
-    public String getContent()
+    void setEntity(HttpEntity entity)
     {
-        return this.getStdout(); 
+        String content = "";
+        try
+        {
+            content = EntityUtils.toString(entity);
+        } 
+        catch (IOException ex)
+        {
+            status = ResponseTypes.CONFIG_ERROR;
+            System.out.println(ex.getMessage());
+        } 
+        catch (ParseException ex)
+        {
+            status = ResponseTypes.ERROR;
+            System.out.println(ex.getMessage());
+        }
+        this.stdout.append(content);
     }
 }
