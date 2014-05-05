@@ -3,7 +3,7 @@ package site.strathcona;
 
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -27,7 +27,7 @@ public class STRCustomerGetNormalizerTest
     public void testSetCustomerValuesFromSiteSpecificFields()
     {
         System.out.println("==setCustomerValuesFromSiteSpecificFields==");
-        SIPFormatter formatter = new SIPFormatter();
+        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
         
         Customer c = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESHERMAN, WILLIAM TECUMSEH|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 SAVANNAH STREET LETHBRIDGE, AB T1A 3N7|BEanton@shortgrass.ca|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZAC20");
         System.out.println("STREET:'" + c.get(CustomerFieldTypes.STREET)+"'");

@@ -4,7 +4,7 @@ package site.trac;
 import api.CustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -28,7 +28,7 @@ public class TRACCustomerGetNormalizerTest
     public void testSetCustomerValuesFromSiteSpecificFields()
     {
         System.out.println("==setCustomerValuesFromSiteSpecificFields==");
-        SIPFormatter formatter = new SIPFormatter();
+        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
         
         Customer c = formatter.getCustomer("64              00120140501    114114000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEsthero@yrl.ab.ca|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY2AZA00A");
         System.out.println("PHONE:'" + c.get(CustomerFieldTypes.PHONE)+"'");

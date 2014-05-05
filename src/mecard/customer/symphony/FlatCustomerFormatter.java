@@ -18,12 +18,14 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.customer.symphony;
 
 import mecard.config.CustomerFieldTypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
 
@@ -34,7 +36,7 @@ import mecard.util.PostalCode;
  * @author metro
  * @since 1.0
  */
-public class FlatUserFormatter implements CustomerFormatter
+public class FlatCustomerFormatter implements CustomerFormatter
 {
     public final static String DEFAULT_DATE = "";
 

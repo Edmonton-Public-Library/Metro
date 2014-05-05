@@ -20,6 +20,7 @@
  */
 package mecard.customer;
 
+import mecard.customer.sip.SIPCustomerFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -39,13 +40,13 @@ public class SIPCustomerFormatterTest
     }
 
     /**
-     * Test of getCustomer method, of class SIPFormatter.
+     * Test of getCustomer method, of class SIPCustomerFormatter.
      */
     @Test
     public void testGetCustomer_String()
     {
         System.out.println("== getCustomer ==");
-        SIPFormatter instance = new SIPFormatter();
+        SIPCustomerFormatter instance = new SIPCustomerFormatter();
         String expResult = "[\"21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
                 + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
         Customer result = instance.getCustomer(this.customerString);
@@ -53,7 +54,7 @@ public class SIPCustomerFormatterTest
     }
 
     /**
-     * Test of getCustomer method, of class SIPFormatter.
+     * Test of getCustomer method, of class SIPCustomerFormatter.
      */
     @Test
     public void testGetCustomer_List()
@@ -61,7 +62,7 @@ public class SIPCustomerFormatterTest
         System.out.println("== getCustomer (list) ==");
         List<String> s = new ArrayList<String>();
         s.add(this.customerString);
-        SIPFormatter instance = new SIPFormatter();
+        SIPCustomerFormatter instance = new SIPCustomerFormatter();
         // SIP doesn't return the PIN and currently does not return phone number.
         String expResult = "21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
                 + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";

@@ -18,10 +18,11 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.customer.symphony;
 
 import java.util.HashMap;
 import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.customer.FormattedTable;
 
 /**
  * Represents one of the given sections of a flat file.
@@ -116,7 +117,7 @@ public class FlatTable implements FormattedTable
         return true;
     }
 
-    protected String finalizeTable(StringBuilder data)
+    public String finalizeTable(StringBuilder data)
     {
         StringBuilder out = new StringBuilder();
         switch (name)

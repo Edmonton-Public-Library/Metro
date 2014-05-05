@@ -1,4 +1,5 @@
 package mecard.customer;
+import mecard.customer.symphony.FlatFormattedCustomer;
 import mecard.Request;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,10 @@ import static org.junit.Assert.*;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class FlatUserFormatterTest
+public class FlatCustomerFormatterTest
 {
     private StringBuffer dumpFlatOutput;
-    public FlatUserFormatterTest()
+    public FlatCustomerFormatterTest()
     {
         dumpFlatOutput = new StringBuffer();
         dumpFlatOutput.append("*** DOCUMENT BOUNDARY ***\n");

@@ -31,7 +31,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -144,7 +144,7 @@ public abstract class ILSRequestBuilder
      * interpretation of request results, and non-standard field use. For example;
      * consider that EPL uses the field "PF" to designate patron sex, but Shortgrass
      * uses the field 'PF'. That being the case both libraries can subclass a 
-     * {@link SIPFormatter} for additional customized SIP2 result interpretation.
+     * {@link SIPCustomerFormatter} for additional customized SIP2 result interpretation.
      * @return CustomerFormatter.
      */
     public abstract CustomerFormatter getFormatter();

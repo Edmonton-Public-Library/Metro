@@ -1,4 +1,5 @@
 package mecard.customer;
+import mecard.customer.symphony.FlatTable;
 import java.util.HashMap;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;

@@ -21,8 +21,6 @@
 package api;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.ResponseTypes;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;

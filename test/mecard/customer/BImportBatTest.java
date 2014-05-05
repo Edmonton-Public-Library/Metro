@@ -4,6 +4,7 @@
  */
 package mecard.customer;
 
+import mecard.customer.horizon.BImportBat;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

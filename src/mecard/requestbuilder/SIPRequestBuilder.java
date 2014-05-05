@@ -39,7 +39,7 @@ import mecard.config.MessagesConfigTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.SIPException;
 import mecard.config.PropertyReader;
 import mecard.exception.ConfigurationException;
@@ -90,7 +90,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerFormatter getFormatter()
     {
-        return new SIPFormatter();
+        return new SIPCustomerFormatter();
     }
 
     @Override

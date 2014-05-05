@@ -26,7 +26,7 @@ import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.customer.BImportTable;
+import mecard.customer.horizon.BImportTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;

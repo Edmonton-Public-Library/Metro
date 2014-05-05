@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.customer.symphony;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,17 +26,20 @@ import java.util.List;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
+import mecard.customer.Customer;
+import mecard.customer.FormattedCustomer;
+import mecard.customer.FormattedTable;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
 
 /**
- *
+ * This class converts a ME customer object and converts it into a flat file.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class FlatFormattedCustomer implements FormattedCustomer
 {
-    private List<FlatTable> customerAccount;
+    private final List<FlatTable> customerAccount;
     
     public FlatFormattedCustomer(Customer customer)
     {

@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package api;
 
 import api.CustomerMessage;
 

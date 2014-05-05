@@ -35,7 +35,7 @@ import mecard.config.PolarisPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.PAPICustomerFormatter;
+import mecard.customer.polaris.PAPICustomerFormatter;
 import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
 

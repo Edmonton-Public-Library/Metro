@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mecard.config.PropertyReader;
-import mecard.customer.BImportBat;
+import mecard.customer.horizon.BImportBat;
 import mecard.customer.UserFile;
 import mecard.exception.BImportException;
 import mecard.requestbuilder.BImportRequestBuilder;

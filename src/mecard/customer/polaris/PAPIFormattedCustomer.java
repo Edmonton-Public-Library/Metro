@@ -18,65 +18,75 @@
  * MA 02110-1301, USA.
  *
  */
-package api;
+package mecard.customer.polaris;
+
+import java.util.List;
+import mecard.customer.FormattedCustomer;
+import mecard.customer.FormattedTable;
 
 /**
- * The PAPI Customer message is basically the payload of a HTTP message response
- * from the web service. The responder sometimes known as the adaptor will use 
- * these methods to test and alter a Customer object en route to the ME libraries
- * web site. 
- * 
- * The Polaris sites are using SIP2 for this, and this class remains stubbed
- * for future development.
- * 
+ * The class is used just before the customer is loaded so a library can add
+ * additional data before customer creation. Some libraries like to add analytic
+ * data before customer load, others rename fields to suit the local requirements.
+ * This object takes customer data and converts it into PAPI XML, (or JSON?) so 
+ * it can be passed in a POST request to the Polaris REST API.
  * @author anisbet
  */
-public class PAPIXMLCustomerMessage
-    implements CustomerMessage
+
+
+public class PAPIFormattedCustomer implements FormattedCustomer
 {
 
-    /**
-     * The string in question is the XML message from the ILS's web service.
-     * @param msg XML(?) input message.
-     * @param debug 
-     */
-    public PAPIXMLCustomerMessage(String msg, boolean debug)
-    {
-        
-    }
-
     @Override
-    public String getCustomerProfile()
+    public List<String> getFormattedCustomer()
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String getField(String fieldName)
+    public List<String> getFormattedHeader()
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isEmpty(String fieldName)
+    public boolean setValue(String key, String value)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String getStanding()
+    public boolean insertValue(String tableName, String key, String value)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean cardReportedLost()
+    public boolean containsKey(String key)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isInGoodStanding()
+    public String getValue(String key)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void insertTable(FormattedTable formattedTable, int index)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean renameField(String tableName, String originalFieldName, String newFieldName)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean removeField(String tableName, String fieldName)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

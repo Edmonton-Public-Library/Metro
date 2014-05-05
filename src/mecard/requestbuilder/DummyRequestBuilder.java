@@ -32,8 +32,8 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.FlatUserFormatter;
-import mecard.customer.SIPFormatter;
+import mecard.customer.symphony.FlatCustomerFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
 import site.CustomerLoadNormalizer;
@@ -75,11 +75,11 @@ public class DummyRequestBuilder extends ILSRequestBuilder
     {
         if (this.format.compareToIgnoreCase(ResponderMethodTypes.SIP2.toString()) == 0)
         {
-            return new SIPFormatter();
+            return new SIPCustomerFormatter();
         }
         else if (this.format.compareToIgnoreCase(ResponderMethodTypes.SYMPHONY_API.toString()) == 0)
         {
-            return new FlatUserFormatter();
+            return new FlatCustomerFormatter();
         }
         // BImport doesn't have a formatter; neither does dummy, so if you are asking for one
         // there is a problem with the call you are making.

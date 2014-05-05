@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.customer.sip;
 
 import api.CustomerMessage;
 import api.SIPCustomerMessage;
@@ -28,6 +28,8 @@ import java.util.List;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
 import mecard.util.Address3;
 import mecard.util.Phone;
 import site.CustomerGetNormalizer;
@@ -45,11 +47,11 @@ import site.trac.TRACCustomerGetNormalizer;
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class SIPFormatter implements CustomerFormatter 
+public class SIPCustomerFormatter implements CustomerFormatter 
 {
     protected CustomerGetNormalizer customMessageInterpreter = null;
     
-    public SIPFormatter()
+    public SIPCustomerFormatter()
     {
         String libCode = PropertyReader.
             getProperties(ConfigFileTypes.ENVIRONMENT).

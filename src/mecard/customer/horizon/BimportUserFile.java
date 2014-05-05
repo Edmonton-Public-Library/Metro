@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package mecard.customer;
+package mecard.customer.horizon;
 
 import java.io.File;
+import mecard.customer.UserFile;
 
 /**
  * The BimportUserFile can accommodate a situation where the original customer's 

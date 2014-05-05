@@ -17,15 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package mecard.customer;
+package mecard.customer.polaris;
 
 import java.util.List;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
 
 /**
  * Formats the {@link mecard.customer.Customer} into the Polaris consumable form.
  * The form of a customer is outlined in the Polaris API manual and can be submitted
  * as either JSON or XML. This class will handle the TRAC version, but with enough
  * wiggle room to handle the other.
+ * 
+ * Note that TRAC uses SIP2 so this class is stubbs only.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class PAPICustomerFormatter implements CustomerFormatter
@@ -34,19 +38,13 @@ public class PAPICustomerFormatter implements CustomerFormatter
     @Override
     public Customer getCustomer(List<String> list)
     {
-        return getCustomer(list.get(0)); 
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Customer getCustomer(String s)
     {
-        // Date conversion will be important
-//        Date Format when using JSON
-//        Because JSON does not have a standard way of describing dates, the following format must be used:
-//        "\/Date(1295352000000)\/"
-//        The number represents the number of milliseconds since January 1st 1970 UTC.
-//        1295352000000 represents Tuesday, January 18, 2011 7:00:00 AM.
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

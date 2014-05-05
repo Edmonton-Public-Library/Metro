@@ -1,4 +1,6 @@
 package mecard.customer;
+import mecard.customer.symphony.FlatFormattedCustomer;
+import mecard.customer.symphony.FlatTable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,5 +1,6 @@
 
 package mecard.customer;
+import mecard.customer.horizon.BImportTable;
 import java.util.HashMap;
 import mecard.config.BImportTableTypes;
 import org.junit.Test;

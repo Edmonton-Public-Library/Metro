@@ -37,11 +37,11 @@ import mecard.config.MessagesConfigTypes;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.FlatUserFormatter;
+import mecard.customer.symphony.FlatCustomerFormatter;
 import mecard.customer.UserFile;
 import mecard.config.PropertyReader;
-import mecard.customer.FlatCustomerMessage;
-import mecard.customer.FlatFormattedCustomer;
+import api.FlatCustomerMessage;
+import mecard.customer.symphony.FlatFormattedCustomer;
 import mecard.customer.FormattedCustomer;
 import site.CustomerLoadNormalizer;
 
@@ -148,7 +148,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerFormatter getFormatter()
     {
-        return new FlatUserFormatter();
+        return new FlatCustomerFormatter();
     }
 
     @Override
