@@ -344,7 +344,7 @@ public class Address3Test
         STREET = "34 Maple Street Mars County";
         CITY = "X";
         POSTALC = "T5R 1R6";
-        PROVINC = "AB";
+        PROVINC = "X";
         PHONE = "780-893-3959";
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
@@ -366,7 +366,7 @@ public class Address3Test
         STREET = "34 Maple Street";
         CITY = "Calgary";
         POSTALC = "T5R 1R6";
-        PROVINC = "AB";
+        PROVINC = "X";
         PHONE = "X";
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
@@ -629,6 +629,28 @@ public class Address3Test
         POSTALC = "T1K 3W2";
         PROVINC = "AB";
         PHONE = "403-382-9749";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        
+        System.out.println("=== Address25 Parkland ===");
+        thisAddress = "BDRR#4, SITE 141, COMP 1, Rocky Mountain House, AB, T4T 2A4";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "Bdrr#4 Site 141 Comp 1";
+        CITY = "Rocky Mountain House";
+        POSTALC = "T4T 2A4";
+        PROVINC = "AB";
+        PHONE = "X";
         System.out.println("STREET:'"+instance.getStreet()+"'");
         System.out.println("CITY:'"+instance.getCity()+"'");
         System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
