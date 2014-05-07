@@ -25,7 +25,7 @@ import mecard.customer.FormattedTable;
 
 /**
  * This class represents a table of customer data for loading.
- * For PAPI XML_CUSTOMER_CREATE, this table represents a complete table of customer data, that 
+ * For PAPI XML, this table represents a complete table of customer data, that 
  can be added to a REST POST request to create customer.
  
  This class uses a factory method because there are 4 variations of tables.
@@ -37,94 +37,83 @@ import mecard.customer.FormattedTable;
  */
 public class PAPIFormattedTable implements FormattedTable
 {
-
-    public enum DataType
+    /**
+     * Content types possible under the Polaris API specification.
+     */
+    public enum ContentType
     {
-        XML_CREATE,
-        XML_UPDATE,
-        JSON_CREATE,
-        JSON_UPDATE;
+        XML,
+        JSON;
+    }
+    
+    public enum QueryType
+    {
+        CREATE,
+        UPDATE;
     }
     
     /** This is the entire set of create fields accepted by Polaris in WS 4.1.
-     * The order must not change.
+     * The order must not change. The values preceded by 'C_' are for creating 
+     * customer records. The values preceded by 'U_' are update-able fields on
+     * a customer's account.
      */
-    public enum CreateOrder
+    public enum Order
     {
-        PATRON_REGISTRATION_CREATE_DATA("PatronRegistrationCreateData"),  // Tag name and place holder. All other entries are ordered starting at 1.
-        LOGON_BRANCH_ID("LogonBranchID"),
-        LOGON_USER_ID("LogonUserID"),
-        LOGON_WORKSTATION_ID("LogonWorkstationID"),
-        PATRON_BRANCH_ID("PatronBranchID"),
-        POSTAL_CODE("PostalCode"),
-        ZIP_PLUS_FOUR("ZipPlusFour"),
-        CITY("City"),
-        STATE("State"),
-        COUNTY("County"),
-        COUNTRY_ID("CountryID"),
-        STREET_ONE("StreetOne"),
-        STREET_TWO("StreetTwo"),
-        NAME_FIRST("NameFirst"),
-        NAME_LAST("NameLast"),
-        NAME_MIDDLE("NameMiddle"),
-        USER_1("User1"),
-        USER_2("User2"),
-        USER_3("User3"),
-        USER_4("User4"),
-        USER_5("User5"),
-        GENDER("Gender"),
-        BIRTHDATE("Birthdate"),
-        PHONE_VOICE_1("PhoneVoice1"),
-        PHONE_VOICE_2("PhoneVoice2"),
-        EMAIL_ADDRESS("EmailAddress"),
-        LANGUAGE_ID("LanguageID"),
-        DELIVERY_OPTION_ID("DeliveryOptionID"),
-        USER_NAME("UserName"),
-        PASSWORD("Password"),
-        PASSWORD_2("Password2"),
-        ALT_EMAIL_ADDRESS("AltEmailAddress"),
-        PHONE_VOICE_3("PhoneVoice3"),
-        PHONE_1_CARRIER_ID("Phone1CarrierID"),
-        PHONE_2_CARRIER_ID("Phone2CarrierID"),
-        PHONE_3_CARRIER_ID("Phone3CarrierID"),
-        ENABLE_SMS("Enable SMS"),
-        TXT_PHONE_NUMBER("TxtPhoneNumber"),
-        BARCODE("Barcode"),
-        ERECEIPT_OPTION_ID("EReceiptOPtionID"); // Ereceipt option ID [4.1 only] 2 - Email Address 8 - TXT Messaging 100 - All
+        C_PATRON_TAG("PatronRegistrationCreateData"),  // Tag name and place holder. All other entries are ordered starting at 1.
+        C_LOGON_BRANCH_ID("LogonBranchID"),
+        C_LOGON_USER_ID("LogonUserID"),
+        C_LOGON_WORKSTATION_ID("LogonWorkstationID"),
+        C_PATRON_BRANCH_ID("PatronBranchID"),
+        C_POSTAL_CODE("PostalCode"),
+        C_ZIP_PLUS_FOUR("ZipPlusFour"),
+        C_CITY("City"),
+        C_STATE("State"),
+        C_COUNTY("County"),
+        C_COUNTRY_ID("CountryID"),
+        C_STREET_ONE("StreetOne"),
+        C_STREET_TWO("StreetTwo"),
+        C_NAME_FIRST("NameFirst"),
+        C_NAME_LAST("NameLast"),
+        C_NAME_MIDDLE("NameMiddle"),
+        C_USER_1("User1"),
+        C_USER_2("User2"),
+        C_USER_3("User3"),
+        C_USER_4("User4"),
+        C_USER_5("User5"),
+        C_GENDER("Gender"),
+        C_BIRTHDATE("Birthdate"),
+        C_PHONE_VOICE_1("PhoneVoice1"),
+        C_PHONE_VOICE_2("PhoneVoice2"),
+        C_EMAIL_ADDRESS("EmailAddress"),
+        C_LANGUAGE_ID("LanguageID"),
+        C_DELIVERY_OPTION_ID("DeliveryOptionID"),
+        C_USER_NAME("UserName"),
+        C_PASSWORD("Password"),
+        C_PASSWORD_2("Password2"),
+        C_ALT_EMAIL_ADDRESS("AltEmailAddress"),
+        C_PHONE_VOICE_3("PhoneVoice3"),
+        C_PHONE_1_CARRIER_ID("Phone1CarrierID"),
+        C_PHONE_2_CARRIER_ID("Phone2CarrierID"),
+        C_PHONE_3_CARRIER_ID("Phone3CarrierID"),
+        C_ENABLE_SMS("Enable SMS"),
+        C_TXT_PHONE_NUMBER("TxtPhoneNumber"),
+        C_BARCODE("Barcode"),
+        C_ERECEIPT_OPTION_ID("EReceiptOPtionID"), // Ereceipt option ID [4.1 only] 2 - Email Address 8 - TXT Messaging 100 - All
+        // Supported Update features.
+        U_PATRON_UPDATE_DATA("PatronUpdateData"), // TAG NAME
+        U_LOGON_BRANCH_ID("LogonBranchID"),
+        U_LOGON_USER_ID("LogonUserID"),
+        U_LOGON_WORKSTATION_ID("LogonWorkstationID"),
+        U_READING_LIST_FLAG("ReadingListFlag"),
+        U_EMAIL_FORMAT("EmailFormat"),
+        U_DELIVERY_OPTION("DeliveryOption"),
+        U_EMAIL_ADDRESS("EmailAddress"),
+        U_PHONE_VOICE_1("PhoneVoice1"),
+        U_PASSWORD("Password");
         
         private String type;
 
-        private CreateOrder(String s)
-        {
-            this.type = s;
-        }
-
-        @Override
-        public String toString()
-        {
-            return this.type;
-        }
-    }
-    
-    /**
-     * The following are update-able via Polaris PatronUpdate.
-     */
-    public enum UpdateOrder
-    {
-        PATRON_UPDATE_DATA("PatronUpdateData"), // TAG NAME
-        LOGON_BRANCH_ID("LogonBranchID"),
-        LOGON_USER_ID("LogonUserID"),
-        LOGON_WORKSTATION_ID("LogonWorkstationID"),
-        READING_LIST_FLAG("ReadingListFlag"),
-        EMAIL_FORMAT("EmailFormat"),
-        DELIVERY_OPTION("DeliveryOption"),
-        EMAIL_ADDRESS("EmailAddress"),
-        PHONE_VOICE_1("PhoneVoice1"),
-        PASSWORD("Password");
-        
-        private String type;
-
-        private UpdateOrder(String s)
+        private Order(String s)
         {
             this.type = s;
         }
@@ -137,27 +126,56 @@ public class PAPIFormattedTable implements FormattedTable
     }
     
     private boolean debug = true;
-    private final DataType dataType;
-    private final EnumMap<CreateOrder, String> columns;
+    private final ContentType dataFormat;
+    private final QueryType queryType;
+    private final EnumMap<Order, String> columns;
     public final static String TABLE_NAME = "USER";
     public final static String DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     
-    public static PAPIFormattedTable getInstanceOf(DataType type)
+    /**
+     * Default factory method creates a table for creating a user with XML formatting.
+     * @return Formatted table ready for submission by RESTful POST.
+     */
+    public static PAPIFormattedTable getInstanceOf()
     {
-        return new PAPIFormattedTable(type);
+        return new PAPIFormattedTable(ContentType.XML, QueryType.CREATE);
     }
     
-    private PAPIFormattedTable(DataType type)
+    /**
+     * Specifies the formatting {@link PAPIFormattedTable.ContentType} and defaults
+     * to a create user query.
+     * @param type
+     * @return create query formatted as per argument.
+     */
+    public static PAPIFormattedTable getInstanceOf(ContentType type)
     {
-        this.columns = new EnumMap<>(CreateOrder.class);
-        this.dataType = type;
+        return new PAPIFormattedTable(type, QueryType.CREATE);
+    }
+    
+    /**
+     * Specifies the formatting {@link PAPIFormattedTable.ContentType}, and 
+     * a query type of {@link PAPIFormattedTable.QueryType}.
+     * @param type
+     * @param qType
+     * @return create or update query formatted as per argument.
+     */
+    public static PAPIFormattedTable getInstanceOf(ContentType type, QueryType qType)
+    {
+        return new PAPIFormattedTable(type, qType);
+    }
+    
+    private PAPIFormattedTable(ContentType type, QueryType qType)
+    {
+        this.columns    = new EnumMap<>(Order.class);
+        this.dataFormat = type;
+        this.queryType  = qType;
     }
     
     @Override
     public String getData()
     {
         StringBuilder sb = new StringBuilder();
-        if (dataType == DataType.XML_CREATE)
+        if (dataFormat == ContentType.XML)
         {
             formatAsXML(sb);
         }
@@ -171,15 +189,15 @@ public class PAPIFormattedTable implements FormattedTable
     private void formatAsXML(StringBuilder sb)
     {
         sb.append(PAPIFormattedTable.DECLARATION);
-        sb.append(this.createTag(CreateOrder.PATRON_REGISTRATION_CREATE_DATA.toString(), false));
-        for (CreateOrder coType: this.columns.keySet())
+        sb.append(this.createTag(Order.C_PATRON_TAG.toString(), false));
+        for (Order coType: this.columns.keySet())
         {
             if (this.columns.get(coType) != null)
             {
                 sb.append(this.createTaggedContent(coType.toString(), this.columns.get(coType)));
             }            
         }
-        sb.append(this.createTag(CreateOrder.PATRON_REGISTRATION_CREATE_DATA.toString(), true));
+        sb.append(this.createTag(Order.C_PATRON_TAG.toString(), true));
     }
     
     private void formatAsJSON(StringBuilder sb)
@@ -215,7 +233,7 @@ public class PAPIFormattedTable implements FormattedTable
     @Override
     public String getHeader()
     {
-        String value = this.columns.get(CreateOrder.BARCODE);
+        String value = this.columns.get(Order.C_BARCODE);
         if (value == null)
         {
             return "";
@@ -235,7 +253,7 @@ public class PAPIFormattedTable implements FormattedTable
         String value = "";
         try
         {
-            CreateOrder order = CreateOrder.valueOf(key);
+            Order order = Order.valueOf(key);
             value = this.columns.get(order);
         }
         catch (IllegalArgumentException ex)
@@ -257,7 +275,7 @@ public class PAPIFormattedTable implements FormattedTable
     {
         try
         {
-            this.columns.put(CreateOrder.valueOf(key), value);
+            this.columns.put(Order.valueOf(key), value);
         }
         catch (IllegalArgumentException ex)
         {
@@ -267,7 +285,7 @@ public class PAPIFormattedTable implements FormattedTable
                     + " No such element.");
             return false;
         }
-        return this.columns.containsKey(CreateOrder.valueOf(key));
+        return this.columns.containsKey(Order.valueOf(key));
     }
 
     @Override
@@ -276,7 +294,7 @@ public class PAPIFormattedTable implements FormattedTable
         String value = "";
         try
         {
-            CreateOrder order = CreateOrder.valueOf(originalkey);
+            Order order = Order.valueOf(originalkey);
             value = this.columns.remove(order);
         }
         catch (IllegalArgumentException ex)
@@ -294,7 +312,7 @@ public class PAPIFormattedTable implements FormattedTable
     {
         try
         {
-            CreateOrder order = CreateOrder.valueOf(key);
+            Order order = Order.valueOf(key);
             String value = this.columns.remove(order);
             // return false if the value is not found.
             if (value == null)
