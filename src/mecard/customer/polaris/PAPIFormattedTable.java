@@ -20,19 +20,26 @@
  */
 package mecard.customer.polaris;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
 import java.util.EnumMap;
 import mecard.customer.FormattedTable;
 
 /**
  * This class represents a table of customer data for loading.
  * For PAPI XML, this table represents a complete table of customer data, that 
- can be added to a REST POST request to create customer.
- 
- This class uses a factory method because there are 4 variations of tables.
- There are create tables which contain a complete set of data about the customer,
- and which come in 1 of 2 flavors: XML_CUSTOMER_CREATE and JSON. This class must be able to 
- make customer update tables which are (much) more restricted in information,
- and also come in two flavors: XML_CUSTOMER_CREATE and JSON.
+ * can be added to a REST POST request to create customer.
+ * 
+ * This class uses a factory method because there are 4 variations of tables.
+ * There are create tables which contain a complete set of data about the customer,
+ * and which come in 1 of 2 flavors: XML and JSON. This class must be able to 
+ * make customer update tables which are (much) more restricted in information,
+ * and also come in two flavors: XML and JSON.
  * @author anisbet
  */
 public class PAPIFormattedTable implements FormattedTable
@@ -175,13 +182,17 @@ public class PAPIFormattedTable implements FormattedTable
     public String getData()
     {
         StringBuilder sb = new StringBuilder();
-        if (dataFormat == ContentType.XML)
+        switch (dataFormat)
         {
-            formatAsXML(sb);
-        }
-        else
-        {
-            formatAsJSON(sb);
+            case XML:
+                formatAsXML(sb);
+                break;
+            case JSON:
+                formatAsJSON(sb);
+                break;
+            default:
+                formatAsXML(sb);
+                break;
         }
         return sb.toString();
     }
@@ -200,9 +211,23 @@ public class PAPIFormattedTable implements FormattedTable
         sb.append(this.createTag(Order.C_PATRON_TAG.toString(), true));
     }
     
+    /* 
+     * Note: this method is not supported yet since the only instance developed
+     * against is XML. 
+     * @param sb the the data to be converted into JSON.
+     */
     private void formatAsJSON(StringBuilder sb)
     {
-        throw new UnsupportedOperationException("JSON not supported yet."); 
+        // TODO: find out if there is additional enclosing parameters included in 
+        // the JSON like the outer tags in XML.
+        final GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(PAPIFormattedTable.class, new TableSerializer());
+        Gson gson = gsonBuilder.create();
+        if (debug)
+        {
+            System.out.println("JSON:"+gson.toJson(this));
+        }
+        sb.append(gson.toJson(this));
     }
     
     private String createTag(String tagName, boolean isClosedTag)
@@ -221,6 +246,7 @@ public class PAPIFormattedTable implements FormattedTable
         sb.append(">");
         return sb.toString();
     }
+    
     private String createTaggedContent(String tagName, String content)
     {
         StringBuilder sb = new StringBuilder();
@@ -330,4 +356,29 @@ public class PAPIFormattedTable implements FormattedTable
         return true;
     }
     
+
+
+    /**
+     *
+     * @author Andrew Nisbet <anisbet@epl.ca>
+     */
+    private class TableSerializer implements JsonSerializer<PAPIFormattedTable>
+    {
+
+        @Override
+        public JsonElement serialize(PAPIFormattedTable papiTable, Type type, JsonSerializationContext context)
+        {
+            final JsonObject json = new JsonObject();
+            for (PAPIFormattedTable.Order papiOrder: PAPIFormattedTable.Order.values())
+            {
+                String storedValue = papiTable.getValue(papiOrder.name());
+                if (storedValue == null || storedValue.isEmpty())
+                {
+                    continue;
+                }
+                json.addProperty(papiOrder.toString(), storedValue);
+            }
+            return json;
+        }
+    }
 }

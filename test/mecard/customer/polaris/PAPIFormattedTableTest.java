@@ -69,6 +69,40 @@ public class PAPIFormattedTableTest
         
         System.out.println("XML:'\n" + papiTable.getData() + "'");
     }
+    
+    /**
+     * Test of getData method, of class PAPIFormattedTable.
+     */
+    @Test
+    public void testGetDataJSON()
+    {
+        System.out.println("==getDataJSON==");
+        PAPIFormattedTable papiTable = PAPIFormattedTable.getInstanceOf(PAPIFormattedTable.ContentType.JSON);
+        assertNotNull(papiTable);
+        assertTrue(papiTable.setValue("C_LOGON_BRANCH_ID", "1"));
+        String testXML = "{\"LogonBranchID\":\"1\"}";
+        System.out.println("JSON:"+papiTable.getData());
+        assertTrue(papiTable.getData().compareTo(testXML) == 0);
+        assertTrue(papiTable.setValue("C_PATRON_BRANCH_ID", String.valueOf(PAPIFormattedTable.Order.C_PATRON_BRANCH_ID.ordinal())));
+        assertTrue(papiTable.getValue(PAPIFormattedTable.Order.C_PATRON_BRANCH_ID.name()).compareTo("4") == 0);
+        // Test if the insertion doesn't matter for well formed order on output.
+        assertTrue(papiTable.setValue("C_ERECEIPT_OPTION_ID", "39"));
+        assertTrue(papiTable.setValue("C_BARCODE", "38"));
+        assertTrue(papiTable.setValue("C_PASSWORD", "29"));
+        assertTrue(papiTable.setValue("C_DELIVERY_OPTION_ID", String.valueOf(PAPIFormattedTable.Order.C_DELIVERY_OPTION_ID.ordinal())));
+        assertTrue(papiTable.setValue("C_EMAIL_ADDRESS", "25"));
+        assertTrue(papiTable.setValue("C_USER_1", "16"));
+        assertTrue(papiTable.setValue("C_NAME_LAST", "14"));
+        
+        assertTrue(papiTable.setValue("C_POSTAL_CODE", "5"));
+        assertTrue(papiTable.setValue("C_CITY", "7"));
+        assertTrue(papiTable.setValue("C_STATE", "8"));
+        assertTrue(papiTable.setValue("C_COUNTRY_ID", "9"));
+        assertTrue(papiTable.setValue("C_STREET_ONE", "11"));
+        assertTrue(papiTable.setValue("C_NAME_FIRST", "13"));
+
+        System.out.println("JSON:'\n" + papiTable.getData() + "'");
+    }
 
     /**
      * Test of getHeader method, of class PAPIFormattedTable.

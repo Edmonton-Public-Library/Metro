@@ -31,7 +31,7 @@ import java.lang.reflect.Type;
 import mecard.customer.Customer;
 
 /**
- *
+ * Serializes a {@link mecard.customer.Customer} to GSON for return to web site.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class ResponseSerializer implements JsonSerializer<Response>
@@ -57,6 +57,7 @@ public class ResponseSerializer implements JsonSerializer<Response>
     /**
      *
      * @param response the value of responseObj
+     * @return response serialized to GSON.
      */
     public String getSerializedResponse(Response response)
     {
