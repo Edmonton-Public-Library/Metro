@@ -39,7 +39,7 @@ import mecard.util.PostalCode;
  */
 public class FlatFormattedCustomer implements FormattedCustomer
 {
-    private final List<FlatTable> customerAccount;
+    private final List<FlatFormattedTable> customerAccount;
     
     public FlatFormattedCustomer(Customer customer)
     {
@@ -61,7 +61,7 @@ public class FlatFormattedCustomer implements FormattedCustomer
 //        {
 //            customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.toString(), customer.get(CustomerFieldTypes.SEX));
 //        }
-        this.customerAccount.add(FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerTable));
+        this.customerAccount.add(FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerTable));
         // Address Table
         customerTable = new HashMap<>();
         customerTable.put(FlatUserFieldTypes.STREET.toString(), customer.get(CustomerFieldTypes.STREET));
@@ -76,7 +76,7 @@ public class FlatFormattedCustomer implements FormattedCustomer
         customerTable.put(FlatUserFieldTypes.POSTALCODE.toString(),
                 PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
         customerTable.put(FlatUserFieldTypes.EMAIL.toString(), customer.get(CustomerFieldTypes.EMAIL));
-        this.customerAccount.add(FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerTable));
+        this.customerAccount.add(FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerTable));
     }
     
     @Override
@@ -156,15 +156,15 @@ public class FlatFormattedCustomer implements FormattedCustomer
     {
         if (index > this.customerAccount.size())
         {
-            this.customerAccount.add((FlatTable)formattedTable);
+            this.customerAccount.add((FlatFormattedTable)formattedTable);
         }
         else if (index < 0)
         {
-            this.customerAccount.add(0, (FlatTable)formattedTable);
+            this.customerAccount.add(0, (FlatFormattedTable)formattedTable);
         }
         else
         {
-            this.customerAccount.add(index, (FlatTable)formattedTable);
+            this.customerAccount.add(index, (FlatFormattedTable)formattedTable);
         }
     }
 

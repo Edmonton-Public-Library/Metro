@@ -28,16 +28,16 @@ import mecard.customer.FormattedTable;
  * Represents one of the given sections of a flat file.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class FlatTable implements FormattedTable
+public class FlatFormattedTable implements FormattedTable
 {
     private final String name;
     private final HashMap<String, String> columns;
-    public static FlatTable getInstanceOf(FlatUserExtendedFieldTypes type, HashMap<String, String> dataFields)
+    public static FlatFormattedTable getInstanceOf(FlatUserExtendedFieldTypes type, HashMap<String, String> dataFields)
     {
-        return new FlatTable(type.name(), dataFields);
+        return new FlatFormattedTable(type.name(), dataFields);
     }
     
-    private FlatTable(String name, HashMap<String, String> headDataMap)
+    private FlatFormattedTable(String name, HashMap<String, String> headDataMap)
     {
         this.columns = new HashMap<>();
         for (String key: headDataMap.keySet())

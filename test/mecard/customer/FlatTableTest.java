@@ -1,5 +1,5 @@
 package mecard.customer;
-import mecard.customer.symphony.FlatTable;
+import mecard.customer.symphony.FlatFormattedTable;
 import java.util.HashMap;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
@@ -58,7 +58,7 @@ public class FlatTableTest
     }
 
     /**
-     * Test of getInstanceOf method, of class FlatTable.
+     * Test of getInstanceOf method, of class FlatFormattedTable.
      */
     @Test
     public void testGetInstanceOf()
@@ -66,12 +66,12 @@ public class FlatTableTest
         System.out.println("==getInstanceOBImportTable==");
         FlatUserExtendedFieldTypes type = FlatUserExtendedFieldTypes.USER;
         HashMap<String, String> dataFields = new HashMap<>();
-        FlatTable result = FlatTable.getInstanceOf(type, dataFields);
+        FlatFormattedTable result = FlatFormattedTable.getInstanceOf(type, dataFields);
         System.out.println("TABLE:" + result.getData());
     }
 
     /**
-     * Test of getData method, of class FlatTable.
+     * Test of getData method, of class FlatFormattedTable.
      */
     @Test
     public void testGetData()
@@ -96,45 +96,45 @@ public class FlatTableTest
         customerData.put("USER_CATEGORY2", "M");
         customerData.put("USER_ACCESS", "PUBLIC");
         customerData.put("USER_ENVIRONMENT", "PUBLIC");
-        FlatTable flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
         System.out.println("FLAT:" + flatTable.getData());
     }
 
     /**
-     * Test of getHeader method, of class FlatTable.
+     * Test of getHeader method, of class FlatFormattedTable.
      */
     @Test
     public void testGetHeader()
     {
         System.out.println("==getHeader==");
         HashMap<String, String> customerData = new HashMap<>();
-        FlatTable flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
         System.out.print("HEADER:\n" + flatTable.getHeader());
     }
 
     /**
-     * Test of getName method, of class FlatTable.
+     * Test of getName method, of class FlatFormattedTable.
      */
     @Test
     public void testGetName()
     {
         System.out.println("==getName==");
         HashMap<String, String> customerData = new HashMap<>();
-        FlatTable flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
         System.out.println("NAME:" + flatTable.getName());
         
-        flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
+        flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
         System.out.println("NAME:" + flatTable.getName());
         
-        flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, customerData);
+        flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, customerData);
         System.out.println("NAME:" + flatTable.getName());
         
-        flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
+        flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
         System.out.println("NAME:" + flatTable.getName());
     }
 
     /**
-     * Test of getValue method, of class FlatTable.
+     * Test of getValue method, of class FlatFormattedTable.
      */
     @Test
     public void testGetValue()
@@ -142,7 +142,7 @@ public class FlatTableTest
         System.out.println("==getValue==");
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put("USER_ID", "21221012345678");
-        FlatTable flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + flatTable.getData());
         String value = flatTable.getValue(FlatUserFieldTypes.USER_ID.name());
         System.out.println("VALUE:" + value);
@@ -150,7 +150,7 @@ public class FlatTableTest
     }
     
     /**
-     * Test of renameKey method, of class FlatTable.
+     * Test of renameKey method, of class FlatFormattedTable.
      */
     @Test
     public void testRenameKey()
@@ -160,7 +160,7 @@ public class FlatTableTest
         String storedValue= "Edmonton, AB";
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put(FlatUserFieldTypes.CITY_SLASH_STATE.toString(), storedValue);
-        FlatTable flatTable = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable flatTable = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + flatTable.getData());
         String value = flatTable.getValue(FlatUserFieldTypes.CITY_SLASH_STATE.toString());
         System.out.println("VALUE:" + value);
@@ -191,7 +191,7 @@ public class FlatTableTest
     }
 
     /**
-     * Test of setValue method, of class FlatTable.
+     * Test of setValue method, of class FlatFormattedTable.
      */
     @Test
     public void testSetValue()
@@ -199,7 +199,7 @@ public class FlatTableTest
         System.out.println("==setValue==");
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put("USER_ID", "21221012345678");
-        FlatTable table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + flatTable.getData());
         String value = table.getValue(FlatUserFieldTypes.USER_ID.name());
         System.out.println("VALUE:" + value);
@@ -216,28 +216,28 @@ public class FlatTableTest
     }
 
     /**
-     * Test of finalizeTable method, of class FlatTable.
+     * Test of finalizeTable method, of class FlatFormattedTable.
      */
     @Test
     public void testFinalizeTable()
     {
         System.out.println("==finalizeTable==");
         HashMap<String, String> customerData = new HashMap<>();
-        FlatTable table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
         
-        table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
+        table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
         
-        table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
+        table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
         
-        table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
+        table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
     }
 
     /**
-     * Test of deleteValue method, of class FlatTable.
+     * Test of deleteValue method, of class FlatFormattedTable.
      */
     @Test
     public void testDeleteValue()
@@ -245,7 +245,7 @@ public class FlatTableTest
         System.out.println("==***deleteValue***==");
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put("USER_ID", "21221012345678");
-        FlatTable table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        FlatFormattedTable table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + table.getData());
         String value = table.getValue(FlatUserFieldTypes.USER_ID.name());
         System.out.println("before VALUE:" + value);
