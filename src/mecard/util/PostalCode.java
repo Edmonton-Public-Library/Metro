@@ -53,6 +53,11 @@ public class PostalCode
         if (code.isValid)
         {
             String pCode = postalCode.replaceAll("\\s+", " ");
+            // If we don't find a space, let's put one in.
+            if (pCode.contains(" ") == false)
+            {
+                pCode =  postalCode.substring(0, 3) + " " + postalCode.substring(3);
+            }
             return pCode;
         }
         return postalCode;
