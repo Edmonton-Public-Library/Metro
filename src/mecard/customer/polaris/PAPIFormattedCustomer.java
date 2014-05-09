@@ -58,17 +58,13 @@ public class PAPIFormattedCustomer implements FormattedCustomer
         if (customer.isEmpty(CustomerFieldTypes.SEX) == false)
         {
             String sex = customer.get(CustomerFieldTypes.SEX);
-            if (sex.compareTo("M") == 0)
+            if (sex.compareTo("M") == 0 || sex.compareTo("F") == 0)
             {
-                customerTable.setValue(PAPIElementOrder.C_GENDER.name(), "Male");
-            }
-            else if (sex.compareTo("F") == 0)
-            {
-                customerTable.setValue(PAPIElementOrder.C_GENDER.name(), "Female");
+                customerTable.setValue(PAPIElementOrder.C_GENDER.name(), sex);
             }
             else
             {
-                customerTable.setValue(PAPIElementOrder.C_GENDER.name(), "N/A");
+                customerTable.setValue(PAPIElementOrder.C_GENDER.name(), "N");
             }
         }
         

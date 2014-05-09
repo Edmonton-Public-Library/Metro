@@ -7,7 +7,6 @@ import json.RequestDeserializer;
 import mecard.Request;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import mecard.customer.FormattedTable;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
