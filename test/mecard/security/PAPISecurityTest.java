@@ -104,15 +104,16 @@ public class PAPISecurityTest
     {
         try
         {
-            System.out.println("==getAuthorizedSignature==");
+            System.out.println("==getX-PAPIAccessTokenSignature==");
             String strAccessKey = "04b44247-6b91-47b7-a328-fcb8cf6eda5f";
             String strHTTPMethod = "POST";
             String strURI = "/PAPIService/REST/public/v1/1033/100/1/patron";
             String strHTTPDate = "Wed, 09 Oct 2009 22:23:32 GMT";
             String strPatronPassword = "";
-//            URI uri = new URI("http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron");
+            // This one works for basic public calls, don't use the www.tracpac.ab.ca domain name.
+            URI uri = new URI("http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron");
 //            URI uri = new URI("http://www.tracpac.ab.ca/PAPIService/REST/public/v1/1033/100/1/patron");
-            URI uri = new URI(strURI);
+//            URI uri = new URI(:strURI);
             PAPISecurity instance = PAPISecurity.getInstanceOf();
             String compHash = instance.getPAPIHash(strAccessKey, strHTTPMethod, strURI, strHTTPDate, strPatronPassword);
             System.out.println(">>>>>COmputed HASH: '" + compHash + "'");
