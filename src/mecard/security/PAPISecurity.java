@@ -44,7 +44,9 @@ public final class PAPISecurity
 //    // Standard prefix for the 'Authentication:' header.
 //    public static final String AUTHORIZATION_PREFIX = "PWS";
     // Value supplied by Polaris used in the 'Authentication:' header.
+    public final static String X_PAPI_ACCESSTOKEN_HEADER = "X-PAPI-AccessToken";
     private final String PAPIAccessKeyId;
+    private final String PAPISecret;
     
     public static PAPISecurity getInstanceOf()
     {
@@ -53,28 +55,30 @@ public final class PAPISecurity
     
     private PAPISecurity()
     {
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        Properties props     = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
         this.PAPIAccessKeyId = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_KEY_ID.toString());
+        this.PAPISecret      = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_SECRET.toString());
     }
     
     /**
      * Computes the PAPI hash signature.
-     * @param accessKey 
-     * @param httpMethod
-     * @param uri
+     * @param accessKey The secret used as a key for hashing, AKA PAPI Access Key
+     * @param httpMethod GET or POST
+     * @param uri documentation refers to this without the base URL (http://server.domain).
      * @param httpDate @see #getPolarisDate() 
      * @param patronPassword which may be empty, in the case where you are 
      * performing the operation as a staff member, but not null.
      * @return hash prepared from code taken from Polaris API manual.
      */
     String getPAPIHash(
-        String accessKey, // TODO Is this the PAPI access key ID without the 'PWS '?
+        String accessKey, 
         String httpMethod,
         String uri,
         String httpDate,
         String patronPassword // optional
     )
     {
+        // Test at: http://caligatio.github.io/jsSHA/
         String data;
         if (patronPassword.length() > 0)
         {
@@ -115,13 +119,26 @@ public final class PAPISecurity
     }
     
     /**
+     * Used to get a signature for special HTTP X-header. Used in public PAPI web service
+     * methods. Since public methods don't take a authentication token in the rest request
+     * you must supply a special X-header (X-PAPI-AccessToken) which is the hash of the 
+     * HTTP method, URI, and Access Secret.
+     * 
+     * Using Public Methods as an Authenticated Staff User
+     * In some scenarios, as an authenticated staff user, you may want to call a public method that requires the
+     * patron’s password. Instead of looking up the patron’s password, you may build the authentication
+     * signature using the AccessSecret. Because the public method does not contain the AccessToken in the URI,
+     * you simply pass in a custom HTTP header field called X-PAPI-AccessToken. The PAPI Service will look
+     * for the X-PAPI-AccessToken header field and act accordingly.
+     * Note:
+     * This process may fail to work if a firewall or network device is configured to remove non-standard HTTP header
+     * fields.
      * 
      * @param HTTPMethod POST, or GET
-     * @param uri the authentication URI, like /protected/v1/1033/100/1/authenticator/staff
-     * @param patronPassword
+     * @param uri the authentication URI, like 'http://localhost/PAPIService/REST/public/v1/1033/100/1/patron'
      * @return the signature used on the end of the Authorization HTTP header.
      */
-    public String getCommandSignature(String HTTPMethod, URI uri, String patronPassword)
+    public String getXPAPIAccessTokenHeader(String HTTPMethod, URI uri)
     {
         // Authorization - PWS [PAPIAccessKeyID]:[Signature]
         // •PWS must be in caps
@@ -130,7 +147,34 @@ public final class PAPISecurity
         // •[Signature] - The signature is the following, encoded with SHA1 UTF-8:
         // [HTTPMethod][URI][Date][PatronPassword]
         String signature = this.getPAPIHash(
-                this.PAPIAccessKeyId, // From the properties file.
+                this.PAPISecret, // From the properties file.
+                HTTPMethod, 
+                uri.toASCIIString(), 
+                this.getPolarisDate(), 
+                ""
+        );
+        return "PWS " + this.PAPIAccessKeyId + ":" + signature;
+    }
+    
+    /**
+     * 
+     * @param HTTPMethod POST, or GET
+     * @param uri the authentication URI, like 'http://localhost/PAPIService/REST/public/v1/1033/100/1/patron/21756003332022'
+     * @param patronPassword This, in the case of public methods (of which PatronRegistrationCreate and PatronUpdate both are)
+     * is the staff authentication secret that is hashed with the URL to authenticate the desired transaction. See page 9 
+     * Polaris Application Programming Interface (PAPI) Reference Guide, Polaris 4.1, PAPI version 1, Document revision 8.
+     * @return the signature used on the end of the Authorization HTTP header.
+     */
+    public String getSignature(String HTTPMethod, URI uri, String patronPassword)
+    {
+        // Authorization - PWS [PAPIAccessKeyID]:[Signature]
+        // •PWS must be in caps
+        // •No space before or after :
+        // •[PAPIAccessKeyID] - Assigned by Polaris
+        // •[Signature] - The signature is the following, encoded with SHA1 UTF-8:
+        // [HTTPMethod][URI][Date][PatronPassword]
+        String signature = this.getPAPIHash(
+                this.PAPISecret, // From the properties file.
                 HTTPMethod, 
                 uri.toASCIIString(), 
                 this.getPolarisDate(), 
@@ -147,7 +191,7 @@ public final class PAPISecurity
      * @param uri of the WS operation either patron create or update.
      * @return Authorization string used to compute initial login Authentication header value.
      */
-    public String getAuthenticationSignature(String HTTPMethod, URI uri)
+    public String getSignature(String HTTPMethod, URI uri)
     {
         // Authorization - PWS [PAPIAccessKeyID]:[Signature]
         // •PWS must be in caps
@@ -156,7 +200,7 @@ public final class PAPISecurity
         // •[Signature] - The signature is the following, encoded with SHA1 UTF-8:
         // [HTTPMethod][URI][Date][PatronPassword]
         String signature = this.getPAPIHash(
-                this.PAPIAccessKeyId,
+                this.PAPISecret,
                 HTTPMethod, 
                 uri.toASCIIString(), 
                 this.getPolarisDate(), 

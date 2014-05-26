@@ -29,19 +29,20 @@ public enum PolarisPropertyTypes
 {
     // local directory where the customers will be stored before loading.
     LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
-    // These are used to authenticate as if the metro server were a staff member.
+    // These are used to authenticate as if the metro server were a staff member. See page 17 PAPI documentation.
     AUTHENTICATE_DOMAIN("domain"),
     AUTHENTICATE_USERNAME("username"),
     AUTHENTICATE_PASSWORD("password"),
     
+    PAPI_ACCESS_SECRET("access-secret"),
     // PAPI Access key id used for authoriziation supplied by Polaris and used
     // in the HTTP header 'Authorization: PWS [papi-access-key-id]:[signature]
-    PAPI_ACCESS_KEY_ID("papi-access-key"), 
+    PAPI_ACCESS_KEY_ID("papi-access-key-id"), 
     
     // these are default values applied to a patron on creation
-    LOGIN_BRANCH_ID("login-branch-id"),
-    LOGIN_USER_ID("login-user-id"),
-    LOGIN_WORKSTATION_ID("login-workstation-id"),
+    LOGON_BRANCH_ID("login-branch-id"),
+    LOGON_USER_ID("login-user-id"),
+    LOGON_WORKSTATION_ID("login-workstation-id"),
     DELIVERY_OPTION_ID("delivery-option-id"),
     ERECEIPT_OPTION_ID("ereceipt-option-id"),
     PATRON_BRANCH_ID("patron-branch-id"),

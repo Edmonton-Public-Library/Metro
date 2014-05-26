@@ -32,7 +32,7 @@ public class PAPISecurityTest
         
         String expResult = "S1B0+M48Z/LOc32PFEfX67uwFyk=";
         String result = instance.getHash(strAccessKey, data);
-        System.out.println(">>HASH: '"+result+"'");
+        System.out.println(">>HASH: '"+result+"' from: '"+data+"'");
         assertEquals(expResult, result);
     }
 
@@ -74,10 +74,10 @@ public class PAPISecurityTest
     }
 
     /**
-     * Test of getCommandSignature method, of class PAPISecurity.
+     * Test of getSignature method, of class PAPISecurity.
      */
     @Test
-    public void testGetCommandSignature()
+    public void testGetSignature()
     {
         try
         {
@@ -87,7 +87,7 @@ public class PAPISecurityTest
             String accessSecret = "1234";
             PAPISecurity instance = PAPISecurity.getInstanceOf();
             String expResult = "";
-            String result = instance.getCommandSignature(HTTPMethod, uri, accessSecret);
+            String result = instance.getSignature(HTTPMethod, uri, accessSecret);
             // We can't test because the date requirement changes each time it runs.
             System.out.println("PAPI_Command sig: '" + result + "'");
         } catch (URISyntaxException ex)
@@ -95,9 +95,38 @@ public class PAPISecurityTest
             Logger.getLogger(PAPISecurityTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    /**
+     * Test of getSignature method, of class PAPISecurity.
+     */
+    @Test
+    public void testGetAuthorizedSignature()
+    {
+        try
+        {
+            System.out.println("==getAuthorizedSignature==");
+            String strAccessKey = "04b44247-6b91-47b7-a328-fcb8cf6eda5f";
+            String strHTTPMethod = "POST";
+            String strURI = "/PAPIService/REST/public/v1/1033/100/1/patron";
+            String strHTTPDate = "Wed, 09 Oct 2009 22:23:32 GMT";
+            String strPatronPassword = "";
+//            URI uri = new URI("http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron");
+//            URI uri = new URI("http://www.tracpac.ab.ca/PAPIService/REST/public/v1/1033/100/1/patron");
+            URI uri = new URI(strURI);
+            PAPISecurity instance = PAPISecurity.getInstanceOf();
+            String compHash = instance.getPAPIHash(strAccessKey, strHTTPMethod, strURI, strHTTPDate, strPatronPassword);
+            System.out.println(">>>>>COmputed HASH: '" + compHash + "'");
+            String result = instance.getXPAPIAccessTokenHeader(strHTTPMethod, uri);
+            // We can't test because the date requirement changes each time it runs.
+            System.out.println("Authorization: '" + result + "'");
+        } catch (URISyntaxException ex)
+        {
+            Logger.getLogger(PAPISecurityTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
-     * Test of getAuthenticationSignature method, of class PAPISecurity.
+     * Test of getSignature method, of class PAPISecurity.
      */
     @Test
     public void testGetAuthenticationSignature()
@@ -108,7 +137,7 @@ public class PAPISecurityTest
             String HTTPMethod = "GET";
             URI uri = new URI("http://localhost/PAPIService/REST/public/v1/1033/100/1/patron/21756003332022");
             PAPISecurity instance = PAPISecurity.getInstanceOf();
-            String result = instance.getAuthenticationSignature(HTTPMethod, uri);
+            String result = instance.getSignature(HTTPMethod, uri);
             // We can't test because the date requirement changes each time it runs.
             System.out.println("PAPI_Authorization sig: '" + result + "'");
         } catch (URISyntaxException ex)

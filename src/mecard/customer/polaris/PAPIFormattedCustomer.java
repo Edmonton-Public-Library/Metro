@@ -22,7 +22,11 @@ package mecard.customer.polaris;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.PolarisPropertyTypes;
+import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;
@@ -42,7 +46,23 @@ public class PAPIFormattedCustomer implements FormattedCustomer
     private FormattedTable customerTable;
     public PAPIFormattedCustomer(Customer customer)
     {
+        Properties props     = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        
         customerTable = PAPIFormattedTable.getInstanceOf();
+        // Fill in the default required fields for v1 of PAPI web service API.
+        customerTable.setValue(
+                PAPIElementOrder.C_LOGON_BRANCH_ID.name(), 
+                props.getProperty(PolarisPropertyTypes.LOGON_BRANCH_ID.toString()));
+        customerTable.setValue(
+                PAPIElementOrder.C_LOGON_USER_ID.name(), 
+                props.getProperty(PolarisPropertyTypes.LOGON_USER_ID.toString()));
+        customerTable.setValue(
+                PAPIElementOrder.C_LOGON_WORKSTATION_ID.name(), 
+                props.getProperty(PolarisPropertyTypes.LOGON_WORKSTATION_ID.toString()));
+        customerTable.setValue(
+                PAPIElementOrder.C_PATRON_BRANCH_ID.name(), 
+                props.getProperty(PolarisPropertyTypes.PATRON_BRANCH_ID.toString()));
+        
         customerTable.setValue(PAPIElementOrder.C_BARCODE.name(), customer.get(CustomerFieldTypes.ID));
         customerTable.setValue(PAPIElementOrder.C_PASSWORD.name(), customer.get(CustomerFieldTypes.PIN));
         customerTable.setValue(PAPIElementOrder.C_NAME_FIRST.name(), customer.get(CustomerFieldTypes.FIRSTNAME));
