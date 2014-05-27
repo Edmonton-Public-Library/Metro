@@ -25,9 +25,11 @@ import api.Command;
 import api.CommandStatus;
 import api.DummyCommand;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +44,7 @@ import mecard.requestbuilder.BImportRequestBuilder;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import mecard.util.BImportResultParser;
 import mecard.util.DateComparer;
+import mecard.util.PIDFile;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -101,6 +104,10 @@ public class BImportCustomerLoader
             if (cmd.hasOption("p")) // location of the pidFile, default is current directory (relative to jar location).
             {
                 pidDir = cmd.getOptionValue("p");
+                if (pidDir.endsWith(File.separator) == false)
+                {
+                    pidDir += File.separator;
+                }
             }
             if (cmd.hasOption("d")) // debug.
             {
@@ -138,28 +145,6 @@ public class BImportCustomerLoader
         }
         System.exit(0);
     }
-
-    /**
-     * 
-     * @return null if there is a bimport process running and a new lock file otherwise.
-     */
-    protected File getLockFile()
-    {
-        if (pidDir.endsWith(File.separator) == false)
-        {
-            pidDir += File.separator;
-        }
-        // now test if there is a pid file and if so, exit because another 
-        // process is using bimport.
-        if (new File(pidDir + pidFile).exists())
-        {
-            return null;
-        }
-        UserFile pid = new UserFile(pidDir + pidFile);
-        pid.addUserData(new ArrayList<String>());
-        return new File(pidDir + pidFile);
-    }
-
     
     public BImportCustomerLoader()
     {
@@ -176,8 +161,8 @@ public class BImportCustomerLoader
     public void run()
     {
         // Should we run, if there is a pid back out without doing anything.
-        File lock;
-        if ((lock = getLockFile()) == null)
+        PIDFile lock = new PIDFile(pidDir + pidFile);
+        if (lock.exists())
         {
             // and test how long that PID file has been there.
             // Sometimes BImport crashes. Here we test the age of the file
@@ -192,9 +177,13 @@ public class BImportCustomerLoader
             }
             if (debug)
             {
-                System.out.println("DEBUG: Could not get a lock file. Is another BImport process running?");           
+                System.out.println("*found lock file '" + pidDir + pidFile + "' backing off.");
             }
             return;
+        }
+        else // lock file doesn't exist so create one now.
+        {
+            lock.touch();
         }
         // This process needs to run to format the user data
         // The process is find all the individual customer -data.txt files and 
