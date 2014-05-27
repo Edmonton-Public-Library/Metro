@@ -79,9 +79,11 @@ public final class PAPISecurity
     )
     {
         // Test at: http://caligatio.github.io/jsSHA/
+//        I am trying to develop a client to consume PAPI web services. Specifically I am trying to use the PatronRegistrationCreate web service API to create patrons. I have read through the documentation and found that the REST call is public, and so I assume that the notes from page 9 of the PAPI Reference Guide (Polaris 4.1 Doc rev. 8) apply. I create a 
         String data;
         if (patronPassword.length() > 0)
         {
+            // TODO: Pass the secret twice, once as the accessKey and again as the patron password param(?)
             data = httpMethod + uri + httpDate + patronPassword;
         }
         else
