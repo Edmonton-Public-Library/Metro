@@ -53,80 +53,16 @@ public final class Address3
         {
             return;
         }
-        
-        
-        // sometimes that's all there is at the end of the string so if it is
-        // let's clean any empty ", "
-        // Different approach. If we have taken care of the phone and pcode
-        // then chop off each of the remaining elements and try to match
-        // The next would be province.
-        // 
-        // Some addresses like 'BOX 20 SITE 7 RR1, Red Deer, AB, T4N 5E1'
-        // cause a problem that manifests as 'Box 20 Site 7 Rr1 Red, Red Deer, AB, T4N 5E1'
-        // There are two ways to deal with this split on the commas...
-        // TODO Fix since we shouldn't have 4 anymore.!!!!
-        // Split the address string into parts based on the delimiter of ', '
-        String[] addressParts = supposedAddress.split(",\\s");
-        if (addressParts.length == 4)
+        supposedAddress = supposedAddress.replaceAll(",", "");
+        StringBuilder sbAddress = new StringBuilder(supposedAddress);
+        if (phone.test(sbAddress))
         {
-            // Typical usage: BOX 21, Heisler, AB, T0B 2A0
-            setPCodePhoneProvince(addressParts[3].trim());
-            this.province.test(addressParts[2]);
-            this.city.test(addressParts[1].trim());
-            this.street.test(addressParts[0].trim());
+            String remaining = supposedAddress.substring(0,supposedAddress.indexOf(phone.value));
+            sbAddress = new StringBuilder(remaining);
         }
-        else if (addressParts.length == 3)
-        {
-            // Usually a 3 part split splits at end of city on province pcode phone last.
-            boolean foundCity = setStreetCity(addressParts[0]);
-            if (! foundCity)
-            {
-                // sometimes there is a comma after apt., so concat [0]+[1] and try again.
-                String splitStreet = addressParts[0] + " " + addressParts[1];
-                foundCity = setStreetCity(splitStreet);
-                if (! foundCity)
-                {
-                    System.out.println("Address3: Failed to find valid place name in '" + addressParts[0] + "'");
-                    this.street.test(addressParts[0]);
-                }
-            }
-            setPCodePhoneProvince(addressParts[2]);
-        }
-        else if (addressParts.length == 2)
-        {
-            setStreetCity(addressParts[0]);
-            setPCodePhoneProvince(addressParts[1]);
-        }
-        else
-        {
-            // to get here we have an address without ',' like:
-            // 123 Aisforapple Drive Calgary AB X0X 0X0
-            StringBuilder sbAddress = new StringBuilder(supposedAddress);
-            if (phone.test(supposedAddress))
-            {
-                String remaining = supposedAddress.substring(0,supposedAddress.indexOf(this.getPhone()));
-                sbAddress = new StringBuilder(remaining);
-            }
-            postalCode.test(sbAddress);
-            province.test(sbAddress);
-            setStreetCity(sbAddress.toString());
-        }
-    }
-    
-    private void setPCodePhoneProvince(String s)
-    {
-        // Low hanging fruit lets see if there is a postal code.
-        StringBuilder supposedAddressBuilder = new StringBuilder(s);
-        this.postalCode.test(supposedAddressBuilder);
-        if (this.phone.test(supposedAddressBuilder) == false)
-        {
-            // To get here SIP2 has pasted a partial phone number to the end of 
-            // the address. Symphony customers are created with a default initial
-            // value of '780-'. If left it becomes their phone number, though
-            // clearly not valid. Let's test gently to get rid of this value.
-            this.phone.testGently(supposedAddressBuilder);
-        }
-        this.province.test(supposedAddressBuilder);
+        postalCode.test(sbAddress);
+        province.test(sbAddress);
+        setStreetCity(sbAddress.toString().trim());
     }
     
     /**
@@ -239,6 +175,7 @@ public final class Address3
          */
         public abstract boolean test(String s);
         public abstract boolean test(StringBuilder s);
+        // Not used.
         public boolean isSet() { return this.value.compareTo(Protocol.DEFAULT_FIELD_VALUE) != 0; }
         @Override
         public String toString()
@@ -253,7 +190,6 @@ public final class Address3
     protected class Phone extends AddressRecord
     {
         private final Pattern phonePattern;
-        private final Pattern partialPhonePattern;
         public Phone()
         {
             super();
@@ -261,9 +197,6 @@ public final class Address3
             // I added the optional 'T' because a library prefixes textable phone numbers 
             // with 'T', yeah I know right?
             this.phonePattern = Pattern.compile("T?\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
-            // A broken partial could look like this:
-            // 96-4058, 780-, (780-, and what about 780 555-1212
-            this.partialPhonePattern = Pattern.compile("T?[(|\\d{2,}][-|\\s{1,}|\\d{2,}]*$");
         }
         
         /**
@@ -300,30 +233,8 @@ public final class Address3
             Matcher matcher = phonePattern.matcher(testString);
             if (matcher.find())
             {
-                this.value = mecard.util.Phone.formatPhone(matcher.group());
-                // if arg is a string builder we are supposed to modify it.
+                this.value = matcher.group();
                 s.delete(matcher.start(), matcher.end());
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Gently tests if the substring at the end of the argument is a partial
-         * phone number. If tests positive then the fragment will be removed.
-         *
-         * @param supposedAddressBuilder complete or partial address line.
-         * @return true if a partial phone number was found at the end of the argument
-         * and false otherwise. The phone number fragment, if found, is not retained.
-         */
-        private boolean testGently(StringBuilder supposedAddressBuilder)
-        {
-            String testString = supposedAddressBuilder.toString();
-            Matcher matcher = partialPhonePattern.matcher(testString);
-            if (matcher.find())
-            {
-                // in this case the phone number is not valid so we should delete it.
-                supposedAddressBuilder.delete(matcher.start(), matcher.end());
                 return true;
             }
             return false;

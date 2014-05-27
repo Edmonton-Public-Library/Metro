@@ -33,12 +33,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Property reader reads all the configuration files and ensures that required
+ * values are included in each file. The property files are XML based. The order
+ * of the elements in the property files are not important.
  * @author andrew
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.13_06h"; // server version
+    public final static String VERSION           = "0.8.13_06j"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 

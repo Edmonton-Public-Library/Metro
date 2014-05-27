@@ -40,6 +40,11 @@ import mecard.config.PropertyReader;
  * 
  * Updated December 28, 2012
  * 
+ * Since the initial release there has been a requirement to add place names
+ * commonly used for Alberta, but not 'sanctioned'. None-the-less that is where
+ * mail is sent and that is the address the people that live there refer to.
+ * All additional none sanctioned names are listed in the 6xxx range of codes.
+ * 
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public final class AlbertaCity extends City
@@ -839,6 +844,21 @@ public final class AlbertaCity extends City
         cityMap.put("Yellowhead County", "0482");
         // Reservation for Chinook Arch.
         cityMap.put("Standoff", "6000");
+        // Additional names that are not recognized by Alberta Gov. but are mailing addresses.
+        cityMap.put("Blairmore", "6010");
+        cityMap.put("Bellevue", "6020");
+        cityMap.put("Coleman", "6030");
+        cityMap.put("Crowsnest Pass", "6040");
+        cityMap.put("Darwell", "6050");
+        cityMap.put("Dewinton", "6060");
+        cityMap.put("Fenn", "6070");
+        cityMap.put("Frank", "6080");
+        cityMap.put("Hillcrest", "6090");
+        cityMap.put("James River Bridge", "6100");
+        cityMap.put("Pine Lake", "6110");
+        cityMap.put("Rosedale Valley", "6120");
+        cityMap.put("Stauffer", "6130");
+        cityMap.put("Water Valley", "6140");
         
         boolean hasDisplayedMessage = false;
         // Now we overlay place name records with config requested codes for BImport.
