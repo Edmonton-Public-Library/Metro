@@ -25,11 +25,9 @@ import api.Command;
 import api.CommandStatus;
 import api.DummyCommand;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -170,14 +168,19 @@ public class BImportCustomerLoader
             if (DateComparer.isGreaterThanMinutesOld(maxPIDAge, lock.lastModified()))
             {
                 UserFile pid = new UserFile(this.loadRequestBuilder.getLoadDir() + stalePid);
-                List<String> msg = new ArrayList<>();
-                msg.add("PID file is more than " + String.valueOf(maxPIDAge) + " minutes old.");
-                msg.add("BImport may have crashed, please check processes and remove PID file in necessary.");
-                pid.addUserData(msg);
+                List<String> messageList = new ArrayList<>();
+                messageList.add("PID file is more than " + String.valueOf(maxPIDAge) + " minutes old.");
+                messageList.add("BImport may have crashed, please check processes and remove PID file in necessary.");
+                pid.addUserData(messageList);
+                if (debug)
+                {
+                    System.out.println("DEBUG.run(): lock file '" + pidDir + pidFile + "' older than "
+                            + String.valueOf(maxPIDAge) + " minutes old.");
+                }
             }
             if (debug)
             {
-                System.out.println("*found lock file '" + pidDir + pidFile + "' backing off.");
+                System.out.println("DEBUG.run(): found lock file '" + pidDir + pidFile + "' backing off.");
             }
             return;
         }
@@ -216,10 +219,8 @@ public class BImportCustomerLoader
             String msg = new Date() + "unable to delete " + lock.getAbsolutePath() 
                     + ", other loads won't run until this is removed. "
                     + "Check for runaway bimport processes.";
-            if (debug)
-            {
-                System.out.println("DEBUG_WARN: " + msg);           
-            }
+
+            System.out.println("DEBUG_WARN: " + msg);      
             Logger.getLogger(MetroService.class.getName()).log(Level.WARNING, msg);
         }
     }

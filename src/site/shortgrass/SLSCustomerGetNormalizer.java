@@ -21,6 +21,7 @@
 package site.shortgrass;
 
 import api.CustomerMessage;
+import mecard.Protocol;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
@@ -121,6 +122,13 @@ public class SLSCustomerGetNormalizer extends CustomerGetNormalizer
         {
             String expiry = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
+        }
+        
+        // Request to check age of user with USER_CATAGORY2 (field PF).
+        // ADULT, CHILD
+        if (message.getField("PF").equalsIgnoreCase("CHILD"))
+        {
+            customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
         }
     }
 }

@@ -28,6 +28,7 @@ public class PIDFileTest
         PIDFile pid = new PIDFile("deleteME.txt");
         assertFalse(pid.exists());
         System.out.println(">>>"+pid.getAbsolutePath());
+        // this value on my Windows machine, obviously different on any other.
         assertTrue(pid.getAbsolutePath().compareTo("C:\\Users\\ANisbet\\Dropbox\\development\\MeCard\\deleteME.txt")==0);
         assertFalse(pid.exists());
     }
@@ -87,6 +88,7 @@ public class PIDFileTest
         System.out.println("==getAbsolutePath==");
         PIDFile pid = new PIDFile("deleteME.txt");
         System.out.println(">>>"+pid.getAbsolutePath());
+        // this value on my Windows machine, obviously different on any other.
         assertTrue(pid.getAbsolutePath().compareTo("C:\\Users\\ANisbet\\Dropbox\\development\\MeCard\\deleteME.txt")==0);
     }
     
