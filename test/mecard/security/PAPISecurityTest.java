@@ -111,9 +111,9 @@ public class PAPISecurityTest
             String strHTTPDate = "Wed, 09 Oct 2009 22:23:32 GMT";
             String strPatronPassword = "";
             // This one works for basic public calls, don't use the www.tracpac.ab.ca domain name.
-            URI uri = new URI("http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron");
+//            URI uri = new URI("http://207.167.28.31/PAPIService/REST/public/v1/1033/100/1/patron");
 //            URI uri = new URI("http://www.tracpac.ab.ca/PAPIService/REST/public/v1/1033/100/1/patron");
-//            URI uri = new URI(:strURI);
+            URI uri = new URI(strURI);
             PAPISecurity instance = PAPISecurity.getInstanceOf();
             String compHash = instance.getPAPIHash(strAccessKey, strHTTPMethod, strURI, strHTTPDate, strPatronPassword);
             System.out.println(">>>>>COmputed HASH: '" + compHash + "'");
