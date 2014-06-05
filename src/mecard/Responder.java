@@ -171,36 +171,39 @@ public class Responder
         // so leave this method call here.
         // SIPFormatter() will place AF message in the reserve field. If it is not "OK"
         // then interpretResults() further sets ISVALID to Protocol.FALSE.
-        if (! requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response) ||
-                customer.isFlagSetFalse(CustomerFieldTypes.ISVALID))
+        boolean accountFoundAndPINOk  = requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
+        boolean accountDataTestFailed = customer.isFlagSetFalse(CustomerFieldTypes.ISVALID);
+        if (accountFoundAndPINOk == false || accountDataTestFailed)
         {
             response.setCustomer(null);
-            System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
-            System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
+            System.out.println(new Date() + " **Error GET__STDOUT:"+status.getStdout());
+            System.out.println(new Date() + " **Error GET__STDERR:"+status.getStderr());
             return;
         }
         // You have this before the test metro requirements b/c it checks for PIN
         // and SIP2 does not return the pin.
         customer.set(CustomerFieldTypes.PIN, userPin);
         StringBuilder failedTests = new StringBuilder();
-        ////////////////////////////////////////////////
-        // TODO use a factory method in ILSBuilder to return the correct message object type.
+        // So basic tests PIN, customer found; done, now test the account against system policies for ME.
         CustomerMessage customerMessage = requestBuilder.getCustomerMessage(status.getStdout());
-//        CustomerMessage customerMessage = new SIPCustomerMessage(status.getStdout());
         if (meetsMeCardRequirements(customer, customerMessage, failedTests))
         {
             response.setCode(ResponseTypes.OK);
+            System.out.println(new Date() + " POLICY_OUT:"+status.getStdout());
+            System.out.println(new Date() + " POLICY_ERR:"+status.getStderr());
         }
         else
         {
-            // this can happen if the user is barred, underage, non-resident, reciprocal, lostcard.
+            // this can happen if the user is barred, underage, non-resident, reciprocal, lostcard
+            // or missing key information.
             response.setCode(ResponseTypes.FAIL);
             response.setResponse(messageProperties.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
             response.setResponse(failedTests.toString());
             response.setCustomer(null);
+            System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStdout());
+            System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStderr());
         }
-        System.out.println(new Date() + " GET__STDOUT:"+status.getStdout());
-        System.out.println(new Date() + " GET__STDERR:"+status.getStderr());
+        
     }
     
     /**
@@ -378,6 +381,7 @@ public class Responder
         }
         if (policy.isValidCustomerData(customer, failResponseMessage) == false) 
         {
+            System.out.println("**"+customer.toString()+"**");
             System.out.println("Customer's data is not valid.");
             return false;
         }
@@ -395,22 +399,4 @@ public class Responder
         System.out.println("Customer cleared.");
         return true;
     }
-    
-    /**
-     * Tests if the request was valid or not based on whether the supplied PIN
-     * matched the user's pin.
-     *
-     * @param suppliedPin
-     * @param customer the value of customer
-     * @return true if the user is authorized and false otherwise.
-     */
-//    public boolean isAuthorized(String suppliedPin, Customer customer)
-//    {
-//        // TODO this should be moved to the appropriate RequestBuilder.
-//        if (suppliedPin.contains(SIP_AUTHORIZATION_FAILURE))
-//        {
-//            return false;
-//        }
-//        return true;
-//    }
 }
