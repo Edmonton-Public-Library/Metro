@@ -20,6 +20,9 @@
 */
 package site.parklands;
 
+import mecard.Response;
+import mecard.customer.Customer;
+import mecard.customer.FormattedCustomer;
 import site.HorizonNormalizer;
 
 /**
@@ -33,5 +36,11 @@ public final class PKLCustomerNormalizer extends HorizonNormalizer
     public PKLCustomerNormalizer(boolean debug)
     {
         super(debug);
+    }
+    
+    @Override
+    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    {
+        addBStatTable(formattedCustomer, "me");
     }
 }

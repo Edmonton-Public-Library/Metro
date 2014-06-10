@@ -198,6 +198,26 @@ begin
   exit;
 end;
 
+// Scheduler batch creation
+function CreateScheduleBatch(): boolean;
+var
+  fileName : string;
+  filePath : string;
+  serverName : string;
+  lines : TArrayOfString;
+begin
+  Result := true;
+  fileName := ExpandConstant('{app}\windows\metroschedule.bat');
+  filePath := ExpandConstant('{app}');
+  serverName := ExpandConstant('{#MyAppName}');
+  SetArrayLength(lines, 3);
+  lines[0] := 'REM runs schedule batch bimport load {#MyAppName}.';
+  lines[1] := 'start /b java -cp '+filePath+'\dist\MeCard.jar mecard.BImportCustomerLoader -c '+filePath+' -d -U -p'+filePath; 
+  lines[2] := 'exit';
+  Result := SaveStringsToFile(filename,lines,true);
+  exit;
+end;
+
  
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
@@ -208,5 +228,6 @@ begin
          CreateStopBatch();
          CreateUninstallBatch();
          CreateManagerBatch();
+         CreateScheduleBatch();
     end
 end;

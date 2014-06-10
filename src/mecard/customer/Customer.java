@@ -56,17 +56,21 @@ public class Customer //extends ProtocolPayload
         // we assume it the last name and set the content string to that, other-
         // wise we set the content to last name and firstName to, well, first
         // name
-        if (name.contains(",") == false)
+        String deCommadName = name.replaceAll(",", " ");
+        String[] cName = new String[2];
+        int pos = deCommadName.indexOf(" ");
+        if (pos > 0)
         {
-            return;
+            cName[0] = deCommadName.substring(0, pos);
+            cName[1] = deCommadName.substring(pos);
         }
-        String[] cName = name.split(",");
-        // Do first name 
-        if (cName.length > 1)
+        else
         {
-            this.customerFields.put(CustomerFieldTypes.FIRSTNAME, cName[1].trim());
+            cName[0] = Protocol.DEFAULT_FIELD_VALUE;
+            cName[1] = deCommadName; // no spaces so just a last name?
         }
-        this.customerFields.put(CustomerFieldTypes.LASTNAME, cName[0].trim());
+        this.customerFields.put(CustomerFieldTypes.FIRSTNAME, cName[1].trim());
+        this.customerFields.put(CustomerFieldTypes.LASTNAME,  cName[0].trim());
     }
     
     /**
