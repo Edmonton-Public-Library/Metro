@@ -23,8 +23,6 @@ package api;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.ResponseTypes;
 import mecard.exception.ConfigurationException;
 import org.apache.http.HttpEntity;
@@ -184,8 +182,9 @@ public class WebServiceCommand implements Command
             switch (this.httpVerb)
             {
                 case "POST":
-                    status = Request.Get(this.uri)
+                    status = Request.Post(this.uri)
                             .version(this.version)
+                            .useExpectContinue()
                             .connectTimeout(this.connectionTimeout)
                             .socketTimeout(this.socketTimeout)
                             .bodyString(this.postString, this.contentType)
