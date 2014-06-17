@@ -60,7 +60,8 @@ public class WebServiceCommandTest
             "</AuthenticationData>";
         WebServiceCommand command = new WebServiceCommand
                 .Builder()
-                .setURI("https://207.167.28.31/PAPIService/REST/protected/v1/1033/100/1/authenticator/staff")
+                .setURI("https://www.tracpac.ab.ca/PAPIService/REST/protected/v1/1033/100/1/authenticator/staff")
+//                .setURI("https://207.167.28.31/PAPIService/REST/protected/v1/1033/100/1/authenticator/staff")
                 .setHTTPVerb("POST")
                 .setContentType(xmlContent, ContentType.APPLICATION_XML)
                 .debug()
