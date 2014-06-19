@@ -249,7 +249,7 @@ public class Responder
         if (customer.isLostCard())
         {
             String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
-            UserLostFile failFile = new UserLostFile(customer);
+            UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
             failFile.recordUserDataMessage(message);
             response.setCode(ResponseTypes.LOST_CARD);
             response.setResponse(message);
@@ -262,7 +262,7 @@ public class Responder
             System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
             if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
             {
-                UserFailFile failFile = new UserFailFile(customer);
+                UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
                 failFile.setStatus(status);
                 System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
@@ -282,15 +282,27 @@ public class Responder
         normalizer.normalizeOnUpdate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
         Command command = requestBuilder.getUpdateUserCommand(customer, response, normalizer);
-        CommandStatus status = command.execute();
-        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
-        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
-        if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
+        if (customer.isLostCard())
         {
-            UserFailFile failFile = new UserFailFile(customer);
-            failFile.setStatus(status);
-            System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
-            throw new ConfigurationException();
+            String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
+            UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
+            failFile.recordUserDataMessage(message);
+            response.setCode(ResponseTypes.LOST_CARD);
+            response.setResponse(message);
+            System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
+        }
+        else // Regular customer update.
+        {
+            CommandStatus status = command.execute();
+            System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
+            System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
+            if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
+            {
+                UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
+                failFile.setStatus(status);
+                System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
+                throw new ConfigurationException();
+            }
         }
     }
 

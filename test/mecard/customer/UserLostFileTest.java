@@ -39,9 +39,9 @@ public class UserLostFileTest
         assertTrue(instance.isLostCard());
         instance.set(CustomerFieldTypes.ALTERNATE_ID, "22222012345678");
         instance.set(CustomerFieldTypes.ID, "22222012222222");
-        UserLostFile userFile = new UserLostFile(instance);
+        UserLostFile userFile = new UserLostFile(instance, "");
         userFile.recordUserDataMessage("LOST CARD detected. This message is read from message.properties normally.");
-        File f = new File("logs/22222012222222.lost");
+        File f = new File("22222012222222.lost");
         assertTrue(f.exists());
         f.delete();
     }
