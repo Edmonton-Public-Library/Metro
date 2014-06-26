@@ -33,5 +33,6 @@ public enum MemberTypes
     SLS, // Shortgrass Library System
     CAR, // Chinook Arch Regional Library System
     CPL, // Calgary Public Library.
-    FMPL; // Fort McMurray Public Library
+    FMPL, // Fort McMurray Public Library
+    RDPL; // Red Deer Public Library
 }

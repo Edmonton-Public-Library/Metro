@@ -85,15 +85,15 @@ public final class MetroService implements Daemon
         }
         catch (IOException ex)
         {
-            String msg = "Could not listen on port: " + portString;
+            String msg = " Could not listen on port: " + portString;
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
-            System.out.println(new Date() + msg);
+            System.out.println(new Date() + msg + ex.getMessage());
         }
         catch (NumberFormatException ex)
         {
             String msg = "Could not parse port number defined in configuration file.";
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
-            System.out.println(new Date() + msg);
+            System.out.println(new Date() + msg + ex.getMessage());
         }
 
         while (listening)

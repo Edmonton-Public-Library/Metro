@@ -212,10 +212,10 @@ public class Responder
      */
     public void getILSStatus(Response response)
     {
-        ILSRequestBuilder sipRequestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_STATUS, debug);
-        Command sipCommand = sipRequestBuilder.getStatusCommand(response);
-        CommandStatus status = sipCommand.execute();
-        sipRequestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
+        ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_STATUS, debug);
+        Command statusCommand = requestBuilder.getStatusCommand(response);
+        CommandStatus status = statusCommand.execute();
+        requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
         System.out.println(new Date() + " STAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " STAT_STDERR:"+status.getStderr());
     }
