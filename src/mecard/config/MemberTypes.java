@@ -34,5 +34,6 @@ public enum MemberTypes
     CAR, // Chinook Arch Regional Library System
     TRAC, // Trac including Yellowhead, Peace, and Northern Lights.
     CPL, // Calgary Public Library.
-    FMPL; // Fort McMurray Public Library
+    FMPL, // Fort McMurray Public Library
+    RDPL; // Red Deer Public Library
 }

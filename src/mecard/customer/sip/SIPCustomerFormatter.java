@@ -38,6 +38,7 @@ import site.chinook.CARCustomerGetNormalizer;
 import site.edmonton.EPLCustomerGetNormalizer;
 import site.ftmcmurray.FMPLCustomerGetNormalizer;
 import site.parklands.PKLCustomerGetNormalizer;
+import site.reddeer.RDPLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
 import site.stalbert.STACustomerGetNormalizer;
 import site.strathcona.STRCustomerGetNormalizer;
@@ -84,6 +85,9 @@ public class SIPCustomerFormatter implements CustomerFormatter
                 break;
             case "FMPL":
                 this.customMessageInterpreter = new FMPLCustomerGetNormalizer();
+                break;
+            case "RDPL":
+                this.customMessageInterpreter = new RDPLCustomerGetNormalizer();
                 break;
             default:
                 this.customMessageInterpreter = new CustomerGetNormalizer();

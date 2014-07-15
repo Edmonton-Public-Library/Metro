@@ -21,10 +21,10 @@
 package mecard.customer;
 
 import api.CommandStatus;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import mecard.config.CustomerFieldTypes;
+import mecard.requestbuilder.ILSRequestBuilder;
 
 /**
  * Creates a failed customer file in the configuration directory or the current
@@ -33,18 +33,19 @@ import mecard.config.CustomerFieldTypes;
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class UserFailFile extends UserFile 
-{
-    private final static String path = "logs" + File.separator;
-    
+{   
     /**
      * Creates a failed customer file in the configuration directory or the current
      * working directory relative to the MeCard.jar, if '-c' is not set when the 
      * server is started.
      * @param customer customer that failed.
+     * @param loadDirectory the path to where the customers are loaded {@link ILSRequestBuilder#getCustomerLoadDirectory()}.
      */
-    public UserFailFile(Customer customer)
+    public UserFailFile(Customer customer, String loadDirectory)
     {
-        super(path + customer.get(CustomerFieldTypes.ID) + ".fail");
+        super(loadDirectory + customer.get(CustomerFieldTypes.ID) + ".fail");
+        System.out.println("Creating fail file: " + loadDirectory
+                + customer.get(CustomerFieldTypes.ID) + ".fail");
     }
     
     /**

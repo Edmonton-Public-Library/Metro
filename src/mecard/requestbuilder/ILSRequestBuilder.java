@@ -45,6 +45,9 @@ import site.CustomerLoadNormalizer;
  */
 public abstract class ILSRequestBuilder
 {
+    // used by failed customer files to determine ILS
+    // agnostically, where customers files are loaded from and stored.
+    protected String loadDir; 
     /**
      *
      *
@@ -225,4 +228,15 @@ public abstract class ILSRequestBuilder
      * @return customer data from the original source in a universally query-able form.
      */
     public abstract CustomerMessage getCustomerMessage(String stdout);
+    
+    /**
+     * This method is used for lost cards which get output to the customer load
+     * directory. This directory is located in each ILS property file as a load-dir. 
+     * Because the lost user has no insight into which ILS is being used the ILSBuilder
+     * must be able to signal the failed customer files with the load directory.
+     */
+    public String getCustomerLoadDirectory()
+    {
+        return loadDir;
+    }
 }

@@ -71,7 +71,8 @@ public enum FlatUserFieldTypes
     NOTIFY_VIA("NOTIFY_VIA"),//PHONE
     NOTE("NOTE"),//ILS Team Test Account - DO NOT REMOVE!
     RETRNMAIL("RETRNMAIL"),//YES
-    USER_XINFO_END("USER_XINFO_END");
+    USER_XINFO_END("USER_XINFO_END"), 
+    HOMEPHONE("HOMEPHONE");
     
     private final String type;
 

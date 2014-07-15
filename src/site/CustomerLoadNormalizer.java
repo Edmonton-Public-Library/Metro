@@ -35,6 +35,7 @@ import site.calgary.CPLCustomerNormalizer;
 import site.chinook.CARCustomerNormalizer;
 import site.ftmcmurray.FMPLCustomerNormalizer;
 import site.parklands.PKLCustomerNormalizer;
+import site.reddeer.RDPLCustomerNormalizer;
 import site.shortgrass.SLSCustomerNormalizer;
 import site.stalbert.STACustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
@@ -120,6 +121,10 @@ public abstract class CustomerLoadNormalizer
         else if (libCode.equalsIgnoreCase(MemberTypes.FMPL.name()))
         {
             normalizer = new FMPLCustomerNormalizer(debug);
+        }
+        else if (libCode.equalsIgnoreCase(MemberTypes.RDPL.name()))
+        {
+            normalizer = new RDPLCustomerNormalizer(debug);
         }
         else
         {

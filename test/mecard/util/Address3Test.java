@@ -662,5 +662,26 @@ public class Address3Test
         assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
         assertTrue(instance.getPhone().compareTo(PHONE) == 0);
         System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address26 RDPL ===");
+        thisAddress = "353 Primary Way Red Deer AB T4N 1T9";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "353 Primary Way";
+        CITY = "Red Deer";
+        POSTALC = "T4N 1T9";
+        PROVINC = "AB";
+        PHONE = "X";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }

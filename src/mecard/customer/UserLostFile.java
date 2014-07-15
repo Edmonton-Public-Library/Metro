@@ -20,7 +20,6 @@
  */
 package mecard.customer;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import mecard.config.CustomerFieldTypes;
@@ -32,12 +31,23 @@ import mecard.config.CustomerFieldTypes;
 */
 public class UserLostFile extends UserFile
 {
-    private final static String path = "logs" + File.separator;
-    private Customer customer;
-    
-    public UserLostFile(Customer customer)
+//    private final static String path = "logs" + File.separator;
+//    private final static String path;
+    // TODO: We need to get the configuration directory for loading users.
+    // Since lost cards are not intented to be loaded it makes sense to just
+    // let them be in the root of the application.
+    private final Customer customer;
+
+    /**
+     *
+     * @param customer the value of customer
+     * @param loadDirectory the path to where the customers are loaded {@link ILSRequestBuilder#getCustomerLoadDirectory()}.
+     */
+    public UserLostFile(Customer customer, String loadDirectory)
     {
-        super(path + customer.get(CustomerFieldTypes.ID) + ".lost");
+        super(loadDirectory + customer.get(CustomerFieldTypes.ID) + ".lost");
+        System.out.println("Creating lost file: " + loadDirectory
+                + customer.get(CustomerFieldTypes.ID) + ".lost");
         this.customer = customer;
     }
 
