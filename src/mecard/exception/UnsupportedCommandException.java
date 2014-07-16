@@ -28,7 +28,7 @@ package mecard.exception;
 public class UnsupportedCommandException extends RuntimeException 
 {
     private final static String initMessage = "The supplied command is not implemented yet. ";
-    private final static String postMessage = "Please refer to the documentation.";
+    private final static String postMessage = "Administrator Please refer to configuration documentation.";
     
     public UnsupportedCommandException()
     {
