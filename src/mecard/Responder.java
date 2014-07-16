@@ -51,7 +51,6 @@ import site.MeCardPolicy;
  */
 public class Responder
 {
-    private final static String SIP_AUTHORIZATION_FAILURE = "AFInvalid PIN";
     protected Request request;
     protected final boolean debug;
     private final Properties messageProperties;
