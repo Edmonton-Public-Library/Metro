@@ -60,6 +60,34 @@ public final class RDPLCustomerNormalizer extends SymphonyNormalizer
     {
         // This loads all the mandatory values on SymphonyPropertyTypes.
         this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
+        
+        // Here we will compute USER_CATEGORY3: sex. Test the 
+        // unformattedCustomer for sex and set it like you set USER_CATEGORY2
+        if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY1.toString(), 
+                "FF"
+            );
+        }
+        else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY1.toString(), 
+                "MA"
+            );
+        }
+        else
+        {
+            formattedCustomer.insertValue(
+                FlatUserExtendedFieldTypes.USER.name(), 
+                FlatUserFieldTypes.USER_CATEGORY1.toString(), 
+                "UNKNOWN"
+            );
+        }
+        
         // Currently Calgary uses PHONE1 to store the customer's phone number: 
         formattedCustomer.renameField(
                 FlatUserExtendedFieldTypes.USER_ADDR1.name(),
