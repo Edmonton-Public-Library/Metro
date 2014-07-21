@@ -20,7 +20,7 @@
  */
 package api;
 
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.exception.SIPException;
 
 /**
@@ -35,7 +35,7 @@ public class SIPStatusMessage extends SIPMessage
         if (this.code.compareTo("98") != 0) // Not a status response message
         {
             throw new SIPException(this.messageProperties.getProperty(
-                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    MessagesTypes.UNAVAILABLE_SERVICE.toString()));
         }
     }
     

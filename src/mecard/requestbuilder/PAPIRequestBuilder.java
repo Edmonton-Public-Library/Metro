@@ -23,14 +23,12 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.WebServiceCommand;
 import api.PAPIXMLCustomerMessage;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
@@ -64,7 +62,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     {
         // read all the properties from the Polaris table
         this.messageProperties      = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        Properties papiProps        = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        Properties papiProps        = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         this.host                   = papiProps.getProperty(PolarisPropertyTypes.HOST.toString());
         this.authenticationDomain   = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_DOMAIN.toString());
         this.authenticationUserName = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_USERNAME.toString());
@@ -95,7 +93,9 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
 //                .setLoginStationId(this.authenticationPassword)
 //                .setHTTPVerb(POST)
 //                .build();
-        return null; 
+        // TODO: not going to use WServices for this now so just stubbed. Stop the user from selecting though.
+        throw new ConfigurationException("Function not supported yet "
+                + "Please review your environment.properties configuration"); 
     }
     
     @Override
@@ -111,7 +111,9 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
 //                .setLoginStationId(this.authenticationPassword)
 //                .setHTTPVerb(POST)
 //                .build();
-        return null;
+        // TODO: not going to use WServices for this now so just stubbed. Stop the user from selecting though.
+        throw new ConfigurationException("Function not supported yet "
+                + "Please review your environment.properties configuration");
     }
     
     @Override
@@ -126,7 +128,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     public final Command getCustomerCommand(String userId, String userPin, Response response)
     {
         // Intentionally left blank should use the SIP2 request.
-        throw new ConfigurationException("Polaris does not support accout queries "
+        throw new ConfigurationException("Polaris does not support account queries "
                 + "Please review your environment.properties configuration"); 
     }
     

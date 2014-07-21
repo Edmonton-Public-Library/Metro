@@ -35,7 +35,7 @@ import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -119,7 +119,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 if (isSuccessful(status.getStdout()) == false)
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                     System.out.println("SIP2 service currently not available.");
                     result = false;
                 }
@@ -141,7 +141,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                     System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
                     result = false;
                 }
@@ -149,7 +149,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.UNAUTHORIZED);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.USERID_PIN_MISMATCH.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
                     System.out.println("User pin does not match the one on record.");
                     result = false;
                 }
@@ -164,7 +164,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
             case UPDATE_CUSTOMER:
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
-                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println(SIPRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());

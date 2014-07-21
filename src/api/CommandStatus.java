@@ -67,6 +67,23 @@ public class CommandStatus
         this.stderr.append(th.getMessage());
         this.status = ResponseTypes.ERROR;
     }
+    
+    /** Allows specific {@link ResponseTypes} to be recorded. {@link #setEnded(int) }
+     * performs a similar task but the response code is always set to {@link ResponseTypes#COMMAND_COMPLETED}
+     * This method will actually set the the status to a value that can be used
+     * later for computing the success of one command before continuing onto another.
+     * 
+     * @param t the response type of the command that executed.
+     * @see #setEnded(int) 
+     */
+    void setResponseType(ResponseTypes value)
+    {
+        this.stdout.append(value.ordinal());
+        this.stdout.append("\n");
+        this.stderr.append(value.ordinal());
+        this.stderr.append("\n");
+        this.status = value;
+    }
 
     public ResponseTypes getStatus() 
     {

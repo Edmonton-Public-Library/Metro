@@ -30,7 +30,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.util.DateComparer;
 import mecard.config.PropertyReader;
 import mecard.util.Text;
@@ -77,14 +77,14 @@ public class MeCardPolicy
         this.lostCardSentinals        = new ArrayList<>();
         
         Properties messageProps     = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        failMinAgeTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_MIN_AGE_TEST.toString());
-        failLostCardTest     = messageProps.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
-        failGoodstandingTest = messageProps.getProperty(MessagesConfigTypes.FAIL_GOODSTANDING_TEST.toString());
-        failReciprocalTest   = messageProps.getProperty(MessagesConfigTypes.FAIL_RECIPROCAL_TEST.toString());
-        failResidencyTest    = messageProps.getProperty(MessagesConfigTypes.FAIL_RESIDENCY_TEST.toString());
-        failEmailTest        = messageProps.getProperty(MessagesConfigTypes.FAIL_EMAIL_TEST.toString());
-        failExpiryTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_EXPIRY_TEST.toString());
-        failCompletenessTest = messageProps.getProperty(MessagesConfigTypes.FAIL_COMPLETENESS_TEST.toString());
+        failMinAgeTest       = messageProps.getProperty(MessagesTypes.FAIL_MIN_AGE_TEST.toString());
+        failLostCardTest     = messageProps.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
+        failGoodstandingTest = messageProps.getProperty(MessagesTypes.FAIL_GOODSTANDING_TEST.toString());
+        failReciprocalTest   = messageProps.getProperty(MessagesTypes.FAIL_RECIPROCAL_TEST.toString());
+        failResidencyTest    = messageProps.getProperty(MessagesTypes.FAIL_RESIDENCY_TEST.toString());
+        failEmailTest        = messageProps.getProperty(MessagesTypes.FAIL_EMAIL_TEST.toString());
+        failExpiryTest       = messageProps.getProperty(MessagesTypes.FAIL_EXPIRY_TEST.toString());
+        failCompletenessTest = messageProps.getProperty(MessagesTypes.FAIL_COMPLETENESS_TEST.toString());
 
         Properties props     = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         // TODO: If we find a reciprocal.properties, or non_resident.properties, or juvenile.properties

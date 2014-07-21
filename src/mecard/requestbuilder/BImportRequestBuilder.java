@@ -34,7 +34,7 @@ import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
@@ -184,14 +184,14 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_JOIN.toString()));
                     System.out.println(new Date() + "Customer account successfully create.");
                     result = true;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_CREATED.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
                     System.out.println(new Date() + "Customer account failed to create.");
                     result = false;
                 }
@@ -202,14 +202,14 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_UPDATE.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_UPDATE.toString()));
                     System.out.println(new Date() + "Customer account successfully updated.");
                     result = true;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_UPDATED.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
                     System.out.println(new Date() + "Customer account failed to update.");
                     result = false;
                 }

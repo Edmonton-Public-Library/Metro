@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.ConfigurationException;
@@ -196,7 +196,7 @@ public class Responder
             // this can happen if the user is barred, underage, non-resident, reciprocal, lostcard
             // or missing key information.
             response.setCode(ResponseTypes.FAIL);
-            response.setResponse(messageProperties.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
+            response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_METRO_POLICY.toString()));
             response.setResponse(failedTests.toString());
             response.setCustomer(null);
             System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStdout());
@@ -247,7 +247,7 @@ public class Responder
         // manually later.
         if (customer.isLostCard())
         {
-            String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
+            String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
             UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
             failFile.recordUserDataMessage(message);
             response.setCode(ResponseTypes.LOST_CARD);
@@ -283,7 +283,7 @@ public class Responder
         Command command = requestBuilder.getUpdateUserCommand(customer, response, normalizer);
         if (customer.isLostCard())
         {
-            String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
+            String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
             UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
             failFile.recordUserDataMessage(message);
             response.setCode(ResponseTypes.LOST_CARD);

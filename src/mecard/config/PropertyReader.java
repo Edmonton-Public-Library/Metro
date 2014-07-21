@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.exception.ConfigurationException;
 
 /**
  * Property reader reads all the configuration files and ensures that required
@@ -59,6 +60,7 @@ public class PropertyReader
     private static String DEBUG_SETTINGS_FILE    = "debug.properties";
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
+    private static String SQL_PROPERTY_FILE      = "sql.properties";
         // There are no mandatory variables, so no checking is done.
     private static Properties polaris;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
@@ -69,6 +71,7 @@ public class PropertyReader
     private static Properties debugProperties;    // Optional config for debugging.
     private static Properties systemVariables;    // Optional no mandatory fields.
     private static Properties messagesProperties; // Messages tailored by local library.
+    private static Properties SQLProperties;      // Optional config for sites that use SQL for transactions.
     
     /**
      * Parses a list of ',' comma separated types from a given entry in the 
@@ -154,7 +157,7 @@ public class PropertyReader
                     if (symphony.get(sType.toString()) == null)
                     {
                         String msg = "'" + sType + "' unset in " + PropertyReader.SYMPHONY_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return symphony;
@@ -167,7 +170,7 @@ public class PropertyReader
                     if (environment.get(lType.toString()) == null)
                     {
                         String msg = "'" + lType + "' unset in " + PropertyReader.ENVIRONMENT_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return environment;
@@ -180,7 +183,7 @@ public class PropertyReader
                     if (sip2.get(sType.toString()) == null)
                     {
                         String msg = "'" + sType + "' unset in " + PropertyReader.SIP2_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return sip2;
@@ -193,7 +196,7 @@ public class PropertyReader
                     if (bimport.get(bType.toString()) == null)
                     {
                         String msg = "'" + bType + "' unset in " + PropertyReader.BIMPORT_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return bimport;
@@ -210,7 +213,7 @@ public class PropertyReader
                     if (debugProperties.get(dType.toString()) == null)
                     {
                         String msg = "'" + dType + "' unset in " + PropertyReader.DEBUG_SETTINGS_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return debugProperties;
@@ -219,7 +222,7 @@ public class PropertyReader
                 systemVariables = readPropertyFile(PropertyReader.VARIABLES_FILE);
                 return systemVariables;
                 
-            case POLARIS:
+            case PAPI:
                 polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
@@ -227,20 +230,33 @@ public class PropertyReader
                     if (polaris.get(pType.toString()) == null)
                     {
                         String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return polaris;
+            // SQL required properties if the user is using SQL for any protocol.    
+            case SQL:
+                SQLProperties = readPropertyFile(PropertyReader.SQL_PROPERTY_FILE);
+                // now check that all mandetory values are here.
+                for (SQLPropertyTypes sType : SQLPropertyTypes.values())
+                {
+                    if (SQLProperties.get(sType.toString()) == null)
+                    {
+                        String msg = "'" + sType + "' unset in " + PropertyReader.SQL_PROPERTY_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
+                    }
+                }
+                return SQLProperties;
                 
             case MESSAGES:
                 messagesProperties = readPropertyFile(PropertyReader.MESSAGES_PROPERTY_FILE);
                 // now check that all mandetory values are here.
-                for (MessagesConfigTypes mType : MessagesConfigTypes.values())
+                for (MessagesTypes mType : MessagesTypes.values())
                 {
                     if (messagesProperties.get(mType.toString()) == null)
                     {
                         String msg = "'" + mType + "' unset in " + PropertyReader.MESSAGES_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return messagesProperties;

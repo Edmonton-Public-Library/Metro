@@ -46,7 +46,7 @@ public class PAPIFormattedCustomer implements FormattedCustomer
     private FormattedTable customerTable;
     public PAPIFormattedCustomer(Customer customer)
     {
-        Properties props     = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        Properties props     = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         
         customerTable = PAPIFormattedTable.getInstanceOf();
         // Fill in the default required fields for v1 of PAPI web service API.

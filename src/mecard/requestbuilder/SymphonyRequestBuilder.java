@@ -33,7 +33,7 @@ import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -124,11 +124,11 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         switch(status.getStatus())
         {
             case UNAVAILABLE:
-                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println(new Date() + "system is currently unavailable." + status.getStderr());
                 break;
             case FAIL:
-                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 System.out.println(new Date() + "account not found." + status.getStderr());
                 break;
             case OK:
@@ -137,7 +137,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 System.out.println(new Date() + " Ok.");
                 break;
             default:
-                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 System.out.println(new Date() + "an error occured while searching for account."
                         + status.getStderr());
                 break;
@@ -206,7 +206,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 if (status.getStderr().contains("**error number 111"))
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                     System.out.println("account not found.");
                     result = false;
                 }
@@ -221,14 +221,14 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 if (status.getStderr().contains("**error number 111") || status.getStdout().isEmpty())
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_CREATED.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
                     System.out.println("There was a problem creating account.");
                     result = false;
                 }
                 else 
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_JOIN.toString()));
                     System.out.println("customer created.");
                     result = true;
                 }
@@ -237,21 +237,21 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 if (status.getStderr().contains("**error number 111") || status.getStdout().isEmpty())
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_UPDATED.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
                     System.out.println("customer not updated.");
                     result = false;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_UPDATE.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_UPDATE.toString()));
                     System.out.println("customer updated.");
                     result = true;
                 }
                 break;
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
-                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println(SymphonyRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());

@@ -55,7 +55,7 @@ public final class PAPISecurity
     
     private PAPISecurity()
     {
-        Properties props     = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        Properties props     = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         this.PAPIAccessKeyId = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_KEY_ID.toString());
         this.PAPISecret      = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_SECRET.toString());
     }

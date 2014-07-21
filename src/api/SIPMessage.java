@@ -27,7 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
 import mecard.exception.SIPException;
 
@@ -113,7 +113,7 @@ public class SIPMessage
             else // not a sip message.
             {
                 throw new SIPException(this.messageProperties.getProperty(
-                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    MessagesTypes.UNAVAILABLE_SERVICE.toString()));
             }
         }
         this.fields = new HashMap<>();
