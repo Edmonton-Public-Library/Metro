@@ -51,8 +51,8 @@ public class SQLCommandTest
             System.out.println("Date could not be parsed." + e.getMessage());
         }
         Command command = new SQLInsertCommand.Builder(connector, "software")
-                .string("title", "Illustrator")
-                .integer("station", 2)
+                .setNull("title")
+                .integer("station", 77)
                 .date("DateInstalled", myDate)
                 .build();
 

@@ -51,6 +51,10 @@ public final class SQLUpdateData extends SQLData
         {
             return this.name + "=" + this.value;
         }
+        if (this.dataType == Type.NULL)
+        {
+            return this.name + " IS NULL";
+        }
         return this.name + "=\"" + this.value + "\"";
     }    
 }
