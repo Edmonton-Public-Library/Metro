@@ -43,24 +43,28 @@ public class PostalCode
     }
     
     /** 
+     * Removes white space from postal codes "CDC DCD" from "CDCDCD".
+     * @param postalCode
+     * @return formatted postal code.
+     */
+    public static String cleanPostalCode(String postalCode)
+    {
+        return postalCode.replaceAll("\\s+", " ");
+    }
+    
+    /** 
      * Formats a given postal code to "CDC DCD" from "CDCDCD".
      * @param postalCode
      * @return formatted postal code.
      */
     public static String formatPostalCode(String postalCode)
     {
-        PostalCode code  = new PostalCode(postalCode);
-        if (code.isValid)
+        StringBuilder sb = new StringBuilder(postalCode);
+        if (sb.length() > 3)
         {
-            String pCode = postalCode.replaceAll("\\s+", " ");
-            // If we don't find a space, let's put one in.
-            if (pCode.contains(" ") == false)
-            {
-                pCode =  postalCode.substring(0, 3) + " " + postalCode.substring(3);
-            }
-            return pCode;
+            sb.insert(3, ' ');
         }
-        return postalCode;
+        return PostalCode.cleanPostalCode(sb.toString());
     }
 
     /**
