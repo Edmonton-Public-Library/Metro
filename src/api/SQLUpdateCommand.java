@@ -20,8 +20,9 @@
  */
 package api;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import mecard.ResponseTypes;
@@ -34,14 +35,17 @@ import mecard.exception.ConfigurationException;
 public class SQLUpdateCommand implements Command
 {
     private final SQLConnector connector;
-    private final String statementString;
+//    private final String statementString;
+    private final List<SQLUpdateData> columnList;
+    private final String table;
+    private SQLUpdateData where;
     
     public static class Builder
     {
         private SQLConnector connector;
         private String table; // The name of the table.
         private List<SQLUpdateData> columnList; // Column names you wish to see in selection.
-        private String where;
+        private SQLUpdateData where;
         
         public Builder(SQLConnector s, String tableName)
         {
@@ -54,12 +58,27 @@ public class SQLUpdateCommand implements Command
             this.connector  = s;
             this.table = tableName;
             this.columnList = new ArrayList<>();
-            this.where = "";
+            this.where = null;
         }
         
-        public Builder where(String whereClause)
+        public Builder whereString(String key, String value)
         {
-            this.where = whereClause;
+            return this.where(value, SQLData.Type.STRING, value);
+        }
+        
+        public Builder whereInteger(String key, String value)
+        {
+            return this.where(key, SQLData.Type.INT, value);
+        }
+        
+        public Builder whereDate(String key, String value)
+        {
+            return this.where(key, SQLData.Type.DATE, value);
+        }
+        
+        private Builder where(String key, SQLData.Type type, String value)
+        {
+            this.where = new SQLUpdateData(key, type, value);
             return this;
         }
         
@@ -77,16 +96,16 @@ public class SQLUpdateCommand implements Command
             return this;
         }
         
-        public Builder integer(String iName, int value)
+        public Builder integer(String iName, String value)
         {
-            SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, String.valueOf(value));
+            SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, value);
             this.columnList.add(i);
             return this;
         }
         
         public SQLUpdateCommand build()
         {
-            if (this.where.isEmpty())
+            if (this.where == null)
             {
                 throw new ConfigurationException("Empty WHERE clause not permitted.");
             }
@@ -96,72 +115,125 @@ public class SQLUpdateCommand implements Command
     
     private SQLUpdateCommand(Builder builder)
     {
-        this.connector = builder.connector;
-        StringBuilder sb = new StringBuilder();
-        // update <table> set <col>=<value> where <condition>=<test>;
-        sb.append("UPDATE ");
-        sb.append(builder.table);
-        sb.append(" SET ");
-        for (int i = 0; i < builder.columnList.size(); i++)
-        {
-            SQLUpdateData dType = builder.columnList.get(i);
-            sb.append(dType.getName());
-            sb.append("=");
-            if (dType.getType() == SQLData.Type.INT)
-            {
-                sb.append(dType.getValue());
-            }
-            else // quote the values we are going to change.
-            {
-                sb.append("\"");
-                sb.append(dType.getValue());
-                sb.append("\"");
-            }
-            if (i + 1 != builder.columnList.size())
-            {
-                sb.append(", ");
-            }
-        }
-        // We do not allow an empty where clause to limit the update.
-        sb.append(" WHERE ");
-        sb.append(builder.where);
-        this.statementString = sb.toString();
+        this.connector  = builder.connector;
+        this.columnList = builder.columnList;
+        this.table      = builder.table;
+        this.where      = builder.where;
     }
     
     @Override
     public CommandStatus execute()
-    {
+    {   
         CommandStatus status = new CommandStatus();
-        Statement statement = null;
+        Connection connection = null;
+        PreparedStatement pStatement = null;
         try
         {
-            statement = this.connector.getConnection().createStatement();
+            StringBuilder statementStrBuilder = new StringBuilder();
+            // update <table> set <col>=<value> where <condition>=<test>;
+            statementStrBuilder.append("UPDATE ");
+            statementStrBuilder.append(this.table);
+            statementStrBuilder.append(" SET ");
+            for (int i = 0; i < this.columnList.size(); i++)
+            {
+                SQLUpdateData dType = this.columnList.get(i);
+                statementStrBuilder.append(dType.getName());
+                statementStrBuilder.append(" = ?");
+                // separate multiple 'set' values.
+                if (i + 1 != this.columnList.size())
+                {
+                    statementStrBuilder.append(", ");
+                }
+            }
+            // We do not allow an empty where clause to limit the update.
+            statementStrBuilder.append(" WHERE ");
+            statementStrBuilder.append(this.where.getName());
+            statementStrBuilder.append(" = ?");
+            // Time to set up the connection and set any null values.
+            connection = this.connector.getConnection();
+            pStatement = connection.prepareStatement(statementStrBuilder.toString());
+            // Set this here because we need it for the where clause at the end.
+            int columnNumber = 0;
+            // Now add the values you want to set in the statement
+            for (int i = 0; i < this.columnList.size(); i++)
+            {
+                SQLUpdateData dType = this.columnList.get(i);
+                columnNumber++;
+                if (dType.getValue() == null)
+                {
+                    if (dType.getType() == SQLData.Type.INT)
+                    {
+                        pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+                    }
+                    else if (dType.getType() == SQLData.Type.DATE)
+                    {
+                        pStatement.setNull(columnNumber, java.sql.Types.DATE);
+                    }
+                    else // dType.getType() == SQLData.Type.STRING
+                    {
+                        pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                    }
+                }
+                else // Statement doesn't include a null value.
+                {
+                    if (dType.getType() == SQLData.Type.INT)
+                    {
+                        pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
+                    }
+                    else if (dType.getType() == SQLData.Type.DATE)
+                    {
+                        pStatement.setDate(columnNumber, java.sql.Date.valueOf(dType.getValue()));
+                    }
+                    else // dType.getType() == SQLData.Type.STRING
+                    {
+                        pStatement.setString(columnNumber, dType.getValue());
+                    }
+                }
+            }
+            // Now fill out the 'WHERE' template which can have the same restrictions
+            columnNumber++;
+            if (this.where.getValue() == null)
+            {
+                if (this.where.getType() == SQLData.Type.INT)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+                }
+                else if (this.where.getType() == SQLData.Type.DATE)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.DATE);
+                }
+                else // dType.getType() == SQLData.Type.STRING
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                }
+            }
+            else // Statement doesn't include a null value.
+            {
+                if (this.where.getType() == SQLData.Type.INT)
+                {
+                    pStatement.setInt(columnNumber, Integer.valueOf(this.where.getValue()));
+                }
+                else if (this.where.getType() == SQLData.Type.DATE)
+                {
+                    pStatement.setDate(columnNumber, java.sql.Date.valueOf(this.where.getValue()));
+                }
+                else // dType.getType() == SQLData.Type.STRING
+                {
+                    pStatement.setString(columnNumber, this.where.getValue());
+                }
+            }
             // Execute the SQL
-            statement.execute(statementString);
+            pStatement.executeUpdate();
             status.setEnded(ResponseTypes.OK.ordinal());
+            pStatement.close();
         }
         catch (SQLException ex)
         {
             System.out.println("**error executing statement '" + 
-                    statementString + "'.\n" + ex.getMessage());
+                    pStatement + "'.\n" + ex.getMessage());
             status.setError(ex);
             System.out.println("SQLException MSG:"+status.getStderr());
             status.setResponseType(ResponseTypes.FAIL);
-        }
-        finally
-        {
-            if (statement != null)
-            {
-                try
-                {
-                    statement.close();
-                } catch (SQLException ex)
-                {
-                    System.out.println("**error " + ex.getMessage());
-                    status.setError(ex);
-                    status.setResponseType(ResponseTypes.FAIL);
-                }
-            }
         }
         return status;
     }
@@ -169,7 +241,7 @@ public class SQLUpdateCommand implements Command
     @Override
     public String toString()
     {
-        return this.statementString;
+        return "Not implemented yet.";
     }
     
 }

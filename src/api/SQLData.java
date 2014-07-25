@@ -31,8 +31,7 @@ public class SQLData
     public enum Type{
         STRING,
         DATE,
-        INT,
-        NULL;
+        INT;
     }
     
     protected final String name;

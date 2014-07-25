@@ -51,12 +51,32 @@ public class SQLCommandTest
             System.out.println("Date could not be parsed." + e.getMessage());
         }
         Command command = new SQLInsertCommand.Builder(connector, "software")
-                .setNull("title")
-                .integer("station", 77)
-                .date("DateInstalled", myDate)
+                .string("title", "Pir8 Software")
+                .integer("station", "76")
+                .date("DateInstalled", null)
                 .build();
-
+        System.out.println("COMMAND==>"+command.toString());
         CommandStatus status = command.execute();
+        System.out.println("STATUS: " + status.getStdout() + status.getStatus());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        command = new SQLInsertCommand.Builder(connector, "software")
+                .string("title", null)
+                .integer("station", "76")
+                .date("DateInstalled", "2014-07-25")
+                .build();
+        System.out.println("COMMAND==>"+command.toString());
+        status = command.execute();
+        System.out.println("STATUS: " + status.getStdout() + status.getStatus());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        command = new SQLInsertCommand.Builder(connector, "software")
+                .string("title", "Pir8 Software")
+                .integer("station") // null value for integer.
+                .date("DateInstalled", "2014-07-25")
+                .build();
+        System.out.println("COMMAND==>"+command.toString());
+        status = command.execute();
         System.out.println("STATUS: " + status.getStdout() + status.getStatus());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
     }
@@ -79,13 +99,25 @@ public class SQLCommandTest
         }
         Command command = new SQLUpdateCommand.Builder(connector, "software")
                 .string("title", "Snadobe Acrobat")
-                .integer("station", 5)
+                .integer("station", "5")
 //                .date("DateInstalled", "2013-25-12") // this date value fails on MySQL date format:Data truncation: Incorrect date value: '2013-25-12' for column 'DateInstalled' at row 1
                 .date("DateInstalled", myDate)
-                .where("Id=6")
+                .whereInteger("station", null)
                 .build();
 
         CommandStatus status = command.execute();
+        System.out.println("STATUS: " + status.getStdout() + status.getStatus());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        command = new SQLUpdateCommand.Builder(connector, "software")
+                .string("title", "Andrew Acrobat")
+                .integer("station", null)
+//                .date("DateInstalled", "2013-25-12") // this date value fails on MySQL date format:Data truncation: Incorrect date value: '2013-25-12' for column 'DateInstalled' at row 1
+                .date("DateInstalled", myDate)
+                .whereInteger("station", "77")
+                .build();
+
+        status = command.execute();
         System.out.println("STATUS: " + status.getStdout() + status.getStatus());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
     }

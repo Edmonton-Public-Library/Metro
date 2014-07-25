@@ -170,7 +170,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                         customer.get(CustomerFieldTypes.FIRSTNAME)
                         + " " 
                         + customer.get(CustomerFieldTypes.LASTNAME))
-                .where("PatronID = " + patronBarcode)
+                .whereString("PatronID", patronBarcode)
                 .build();
         status = updateCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -206,7 +206,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .string("PostalCode", customer.get(CustomerFieldTypes.POSTALCODE))
                 .string("City", customer.get(CustomerFieldTypes.CITY))
                 .string("State", customer.get(CustomerFieldTypes.PROVINCE))
-                .integer("CountryID", 2)
+                .integer("CountryID", "2")
 //                    .string("County", "NULL") // This may have to be commented out since this will probably put the literal value NULL in the country field.
                 .build();
             postalcodeInsert.execute();
@@ -259,13 +259,11 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             VALUES ( (PostalCodeID) , (StreetOne) , (StreetTwo) , NULL , NULL )
             */
             SQLInsertCommand insertAddress = new SQLInsertCommand.Builder(connector, this.addressTable)
-                    .integer("PostalCodeID", Integer.valueOf(postalCodeId))
+                    .integer("PostalCodeID", postalCodeId)
                     .string("StreetOne", customer.get(CustomerFieldTypes.STREET))
-                    .string("StreetTwo", "")
-//                    .string("ZipPlusFour", "NULL") 
-                    .setNull("ZipPlusFour") // TODO: insert null
-//                    .string("MunicipalityName", "NULL") 
-                    .setNull("MunicipalityName") // TODO: insert null
+                    .string("StreetTwo", "") 
+                    .string("ZipPlusFour", null) 
+                    .string("MunicipalityName", null)
                     .build();
             insertAddress.execute();
         }

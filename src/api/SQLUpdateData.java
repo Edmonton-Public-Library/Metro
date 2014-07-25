@@ -33,12 +33,10 @@ public final class SQLUpdateData extends SQLData
         this.value = value;
     }
 
-    SQLUpdateData(String columnName)
-    {
-        super(columnName, Type.NULL);
-        this.value = "NULL";
-    }
-
+    /**
+     * 
+     * @return stored value which may be null.
+     */
     public String getValue()
     {
         return this.value;
@@ -47,13 +45,13 @@ public final class SQLUpdateData extends SQLData
     @Override
     public String toString()
     {
+        if (this.value == null)
+        {
+            return this.name + " is null";
+        }
         if (this.dataType == Type.INT)
         {
             return this.name + "=" + this.value;
-        }
-        if (this.dataType == Type.NULL)
-        {
-            return this.name + " IS NULL";
         }
         return this.name + "=\"" + this.value + "\"";
     }    

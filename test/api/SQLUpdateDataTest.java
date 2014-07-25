@@ -24,7 +24,7 @@ public class SQLUpdateDataTest
     public void testToString()
     {
         System.out.println("== toString ==");
-        SQLUpdateData sqlData = new SQLUpdateData("Comment");
+        SQLUpdateData sqlData = new SQLUpdateData("Comment", SQLData.Type.STRING, "NULL");
         String expResult = "Comment IS NULL";
         String result = sqlData.toString();
         System.out.println("RESULT:" + result);
