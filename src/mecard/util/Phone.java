@@ -66,7 +66,7 @@ public class Phone
         // any space delimited phone numbers should be converted.
         phNum = phNum.replace("(", "");
         phNum = phNum.replace(")", " ");
-        phNum = phNum.replace(" ", "-");
+        phNum = phNum.replace(" ", DEFAULT_PHONE_DELIMITER);
         if (phNum.contains(DEFAULT_PHONE_DELIMITER))
         {
             return phNum;
