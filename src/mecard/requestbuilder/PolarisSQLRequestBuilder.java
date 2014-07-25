@@ -58,12 +58,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     private final String postalCodes        = "Polaris.PostalCodes";
     private final String addressTable       = "Polaris.Addresses";
     
-    private String host;
-    private String driver;
-    private String database;
-    private String user;
-    private String password;
+    private final String host;
+    private final String driver;
+    private final String database;
+    private final String user;
+    private final String password;
     private final Properties messages;
+    private SQLConnector connector;
     
     public PolarisSQLRequestBuilder()
     {
@@ -75,7 +76,6 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         database = properties.getProperty(SQLPropertyTypes.DATABASE.toString());
         user = properties.getProperty(SQLPropertyTypes.USERNAME.toString());
         password = properties.getProperty(SQLPropertyTypes.PASSWORD.toString());
-        
     }
     
     @Override
@@ -102,7 +102,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
-        SQLConnector connector = new SQLConnector.Builder(host, driver, database)
+        // This is a class variable because the Responder will need to run the last command and return results.
+        this.connector = new SQLConnector.Builder(host, driver, database)
                 .user(user)
                 .password(password)
                 .build();
@@ -241,12 +242,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         */
         SQLSelectCommand selectAddressIDCommand = new SQLSelectCommand.Builder(connector, this.addressTable)
                 .integer("AddressID")
-                .where("PostalCodeID=" + postalCodeId 
-                        + " AND StreetOne="
-                        + customer.get(CustomerFieldTypes.STREET)
-                        + " AND StreetTWo ="
-                        + "") // what is this? Why check street one or street two.
-                // TODO: Add AND clauses.
+                .whereInteger("PostalCodeID", postalCodeId 
+                        + " AND StreetOne = "
+                        + customer.get(CustomerFieldTypes.STREET)) // what is this? Why check street one.
                 .build();
         status = selectAddressIDCommand.execute();
         if (status.getStdout().compareTo("NULL") == 0)
@@ -267,10 +265,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .build();
             insertAddress.execute();
         }
-        /*
         
+        
+        /*
         SELECT IDENT_CURRENT('Polaris.Addresses') STORE AS VARIABLE (AddressID)
-        * NOTE this has to be done immediately - it returns the last inserted value, it's possible for another value to be inserted quite quickly.  Can error check this if necessary (Example below)
+        * NOTE this has to be done immediately - it returns the last inserted value, 
+        it's possible for another value to be inserted quite quickly.  
+        Can error check this if necessary (Example below)
         --
         SELECT PostalCodeID
         FROM Polaris.Polaris.Addresses
@@ -279,7 +280,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         IF Query == (PostalCode) OK
         ELSE Run same query and decrement (AddressID) until we get a match, then store new value as (AddressID).
         --
-
+        */
+        // TODO get clarification on the above value selection. Is it the max id in the table?
+        /*
         ADD ADDRESS TO PATRON
 
         INSERT INTO Polaris.Polaris.PatronAddresses
@@ -290,7 +293,19 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         VALUES ( (PatronID) , (AddressID) , 4 , 'Home' , 0 , NULL , NULL )
         *Yes, must run this three times, one for each number value
         }
-
+        */
+        SQLInsertCommand insertAddressFields = new SQLInsertCommand.Builder(connector, this.addressTable)
+            .integer("PatronID", patronBarcode)
+                // GET the field names for this table.
+//            .integer("AddressID", addressId)
+//            .integer("StreetTwo", "2") 
+//            .string(" ", "Home") 
+//            .integer(" ", "0") 
+//            .string(" ", null)
+//            .string(" ", null)
+            .build();
+        insertAddressFields.execute();
+        /*
         IF THE VALUE EXISTED
 
         UPDATE PATRON ADDRESS
@@ -330,8 +345,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean tidy()
     {
-        throw new UnsupportedOperationException("Not supported in " +
-                PolarisSQLRequestBuilder.class.getName());
+        this.connector.close();
+        return true;
     }
     
     @Override

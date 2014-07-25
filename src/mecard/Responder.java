@@ -202,7 +202,7 @@ public class Responder
             System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStdout());
             System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStderr());
         }
-        
+        requestBuilder.tidy();
     }
     
     /**
@@ -217,6 +217,7 @@ public class Responder
         requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
         System.out.println(new Date() + " STAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " STAT_STDERR:"+status.getStderr());
+        requestBuilder.tidy();
     }
     
     /**
@@ -267,6 +268,7 @@ public class Responder
                 throw new ConfigurationException();
             }
         }
+        requestBuilder.tidy();
     }
 
     /**
@@ -303,6 +305,7 @@ public class Responder
                 throw new ConfigurationException();
             }
         }
+        requestBuilder.tidy();
     }
 
     /**

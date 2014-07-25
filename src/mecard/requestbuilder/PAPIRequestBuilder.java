@@ -158,7 +158,7 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean tidy()
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
     
     @Override

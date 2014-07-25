@@ -45,6 +45,7 @@ public class SQLSelectCommand implements Command
         private String table; // The name of the table.
         private List<SQLData> columnList; // Column names you wish to see in selection.
         private String whereClause;
+        private SQLUpdateData where;
         
         public Builder(SQLConnector s, String tableName)
         {
@@ -54,10 +55,11 @@ public class SQLSelectCommand implements Command
                         + " received null connector as argument.");
                 throw new ConfigurationException();
             }
-            this.connector  = s;
-            this.table      = tableName;
-            this.columnList = new ArrayList<>();
-            this.whereClause      = "";
+            this.connector   = s;
+            this.table       = tableName;
+            this.columnList  = new ArrayList<>();
+            this.whereClause = "";
+            this.where       = null;
         }
         
         public Builder string(String cName)
@@ -81,9 +83,30 @@ public class SQLSelectCommand implements Command
             return this;
         }
         
-         public Builder where(String whereClause)
+        public Builder where(String whereClause)
         {
             this.whereClause = whereClause;
+            return this;
+        }
+        
+        public Builder whereString(String key, String value)
+        {
+            return this.where(value, SQLData.Type.STRING, value);
+        }
+        
+        public Builder whereInteger(String key, String value)
+        {
+            return this.where(key, SQLData.Type.INT, value);
+        }
+        
+        public Builder whereDate(String key, String value)
+        {
+            return this.where(key, SQLData.Type.DATE, value);
+        }
+        
+        private Builder where(String key, SQLData.Type type, String value)
+        {
+            this.where = new SQLUpdateData(key, type, value);
             return this;
         }
         
@@ -110,10 +133,12 @@ public class SQLSelectCommand implements Command
         }
         sb.append(" FROM ");
         sb.append(builder.table);
-        if (! builder.whereClause.isEmpty())
+        if (builder.whereClause != null)
         {
             sb.append(" WHERE ");
-            sb.append(builder.whereClause);
+            sb.append(builder.where.getName());
+            sb.append(" = ");
+            sb.append(builder.where.getValue());
         }
         this.statementString = sb.toString();
     }
@@ -168,6 +193,8 @@ public class SQLSelectCommand implements Command
                 status.setStdout(output.toString());
             }
             status.setEnded(ResponseTypes.OK.ordinal());
+            statement.close();
+            // Don't close the connection, other commands might need it.
         }
         catch (SQLException ex)
         {
@@ -176,21 +203,6 @@ public class SQLSelectCommand implements Command
             status.setError(ex);
             System.out.println("SQLException MSG:"+status.getStderr());
             status.setResponseType(ResponseTypes.FAIL);
-        }
-        finally
-        {
-            if (statement != null)
-            {
-                try
-                {
-                    statement.close();
-                } catch (SQLException ex)
-                {
-                    System.out.println("**error " + ex.getMessage());
-                    status.setError(ex);
-                    status.setResponseType(ResponseTypes.FAIL);
-                }
-            }
         }
         return status;
     }
