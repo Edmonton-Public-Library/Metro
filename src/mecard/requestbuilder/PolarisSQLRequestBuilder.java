@@ -44,6 +44,7 @@ import mecard.customer.CustomerFormatter;
 import mecard.customer.polaris.PolarisSQLCustomerFormatter;
 import mecard.exception.ConfigurationException;
 import mecard.util.DateComparer;
+import mecard.util.PostalCode;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -78,6 +79,24 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         password = properties.getProperty(SQLPropertyTypes.PASSWORD.toString());
     }
     
+    /**
+     * Constructor for testing purposes.
+     * @param host
+     * @param driver MY_SQL or SQL_SERVER.
+     * @param database
+     * @param user
+     * @param password
+     */
+    public PolarisSQLRequestBuilder(String host, String driver, String database, String user, String password)
+    {
+        messages = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        this.host = host;
+        this.driver = driver;
+        this.database = database;
+        this.user = user;
+        this.password = password;
+    }
+    
     @Override
     public CustomerFormatter getFormatter()
     {
@@ -90,7 +109,20 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     {
         // TODO: Normally we would use SIP2 for this command but I am going to
         // do some testing with the Polaris DB.
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.connector = new SQLConnector.Builder(host, driver, database)
+                .user(user)
+                .password(password)
+                .build();
+        /* First we need the PatronID
+        SELECT PatronID
+        FROM Polaris.Polaris.Patrons
+        WHERE Barcode = (Barcode)
+        */
+        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
+            .string("PatronID")
+            .where("Barcode=" + userId)
+            .build();
+        return selectUser;
     }
 
     @Override
@@ -221,10 +253,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 
         STORE AS VARIABLE (PostalCodeID) 
         */
+        // The raw postal code from customer is 'A0A0A0', which won't match a correctly
+        // stored postal code of 'A0A 0A0'.
+        String pCode = PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE));
         selectPostalcodeCommand = new SQLSelectCommand.Builder(connector, this.postalCodes)
-            .string("PostalCodeID")
-            .where("PostalCode=" + customer.get(CustomerFieldTypes.POSTALCODE))
-            .build();
+                .integer("PostalCodeID")
+                .whereString("PostalCode", pCode)
+                .build();
         status = selectPostalcodeCommand.execute();
         String postalCodeId = status.getStdout();
         /*
@@ -294,17 +329,39 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         *Yes, must run this three times, one for each number value
         }
         */
-        SQLInsertCommand insertAddressFields = new SQLInsertCommand.Builder(connector, this.addressTable)
-            .integer("PatronID", patronBarcode)
-                // GET the field names for this table.
+        // Number 1 pass...
+//        SQLInsertCommand insertAddressFields = new SQLInsertCommand.Builder(connector, this.addressTable)
+//            .integer("PatronID", patronBarcode)
 //            .integer("AddressID", addressId)
-//            .integer("StreetTwo", "2") 
-//            .string(" ", "Home") 
-//            .integer(" ", "0") 
-//            .string(" ", null)
-//            .string(" ", null)
-            .build();
-        insertAddressFields.execute();
+//            .integer("AddressTypeID ", "2") 
+//            .string("FreeTextLabel", "Home") 
+//            .integer("Verified ", "0") 
+//            .string("VerificationDate", null)
+//            .string("PolarisUserID", null)
+//            .build();
+//        insertAddressFields.execute();
+        // Number 2...
+//        insertAddressFields = new SQLInsertCommand.Builder(connector, this.addressTable)
+//            .integer("PatronID", patronBarcode)
+//            .integer("AddressID", addressId)
+//            .integer("AddressTypeID ", "3") 
+//            .string("FreeTextLabel", "Home") 
+//            .integer("Verified ", "0") 
+//            .string("VerificationDate", null)
+//            .string("PolarisUserID", null)
+//            .build();
+//        insertAddressFields.execute();
+        // Number 3 pass...
+//        insertAddressFields = new SQLInsertCommand.Builder(connector, this.addressTable)
+//            .integer("PatronID", patronBarcode)
+//            .integer("AddressID", addressId)
+//            .integer("AddressTypeID ", "4") 
+//            .string("FreeTextLabel", "Home") 
+//            .integer("Verified ", "0") 
+//            .string("VerificationDate", null)
+//            .string("PolarisUserID", null)
+//            .build();
+//        insertAddressFields.execute();
         /*
         IF THE VALUE EXISTED
 
@@ -313,8 +370,12 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         SET AddressID = (AddressID) 
         WHERE PatronID = (PatronID)
         */
-        
-        return selectBarcodeCommand;
+//        SQLUpdateCommand updatePatronAddress = new SQLUpdateCommand.Builder(connector, addressTable)
+//                .string("AddressID", addressId)
+//                .whereInteger("PatronID", patronId)
+//                .build();
+//        return updatePatronAddress;
+        return null;
     }
 
     @Override

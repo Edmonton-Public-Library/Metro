@@ -39,6 +39,7 @@ public class SQLConnector
     private final String driverName;
     private final String urlProtocol;
     Connection connection = null;
+    private final String url;
 
     public static class Builder
     {
@@ -52,7 +53,6 @@ public class SQLConnector
          * Creates builder with minimum constructor arguments.
          *
          * @param host host name of the database.
-         * @param port port the JDBC connects on.
          * @param driver enum of the driver type. Only MySQL and SQL Server are supported.
          * @param databaseName name of the database to connect with.
          */
@@ -122,11 +122,13 @@ public class SQLConnector
                 this.driverName  = "com.mysql.jdbc.Driver";
                 this.urlProtocol = "jdbc:mysql://";
                 this.port        = 3306;
+                this.url         = getMySQL_URL();
                 break;
             case "SQL_SERVER": // sqljdbc4.jar
                 this.driverName  = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
                 this.urlProtocol = "jdbc:sqlserver://";
                 this.port        = 1433;
+                this.url         = getSQLServer_URL();
                 break;
             default:
                 throw new UnsupportedOperationException(
@@ -146,13 +148,15 @@ public class SQLConnector
         }
         try
         {
-            // build the connection
-            connection = DriverManager.getConnection(
-                    getURL(), this.sqlUser, this.sqlPassword);
+            // build the connection for MySQL
+//            connection = DriverManager.getConnection(
+//                    this.url, this.sqlUser, this.sqlPassword);
+            // build the connection for SQL Server
+            connection = DriverManager.getConnection(this.url);
         }
         catch (SQLException ex)
         {
-            System.out.println("SQL Connection failed: Check output console." + ex.getMessage());
+            System.out.println("SQL Connection failed: " + ex.getMessage());
             throw new ConfigurationException("sql driver error");
         }
         
@@ -165,7 +169,7 @@ public class SQLConnector
         System.out.println("SQL connection succeeded");       
     }
     
-    private String getURL()
+    private String getMySQL_URL()
     {
         StringBuilder connectionURL = new StringBuilder();
         connectionURL.append(this.urlProtocol);
@@ -174,6 +178,19 @@ public class SQLConnector
         connectionURL.append(this.port);
         connectionURL.append("/");
         connectionURL.append(this.sqlDatabase);
+        return connectionURL.toString();
+    }
+    
+    private String getSQLServer_URL()
+    {
+        StringBuilder connectionURL = new StringBuilder();
+        connectionURL.append(this.urlProtocol);
+        connectionURL.append(this.host);
+        connectionURL.append(":"+String.valueOf(this.port)+";");
+//        connectionURL.append("\\\\sqlexpress;");
+         connectionURL.append("database=" + this.sqlDatabase + ";");
+        connectionURL.append("user=" + this.sqlUser + ";");
+        connectionURL.append("password=" + this.sqlPassword + ";");
         return connectionURL.toString();
     }
     
@@ -207,6 +224,6 @@ public class SQLConnector
     @Override
     public String toString()
     {
-        return getURL();
+        return this.url;
     }
 }
