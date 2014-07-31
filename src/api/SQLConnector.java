@@ -149,10 +149,10 @@ public class SQLConnector
         try
         {
             // build the connection for MySQL
-//            connection = DriverManager.getConnection(
-//                    this.url, this.sqlUser, this.sqlPassword);
+            connection = DriverManager.getConnection(
+                    this.url, this.sqlUser, this.sqlPassword);
             // build the connection for SQL Server
-            connection = DriverManager.getConnection(this.url);
+//            connection = DriverManager.getConnection(this.url);
         }
         catch (SQLException ex)
         {
@@ -193,13 +193,13 @@ public class SQLConnector
         connectionURL.append("databaseName=");
         connectionURL.append(this.sqlDatabase);
         connectionURL.append(";");
-        connectionURL.append("user=");
-        connectionURL.append(this.sqlUser);
-        connectionURL.append(";");
-        connectionURL.append("password=");
-        connectionURL.append(this.sqlPassword);
-        connectionURL.append(";");
-//        System.out.println(">>>>>>>>>>>"+connectionURL.toString()+"<<<<<<<<<<<<<<<");
+//        connectionURL.append("user=");
+//        connectionURL.append(this.sqlUser);
+//        connectionURL.append(";");
+//        connectionURL.append("password=");
+//        connectionURL.append(this.sqlPassword);
+//        connectionURL.append(";");
+        System.out.println(">>>>>>>>>>>"+connectionURL.toString()+"<<<<<<<<<<<<<<<");
         return connectionURL.toString();
     }
     

@@ -161,11 +161,73 @@ public class SQLCommandTest
         System.out.println("==execute NULL date==");
         Command command = new SQLSelectCommand.Builder(connector, "software")
                 .date("DateInstalled")
-                .where("Id=1")
+                .whereInteger("Id", "1")
                 .build();
 
         CommandStatus status = command.execute();
         System.out.println("STATUS: " + status.getStdout() + status.getStatus());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        System.out.println(">>>>>>>: station where dateInstalled = null"); 
+        command = new SQLSelectCommand.Builder(connector, "software")
+                .integer("station")
+                .whereInteger("Id", "23")
+                .build();
+        status = command.execute();
+        System.out.println("RESULT: " + status.getStdout());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        System.out.println(">>>>>>>: station where title = null"); 
+        command = new SQLSelectCommand.Builder(connector, "software")
+                .integer("station")
+                .whereString("title", null)
+                .build();
+        status = command.execute();
+        System.out.println("RESULT: " + status.getStdout());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        
+        System.out.println("+++++++++++++++++++++++++++++++++++++");
+        // NULL value check
+        System.out.println(">>>>>>>: station where title = null"); 
+        command = new SQLSelectCommand.Builder(connector, "software")
+                .integer("station")
+                .whereString("title", null)
+                .build();
+        status = command.execute();
+        System.out.println("RESULT: " + status.getStdout());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        System.out.println(">>>>>>>: Id where station = null"); 
+        command = new SQLSelectCommand.Builder(connector, "software")
+                .integer("Id")
+                .whereInteger("station", null)
+                .build();
+        status = command.execute();
+        System.out.println("RESULT: " + status.getStdout());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        
+        System.out.println(">>>>>>>: station where date = null"); 
+        command = new SQLSelectCommand.Builder(connector, "software")
+                .integer("station")
+                .whereString("title", null)
+                .build();
+        status = command.execute();
+        System.out.println("RESULT: " + status.getStdout());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+        System.out.println("+++++++++++++++++++++++++++++++++++++");
+        
+        
+        
+        
+        System.out.println(">>>>>>>: station where dateInstalled = 2014-07-25"); 
+        // Note null station ids result is '0'
+        command = new SQLSelectCommand.Builder(connector, "software")
+                .integer("station")
+                .whereDate("DateInstalled", "2014-07-25")
+                .build();
+        status = command.execute();
+        System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
     }
     

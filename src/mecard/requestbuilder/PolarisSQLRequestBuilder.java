@@ -120,8 +120,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         */
         System.out.println("USERID:" + barcode);
         SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
-            .string("PatronID")
-            .whereInteger("Barcode", barcode)
+            .integer("PatronID")
+            .whereString("Barcode", barcode)
             .build();
         return selectUser;
     }
@@ -147,7 +147,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         */
         SQLSelectCommand selectBarcodeCommand = new SQLSelectCommand.Builder(connector, this.patronsTable)
             .string("PatronID")
-            .where("Barcode=" + customer.get(CustomerFieldTypes.ID))
+            .whereInteger("Barcode", customer.get(CustomerFieldTypes.ID))
             .build();
         CommandStatus status = selectBarcodeCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -225,7 +225,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         */
         SQLSelectCommand selectPostalcodeCommand = new SQLSelectCommand.Builder(connector, this.postalCodes)
             .string("PostalCodeID")
-            .where("PostalCode=" + customer.get(CustomerFieldTypes.POSTALCODE))
+            .whereString("PostalCode=", customer.get(CustomerFieldTypes.POSTALCODE))
             .build();
         status = selectPostalcodeCommand.execute();
         if (status.getStdout().compareTo("NULL") == 0)

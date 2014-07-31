@@ -20,6 +20,8 @@
  */
 package api;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,15 +38,15 @@ import mecard.exception.ConfigurationException;
 public class SQLSelectCommand implements Command
 {
     private final SQLConnector connector;
-    private final String statementString;
     private final List<SQLData> statementList;
+    private final String table;
+    private final SQLUpdateData whereClause;
     
     public static class Builder
     {
         private SQLConnector connector;
         private String table; // The name of the table.
         private List<SQLData> columnList; // Column names you wish to see in selection.
-        private String whereClause;
         private SQLUpdateData where;
         
         public Builder(SQLConnector s, String tableName)
@@ -58,7 +60,6 @@ public class SQLSelectCommand implements Command
             this.connector   = s;
             this.table       = tableName;
             this.columnList  = new ArrayList<>();
-            this.whereClause = "";
             this.where       = null;
         }
         
@@ -80,12 +81,6 @@ public class SQLSelectCommand implements Command
         {
             SQLData i = new SQLData(iName, SQLData.Type.INT);
             this.columnList.add(i);
-            return this;
-        }
-        
-        public Builder where(String whereClause)
-        {
-            this.whereClause = whereClause;
             return this;
         }
         
@@ -118,39 +113,44 @@ public class SQLSelectCommand implements Command
     
     private SQLSelectCommand(Builder builder)
     {
-        this.connector = builder.connector;
-        this.statementList = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ");
-        for (SQLData dType: builder.columnList)
-        {
-            sb.append(dType.getName());
-            this.statementList.add(dType); // keep for execute()
-            if (builder.columnList.size() != this.statementList.size())
-            {
-                sb.append(", ");
-            }
-        }
-        sb.append(" FROM ");
-        sb.append(builder.table);
-        if (builder.whereClause != null)
-        {
-            sb.append(" WHERE ");
-            sb.append(builder.where.toString());
-        }
-        this.statementString = sb.toString();
+        this.connector     = builder.connector;
+        this.statementList = builder.columnList;
+        this.table         = builder.table;
+        this.whereClause   = builder.where;
     }
         
     @Override
     public CommandStatus execute()
     {
         CommandStatus status = new CommandStatus();
-        Statement statement = null;
+        Connection connection = null;
+        PreparedStatement pStatement = null;
+        StringBuilder statementStrBuilder = new StringBuilder();
+        // SELECT value FROM <table> where <condition>=<test>;
+        statementStrBuilder.append("SELECT ");
+
+        for (int i = 0; i < this.statementList.size(); i++)
+        {
+            SQLData dType = this.statementList.get(i);
+            statementStrBuilder.append(dType.getName());
+            if (i + 1 != this.statementList.size())
+            {
+                statementStrBuilder.append(", ");
+            }
+        }
+        statementStrBuilder.append(" FROM ");
+        statementStrBuilder.append(this.table);
+        if (this.whereClause != null)
+        {
+            statementStrBuilder.append(" WHERE ");
+            statementStrBuilder.append(this.whereClause.toString());
+        }
+        // Time to set up the connection.
+        connection = this.connector.getConnection();
         try
         {
-            statement = this.connector.getConnection().createStatement();
-            // Execute the SQL
-            ResultSet rs = statement.executeQuery(statementString);
+            pStatement = connection.prepareStatement(statementStrBuilder.toString());
+            ResultSet rs = pStatement.executeQuery();
             while (rs.next())
             {
                 StringBuilder output = new StringBuilder();
@@ -191,13 +191,13 @@ public class SQLSelectCommand implements Command
                 status.setStdout(output.toString());
             }
             status.setEnded(ResponseTypes.OK.ordinal());
-            statement.close();
+            pStatement.close();
             // Don't close the connection, other commands might need it.
         }
         catch (SQLException ex)
         {
             System.out.println("**error executing statement '" + 
-                    statementString + "'.\n" + ex.getMessage());
+                    pStatement + "'.\n" + ex.getMessage());
             status.setError(ex);
             System.out.println("SQLException MSG:"+status.getStderr());
             status.setResponseType(ResponseTypes.FAIL);
@@ -208,6 +208,6 @@ public class SQLSelectCommand implements Command
     @Override
     public String toString()
     {
-        return this.statementString;
+        return "Not implemented yet.";
     }
 }
