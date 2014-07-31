@@ -91,7 +91,7 @@ public class SQLSelectCommand implements Command
         
         public Builder whereString(String key, String value)
         {
-            return this.where(value, SQLData.Type.STRING, value);
+            return this.where(key, SQLData.Type.STRING, value);
         }
         
         public Builder whereInteger(String key, String value)
@@ -136,9 +136,7 @@ public class SQLSelectCommand implements Command
         if (builder.whereClause != null)
         {
             sb.append(" WHERE ");
-            sb.append(builder.where.getName());
-            sb.append(" = ");
-            sb.append(builder.where.getValue());
+            sb.append(builder.where.toString());
         }
         this.statementString = sb.toString();
     }

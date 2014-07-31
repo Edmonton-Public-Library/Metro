@@ -186,11 +186,20 @@ public class SQLConnector
         StringBuilder connectionURL = new StringBuilder();
         connectionURL.append(this.urlProtocol);
         connectionURL.append(this.host);
-        connectionURL.append(":"+String.valueOf(this.port)+";");
+        connectionURL.append(":");
+        connectionURL.append(String.valueOf(this.port));
+        connectionURL.append(";");
 //        connectionURL.append("\\\\sqlexpress;");
-         connectionURL.append("database=" + this.sqlDatabase + ";");
-        connectionURL.append("user=" + this.sqlUser + ";");
-        connectionURL.append("password=" + this.sqlPassword + ";");
+        connectionURL.append("databaseName=");
+        connectionURL.append(this.sqlDatabase);
+        connectionURL.append(";");
+        connectionURL.append("user=");
+        connectionURL.append(this.sqlUser);
+        connectionURL.append(";");
+        connectionURL.append("password=");
+        connectionURL.append(this.sqlPassword);
+        connectionURL.append(";");
+//        System.out.println(">>>>>>>>>>>"+connectionURL.toString()+"<<<<<<<<<<<<<<<");
         return connectionURL.toString();
     }
     

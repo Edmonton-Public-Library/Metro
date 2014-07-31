@@ -105,7 +105,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getCustomerCommand(String userId, String userPin, Response response)
+    public Command getCustomerCommand(String barcode, String userPin, Response response)
     {
         // TODO: Normally we would use SIP2 for this command but I am going to
         // do some testing with the Polaris DB.
@@ -118,9 +118,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         FROM Polaris.Polaris.Patrons
         WHERE Barcode = (Barcode)
         */
+        System.out.println("USERID:" + barcode);
         SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
             .string("PatronID")
-            .where("Barcode=" + userId)
+            .whereInteger("Barcode", barcode)
             .build();
         return selectUser;
     }

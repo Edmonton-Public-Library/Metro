@@ -51,8 +51,8 @@ public final class SQLUpdateData extends SQLData
         }
         if (this.dataType == Type.INT)
         {
-            return this.name + "=" + this.value;
+            return this.name + " = " + this.value;
         }
-        return this.name + "=\"" + this.value + "\"";
+        return this.name + " = \"" + this.value + "\"";
     }    
 }
