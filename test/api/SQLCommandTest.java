@@ -239,4 +239,17 @@ public class SQLCommandTest
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
     }
     
+    @Test
+    public void testDescribe()
+    {
+        System.out.println("==execute Descibe table==");
+        Command command = new SQLDescribeCommand.Builder(connector, "software")
+                .build();
+
+        System.out.println("COMMAND==>"+command.toString());
+        CommandStatus status = command.execute();
+        System.out.println("STDOUT: '" + status.getStdout() + "' status:"+ status.getStatus());
+        assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
+    }
+    
 }

@@ -40,6 +40,7 @@ public class SQLConnector
     private final String urlProtocol;
     private Connection connection = null;
     private final String url;
+    private DriverType driverType;
 
     public static class Builder
     {
@@ -103,6 +104,12 @@ public class SQLConnector
             return new SQLConnector(this);
         }
     }
+    
+    public enum DriverType
+    {
+        MY_SQL,
+        SQL_SERVER;
+    }
 
     /**
      * Creates a SIPConnector but not without the help of a builder object.
@@ -123,12 +130,14 @@ public class SQLConnector
                 this.urlProtocol = "jdbc:mysql://";
                 this.port        = 3306;
                 this.url         = getMySQL_URL();
+                this.driverType  = DriverType.MY_SQL;
                 break;
             case "SQL_SERVER": // sqljdbc4.jar
                 this.driverName  = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
                 this.urlProtocol = "jdbc:sqlserver://";
                 this.port        = 1433;
                 this.url         = getSQLServer_URL();
+                this.driverType  = DriverType.SQL_SERVER;
                 break;
             default:
                 throw new UnsupportedOperationException(
@@ -192,6 +201,11 @@ public class SQLConnector
         connectionURL.append(";");
         System.out.println(">>>>"+connectionURL.toString()+"<<<<");
         return connectionURL.toString();
+    }
+    
+    public DriverType getDriverType()
+    {
+        return this.driverType;
     }
     
     /**

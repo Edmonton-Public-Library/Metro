@@ -26,6 +26,7 @@ import api.CustomerMessage;
 import api.DummyCommand;
 import api.SQLConnector;
 import api.SQLCustomerMessage;
+import api.SQLDescribeCommand;
 import api.SQLInsertCommand;
 import api.SQLSelectCommand;
 import api.SQLUpdateCommand;
@@ -54,7 +55,7 @@ import site.CustomerLoadNormalizer;
  */
 public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 {
-    private final String patronsTable       = "Polaris.Patrons";
+    private final String patronsTable       = "Polaris.Patrons"; // Use this for insert and update.
     private final String patronRegistration = "Polaris.PatronRegistration";
     private final String postalCodes        = "Polaris.PostalCodes";
     private final String addressTable       = "Polaris.Addresses";
@@ -118,12 +119,17 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         FROM Polaris.Polaris.Patrons
         WHERE Barcode = (Barcode)
         */
-        System.out.println("USERID:" + barcode);
-        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
-            .integer("PatronID")
-            .whereString("Barcode", barcode)
+//        System.out.println("USERID:" + barcode);
+//        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
+//            .integer("PatronID")
+//            .whereInteger("Barcode", barcode)
+//            .build();
+//        System.out.println("COMMAND==>"+selectUser.toString()+"<==");
+        
+        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, "Patrons")// use this version for query DESCRIBE table
             .build();
-        return selectUser;
+        System.out.println("COMMAND==>"+describe.toString()+"<==");
+        return describe;
     }
 
     @Override

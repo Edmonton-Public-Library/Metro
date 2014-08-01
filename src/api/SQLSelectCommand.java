@@ -145,6 +145,7 @@ public class SQLSelectCommand implements Command
             statementStrBuilder.append(" WHERE ");
             statementStrBuilder.append(this.whereClause.toString());
         }
+        System.out.println("COMMAND==>"+statementStrBuilder.toString() + "<==");
         PreparedStatement pStatement = connection.prepareStatement(statementStrBuilder.toString());
         return pStatement;
     }
