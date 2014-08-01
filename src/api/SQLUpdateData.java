@@ -53,6 +53,6 @@ public final class SQLUpdateData extends SQLData
         {
             return this.name + "=" + this.value;
         }
-        return this.name + " = \"" + this.value + "\"";
+        return this.name + "='" + this.value + "'";
     }    
 }

@@ -119,17 +119,32 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         FROM Polaris.Polaris.Patrons
         WHERE Barcode = (Barcode)
         */
-//        System.out.println("USERID:" + barcode);
-//        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
-//            .integer("PatronID")
-//            .whereInteger("Barcode", barcode)
+//        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, "Patrons")// use this version for query DESCRIBE table
 //            .build();
-//        System.out.println("COMMAND==>"+selectUser.toString()+"<==");
+//        System.out.println("COMMAND==>"+describe.toString()+"<==");
+//        Polaris, Polaris, Patrons, PatronID, 4, int identity, 10, 4, 0, 10, 0, null, null, 4, null, null, 1, NO, 
+//        Polaris, Polaris, Patrons, PatronCodeID, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 2, NO, 
+//        Polaris, Polaris, Patrons, OrganizationID, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 3, NO, 
+//        Polaris, Polaris, Patrons, CreatorID, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 4, NO, 
+//        Polaris, Polaris, Patrons, ModifierID, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 5, YES, 
+//        Polaris, Polaris, Patrons, Barcode, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 6, YES, 
+//        Polaris, Polaris, Patrons, SystemBlocks, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 7, NO, 
+//        Polaris, Polaris, Patrons, YTDCircCount, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 8, NO, 
+//        Polaris, Polaris, Patrons, LifetimeCircCount, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 9, NO, 
+//        Polaris, Polaris, Patrons, LastActivityDate, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 10, YES, 
+//        Polaris, Polaris, Patrons, ClaimCount, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 11, YES, 
+//        Polaris, Polaris, Patrons, LostItemCount, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 12, YES, 
+//        Polaris, Polaris, Patrons, ChargesAmount, 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 13, NO, 
+//        Polaris, Polaris, Patrons, CreditsAmount, 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 14, NO,
         
-        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, "Patrons")// use this version for query DESCRIBE table
+        System.out.println("USERID:" + barcode);
+        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
+            .integer("PatronID")
+            .whereString("Barcode", barcode)
             .build();
-        System.out.println("COMMAND==>"+describe.toString()+"<==");
-        return describe;
+        System.out.println("COMMAND==>"+selectUser.toString()+"<==");
+        
+        return selectUser;
     }
 
     @Override
