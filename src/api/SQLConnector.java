@@ -38,7 +38,7 @@ public class SQLConnector
     private final String sqlDatabase;
     private final String driverName;
     private final String urlProtocol;
-    Connection connection = null;
+    private Connection connection = null;
     private final String url;
 
     public static class Builder
@@ -149,10 +149,8 @@ public class SQLConnector
         try
         {
             // build the connection for MySQL
-            connection = DriverManager.getConnection(
+            this.connection = DriverManager.getConnection(
                     this.url, this.sqlUser, this.sqlPassword);
-            // build the connection for SQL Server
-//            connection = DriverManager.getConnection(this.url);
         }
         catch (SQLException ex)
         {
@@ -189,17 +187,10 @@ public class SQLConnector
         connectionURL.append(":");
         connectionURL.append(String.valueOf(this.port));
         connectionURL.append(";");
-//        connectionURL.append("\\\\sqlexpress;");
         connectionURL.append("databaseName=");
         connectionURL.append(this.sqlDatabase);
         connectionURL.append(";");
-//        connectionURL.append("user=");
-//        connectionURL.append(this.sqlUser);
-//        connectionURL.append(";");
-//        connectionURL.append("password=");
-//        connectionURL.append(this.sqlPassword);
-//        connectionURL.append(";");
-        System.out.println(">>>>>>>>>>>"+connectionURL.toString()+"<<<<<<<<<<<<<<<");
+        System.out.println(">>>>"+connectionURL.toString()+"<<<<");
         return connectionURL.toString();
     }
     

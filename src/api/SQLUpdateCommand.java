@@ -35,10 +35,9 @@ import mecard.exception.ConfigurationException;
 public class SQLUpdateCommand implements Command
 {
     private final SQLConnector connector;
-//    private final String statementString;
     private final List<SQLUpdateData> columnList;
     private final String table;
-    private SQLUpdateData where;
+    private final SQLUpdateData where;
     
     public static class Builder
     {
@@ -121,84 +120,47 @@ public class SQLUpdateCommand implements Command
         this.where      = builder.where;
     }
     
-    @Override
-    public CommandStatus execute()
-    {   
-        CommandStatus status = new CommandStatus();
-        Connection connection = null;
+    private PreparedStatement getPreparedStatement() throws SQLException
+    {
         PreparedStatement pStatement = null;
-        try
+        Connection connection = null;
+        StringBuilder statementStrBuilder = new StringBuilder();
+        // update <table> set <col>=<value> where <condition>=<test>;
+        statementStrBuilder.append("UPDATE ");
+        statementStrBuilder.append(this.table);
+        statementStrBuilder.append(" SET ");
+        for (int i = 0; i < this.columnList.size(); i++)
         {
-            StringBuilder statementStrBuilder = new StringBuilder();
-            // update <table> set <col>=<value> where <condition>=<test>;
-            statementStrBuilder.append("UPDATE ");
-            statementStrBuilder.append(this.table);
-            statementStrBuilder.append(" SET ");
-            for (int i = 0; i < this.columnList.size(); i++)
-            {
-                SQLUpdateData dType = this.columnList.get(i);
-                statementStrBuilder.append(dType.getName());
-                statementStrBuilder.append(" = ?");
-                // separate multiple 'set' values.
-                if (i + 1 != this.columnList.size())
-                {
-                    statementStrBuilder.append(", ");
-                }
-            }
-            // We do not allow an empty where clause to limit the update.
-            statementStrBuilder.append(" WHERE ");
-            statementStrBuilder.append(this.where.getName());
+            SQLUpdateData dType = this.columnList.get(i);
+            statementStrBuilder.append(dType.getName());
             statementStrBuilder.append(" = ?");
-            // Time to set up the connection and set any null values.
-            connection = this.connector.getConnection();
-            pStatement = connection.prepareStatement(statementStrBuilder.toString());
-            // Set this here because we need it for the where clause at the end.
-            int columnNumber = 0;
-            // Now add the values you want to set in the statement
-            for (int i = 0; i < this.columnList.size(); i++)
+            // separate multiple 'set' values.
+            if (i + 1 != this.columnList.size())
             {
-                SQLUpdateData dType = this.columnList.get(i);
-                columnNumber++;
-                if (dType.getValue() == null)
-                {
-                    if (dType.getType() == SQLData.Type.INT)
-                    {
-                        pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
-                    }
-                    else if (dType.getType() == SQLData.Type.DATE)
-                    {
-                        pStatement.setNull(columnNumber, java.sql.Types.DATE);
-                    }
-                    else // dType.getType() == SQLData.Type.STRING
-                    {
-                        pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
-                    }
-                }
-                else // Statement doesn't include a null value.
-                {
-                    if (dType.getType() == SQLData.Type.INT)
-                    {
-                        pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
-                    }
-                    else if (dType.getType() == SQLData.Type.DATE)
-                    {
-                        pStatement.setDate(columnNumber, java.sql.Date.valueOf(dType.getValue()));
-                    }
-                    else // dType.getType() == SQLData.Type.STRING
-                    {
-                        pStatement.setString(columnNumber, dType.getValue());
-                    }
-                }
+                statementStrBuilder.append(", ");
             }
-            // Now fill out the 'WHERE' template which can have the same restrictions
+        }
+        // We do not allow an empty where clause to limit the update.
+        statementStrBuilder.append(" WHERE ");
+        statementStrBuilder.append(this.where.getName());
+        statementStrBuilder.append(" = ?");
+        // Time to set up the connection and set any null values.
+        connection = this.connector.getConnection();
+        pStatement = connection.prepareStatement(statementStrBuilder.toString());
+        // Set this here because we need it for the where clause at the end.
+        int columnNumber = 0;
+        // Now add the values you want to set in the statement
+        for (int i = 0; i < this.columnList.size(); i++)
+        {
+            SQLUpdateData dType = this.columnList.get(i);
             columnNumber++;
-            if (this.where.getValue() == null)
+            if (dType.getValue() == null)
             {
-                if (this.where.getType() == SQLData.Type.INT)
+                if (dType.getType() == SQLData.Type.INT)
                 {
                     pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
                 }
-                else if (this.where.getType() == SQLData.Type.DATE)
+                else if (dType.getType() == SQLData.Type.DATE)
                 {
                     pStatement.setNull(columnNumber, java.sql.Types.DATE);
                 }
@@ -209,19 +171,63 @@ public class SQLUpdateCommand implements Command
             }
             else // Statement doesn't include a null value.
             {
-                if (this.where.getType() == SQLData.Type.INT)
+                if (dType.getType() == SQLData.Type.INT)
                 {
-                    pStatement.setInt(columnNumber, Integer.valueOf(this.where.getValue()));
+                    pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
                 }
-                else if (this.where.getType() == SQLData.Type.DATE)
+                else if (dType.getType() == SQLData.Type.DATE)
                 {
-                    pStatement.setDate(columnNumber, java.sql.Date.valueOf(this.where.getValue()));
+                    pStatement.setDate(columnNumber, java.sql.Date.valueOf(dType.getValue()));
                 }
                 else // dType.getType() == SQLData.Type.STRING
                 {
-                    pStatement.setString(columnNumber, this.where.getValue());
+                    pStatement.setString(columnNumber, dType.getValue());
                 }
             }
+        }
+        // Now fill out the 'WHERE' template which can have the same restrictions
+        columnNumber++;
+        if (this.where.getValue() == null)
+        {
+            if (this.where.getType() == SQLData.Type.INT)
+            {
+                pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+            }
+            else if (this.where.getType() == SQLData.Type.DATE)
+            {
+                pStatement.setNull(columnNumber, java.sql.Types.DATE);
+            }
+            else // dType.getType() == SQLData.Type.STRING
+            {
+                pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+            }
+        }
+        else // Statement doesn't include a null value.
+        {
+            if (this.where.getType() == SQLData.Type.INT)
+            {
+                pStatement.setInt(columnNumber, Integer.valueOf(this.where.getValue()));
+            }
+            else if (this.where.getType() == SQLData.Type.DATE)
+            {
+                pStatement.setDate(columnNumber, java.sql.Date.valueOf(this.where.getValue()));
+            }
+            else // dType.getType() == SQLData.Type.STRING
+            {
+                pStatement.setString(columnNumber, this.where.getValue());
+            }
+        }
+        return pStatement;
+    }
+    
+    @Override
+    public CommandStatus execute()
+    {   
+        CommandStatus status = new CommandStatus();
+        PreparedStatement pStatement = null;
+        try
+        {
+            pStatement = this.getPreparedStatement();
             // Execute the SQL
             pStatement.executeUpdate();
             status.setEnded(ResponseTypes.OK.ordinal());
@@ -241,7 +247,19 @@ public class SQLUpdateCommand implements Command
     @Override
     public String toString()
     {
-        return "Not implemented yet.";
+        PreparedStatement pStatement = null;
+        String result;
+        try
+        {
+            pStatement = this.getPreparedStatement();
+            result = pStatement.toString();
+            pStatement.close();
+        }
+        catch (SQLException ex)
+        {
+            result = "**error in statement '" + 
+                    pStatement + "'.\n" + ex.getMessage();
+        }
+        return result;
     }
-    
 }

@@ -109,77 +109,84 @@ public class SQLInsertCommand implements Command
         this.table     = builder.table;
     }
     
+    private PreparedStatement getPreparedStatement() throws SQLException
+    {
+        Connection connection = null;
+        PreparedStatement pStatement = null;
+        StringBuilder statementStrBuilder = new StringBuilder();
+        // insert INTO software (station, title, DateInstalled) values (45, "Adobe Acrobat", curdate());
+        statementStrBuilder.append("INSERT INTO ");
+        statementStrBuilder.append(this.table);
+        statementStrBuilder.append(" (");
+        for (int i = 0; i < this.columnList.size(); i++)
+        {
+            SQLUpdateData dType = this.columnList.get(i);
+            statementStrBuilder.append(dType.getName());
+            if (i + 1 != this.columnList.size())
+            {
+                statementStrBuilder.append(", ");
+            }
+        }
+        // We do not allow an empty where clause to limit the update.
+        statementStrBuilder.append(") VALUES (");
+        for (int i = 0; i < this.columnList.size(); i++)
+        {
+            statementStrBuilder.append("?");
+            if (i + 1 != this.columnList.size())
+            {
+                statementStrBuilder.append(", ");
+            }
+        }
+        statementStrBuilder.append(")");
+        connection = this.connector.getConnection();
+        pStatement = connection.prepareStatement(statementStrBuilder.toString());
+        // Now change the values in the prepared statement to include null values.
+        for (int i = 0; i < this.columnList.size(); i++)
+        {
+            SQLUpdateData dType = this.columnList.get(i);
+            int columnNumber = i + 1;
+            if (dType.getValue() == null)
+            {
+                if (dType.getType() == SQLData.Type.INT)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+                }
+                else if (dType.getType() == SQLData.Type.DATE)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.DATE);
+                }
+                else // dType.getType() == SQLData.Type.STRING
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                }
+            }
+            else // Statement doesn't include a null value.
+            {
+                if (dType.getType() == SQLData.Type.INT)
+                {
+                    pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.DATE)
+                {
+                    pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
+                }
+                else // dType.getType() == SQLData.Type.STRING
+                {
+                    pStatement.setString(columnNumber, dType.getValue());
+                }
+            }
+        }
+        return pStatement;
+    }
+    
     @Override
     public CommandStatus execute()
     {
         CommandStatus status = new CommandStatus();
-        Connection connection = null;
         PreparedStatement pStatement = null;
         try
         {
-            StringBuilder statementStrBuilder = new StringBuilder();
-            // insert INTO software (station, title, DateInstalled) values (45, "Adobe Acrobat", curdate());
-            statementStrBuilder.append("INSERT INTO ");
-            statementStrBuilder.append(this.table);
-            statementStrBuilder.append(" (");
-            for (int i = 0; i < this.columnList.size(); i++)
-            {
-                SQLUpdateData dType = this.columnList.get(i);
-                statementStrBuilder.append(dType.getName());
-                if (i + 1 != this.columnList.size())
-                {
-                    statementStrBuilder.append(", ");
-                }
-            }
-            // We do not allow an empty where clause to limit the update.
-            statementStrBuilder.append(") VALUES (");
-            for (int i = 0; i < this.columnList.size(); i++)
-            {
-                statementStrBuilder.append("?");
-                if (i + 1 != this.columnList.size())
-                {
-                    statementStrBuilder.append(", ");
-                }
-            }
-            statementStrBuilder.append(")");
-            connection = this.connector.getConnection();
-            pStatement = connection.prepareStatement(statementStrBuilder.toString());
-            // Now change the values in the prepared statement to include null values.
-            for (int i = 0; i < this.columnList.size(); i++)
-            {
-                SQLUpdateData dType = this.columnList.get(i);
-                int columnNumber = i + 1;
-                if (dType.getValue() == null)
-                {
-                    if (dType.getType() == SQLData.Type.INT)
-                    {
-                        pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
-                    }
-                    else if (dType.getType() == SQLData.Type.DATE)
-                    {
-                        pStatement.setNull(columnNumber, java.sql.Types.DATE);
-                    }
-                    else // dType.getType() == SQLData.Type.STRING
-                    {
-                        pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
-                    }
-                }
-                else // Statement doesn't include a null value.
-                {
-                    if (dType.getType() == SQLData.Type.INT)
-                    {
-                        pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
-                    }
-                    else if (dType.getType() == SQLData.Type.DATE)
-                    {
-                        pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
-                    }
-                    else // dType.getType() == SQLData.Type.STRING
-                    {
-                        pStatement.setString(columnNumber, dType.getValue());
-                    }
-                }
-            }
+            pStatement = this.getPreparedStatement();
             // Execute the SQL, and yes JDBC has helpfully called the insert statement executeUpdate.
             pStatement.executeUpdate();
             status.setEnded(ResponseTypes.OK.ordinal());
@@ -189,7 +196,7 @@ public class SQLInsertCommand implements Command
         catch (SQLException ex)
         {
             System.out.println("**error executing statement '" + 
-                    pStatement.toString() + "'.\n" + ex.getMessage());
+                    pStatement + "'.\n" + ex.getMessage());
             status.setError(ex);
             System.out.println("SQLException MSG:"+status.getStderr());
             status.setResponseType(ResponseTypes.FAIL);
@@ -200,7 +207,19 @@ public class SQLInsertCommand implements Command
     @Override
     public String toString()
     {
-        return "Not completed yet";
-    }
-    
+        PreparedStatement pStatement = null;
+        String result;
+        try
+        {
+            pStatement = this.getPreparedStatement();
+            result = pStatement.toString();
+            pStatement.close();
+        }
+        catch (SQLException ex)
+        {
+            result = "**error in statement '" + 
+                    pStatement + "'.\n" + ex.getMessage();
+        }
+        return result;
+    } 
 }

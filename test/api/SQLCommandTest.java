@@ -117,6 +117,7 @@ public class SQLCommandTest
                 .whereInteger("station", "77")
                 .build();
 
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("STATUS: " + status.getStdout() + status.getStatus());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -164,6 +165,7 @@ public class SQLCommandTest
                 .whereInteger("Id", "1")
                 .build();
 
+        System.out.println("COMMAND==>"+command.toString());
         CommandStatus status = command.execute();
         System.out.println("STATUS: " + status.getStdout() + status.getStatus());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -173,6 +175,7 @@ public class SQLCommandTest
                 .integer("station")
                 .whereInteger("Id", "23")
                 .build();
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -182,6 +185,7 @@ public class SQLCommandTest
                 .integer("station")
                 .whereString("title", null)
                 .build();
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -194,6 +198,7 @@ public class SQLCommandTest
                 .integer("station")
                 .whereString("title", null)
                 .build();
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -203,6 +208,7 @@ public class SQLCommandTest
                 .integer("Id")
                 .whereInteger("station", null)
                 .build();
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -212,6 +218,7 @@ public class SQLCommandTest
                 .integer("station")
                 .whereString("title", null)
                 .build();
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
@@ -226,6 +233,7 @@ public class SQLCommandTest
                 .integer("station")
                 .whereDate("DateInstalled", "2014-07-25")
                 .build();
+        System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
         System.out.println("RESULT: " + status.getStdout());
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);

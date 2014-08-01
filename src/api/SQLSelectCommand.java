@@ -118,13 +118,13 @@ public class SQLSelectCommand implements Command
         this.table         = builder.table;
         this.whereClause   = builder.where;
     }
-        
-    @Override
-    public CommandStatus execute()
+    
+    private PreparedStatement getPreparedStatement() throws SQLException
     {
-        CommandStatus status = new CommandStatus();
         Connection connection = null;
-        PreparedStatement pStatement = null;
+        // Time to set up the connection.
+        connection = this.connector.getConnection();
+        
         StringBuilder statementStrBuilder = new StringBuilder();
         // SELECT value FROM <table> where <condition>=<test>;
         statementStrBuilder.append("SELECT ");
@@ -145,11 +145,18 @@ public class SQLSelectCommand implements Command
             statementStrBuilder.append(" WHERE ");
             statementStrBuilder.append(this.whereClause.toString());
         }
-        // Time to set up the connection.
-        connection = this.connector.getConnection();
+        PreparedStatement pStatement = connection.prepareStatement(statementStrBuilder.toString());
+        return pStatement;
+    }
+        
+    @Override
+    public CommandStatus execute()
+    {
+        CommandStatus status = new CommandStatus();
+        PreparedStatement pStatement = null;
         try
         {
-            pStatement = connection.prepareStatement(statementStrBuilder.toString());
+            pStatement = this.getPreparedStatement();
             ResultSet rs = pStatement.executeQuery();
             while (rs.next())
             {
@@ -208,6 +215,19 @@ public class SQLSelectCommand implements Command
     @Override
     public String toString()
     {
-        return "Not implemented yet.";
+        PreparedStatement pStatement = null;
+        String result;
+        try
+        {
+            pStatement = this.getPreparedStatement();
+            result = pStatement.toString();
+            pStatement.close();
+        }
+        catch (SQLException ex)
+        {
+            result = "**error in statement '" + 
+                    pStatement + "'.\n" + ex.getMessage();
+        }
+        return result;
     }
 }
