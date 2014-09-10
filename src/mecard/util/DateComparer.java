@@ -49,6 +49,14 @@ public class DateComparer
             .getProperty(LibraryPropertyTypes.DATE_FORMAT.toString());
     public final static String ANSI_DATE_FORMAT = "yyyyMMdd";
     public final static String RFC1123_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+    // hard coded here instead of environment properties because JDBC java.sql.Timestamp 
+    // requires this format in its constructor.
+    // http://technet.microsoft.com/en-us/library/ms378878(v=sql.110).aspx
+    // http://dev.mysql.com/doc/connector-j/en/connector-j-reference-type-conversions.html
+//    public final static String SQL_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    // We can set it in environment properties.
+    public final static String SQL_TIMESTAMP_FORMAT = CUSTOMER_DATE_FORMAT;
+    
     /**
      * GMT timezone - all HTTP dates are on GMT
      */
@@ -62,6 +70,7 @@ public class DateComparer
     public final static long MILLISECONDS_PER_YEAR = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
     public final static long MILLISECONDS_PER_DAY = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY;
     public final static long MILLISECONDS_PER_MINUTE = MILLS_IN_SECOND * SECONDS_IN_MINUTE;
+    
 
     /**
      * Returns the absolute difference between date one (d1) and date two (d2)
@@ -187,5 +196,23 @@ public class DateComparer
             return true;
         }
         return false;
+    }
+
+    /**
+     * s - timestamp in format read from environment.properties and recommended
+     * to be 'yyyy-[m]m-[d]d hh:mm:ss' for SQL based transactions because the 
+     * java.sql.Timestamp object's constructor takes a String and parses it,
+     * the expectation is that it comes in the format of 'yyyy-[m]m-[d]d hh:mm:ss[.f...]'.
+     * The fractional seconds may be omitted. The leading zero for mm and dd 
+     * may also be omitted.
+     * @return TimeStamp SQL in format: yyyy-[m]m-[d]d hh:mm:ss[.f...]
+     */
+    public static String getNowSQLTimeStamp()
+    {
+        // s - timestamp in format yyyy-[m]m-[d]d hh:mm:ss[.f...]. The fractional 
+        // seconds may be omitted. The leading zero for mm and dd may also be omitted.
+        Date today = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.SQL_TIMESTAMP_FORMAT, LOCALE_US);
+        return dateFormat.format(today);
     }
 }

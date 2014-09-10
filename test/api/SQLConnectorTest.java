@@ -22,13 +22,13 @@ public class SQLConnectorTest
     }
 
     /**
-     * Test of getConnection method, of class SQLConnector.
+     * Test of getConnection method, of class POLARIS_SQLConnector.
      */
     @Test
     public void testGetConnection()
     {
         System.out.println("==getConnection==");
-        Properties p = PropertyReader.getProperties(ConfigFileTypes.SQL);
+        Properties p = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         String host = p.getProperty(SQLPropertyTypes.HOST.toString());
         String driver = p.getProperty(SQLPropertyTypes.CONNECTOR_TYPE.toString());
         String database = p.getProperty(SQLPropertyTypes.DATABASE.toString());

@@ -32,7 +32,7 @@ public enum ConfigFileTypes
     BIMPORT,
     BIMPORT_CITY_MAPPING,
     PAPI,
-    SQL,   // Used for general SQL API transactions.
+    POLARIS_SQL,   // Used for general POLARIS_SQL API transactions.
     DEBUG, // used with DummyResponder, this file contains canned results to return to client.
     VARS,  // System variables like PATH, UPATH, etc.
     MESSAGES;  // Custom messages for each library.

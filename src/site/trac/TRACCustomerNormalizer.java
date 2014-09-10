@@ -23,7 +23,7 @@ package site.trac;
 import mecard.Response;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import site.HorizonNormalizer;
+import site.PolarisNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -31,7 +31,7 @@ import site.HorizonNormalizer;
  * such as minimum PIN width, or application of a computed bStat value.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class TRACCustomerNormalizer extends HorizonNormalizer
+public final class TRACCustomerNormalizer extends PolarisNormalizer
 {
     
     public TRACCustomerNormalizer(boolean debug)

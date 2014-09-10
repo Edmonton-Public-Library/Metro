@@ -54,14 +54,14 @@ public class PropertyReader
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
-    private static String POLARIS_PROPERTY_FILE  = "polaris.properties";
+    private static String POLARIS_PROPERTY_FILE  = "papi.properties";
     private static String ENVIRONMENT_FILE       = "environment.properties";
     private static String SIP2_FILE              = "sip2.properties";
     private static String BIMPORT_CITY_MAPPING   = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE    = "debug.properties";
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
-    private static String SQL_PROPERTY_FILE      = "sql.properties";
+    private static String POLARIS_SQL_PROPERTY_FILE      = "polaris_sql.properties";
         // There are no mandatory variables, so no checking is done.
     private static Properties polaris;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
@@ -72,7 +72,7 @@ public class PropertyReader
     private static Properties debugProperties;    // Optional config for debugging.
     private static Properties systemVariables;    // Optional no mandatory fields.
     private static Properties messagesProperties; // Messages tailored by local library.
-    private static Properties SQLProperties;      // Optional config for sites that use SQL for transactions.
+    private static Properties SQLProperties;      // Optional config for sites that use POLARIS_SQL for transactions.
     
     /**
      * Parses a list of ',' comma separated types from a given entry in the 
@@ -235,15 +235,15 @@ public class PropertyReader
                     }
                 }
                 return polaris;
-            // SQL required properties if the user is using SQL for any protocol.    
-            case SQL:
-                SQLProperties = readPropertyFile(PropertyReader.SQL_PROPERTY_FILE);
+            // POLARIS_SQL required properties if the user is using POLARIS_SQL for any protocol.    
+            case POLARIS_SQL:
+                SQLProperties = readPropertyFile(PropertyReader.POLARIS_SQL_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (SQLPropertyTypes sType : SQLPropertyTypes.values())
                 {
                     if (SQLProperties.get(sType.toString()) == null)
                     {
-                        String msg = "'" + sType + "' unset in " + PropertyReader.SQL_PROPERTY_FILE;
+                        String msg = "'" + sType + "' unset in " + PropertyReader.POLARIS_SQL_PROPERTY_FILE;
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }

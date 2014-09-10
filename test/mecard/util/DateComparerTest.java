@@ -185,4 +185,15 @@ public class DateComparerTest
         assertTrue(DateComparer.isGreaterThanMinutesOld(15,  justMade));
         assertFalse(DateComparer.isGreaterThanMinutesOld(15, olderThan));
     }
+
+    /**
+     * Test of getNowSQLTimeStamp method, of class DateComparer.
+     */
+    @Test
+    public void testGetNowSQLTimeStamp()
+    {
+        System.out.println("===getNowSQLTimeStamp===");
+        String result = DateComparer.getNowSQLTimeStamp();
+        System.out.println("TIMESTAMP_NOW:>>"+result+"<<");
+    }
 }

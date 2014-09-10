@@ -136,12 +136,34 @@ public final class Text
      */
     public static String lastWord(String sentence)
     {
-        int pos = sentence.lastIndexOf(" ");
-        if (pos < 0)
+        String[] words = sentence.split("\\s{1,}");
+        if (words.length > 1)
+        {
+            return words[words.length -1].trim();
+        }
+        return "";
+    }
+    
+    /**
+     * Returns the last 'nth' word in the sentence. 
+     * @param sentence the sentence to parse out. 
+     * @param which the word index you would like. '0' indexed. 
+     * Example: String input = "399565 399566 399567 399568"
+     * lastWord(input, 1) returns '399567'
+     * lastWord(input, 0) returns '399568'
+     * lastWord(input, -1) returns ''
+     * lastWord(input, 100) returns ''
+     * @return the last nth word in the sentence.
+     */
+    public static String lastWord(String sentence, int which)
+    {
+        String[] words = sentence.split("\\s{1,}");
+        int whichWordFromTheBack = words.length -which;
+        if (whichWordFromTheBack < 0 || whichWordFromTheBack >= words.length)
         {
             return "";
         }
-        return sentence.substring(pos).trim();
+        return words[words.length -which].trim();
     }
     
     /**

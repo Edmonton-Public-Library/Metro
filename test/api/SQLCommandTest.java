@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * 
  * @author anisbet
  */
 public class SQLCommandTest
@@ -22,7 +22,7 @@ public class SQLCommandTest
     
     public SQLCommandTest()
     {
-        p = PropertyReader.getProperties(ConfigFileTypes.SQL);
+        p = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         String host = p.getProperty(SQLPropertyTypes.HOST.toString());
         String driver = p.getProperty(SQLPropertyTypes.CONNECTOR_TYPE.toString());
         String database = p.getProperty(SQLPropertyTypes.DATABASE.toString());
@@ -35,7 +35,7 @@ public class SQLCommandTest
     }
     
      /**
-     * Test of execute method, of class SQLInsertCommand.
+     * Test of execute method, of class POLARIS_SQLInsertCommand.
      */
     @Test
     public void testInsertExecute()
@@ -82,7 +82,7 @@ public class SQLCommandTest
     }
     
      /**
-     * Test of execute method, of class SQLUpdateCommand.
+     * Test of execute method, of class POLARIS_SQLUpdateCommand.
      */
     @Test
     public void testUpdateExecute()
@@ -124,7 +124,7 @@ public class SQLCommandTest
     }
     
     /**
-     * Test of execute method, of class SQLSelectCommand.
+     * Test of execute method, of class POLARIS_SQLSelectCommand.
      */
     @Test
     public void testSelectExecute()
@@ -154,7 +154,7 @@ public class SQLCommandTest
     }
 
     /**
-     * Test of execute method, of class SQLCommand.
+     * Test of execute method, of class POLARIS_SQLCommand.
      */
     @Test
     public void testExecute()

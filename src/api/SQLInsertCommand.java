@@ -20,6 +20,7 @@
  */
 package api;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import mecard.ResponseTypes;
 import mecard.exception.ConfigurationException;
+import mecard.util.DateComparer;
+import sun.misc.JavaxSecurityAuthKerberosAccess;
 
 /**
  * Handles basic SQL insert statement via JDBC.
@@ -67,8 +70,115 @@ public class SQLInsertCommand implements Command
         
         public Builder date(String dName, String date)
         {
+            if (date == null)
+            {
+                SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
+                this.columnList.add(d);
+                return this;
+            }
             SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, date);
             this.columnList.add(d);
+            return this;
+        }
+        
+        public Builder date(String dName)
+        {
+            SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
+            this.columnList.add(d);
+            return this;
+        }
+        
+        public Builder dateTime(String dName)
+        {
+            SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
+            this.columnList.add(d);
+            return this;
+        }
+        
+        public Builder smallInt(String sName)
+        {
+            SQLUpdateData d = new SQLUpdateData(sName, SQLData.Type.SMALL_INT, null);
+            this.columnList.add(d);
+            return this;
+        }
+        
+        public Builder smallInt(String sName, String smallValue)
+        {
+            if (smallValue == null)
+            {
+                SQLUpdateData d = new SQLUpdateData(sName, SQLData.Type.SMALL_INT, null);
+                this.columnList.add(d);
+                return this;
+            }
+            SQLUpdateData d = new SQLUpdateData(sName, SQLData.Type.SMALL_INT, smallValue);
+            this.columnList.add(d);
+            return this;
+        }
+        
+        /**
+         * Enters a given date and time based on the argument.
+         * @param dName The name of the field where the timestamp will be stored.
+         * @param dateTime The actual date and time.
+         * @return Builder object.
+         */
+        public Builder dateTime(String dName, String dateTime)
+        {
+            if (dateTime == null)
+            {
+                SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
+                this.columnList.add(d);
+                return this;
+            }
+            SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, dateTime);
+            this.columnList.add(d);
+            return this;
+        }
+        
+        /**
+         * Use this function in place of 'GETDATE()' function. Creates a default
+         * time stamp of 'now' in 'yyyy-MM-dd HH:mm:ss' format.
+         * @param dName Name of the field that will get the now timestamp.
+         * @return Builder object.
+         */
+        public Builder dateTimeNow(String dName)
+        {
+            String now = DateComparer.getNowSQLTimeStamp();
+            SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, now);
+            this.columnList.add(d);
+            return this;
+        }
+        
+        public Builder tinyInt(String tName, String value)
+        {
+            if (value == null)
+            {
+                SQLUpdateData i = new SQLUpdateData(tName, SQLData.Type.TINY_INT, null);
+                this.columnList.add(i);
+                return this;
+            }
+            SQLUpdateData i = new SQLUpdateData(tName, SQLData.Type.TINY_INT, value);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        public Builder tinyInt(String tName)
+        {
+            SQLUpdateData i = new SQLUpdateData(tName, SQLData.Type.TINY_INT, null);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        public Builder setChar(String cName, String value)
+        {
+            if (value == null)
+            {
+                SQLUpdateData i = new SQLUpdateData(cName, SQLData.Type.CHAR, null);
+                this.columnList.add(i);
+                return this;
+            }
+            // Data type is String to JDBC.
+            SQLUpdateData i = new SQLUpdateData(cName, SQLData.Type.CHAR, value);
+            this.columnList.add(i);
             return this;
         }
         
@@ -92,6 +202,85 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        public Builder string(String iName)
+        {
+            SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.STRING, null);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
+         * Stores given money amount in a JDBC compatible data type. Also accepts
+         * null as a valid amount.
+         * @param mName
+         * @param amount, amount of money to store, may be 'null'.
+         * @return Builder
+         */
+        public Builder money(String mName, String amount)
+        {
+            if (amount == null)
+            {
+                SQLUpdateData i = new SQLUpdateData(mName, SQLData.Type.MONEY, null);
+                this.columnList.add(i);
+                return this;
+            }
+            SQLUpdateData i = new SQLUpdateData(mName, SQLData.Type.MONEY, amount);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
+         * Stores null money values.
+         * @param mName
+         * @return Builder
+         */
+        public Builder money(String mName)
+        {
+            SQLUpdateData i = new SQLUpdateData(mName, SQLData.Type.MONEY, null);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
+         * Stores a bit value in SQL type of BIT.
+         * @param bName
+         * @return Builder.
+         */
+        public Builder bit(String bName)
+        {
+            SQLUpdateData i = new SQLUpdateData(bName, SQLData.Type.BIT, null);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
+         * Creates a SQL bit field.
+         * @param bName must be a string of either true or '1', anything else 
+         * will be interpreted as being a bit value of '0'. Null permitted permitted.
+         * @param value bit value of either true or '1' to be set and anything else
+         * will set the value to '0', except null which will store a null value.
+         * @return Builder object.
+         */
+        public Builder bit(String bName, String value)
+        {
+            SQLUpdateData i;
+            if (value == null)
+            {
+                i = new SQLUpdateData(bName, SQLData.Type.BIT, null);
+                this.columnList.add(i);
+                return this;
+            }
+            else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("1"))
+            {
+                i = new SQLUpdateData(bName, SQLData.Type.BIT, "true");
+                this.columnList.add(i);
+                return this;
+            }
+            i = new SQLUpdateData(bName, SQLData.Type.BIT, "false");
+            this.columnList.add(i);
+            return this;
+        }
+        
         public SQLInsertCommand build()
         {
             return new SQLInsertCommand(this);
@@ -111,8 +300,8 @@ public class SQLInsertCommand implements Command
     
     private PreparedStatement getPreparedStatement() throws SQLException
     {
-        Connection connection = null;
-        PreparedStatement pStatement = null;
+        Connection connection;
+        PreparedStatement pStatement;
         StringBuilder statementStrBuilder = new StringBuilder();
         // insert INTO software (station, title, DateInstalled) values (45, "Adobe Acrobat", curdate());
         statementStrBuilder.append("INSERT INTO ");
@@ -155,6 +344,30 @@ public class SQLInsertCommand implements Command
                 {
                     pStatement.setNull(columnNumber, java.sql.Types.DATE);
                 }
+                else if (dType.getType() == SQLData.Type.MONEY)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.DECIMAL);
+                }
+                else if (dType.getType() == SQLData.Type.BIT)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.BIT);
+                }
+                else if (dType.getType() == SQLData.Type.TIMESTAMP)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
+                }
+                else if (dType.getType() == SQLData.Type.SMALL_INT)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.SMALLINT);
+                }
+                else if (dType.getType() == SQLData.Type.TINY_INT)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.TINYINT);
+                }
+                else if (dType.getType() == SQLData.Type.CHAR)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.CHAR);
+                }
                 else // dType.getType() == SQLData.Type.STRING
                 {
                     pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
@@ -169,6 +382,32 @@ public class SQLInsertCommand implements Command
                 else if (dType.getType() == SQLData.Type.DATE)
                 {
                     pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.MONEY)
+                {
+//                    pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
+                    BigDecimal bd = new BigDecimal(dType.getValue());
+                    pStatement.setBigDecimal(columnNumber, bd);
+                }
+                else if (dType.getType() == SQLData.Type.BIT)
+                {
+                    pStatement.setBoolean(columnNumber, Boolean.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.TIMESTAMP)
+                {
+                    pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.SMALL_INT)
+                {
+                    pStatement.setShort(columnNumber, Short.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.TINY_INT)
+                {   // Tiny int similar to SMALL_INT for JDBC.
+                    pStatement.setShort(columnNumber, Short.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.CHAR)
+                {   // Char handled as String JDBC.
+                    pStatement.setString(columnNumber, dType.getValue());
                 }
                 else // dType.getType() == SQLData.Type.STRING
                 {

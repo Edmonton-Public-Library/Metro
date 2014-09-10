@@ -67,7 +67,7 @@ public class PropertyReaderTest
         Properties polarisProps = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         polarisProps.list(System.out);
         
-        Properties sqlProps = PropertyReader.getProperties(ConfigFileTypes.SQL);
+        Properties sqlProps = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         sqlProps.list(System.out);
         
         Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);

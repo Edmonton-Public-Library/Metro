@@ -31,7 +31,14 @@ public class SQLData
     public enum Type{
         STRING,
         DATE,
-        INT;
+        INT,
+        MONEY,
+        BIT,
+        TIMESTAMP,
+        TIMESTAMP_NOW,
+        SMALL_INT,
+        CHAR,
+        TINY_INT;
     }
     
     protected final String name;

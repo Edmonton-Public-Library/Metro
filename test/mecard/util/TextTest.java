@@ -14,6 +14,89 @@ public class TextTest
     public TextTest()
     {
     }
+    
+    @Test
+    public void testNthLastWord()
+    {
+        System.out.println("==getNthLastWord==");
+        String input = "399565 399566 399567 399568";
+        String output= Text.lastWord(input, 0);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.lastWord(input, 1);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399568") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.lastWord(input, 2);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399567") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.lastWord(input, 3);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399566") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.lastWord(input, 4);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399565") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.lastWord(input, 5);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = "this    that\t   and \n the \t\t\t\t\t\t the               other";
+        output= Text.lastWord(input, 5);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("that") == 0);
+        
+        input = "";
+        output= Text.lastWord(input, 0);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = "    ";
+        output= Text.lastWord(input, 100);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+    }
+    
+    /**
+     * Test of isValidExpiryDate method, of class MeCardPolicy.
+     */
+    @Test
+    public void testLastWord()
+    {
+        System.out.println("==getLastWord==");
+        String input = "399565 399566 399567 399568";
+        String output= Text.lastWord(input);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399568") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.lastWord(input);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399568") == 0);
+        
+        input = "this    that\t   and \n the \t\t\t\t\t\t the               other";
+        output= Text.lastWord(input);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("other") == 0);
+        
+        input = "";
+        output= Text.lastWord(input);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = "    ";
+        output= Text.lastWord(input);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+    }
 
     /**
      * Test of isValidExpiryDate method, of class MeCardPolicy.
