@@ -66,6 +66,7 @@ public abstract class PolarisNormalizer extends CustomerLoadNormalizer
 //            String value = defaultProps.get(key).toString();
 //            formattedCustomer.insertValue(FlatUserExtendedFieldTypes.USER.name(), key, value);
 //        }
+        // Set meaningful default from properties.
     }
     
     @Override

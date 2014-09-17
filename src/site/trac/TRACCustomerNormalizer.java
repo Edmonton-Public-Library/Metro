@@ -41,5 +41,19 @@ public final class TRACCustomerNormalizer extends PolarisNormalizer
 
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
-    {   }
+    {   
+        
+    }
+    
+    @Override
+    public void normalizeOnCreate(Customer customer, Response response)
+    {
+        // add User1 - User5 and any other fields.
+    }
+
+    @Override
+    public void normalizeOnUpdate(Customer customer, Response response)
+    {
+        // No special action required at this time.
+    }
 }

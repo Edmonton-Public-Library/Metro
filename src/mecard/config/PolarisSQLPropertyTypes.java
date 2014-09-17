@@ -24,19 +24,29 @@ package mecard.config;
  * Basic values needed to make a connection with a JDBC.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum SQLPropertyTypes
+public enum PolarisSQLPropertyTypes
 {
     // local directory where the customers will be stored before loading.
     LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
-    HOST("host"),
+    HOST("host"), // IP or DNS name of the database server.
     CONNECTOR_TYPE("connector-type"), // 'sql_server, or mysql so far
-    DATABASE("database"),
-    USERNAME("username"),
-    PASSWORD("password");
+    DATABASE("database"),        // The name of the database like "Polaris"
+    USERNAME("username"),        // User name for the ILS database.
+    PASSWORD("password"),        // password for the ILS database
+    // Polaris specific default values.
+    PATRON_CODE_ID("patron-code-id"), // PatronCodeID the type of patron or profile of the patron as an integer. Like 25.
+    ORGANIZATION_ID("organization-id"), // The library the user will belong to. An integer value like 303.
+    CREATOR_ID("creator-id"),           // Integer id value of the entity creating customers in the ILS database. Like 1831.
+    LANGUAGE_ID("language-id"),         // Integer value of the customer's default language; English = 1.
+    DELIVERY_OPTION_ID("delivery-option-id"), // Integer value of default notice delivery method. email = 2.
+    EMAIL_FORMAT_ID("email-format-id"),       // Not sure but the default value is 2.
+    COUNTRY_ID("country-id"),         // Default country ID of the customer, Cananda = 2. Guess who is 1?
+    ADDRESS_TYPE_ID("address-type-id"), // The type of address the customer has. Not helpful but I don't really know. Default 2.
+    FREE_TEXT_LABEL("free-text-label"); // Free text lable string; "Home" might be a good choice.
     
     private String type;
 
-    private SQLPropertyTypes(String s)
+    private PolarisSQLPropertyTypes(String s)
     {
         this.type = s;
     }

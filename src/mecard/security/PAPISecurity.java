@@ -29,7 +29,7 @@ import java.util.Properties;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PolarisPropertyTypes;
+import mecard.config.PAPIPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.exception.ConfigurationException;
 import mecard.util.DateComparer;
@@ -56,8 +56,8 @@ public final class PAPISecurity
     private PAPISecurity()
     {
         Properties props     = PropertyReader.getProperties(ConfigFileTypes.PAPI);
-        this.PAPIAccessKeyId = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_KEY_ID.toString());
-        this.PAPISecret      = props.getProperty(PolarisPropertyTypes.PAPI_ACCESS_SECRET.toString());
+        this.PAPIAccessKeyId = props.getProperty(PAPIPropertyTypes.PAPI_ACCESS_KEY_ID.toString());
+        this.PAPISecret      = props.getProperty(PAPIPropertyTypes.PAPI_ACCESS_SECRET.toString());
     }
     
     /**

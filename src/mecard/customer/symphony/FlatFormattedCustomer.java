@@ -34,7 +34,7 @@ import mecard.util.Phone;
 import mecard.util.PostalCode;
 
 /**
- * This class converts a ME customer object and converts it into a flat file.
+ * This class converts a ME customer object into a flat file.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class FlatFormattedCustomer implements FormattedCustomer

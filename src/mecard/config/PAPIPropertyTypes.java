@@ -25,7 +25,7 @@ package mecard.config;
  * fields 
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum PolarisPropertyTypes
+public enum PAPIPropertyTypes
 {
     // local directory where the customers will be stored before loading.
     LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
@@ -56,7 +56,7 @@ public enum PolarisPropertyTypes
     
     private String type;
 
-    private PolarisPropertyTypes(String s)
+    private PAPIPropertyTypes(String s)
     {
         this.type = s;
     }

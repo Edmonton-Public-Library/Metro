@@ -29,7 +29,7 @@ import mecard.QueryTypes;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.PolarisPropertyTypes;
+import mecard.config.PAPIPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
@@ -63,15 +63,15 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
         // read all the properties from the Polaris table
         this.messageProperties      = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         Properties papiProps        = PropertyReader.getProperties(ConfigFileTypes.PAPI);
-        this.host                   = papiProps.getProperty(PolarisPropertyTypes.HOST.toString());
-        this.authenticationDomain   = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_DOMAIN.toString());
-        this.authenticationUserName = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_USERNAME.toString());
-        this.authenticationPassword = papiProps.getProperty(PolarisPropertyTypes.AUTHENTICATE_PASSWORD.toString());
-        this.patronBranchId         = papiProps.getProperty(PolarisPropertyTypes.PATRON_BRANCH_ID.toString());
-        this.version                = papiProps.getProperty(PolarisPropertyTypes.VERSION.toString());
-        this.languageId             = papiProps.getProperty(PolarisPropertyTypes.LANGUAGE_ID.toString());
-        this.appId                  = papiProps.getProperty(PolarisPropertyTypes.APP_ID.toString());
-        this.orgId                  = papiProps.getProperty(PolarisPropertyTypes.ORG_ID.toString());
+        this.host                   = papiProps.getProperty(PAPIPropertyTypes.HOST.toString());
+        this.authenticationDomain   = papiProps.getProperty(PAPIPropertyTypes.AUTHENTICATE_DOMAIN.toString());
+        this.authenticationUserName = papiProps.getProperty(PAPIPropertyTypes.AUTHENTICATE_USERNAME.toString());
+        this.authenticationPassword = papiProps.getProperty(PAPIPropertyTypes.AUTHENTICATE_PASSWORD.toString());
+        this.patronBranchId         = papiProps.getProperty(PAPIPropertyTypes.PATRON_BRANCH_ID.toString());
+        this.version                = papiProps.getProperty(PAPIPropertyTypes.VERSION.toString());
+        this.languageId             = papiProps.getProperty(PAPIPropertyTypes.LANGUAGE_ID.toString());
+        this.appId                  = papiProps.getProperty(PAPIPropertyTypes.APP_ID.toString());
+        this.orgId                  = papiProps.getProperty(PAPIPropertyTypes.ORG_ID.toString());
     }
     
     /**

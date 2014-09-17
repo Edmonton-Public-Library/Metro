@@ -6,7 +6,7 @@ import java.util.Properties;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
-import mecard.config.SQLPropertyTypes;
+import mecard.config.PolarisSQLPropertyTypes;
 import mecard.util.DateComparer;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -23,11 +23,11 @@ public class SQLCommandTest
     public SQLCommandTest()
     {
         p = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
-        String host = p.getProperty(SQLPropertyTypes.HOST.toString());
-        String driver = p.getProperty(SQLPropertyTypes.CONNECTOR_TYPE.toString());
-        String database = p.getProperty(SQLPropertyTypes.DATABASE.toString());
-        String user = p.getProperty(SQLPropertyTypes.USERNAME.toString());
-        String password = p.getProperty(SQLPropertyTypes.PASSWORD.toString());
+        String host = p.getProperty(PolarisSQLPropertyTypes.HOST.toString());
+        String driver = p.getProperty(PolarisSQLPropertyTypes.CONNECTOR_TYPE.toString());
+        String database = p.getProperty(PolarisSQLPropertyTypes.DATABASE.toString());
+        String user = p.getProperty(PolarisSQLPropertyTypes.USERNAME.toString());
+        String password = p.getProperty(PolarisSQLPropertyTypes.PASSWORD.toString());
         connector = new SQLConnector.Builder(host, driver, database)
                 .user(user)
                 .password(password)

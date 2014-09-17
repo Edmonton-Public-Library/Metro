@@ -26,7 +26,14 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 
 /**
- *
+ * This class is like {@link mecard.customer.symphony.FlatFormattedCustomer} but
+ * in the case of Symphony that needs to operate on a list of strings, making 
+ * changes to the customer information, then load the customer as a list of 
+ * strings (similarly with {@link mecard.customer.horizon.BImportFormattedCustomer})
+ * this formatted customer only needs to operate on the customer data, formatting
+ * it in minor ways like ensuring the postal code has proper formatting and phone
+ * numbers include hyphens '-'. The customer then needs to be referenced like a 
+ * regular {@link mecard.customer.Customer} object.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class PolarisSQLCustomerFormatter implements CustomerFormatter
