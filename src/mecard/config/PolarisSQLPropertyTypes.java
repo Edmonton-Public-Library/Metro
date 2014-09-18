@@ -41,7 +41,6 @@ public enum PolarisSQLPropertyTypes
     DELIVERY_OPTION_ID("delivery-option-id"), // Integer value of default notice delivery method. email = 2.
     EMAIL_FORMAT_ID("email-format-id"),       // Not sure but the default value is 2.
     COUNTRY_ID("country-id"),         // Default country ID of the customer, Cananda = 2. Guess who is 1?
-    ADDRESS_TYPE_ID("address-type-id"), // The type of address the customer has. Not helpful but I don't really know. Default 2.
     FREE_TEXT_LABEL("free-text-label"); // Free text lable string; "Home" might be a good choice.
     
     private String type;

@@ -26,8 +26,6 @@ import api.CustomerMessage;
 import api.DummyCommand;
 import api.SIPCustomerMessage;
 import api.SQLConnector;
-import api.SQLCustomerMessage;
-import api.SQLDescribeCommand;
 import api.SQLInsertCommand;
 import api.SQLSelectCommand;
 import api.SQLUpdateCommand;
@@ -46,7 +44,6 @@ import mecard.customer.CustomerFormatter;
 import mecard.customer.polaris.PolarisSQLCustomerFormatter;
 import mecard.exception.ConfigurationException;
 import mecard.util.DateComparer;
-import mecard.util.PostalCode;
 import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
@@ -867,11 +864,11 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         WHERE PatronID = (PatronID)
         */
         // Get the date today in system format
-        String today = ""; // Get ready with dob and expiry in acceptable format.
+        String today; // Get ready with dob and expiry in acceptable format.
         String expiry;
         try
         {
-            DateComparer.ANSIToConfigDate(DateComparer.ANSIToday());
+            today = DateComparer.ANSIToConfigDate(DateComparer.ANSIToday());
             expiry = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         }
         catch (ParseException e)

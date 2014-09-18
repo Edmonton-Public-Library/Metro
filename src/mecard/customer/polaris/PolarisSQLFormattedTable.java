@@ -32,6 +32,10 @@ public class PolarisSQLFormattedTable implements FormattedTable
     private final String TABLE_NAME;
     private final HashMap<String, String> columns;
     
+    /**
+     * Mostly used for testing.
+     * @param name 
+     */
     public PolarisSQLFormattedTable(String name)
     {
         TABLE_NAME   = name;
