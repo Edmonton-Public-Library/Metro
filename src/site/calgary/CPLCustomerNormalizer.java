@@ -89,14 +89,9 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
                 "MALE"
             );
         }
-        else
-        {
-            formattedCustomer.insertValue(
-                FlatUserExtendedFieldTypes.USER.name(), 
-                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-                "UNKNOWN"
-            );
-        }
+        // else CPL doesn't have a category of unknown, so either MALE, FEMALE
+        // or no USER_CATEGORY3 at all.
+
         
         formattedCustomer.insertValue(
             FlatUserExtendedFieldTypes.USER.name(),
