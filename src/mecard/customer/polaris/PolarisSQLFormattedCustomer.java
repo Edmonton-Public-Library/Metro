@@ -251,7 +251,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
             // check if any table contains a value for the provided key, then
             // insert the value and return true if the value was found and false
             // otherwise. 
-            if (containsKey(key))
+            if (containsKey(table, key))
             {
                 result = true;
                 table.setValue(key, value);
@@ -302,6 +302,22 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         }
         return result;
     }
+    
+    /**
+     * Use this instead of {@link #containsKey(java.lang.String)} because this
+     * method will localize the search to a specific table.
+     * @param table
+     * @param key
+     * @return true if the specified table contains a key and false otherwise.
+     */
+    private boolean containsKey(FormattedTable table, String key)
+    {
+        if (table.getValue(key).isEmpty() == false)
+        {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * This method returns all the values stored under any matching key in all
@@ -344,15 +360,15 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
     {
         if (index > this.customerAccount.size())
         {
-            this.customerAccount.add((FlatFormattedTable)formattedTable);
+            this.customerAccount.add((PolarisSQLFormattedTable)formattedTable);
         }
         else if (index < 0)
         {
-            this.customerAccount.add(0, (FlatFormattedTable)formattedTable);
+            this.customerAccount.add(0, (PolarisSQLFormattedTable)formattedTable);
         }
         else
         {
-            this.customerAccount.add(index, (FlatFormattedTable)formattedTable);
+            this.customerAccount.add(index, (PolarisSQLFormattedTable)formattedTable);
         }
     }
 

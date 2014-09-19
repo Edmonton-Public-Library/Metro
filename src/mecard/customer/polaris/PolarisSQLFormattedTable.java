@@ -68,9 +68,9 @@ public class PolarisSQLFormattedTable implements FormattedTable
             data.append(sKeys);
             data.append("='");
             data.append(this.columns.get(sKeys));
-            data.append("'\n");
+            data.append("' ");
         }
-        return data.toString();
+        return data.toString().trim();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class PolarisSQLFormattedTable implements FormattedTable
             // The table has no real output value so this is more of a toString() method.
             // but just the names of the keys. It is never used in practice.
             data.append(sKeys);
-            data.append("'\n");
+            data.append(" ");
         }
         return data.toString();
     }
