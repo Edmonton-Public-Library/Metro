@@ -30,7 +30,6 @@ import java.util.List;
 import mecard.ResponseTypes;
 import mecard.exception.ConfigurationException;
 import mecard.util.DateComparer;
-import sun.misc.JavaxSecurityAuthKerberosAccess;
 
 /**
  * Handles basic SQL insert statement via JDBC.
@@ -38,6 +37,7 @@ import sun.misc.JavaxSecurityAuthKerberosAccess;
  */
 public class SQLInsertCommand implements Command 
 {
+    public final static String NULL = "NULL";
     private final SQLConnector connector;
     private final List<SQLUpdateData> columnList;
     private final String table;
@@ -61,8 +61,20 @@ public class SQLInsertCommand implements Command
             this.columnList = new ArrayList<>();
         }
         
+        /**
+         * Inserts a string value into an SQL table.
+         * @param cName - name of the column in the table.
+         * @param value value to store which can be null, or "NULL".
+         * @return builder object.
+         */
         public Builder string(String cName, String value)
         {
+            if (value != null && value.compareToIgnoreCase(NULL) == 0)
+            {
+                SQLUpdateData d = new SQLUpdateData(cName, SQLData.Type.DATE, null);
+                this.columnList.add(d);
+                return this;
+            }
             SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, value);
             this.columnList.add(s);
             return this;
@@ -70,7 +82,7 @@ public class SQLInsertCommand implements Command
         
         public Builder date(String dName, String date)
         {
-            if (date == null)
+            if (date != null && date.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
                 this.columnList.add(d);
@@ -104,7 +116,7 @@ public class SQLInsertCommand implements Command
         
         public Builder smallInt(String sName, String smallValue)
         {
-            if (smallValue == null)
+            if (smallValue != null && smallValue.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData d = new SQLUpdateData(sName, SQLData.Type.SMALL_INT, null);
                 this.columnList.add(d);
@@ -123,7 +135,7 @@ public class SQLInsertCommand implements Command
          */
         public Builder dateTime(String dName, String dateTime)
         {
-            if (dateTime == null)
+            if (dateTime != null && dateTime.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
                 this.columnList.add(d);
@@ -150,7 +162,7 @@ public class SQLInsertCommand implements Command
         
         public Builder tinyInt(String tName, String value)
         {
-            if (value == null)
+            if (value != null && value.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData i = new SQLUpdateData(tName, SQLData.Type.TINY_INT, null);
                 this.columnList.add(i);
@@ -170,7 +182,7 @@ public class SQLInsertCommand implements Command
         
         public Builder setChar(String cName, String value)
         {
-            if (value == null)
+            if (value != null && value.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData i = new SQLUpdateData(cName, SQLData.Type.CHAR, null);
                 this.columnList.add(i);
@@ -184,7 +196,7 @@ public class SQLInsertCommand implements Command
         
         public Builder integer(String iName, String value)
         {
-            if (value == null)
+            if (value != null && value.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, null);
                 this.columnList.add(i);
@@ -218,7 +230,9 @@ public class SQLInsertCommand implements Command
          */
         public Builder money(String mName, String amount)
         {
-            if (amount == null)
+            // Permits objects like PolarisSQLFormattedCustomer to explicitly set
+            // a value to "NULL" and actually have it set to null, not "null" as a string.
+            if (amount != null && amount.compareToIgnoreCase(NULL) == 0)
             {
                 SQLUpdateData i = new SQLUpdateData(mName, SQLData.Type.MONEY, null);
                 this.columnList.add(i);
@@ -264,7 +278,7 @@ public class SQLInsertCommand implements Command
         public Builder bit(String bName, String value)
         {
             SQLUpdateData i;
-            if (value == null)
+            if (value != null && value.compareToIgnoreCase(NULL) == 0)
             {
                 i = new SQLUpdateData(bName, SQLData.Type.BIT, null);
                 this.columnList.add(i);

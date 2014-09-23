@@ -21,6 +21,7 @@
 package api;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -95,9 +96,37 @@ public class SQLUpdateCommand implements Command
             return this;
         }
         
+        /** 
+         * Allows the update of a dateTime field.
+         * @param dName the name of the date time column.
+         * @param dateTime which may be null.
+         * @return builder object.
+         */
+        public Builder dateTime(String dName, String dateTime)
+        {
+            SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, dateTime);
+            this.columnList.add(d);
+            return this;
+        }
+        
         public Builder integer(String iName, String value)
         {
             SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, value);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
+         * Sets a character value for the update object. Underneath JDBC handles
+         * char data type as a string.
+         * @param cName
+         * @param value of char, which may be null.
+         * @return builder object.
+         */
+        public Builder setChar(String cName, String value)
+        {
+            // Data type is String to JDBC.
+            SQLUpdateData i = new SQLUpdateData(cName, SQLData.Type.CHAR, value);
             this.columnList.add(i);
             return this;
         }
@@ -164,6 +193,14 @@ public class SQLUpdateCommand implements Command
                 {
                     pStatement.setNull(columnNumber, java.sql.Types.DATE);
                 }
+                else if (dType.getType() == SQLData.Type.TIMESTAMP)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
+                }
+                else if (dType.getType() == SQLData.Type.CHAR)
+                {
+                    pStatement.setNull(columnNumber, java.sql.Types.CHAR);
+                }
                 else // dType.getType() == SQLData.Type.STRING
                 {
                     pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
@@ -177,7 +214,15 @@ public class SQLUpdateCommand implements Command
                 }
                 else if (dType.getType() == SQLData.Type.DATE)
                 {
-                    pStatement.setDate(columnNumber, java.sql.Date.valueOf(dType.getValue()));
+                    pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.TIMESTAMP)
+                {
+                    pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(dType.getValue()));
+                }
+                else if (dType.getType() == SQLData.Type.CHAR)
+                {   // Char handled as String JDBC.
+                    pStatement.setString(columnNumber, dType.getValue());
                 }
                 else // dType.getType() == SQLData.Type.STRING
                 {

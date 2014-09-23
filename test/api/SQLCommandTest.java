@@ -61,9 +61,9 @@ public class SQLCommandTest
         assertTrue(status.getStatus() == ResponseTypes.COMMAND_COMPLETED);
         
         command = new SQLInsertCommand.Builder(connector, "software")
-                .string("title", null)
-                .integer("station", "76")
-                .date("DateInstalled", "2014-07-25")
+                .string("title", "null")
+                .integer("station", "3333")
+                .date("DateInstalled", "null")
                 .build();
         System.out.println("COMMAND==>"+command.toString());
         status = command.execute();
@@ -98,11 +98,11 @@ public class SQLCommandTest
             System.out.println("Date could not be parsed." + e.getMessage());
         }
         Command command = new SQLUpdateCommand.Builder(connector, "software")
-                .string("title", "Snadobe Acrobat")
-                .integer("station", "5")
+                .string("title", "POPPY Cap")
+                .integer("station", "4444")
 //                .date("DateInstalled", "2013-25-12") // this date value fails on MySQL date format:Data truncation: Incorrect date value: '2013-25-12' for column 'DateInstalled' at row 1
-                .date("DateInstalled", myDate)
-                .whereInteger("station", null)
+                .date("DateInstalled", null)
+                .whereInteger("station", "3333")
                 .build();
 
         CommandStatus status = command.execute();

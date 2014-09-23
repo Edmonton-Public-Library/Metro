@@ -29,4 +29,3 @@ dist/lib/junit-4.10.jar
 *.zip
 /dist/
 config_EPL.tgz
-test/mecard/requestbuilder/

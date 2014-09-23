@@ -674,7 +674,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         */
         // Get the date today in system format
         String today; // Get ready with dob and expiry in acceptable format.
-        String expiry = fCustomer.getValue(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString());;
+        String expiry = fCustomer.getValue(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString());
         try
         {
             today = DateComparer.ANSIToConfigDate(DateComparer.ANSIToday());
@@ -757,9 +757,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .string("PhoneVoice1", customer.get(CustomerFieldTypes.PHONE))
                 .string("EmailAddress", customer.get(CustomerFieldTypes.EMAIL))
                 .string("Password", customer.get(CustomerFieldTypes.PIN))
-                .string("UpdateDate", today)     // add dateTime to update
-                .string("ExpirationDate", expiry)
-                .string("AddrCheckDate", expiry)
+                .dateTime("UpdateDate", today)     // add dateTime to update
+                .dateTime("ExpirationDate", expiry)
+                .dateTime("AddrCheckDate", expiry)
                 .string("Gender", customer.get(CustomerFieldTypes.SEX))
                 .string("PatronFullName", 
                         customer.get(CustomerFieldTypes.LASTNAME)
@@ -769,7 +769,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                         customer.get(CustomerFieldTypes.FIRSTNAME)
                         + " " 
                         + customer.get(CustomerFieldTypes.LASTNAME))
-                .whereString("PatronID", polarisPatronID)
+                .whereInteger("PatronID", polarisPatronID)
                 .build();
         status = updatePatronRegistration.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -1064,16 +1064,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     {
         // TODO let's parse the returning POLARIS_SQL message for results.
         ResponseTypes responseType = status.getStatus();
-        boolean result = false;
         switch(responseType)
         {
             case SUCCESS:
-                result = true;
+                return true;
             default:
-                result = false;
-                break;
+                return false;
         }
-        return result;
     }
 
     @Override
