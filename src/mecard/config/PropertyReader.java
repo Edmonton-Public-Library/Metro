@@ -60,9 +60,9 @@ public class PropertyReader
     private static String DEBUG_SETTINGS_FILE    = "debug.properties";
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
-    private static String POLARIS_SQL_PROPERTY_FILE      = "polaris_sql.properties";
+    private static final String POLARIS_SQL_PROPERTY_FILE      = "polaris_sql.properties";
         // There are no mandatory variables, so no checking is done.
-    private static Properties polaris;            // Default properties needed by Polaris.
+    private static Properties polarisAPI;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
     private static Properties bimport;            // Properties Metro needs to operate BImport.
     private static Properties environment;        // Basic envrionment values.
@@ -223,17 +223,17 @@ public class PropertyReader
                 return systemVariables;
                 
             case PAPI:
-                polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
+                polarisAPI = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (PAPIPropertyTypes pType : PAPIPropertyTypes.values())
                 {
-                    if (polaris.get(pType.toString()) == null)
+                    if (polarisAPI.get(pType.toString()) == null)
                     {
                         String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PROPERTY_FILE;
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
-                return polaris;
+                return polarisAPI;
             // POLARIS_SQL required properties if the user is using POLARIS_SQL for any protocol.    
             case POLARIS_SQL:
                 SQLProperties = readPropertyFile(PropertyReader.POLARIS_SQL_PROPERTY_FILE);

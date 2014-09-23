@@ -174,7 +174,7 @@ public class PolarisTable
         CITY("City"), //, 12, varchar, 32, 32, null, null, 0, null, null, 12, null, 32, 3, NO, 
         STATE("State"), //, 12, varchar, 32, 32, null, null, 0, null, null, 12, null, 32, 4, NO, 
         COUNTRY_ID("CountryID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 5, YES, 
-        COUNTRY("County"); //, 12, varchar, 32, 32, null, null, 1, null, null, 12, null, 32, 6, YES,
+        COUNTY("County"); //, 12, varchar, 32, 32, null, null, 1, null, null, 12, null, 32, 6, YES,
         
         private String type;
 

@@ -33,7 +33,6 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import mecard.customer.FormattedTable;
-import mecard.customer.symphony.FlatFormattedTable;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
@@ -41,7 +40,10 @@ import mecard.util.PostalCode;
 /**
  * This object will format the fields so they are ready for insertion into the
  * ILS database with correct formatting. Example: phone number '7805551212' will
- * become '780-555-1212'.
+ * become '780-555-1212'. The {@link FormattedCustomer} object has the ability 
+ * to store any key value pair as strings, the key should agree with the naming 
+ * convention used by the RequestBuilder, in this case {@link mecard.requestbuilder.PolarisILSRequestBuilder}.
+ * @see {@link PolarisSQLFormattedCustomer.insertValue()}.
  * @author anisbet
  */
 public class PolarisSQLFormattedCustomer implements FormattedCustomer
@@ -84,14 +86,17 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         this.insertValue(
                 PolarisTable.PATRONS, 
                 PolarisTable.Patrons.PATRON_CODE_ID.toString(), 
+                // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.PATRON_CODE_ID.toString(), "25"));
         this.insertValue(
                 PolarisTable.PATRONS, 
                 PolarisTable.Patrons.ORGANIZATION_ID.toString(), 
+                // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString()));
         this.insertValue(
                 PolarisTable.PATRONS, 
                 PolarisTable.Patrons.CREATOR_ID.toString(), 
+                // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString()));
         this.insertValue(
                 PolarisTable.PATRONS, 
@@ -150,8 +155,13 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
             lastUpdated = DateComparer.ANSIToConfigDate(DateComparer.ANSIToday());
             this.insertValue(
                 PolarisTable.PATRON_REGISTRATION, 
+                PolarisTable.PatronRegistration.BIRTH_DATE.toString(), 
+                dob);
+            this.insertValue(
+                PolarisTable.PATRON_REGISTRATION, 
                 PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), 
                 expiry);
+            // Set to the customer's expiry date.
             this.insertValue(
                 PolarisTable.PATRON_REGISTRATION, 
                 PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), 
@@ -178,7 +188,13 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         this.insertValue(
                 PolarisTable.PATRON_REGISTRATION, 
                 PolarisTable.PatronRegistration.DELIVERY_OPTION_ID.toString(), 
+                // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.DELIVERY_OPTION_ID.toString()));
+        this.insertValue(
+                PolarisTable.PATRON_REGISTRATION, 
+                PolarisTable.PatronRegistration.EMAIL_FORMAT_ID.toString(), 
+                // read from the properties file.
+                props.getProperty(PolarisSQLPropertyTypes.EMAIL_FORMAT_ID.toString()));
         
         /////////////////// Postal Codes ///////////////////
         this.insertValue(
@@ -196,6 +212,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         this.insertValue(
                 PolarisTable.POSTAL_CODES, 
                 PolarisTable.PostalCodes.COUNTRY_ID.toString(), 
+                // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.COUNTRY_ID.toString())); // normally '2'
         ////////////////// Addresses ///////////////////////////
         this.insertValue(
@@ -206,6 +223,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         this.insertValue(
                 PolarisTable.PATRON_ADDRESSES, 
                 PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
+                // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.FREE_TEXT_LABEL.toString()));
     }
     

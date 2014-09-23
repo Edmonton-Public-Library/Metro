@@ -26,6 +26,12 @@ public class PhoneTest
         String result = Phone.formatPhone(p, true);
         assertEquals(expResult, result);
         
+        p = "7804366077";
+        expResult = "780-436-6077";
+        result = Phone.formatPhone(p);
+        System.out.println(">>>>>>>"+result+"<<<<<<<<<");
+        assertEquals(expResult, result);
+        
         p = "780-436-6077";
         expResult = "780-436-6077";
         result = Phone.formatPhone(p);

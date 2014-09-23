@@ -32,7 +32,8 @@ public enum ResponderMethodTypes
     SIP2("sip2"),
     BIMPORT("bimport"), 
     DEBUG("dummy"), 
-    POLARIS_API("polaris-api"); // restful service.
+    POLARIS_API("polaris-api"), // restful service. untested.
+    POLARIS_SQL("polaris-sql"); 
     
     private String type;
     

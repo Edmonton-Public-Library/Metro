@@ -114,7 +114,20 @@ public class PolarisSQLFormattedCustomerTest
         assertFalse(formattedCustomer.containsKey("Some_Silly_Value"));
         assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.NAME_FIRST.toString()));
         assertTrue(formattedCustomer.containsKey(PolarisTable.Patrons.BARCODE.toString()));
-        System.out.println(">>>"+ formattedCustomer.containsKey("Some_Silly_Value") +"<<<");
+        
+        String v = formattedCustomer.getValue("Some_Silly_Value");
+        System.out.println(">>>"+ v +"<<<");
+        assertTrue(v.isEmpty());
+        
+        assertTrue(formattedCustomer.containsKey(PolarisTable.Patrons.CREATOR_ID.toString()));
+        v = formattedCustomer.getValue(PolarisTable.Patrons.CREATOR_ID.toString());
+        System.out.println(">>>"+ v +"<<<");
+        assertTrue(v.compareTo("1831") == 0);
+        
+        assertTrue(formattedCustomer.containsKey(PolarisTable.Patrons.ORGANIZATION_ID.toString()));
+        v = formattedCustomer.getValue(PolarisTable.Patrons.ORGANIZATION_ID.toString());
+        System.out.println(">>>"+ v +"<<<");
+        assertTrue(v.compareTo("303") == 0);
     }
 
     /**

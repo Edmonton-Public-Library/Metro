@@ -134,6 +134,11 @@ public abstract class ILSRequestBuilder
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_API' ");
             return new PAPIRequestBuilder(debug);
         }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_SQL.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_SQL' ");
+            return new PolarisSQLRequestBuilder(debug);
+        }
         else
         {
             throw new UnsupportedCommandException(configRequestedService + 
@@ -233,10 +238,11 @@ public abstract class ILSRequestBuilder
      * This method is used for lost cards which get output to the customer load
      * directory. This directory is located in each ILS property file as a load-dir. 
      * Because the lost user has no insight into which ILS is being used the ILSBuilder
-     * must be able to signal the failed customer files with the load directory.
+     * must be able to signal the failed customer files with the load directory. 
+     * @return string of load directory.
      */
     public String getCustomerLoadDirectory()
     {
         return loadDir;
-    }
+    }    
 }
