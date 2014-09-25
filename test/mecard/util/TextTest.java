@@ -156,6 +156,16 @@ public class TextTest
         output= Text.firstWord(input);
         System.out.println("FIRST_WORD:'"+ output + "'");
         assertTrue(output.compareTo("") == 0);
+        
+        content = "492723 \n" +
+            "492724 \n" +
+            "492725 \n" +
+            "492726 \n" +
+            "3\n";
+        result = Text.firstWord(content);
+        System.out.println("FIRST_WORD:'"+ result + "'");
+        assertFalse(result.isEmpty());
+        assertTrue(result.compareTo("492723") == 0);
     }
     
     /**
