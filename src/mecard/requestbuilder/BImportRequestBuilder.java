@@ -70,7 +70,6 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public static final CharSequence SUCCESS_MARKER = "<ok>";
     public static final String PHONE_TAG = "default-phone";
     protected String bimportDir;    // where bimport exe is located.
-    protected String loadDir; // where to find the batch, header and data files.
     protected String serverName;
     protected String password;
     protected String userName;

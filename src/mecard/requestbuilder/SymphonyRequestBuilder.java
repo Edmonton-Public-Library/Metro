@@ -65,7 +65,6 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     private static List<String> loadFlatUserUpdate;
     public final static String USER_FILE_NAME_PREFIX  = "metro_user_";
     public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
-    private final String homeDirectory;
     private final String sshServer;
     private final Properties messageProperties;
     private final boolean debug;
@@ -76,7 +75,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         Properties symphonyProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
-        this.homeDirectory = symphonyProps.getProperty(PropertyReader.LOAD_DIR, "");
+        this.loadDir = symphonyProps.getProperty(SymphonyPropertyTypes.LOAD_DIR.toString());
         // This is an optional tag that if included will run the commands remotely.
         // sshServer should now have either the name of the ssh server or "" if not defined.
         this.sshServer = symphonyProps.getProperty(PropertyReader.SSH_TAG, "");
@@ -274,7 +273,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
      */
     private void printReceipt(Customer customer, List<String> flatUser)
     {
-        String userDataFileName = this.homeDirectory 
+        String userDataFileName = this.loadDir 
                 + File.separator
                 + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
                 + customer.get(CustomerFieldTypes.ID) 

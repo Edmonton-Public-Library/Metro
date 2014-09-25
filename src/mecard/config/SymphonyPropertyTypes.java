@@ -31,7 +31,7 @@ package mecard.config;
  */
 public enum SymphonyPropertyTypes
 {
-//    LOAD_DIR("load-dir"),     // Optional field Directory where to find customer files to load.
+    LOAD_DIR("load-dir"),     // No longer optional, optional field Directory where to find customer files to load.
     USER_LIBRARY("USER_LIBRARY"),
     USER_PROFILE("USER_PROFILE"),
     USER_PREFERED_LANGUAGE("USER_PREF_LANG"),
