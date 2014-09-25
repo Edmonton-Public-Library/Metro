@@ -17,12 +17,11 @@ import static org.junit.Assert.*;
  */
 public class SQLCommandTest
 {
-    private Properties p;
     private final SQLConnector connector;
     
     public SQLCommandTest()
     {
-        p = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
+        Properties p = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         String host = p.getProperty(PolarisSQLPropertyTypes.HOST.toString());
         String driver = p.getProperty(PolarisSQLPropertyTypes.CONNECTOR_TYPE.toString());
         String database = p.getProperty(PolarisSQLPropertyTypes.DATABASE.toString());

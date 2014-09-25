@@ -63,6 +63,99 @@ public class TextTest
         output= Text.lastWord(input, 100);
         System.out.println("LAST_WORD:'"+ output + "'");
         assertTrue(output.compareTo("") == 0);
+        
+        input = null;
+        output= Text.lastWord(input, 100);
+        System.out.println("LAST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+    }
+    
+    @Test
+    public void testMatchLine()
+    {
+        System.out.println("======testMatchLine======");
+        String content = "492723 12345 123 St. \n3";
+        String result = Text.matchLine(content, "123 St.");
+        System.out.println(">>>MATCH_LINE:'"+ result + "'<<<<");
+        assertFalse(result.isEmpty());
+        
+        result = Text.matchLine(content, "111 St.");
+        System.out.println(">>>MATCH_LINE:'"+ result + "'<<<<");
+        assertTrue(result.isEmpty());
+        
+        result = Text.matchLine(content, null);
+        assertTrue(result.isEmpty());
+        result = Text.matchLine(null, "123 St.");
+        assertTrue(result.isEmpty());
+        result = Text.matchLine(null, null);
+        assertTrue(result.isEmpty());
+        
+        content = "492721 12345 17 St. Albert\n492723 12345 123 St. \n492724 12345 111 St. \n3";
+        result = Text.matchLine(content, "123 St.");
+        System.out.println(">>>MATCH_LINE:'"+ result + "'<<<<");
+        assertFalse(result.isEmpty());
+        assertTrue(result.compareTo("492723 12345 123 St.") == 0);
+        
+        result = Text.matchLine(content, "111 St.");
+        System.out.println(">>>MATCH_LINE:'"+ result + "'<<<<");
+        assertFalse(result.isEmpty());
+        assertTrue(result.compareTo("492724 12345 111 St.") == 0);
+        
+        result = Text.matchLine(content, "Albert");
+        System.out.println(">>>MATCH_LINE:'"+ result + "'<<<<");
+        assertFalse(result.isEmpty());
+        assertTrue(result.compareTo("492721 12345 17 St. Albert") == 0);
+        
+        content = "492723 12345 123 St. \n" +
+"492724 12222 144 St. \n" +
+"492725 12222 144 St. \n" +
+"492726 12222 144 St. \n" +
+"3\n";
+        result = Text.matchLine(content, "12222 144 St.");
+        System.out.println(">>>MATCH_LINE:'"+ result + "'<<<<");
+        assertFalse(result.isEmpty());
+        assertTrue(result.compareTo("492724 12222 144 St.") == 0);
+    }
+    
+    @Test
+    public void testFirstWord()
+    {
+        System.out.println("======testFirstWord======");
+        String content = "492723 12345 123 St. \n3";
+        String result = Text.firstWord(content);
+        System.out.println(">>>FIRST_WORD:'"+ result + "'<<<<");
+        assertFalse(result.isEmpty());
+        assertTrue(result.compareTo("492723") == 0);
+        
+        String input = "399565 399566 399567 399568";
+        String output= Text.firstWord(input);
+        System.out.println("FIRST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399565") == 0);
+        
+        input = "399565\n399566\n399567\n399568";
+        output= Text.firstWord(input);
+        System.out.println("FIRST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("399565") == 0);
+        
+        input = "this    that\t   and \n the \t\t\t\t\t\t the               other";
+        output= Text.firstWord(input);
+        System.out.println("FIRST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("this") == 0);
+        
+        input = "";
+        output= Text.firstWord(input);
+        System.out.println("FIRST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = "    ";
+        output= Text.firstWord(input);
+        System.out.println("FIRST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = null;
+        output= Text.firstWord(input);
+        System.out.println("FIRST_WORD:'"+ output + "'");
+        assertTrue(output.compareTo("") == 0);
     }
     
     /**

@@ -20,6 +20,7 @@
  */
 package api;
 
+import static api.SQLInsertCommand.NULL;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -84,6 +85,12 @@ public class SQLUpdateCommand implements Command
         
         public Builder string(String cName, String value)
         {
+            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            {
+                SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, null);
+                this.columnList.add(s);
+                return this;
+            }
             SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, value);
             this.columnList.add(s);
             return this;
@@ -91,6 +98,12 @@ public class SQLUpdateCommand implements Command
         
         public Builder date(String dName, String date)
         {
+            if (date == null || date.compareToIgnoreCase(NULL) == 0)
+            {
+                SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
+                this.columnList.add(d);
+                return this;
+            }
             SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, date);
             this.columnList.add(d);
             return this;
@@ -104,6 +117,12 @@ public class SQLUpdateCommand implements Command
          */
         public Builder dateTime(String dName, String dateTime)
         {
+            if (dateTime == null || dateTime.compareToIgnoreCase(NULL) == 0)
+            {
+                SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
+                this.columnList.add(d);
+                return this;
+            }
             SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, dateTime);
             this.columnList.add(d);
             return this;
@@ -111,6 +130,12 @@ public class SQLUpdateCommand implements Command
         
         public Builder integer(String iName, String value)
         {
+            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            {
+                SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, null);
+                this.columnList.add(i);
+                return this;
+            }
             SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, value);
             this.columnList.add(i);
             return this;
@@ -133,7 +158,7 @@ public class SQLUpdateCommand implements Command
         
         public SQLUpdateCommand build()
         {
-            if (this.where == null)
+            if (this.where == null || this.where.getValue().isEmpty())
             {
                 throw new ConfigurationException("Empty WHERE clause not permitted.");
             }
@@ -242,6 +267,14 @@ public class SQLUpdateCommand implements Command
             {
                 pStatement.setNull(columnNumber, java.sql.Types.DATE);
             }
+            else if (this.where.getType() == SQLData.Type.TIMESTAMP)
+            {
+                pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
+            }
+            else if (this.where.getType() == SQLData.Type.CHAR)
+            {
+                pStatement.setNull(columnNumber, java.sql.Types.CHAR);
+            }
             else // dType.getType() == SQLData.Type.STRING
             {
                 pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
@@ -256,6 +289,14 @@ public class SQLUpdateCommand implements Command
             else if (this.where.getType() == SQLData.Type.DATE)
             {
                 pStatement.setDate(columnNumber, java.sql.Date.valueOf(this.where.getValue()));
+            }
+            else if (this.where.getType() == SQLData.Type.TIMESTAMP)
+            {
+                pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(this.where.getValue()));
+            }
+            else if (this.where.getType() == SQLData.Type.CHAR)
+            {   // Char handled as String JDBC.
+                pStatement.setString(columnNumber, this.where.getValue());
             }
             else // dType.getType() == SQLData.Type.STRING
             {
