@@ -438,18 +438,14 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
  
 //        ADD ADDRESS
         SQLInsertCommand insertAddress = new SQLInsertCommand.Builder(connector, this.addressTable)
-//                .integer("PostalCodeID", postalCodeID)
-                .integer(PolarisTable.Addresses.POSTAL_CODE_ID.toString(), postalCodeID)
-//                .string("StreetOne", customer.get(CustomerFieldTypes.STREET))
-                .string(PolarisTable.Addresses.STREET_ONE.toString(), 
-                        fCustomer.getValue(PolarisTable.Addresses.STREET_ONE.toString()))
-//                .string("StreetTwo", null)  // we don't have more than one street value.
-                .string(PolarisTable.Addresses.STREET_TWO.toString(), null)
-//                .string("ZipPlusFour", null)
-                .string(PolarisTable.Addresses.ZIP_PLUS_FOUR.toString(), null)
-//                .string("MunicipalityName", null)
-                .string(PolarisTable.Addresses.MUNICIPALITY_NAME.toString(), null)
-                .build();
+            .integer(PolarisTable.Addresses.POSTAL_CODE_ID.toString(), postalCodeID)
+            .string(PolarisTable.Addresses.STREET_ONE.toString(), 
+                    fCustomer.getValue(PolarisTable.Addresses.STREET_ONE.toString()))
+            // we don't have more than one street value.
+            .string(PolarisTable.Addresses.STREET_TWO.toString(), null)
+            .string(PolarisTable.Addresses.ZIP_PLUS_FOUR.toString(), null)
+            .string(PolarisTable.Addresses.MUNICIPALITY_NAME.toString(), null)
+            .build();
         status = insertAddress.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
@@ -466,9 +462,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 //        SELECT IDENT_CURRENT('Polaris.Addresses') STORE AS VARIABLE (AddressID)
 //        * NOTE this has to be done immediately - it returns the last inserted value, it's possible for another value to be inserted quite quickly.  Can error check this if necessary (Example below)
         SQLSelectCommand selectLastAddressID = new SQLSelectCommand.Builder(connector, this.addressTable)
-                .integer("AddressID")
-                .whereInteger("AddressID", "IDENT_CURRENT('Polaris.Addresses')") // is there any possible way this will work?
-                .build();
+            .integer("AddressID")
+            .whereInteger("AddressID", "IDENT_CURRENT('Polaris.Addresses')") // is there any possible way this will work?
+            .build();
         status = selectLastAddressID.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
@@ -488,11 +484,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 //        FROM Polaris.Polaris.Addresses
 //        WHERE AddressID = (AddressID)
         SQLSelectCommand selectPostalCodeFromAddressTable = new SQLSelectCommand.Builder(connector, this.addressTable)
-//                .integer("PostalCodeID")
-                .integer(PolarisTable.Addresses.POSTAL_CODE_ID.toString())
-//                .whereInteger("AddressID", polarisAddressID)
-                .whereInteger(PolarisTable.Addresses.ADDRESS_ID.toString(), polarisAddressID)
-                .build();
+            .integer(PolarisTable.Addresses.POSTAL_CODE_ID.toString())
+            .whereInteger(PolarisTable.Addresses.ADDRESS_ID.toString(), polarisAddressID)
+            .build();
 //        IF Query == (PostalCode) OK
         status = selectPostalCodeFromAddressTable.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -519,24 +513,15 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         if (postalCodeID.equalsIgnoreCase(postalCodeIDFromAddressTable))
         {
             //        IF Query == (PostalCode) OK
-            if (this.debug)
-            {
-                System.out.println("PATRON_POSTALCODE_ID Found a MATCH!!" + postalCodeIDFromAddressTable);
-            }
+            if (this.debug)System.out.println("PATRON_POSTALCODE_ID Found a MATCH!!" + postalCodeIDFromAddressTable);
         }
         else
         {
             //        ELSE Run same query and decrement (AddressID) until we get a match, then store new value as (AddressID).
-            if (this.debug)
-            {
-                System.out.println("PATRON_POSTALCODE_ID did match: postalCodeID='" + postalCodeID
+            if (this.debug) System.out.println("PATRON_POSTALCODE_ID did match: postalCodeID='" + postalCodeID
                    + "' and postalCodeIDFromAddressTable='" + postalCodeIDFromAddressTable + "'");
-            }
         }
         // ================================== revisit if not getting the correct address ==================
-        //        --
-        
-        
         // ... and finally...
 //        INSERT INTO Polaris.Polaris.PatronAddresses
 //        VALUES ( (PatronID) , (AddressID) , 2 , 'Home' , 0 , NULL , NULL )
@@ -546,22 +531,16 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 //        VALUES ( (PatronID) , (AddressID) , 4 , 'Home' , 0 , NULL , NULL )
 //        *Yes, must run this three times, one for each number value
         SQLInsertCommand insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
-//                .integer("PatronID", polarisPatronID)
-                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
-//                .integer("AddressID", polarisAddressID)
-                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
-//                .integer("AddressTypeID", "2")
-                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "2")
-//                .string("FreeTextLabel", "Home") // polaris_sql.properties
-                .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
-//                .bit("Verified", "0")
-                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
-//                .dateTime("VerificationDate") // null
-                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
-//                .integer("PolarisUserID") // null
-                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
-                .build();
+            .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+            .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+            .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "2")
+            // polaris_sql.properties
+            .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
+                    fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
+            .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+            .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+            .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+            .build();
         status = insertPatronIDAddressID.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
@@ -576,15 +555,15 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         }
         // iteration number 2 for AddressTypeID 3
         insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
-                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
-                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
-                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
-                .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
-                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
-                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
-                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
-                .build();
+            .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+            .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+            .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
+            .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
+                    fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
+            .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+            .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+            .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+            .build();
         status = insertPatronIDAddressID.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
