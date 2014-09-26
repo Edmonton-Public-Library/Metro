@@ -195,7 +195,28 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 PolarisTable.PatronRegistration.EMAIL_FORMAT_ID.toString(), 
                 // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.EMAIL_FORMAT_ID.toString()));
-        
+        // Finally the USER_1-5 categories
+        // The only Polaris site in our federation sets these in TRACCustomerNormalizer.
+        this.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_1.toString(), 
+                props.getProperty(PolarisSQLPropertyTypes.USER_1.toString()));
+        this.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_2.toString(), 
+                props.getProperty(PolarisSQLPropertyTypes.USER_2.toString()));
+        this.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_3.toString(), 
+                props.getProperty(PolarisSQLPropertyTypes.USER_3.toString()));
+        this.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_4.toString(), 
+                props.getProperty(PolarisSQLPropertyTypes.USER_4.toString()));
+        this.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_5.toString(), 
+                props.getProperty(PolarisSQLPropertyTypes.USER_5.toString()));
         /////////////////// Postal Codes ///////////////////
         this.insertValue(
                 PolarisTable.POSTAL_CODES, 

@@ -132,11 +132,11 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     {
         // We don't actually use this command, but we should do a look up for
         System.out.println("USERID:" + barcode);
-        this.connector = new SQLConnector.Builder(host, driver, database)
-                .user(user)
-                .password(password)
-                .build();
-        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(connector, this.patronsTable)
+        this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
+            .user(user)
+            .password(password)
+            .build();
+        SQLSelectCommand selectUser = new SQLSelectCommand.Builder(this.connector, this.patronsTable)
             .string(PolarisTable.Patrons.BARCODE.toString())
             .whereString(PolarisTable.Patrons.BARCODE.toString(), barcode)
             .build();
@@ -167,10 +167,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         List<String> userSQLFileLines = fCustomer.getFormattedCustomer();
         this.printReceipt(customer, userSQLFileLines);
         // This is a class variable because the Responder will need to run the last command and return results.
-        this.connector = new SQLConnector.Builder(host, driver, database)
-                .user(user)
-                .password(password)
-                .build();
+        this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
+            .user(user)
+            .password(password)
+            .build();
         
         //        INSERT INTO Polaris.Polaris.Patrons ( PatronCodeID , OrganizationID , CreatorID , ModifierID , Barcode , 
         //                  SystemBlocks , YTDCircCount , LifetimeCircCount , LastActivityDate , ClaimCount , LostItemCount , 
@@ -182,7 +182,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             .integer(PolarisTable.Patrons.ORGANIZATION_ID.toString(), organizationID)
             .integer(PolarisTable.Patrons.CREATOR_ID.toString(), creatorID)
             .integer(PolarisTable.Patrons.MODIFIER_ID.toString())
-            .string(PolarisTable.Patrons.BARCODE.toString(), fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString()))
+            .string(PolarisTable.Patrons.BARCODE.toString(), 
+                    fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString()))
             .integer(PolarisTable.Patrons.SYSTEM_BLOCKS.toString(), "0")
             .integer(PolarisTable.Patrons.YTD_CIRC_COUNT.toString(), "0")
             .integer(PolarisTable.Patrons.LIFE_TIME_CIRC_COUNT.toString(), "0")
@@ -230,7 +231,6 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .build();
         }
         // STORE AS VARIABLE (PatronID) This is an Integer, but all responses Status are strings.
-//        String polarisPatronID = status.getStdout();
         // Also we have to be careful because multiple id's can be returned if the 
         // customer was created more than once. If that is so get the highest or last number
         // it is 'likely' to be the most recent and most valid.
@@ -238,7 +238,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         String polarisPatronID = Text.lastWord(status.getStdout(), 2);
         if (debug)
         {
-            System.out.println("PATRON_ID:>>" + polarisPatronID + "<<");
+            System.out.println("PATRON_ID: '" + polarisPatronID + "'");
         }
         
         // Get ready with dob and expiry in acceptable format.
@@ -248,9 +248,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         String expiry = fCustomer.getValue(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString());
         if (debug)
         {
-            System.out.println("***PatronID>"+polarisPatronID);
-            System.out.println("***     dob>"+dob);
-            System.out.println("***  expiry>"+expiry);
+            System.out.println("---PatronID>"+polarisPatronID);
+            System.out.println("---     dob>"+dob);
+            System.out.println("---  expiry>"+expiry);
         }
         
         
@@ -287,11 +287,16 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .dateTime(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), expiry)
                 .dateTime(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), expiry)
                 .dateTimeNow(PolarisTable.PatronRegistration.UPDATE_DATE.toString())
-                .string(PolarisTable.PatronRegistration.USER_1.toString(), "Not in the List") // Set these during customer normalization.
-                .string(PolarisTable.PatronRegistration.USER_2.toString(), null)       // Set these during customer normalization.
-                .string(PolarisTable.PatronRegistration.USER_3.toString(), null)       // Set these during customer normalization.
-                .string(PolarisTable.PatronRegistration.USER_4.toString(), "(none)")   // The none is actually (none) including the brackets. It actually links to a list of options.
-                .string(PolarisTable.PatronRegistration.USER_5.toString(), "(none)")   // Set these during customer normalization.
+                .string(PolarisTable.PatronRegistration.USER_1.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronRegistration.USER_1.toString())) // Set these during customer normalization.
+                .string(PolarisTable.PatronRegistration.USER_2.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronRegistration.USER_2.toString())) // Set these during customer normalization.
+                .string(PolarisTable.PatronRegistration.USER_3.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronRegistration.USER_3.toString())) // Set these during customer normalization.
+                .string(PolarisTable.PatronRegistration.USER_4.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronRegistration.USER_4.toString())) // The none is actually (none) including the brackets. It actually links to a list of options.
+                .string(PolarisTable.PatronRegistration.USER_5.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronRegistration.USER_5.toString())) // Set these during customer normalization.
                 .setChar(PolarisTable.PatronRegistration.GENDER.toString(),   // single char.
                         fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
                 .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), dob) 
@@ -590,13 +595,6 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         return insertPatronIDAddressID;
     }
 
-    
-    
-    
-    
-    
-    
-    
     /**
      * This method will update all fields regardless of what data changed.
      * @param customer object from melibraries.ca.

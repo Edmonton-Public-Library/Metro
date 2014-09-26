@@ -53,14 +53,14 @@ public class PropertyReader
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
-    private static String POLARIS_PROPERTY_FILE  = "papi.properties";
+    private static String POLARIS_PAPI_FILE      = "papi.properties";
     private static String ENVIRONMENT_FILE       = "environment.properties";
     private static String SIP2_FILE              = "sip2.properties";
     private static String BIMPORT_CITY_MAPPING   = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE    = "debug.properties";
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
-    private static final String POLARIS_SQL_PROPERTY_FILE      = "polaris_sql.properties";
+    private static String POLARIS_SQL_FILE      = "polaris_sql.properties";
         // There are no mandatory variables, so no checking is done.
     private static Properties polarisAPI;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
@@ -122,13 +122,14 @@ public class PropertyReader
         System.out.println(new Date() + " CONFIG: dir set to '" + CONFIG_DIR + "'");
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
-        POLARIS_PROPERTY_FILE  = CONFIG_DIR + POLARIS_PROPERTY_FILE;
+        POLARIS_PAPI_FILE      = CONFIG_DIR + POLARIS_PAPI_FILE;
         MESSAGES_PROPERTY_FILE = CONFIG_DIR + MESSAGES_PROPERTY_FILE;
         ENVIRONMENT_FILE       = CONFIG_DIR + ENVIRONMENT_FILE;
         SIP2_FILE              = CONFIG_DIR + SIP2_FILE;
         BIMPORT_CITY_MAPPING   = CONFIG_DIR + BIMPORT_CITY_MAPPING;
         DEBUG_SETTINGS_FILE    = CONFIG_DIR + DEBUG_SETTINGS_FILE;
         VARIABLES_FILE         = CONFIG_DIR + VARIABLES_FILE;
+        POLARIS_SQL_FILE       = CONFIG_DIR + POLARIS_SQL_FILE;
     }
     
     /**
@@ -223,26 +224,26 @@ public class PropertyReader
                 return systemVariables;
                 
             case PAPI:
-                polarisAPI = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
+                polarisAPI = readPropertyFile(PropertyReader.POLARIS_PAPI_FILE);
                 // now check that all mandetory values are here.
                 for (PAPIPropertyTypes pType : PAPIPropertyTypes.values())
                 {
                     if (polarisAPI.get(pType.toString()) == null)
                     {
-                        String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PROPERTY_FILE;
+                        String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PAPI_FILE;
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return polarisAPI;
             // POLARIS_SQL required properties if the user is using POLARIS_SQL for any protocol.    
             case POLARIS_SQL:
-                SQLProperties = readPropertyFile(PropertyReader.POLARIS_SQL_PROPERTY_FILE);
+                SQLProperties = readPropertyFile(PropertyReader.POLARIS_SQL_FILE);
                 // now check that all mandetory values are here.
                 for (PolarisSQLPropertyTypes sType : PolarisSQLPropertyTypes.values())
                 {
                     if (SQLProperties.get(sType.toString()) == null)
                     {
-                        String msg = "'" + sType + "' unset in " + PropertyReader.POLARIS_SQL_PROPERTY_FILE;
+                        String msg = "'" + sType + "' unset in " + PropertyReader.POLARIS_SQL_FILE;
                         Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }

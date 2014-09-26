@@ -21,6 +21,7 @@
 package site.trac;
 
 import mecard.Response;
+import mecard.config.PolarisTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
 import site.PolarisNormalizer;
@@ -40,15 +41,35 @@ public final class TRACCustomerNormalizer extends PolarisNormalizer
     }
 
     @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer customer, FormattedCustomer formattedCustomer, Response response)
     {   
-        
+        // add User1 - User5 and any other fields.
+        formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_1.toString(), 
+                "Not in the List");
+        formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_2.toString(), 
+                null);
+        formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_3.toString(), 
+                null);
+        formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_4.toString(), 
+                "(none)");
+        formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.USER_5.toString(), 
+                "(none)");
     }
     
     @Override
     public void normalizeOnCreate(Customer customer, Response response)
     {
-        // add User1 - User5 and any other fields.
+        // No special action required at this time.
     }
 
     @Override
