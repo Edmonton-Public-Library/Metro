@@ -129,13 +129,11 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 customer.get(CustomerFieldTypes.FIRSTNAME) 
                         + " " + customer.get(CustomerFieldTypes.LASTNAME));
         // Phone (voice).
-        if (customer.isEmpty(CustomerFieldTypes.PHONE) == false)
-        {
-            this.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.PHONE_VOICE_1.toString(),
-                Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
-        }
+        this.insertValue(
+            PolarisTable.PATRON_REGISTRATION,
+            PolarisTable.PatronRegistration.PHONE_VOICE_1.toString(),
+            Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE)));
+            
         this.insertValue(
                 PolarisTable.PATRON_REGISTRATION, 
                 PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), 
