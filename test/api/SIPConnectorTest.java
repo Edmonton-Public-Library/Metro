@@ -18,6 +18,7 @@ public class SIPConnectorTest
     private final String timeout;
     private final String user;
     private final String password;
+    private final String location;
     
     public SIPConnectorTest()
     {
@@ -27,6 +28,8 @@ public class SIPConnectorTest
         user = "3MLogin";
         password = "3MLogin";
         institution = "";
+        location = "AUTHENTICATE";
+        
     }
 
     /**
@@ -42,6 +45,8 @@ public class SIPConnectorTest
                 .password("")
                 .institution(institution)
                 .timeout(timeout)
+                .locationCode(location)
+                .debug()
                 .build();
         boolean expResult = true; // If online.
         boolean result = instance.test();
@@ -53,8 +58,11 @@ public class SIPConnectorTest
                 .password(password)
                 .institution(institution)
                 .timeout(timeout)
+                .locationCode(location)
+                .debug()
                 .build();
         // should be sending: '93  CN3MLogin|CO3MLogin|CP|AY0AZF5D3'
+      
         String returnString = instance.send("63                               AO|AA29335002291042|AD2003|AY2AZF3B6");
         SIPCustomerMessage customerMessage = new SIPCustomerMessage(returnString);
         System.out.println("recv:'" + returnString + "'");

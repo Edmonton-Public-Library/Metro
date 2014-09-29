@@ -57,6 +57,7 @@ public class SIPConnector
     private BufferedReader in;
     private PrintWriter out;
     private final String locationCode;
+    private final boolean debug;
 
     public static class Builder
     {
@@ -68,6 +69,7 @@ public class SIPConnector
         private String password;
         private int timeout;
         private String locationCode;
+        private boolean debug;
 
         /**
          * Creates builder with minimum constructor arguments.
@@ -90,6 +92,7 @@ public class SIPConnector
             // if not specified the timeout is set to 5000, or 5 seconds. That is
             // about all a customer is willing to wait for on the website.
             this.timeout = SIPConnector.DEFAULT_TIMEOUT;
+            this.debug = false;
         }
 
         /**
@@ -126,6 +129,12 @@ public class SIPConnector
             {
                 this.institution = id;
             }
+            return this;
+        }
+        
+        public Builder debug()
+        {
+            this.debug = true;
             return this;
         }
         
@@ -199,11 +208,12 @@ public class SIPConnector
         sipUser = builder.user;
         sipPassword = builder.password;
         locationCode = builder.locationCode;
+        debug = builder.debug;
     }
 
     /**
      *
-     * @return true if the service is up, and patron information is queriable,
+     * @return true if the service is up, and patron information is queryable,
      * and false otherwise.
      */
     public boolean test()
@@ -326,6 +336,10 @@ public class SIPConnector
 
     private String sendReceive(String sipData)
     {
+        if (debug)
+        {
+            System.out.println("DEBUG send: -> '" + sipData + "'");
+        }
         // sipData should look like: "63                               AO|AA21221012345678|AD64058|AY0AZF374\r"
         if (sipData.charAt(sipData.length() - 1) != SIPConnector.CONNECTION_TERMINATOR)
         {
@@ -350,6 +364,10 @@ public class SIPConnector
             {
                 break;
             }
+        }
+        if (debug)
+        {
+            System.out.println("DEBUG recv: <- '" + line + "'");
         }
         return line;
     }
@@ -407,11 +425,11 @@ public class SIPConnector
         } catch (UnknownHostException ex)
         {
             throw new SIPException(SIPConnector.class.getName()
-                    + "the requested host '" + host + "' is unknown");
+                    + " the requested host '" + host + "' is unknown");
         } catch (IOException ex)
         {
             throw new SIPException(SIPConnector.class.getName()
-                    + "the request for sip connection was refused");
+                    + " the request for sip connection was refused");
         }
     }
 
