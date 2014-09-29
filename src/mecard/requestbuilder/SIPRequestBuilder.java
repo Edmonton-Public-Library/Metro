@@ -54,6 +54,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
 {
     private static SIPConnector sipServer;
     private final Properties messageProperties;
+    public final static String LOCATION_CODE_TAG = "location-code"; // optional field in sip2.properties.
     /**
      *
      * @param debug the value of debug
@@ -68,6 +69,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         String password = sipProps.getProperty(SipPropertyTypes.PASSWORD.toString(), "");
         String timeout = sipProps.getProperty(SipPropertyTypes.TIMEOUT.toString());
         String institutionId = sipProps.getProperty(SipPropertyTypes.INSTITUTION_ID.toString(), "");
+        String locationCode = sipProps.getProperty(SIPRequestBuilder.LOCATION_CODE_TAG.toString(), ""); // if not found an empty string is forwarded to the builder.
         sipServer = new SIPConnector
                 .Builder(host, port)
                 .sipUser(user)
@@ -75,6 +77,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 .institution(institutionId)
                 .sipUser(user)
                 .timeout(timeout)
+                .locationCode(locationCode)
                 .build();
     }
 

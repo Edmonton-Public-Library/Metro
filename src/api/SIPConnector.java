@@ -56,6 +56,7 @@ public class SIPConnector
     private Socket sipSocket;
     private BufferedReader in;
     private PrintWriter out;
+    private final String locationCode;
 
     public static class Builder
     {
@@ -66,6 +67,7 @@ public class SIPConnector
         private String user;
         private String password;
         private int timeout;
+        private String locationCode;
 
         /**
          * Creates builder with minimum constructor arguments.
@@ -76,6 +78,7 @@ public class SIPConnector
         public Builder(String host, String port)
         {
             this.host = host;
+            this.locationCode = "";
             try
             {
                 this.port = Integer.parseInt(port);
@@ -122,6 +125,20 @@ public class SIPConnector
             if (id != null && id.length() > 0)
             {
                 this.institution = id;
+            }
+            return this;
+        }
+        
+        /**
+         * Sets the location code (field CP) of a sip request.
+         * @param location
+         * @return 
+         */
+        public Builder locationCode(String location)
+        {
+            if (location != null && location.length() > 0)
+            {
+                this.locationCode = location;
             }
             return this;
         }
@@ -181,6 +198,7 @@ public class SIPConnector
         institutionalId = builder.institution;
         sipUser = builder.user;
         sipPassword = builder.password;
+        locationCode = builder.locationCode;
     }
 
     /**
@@ -283,7 +301,11 @@ public class SIPConnector
         sb.append(sipUser);
         sb.append("|CO");
         sb.append(sipPassword);
-        sb.append("|CP|AY");
+        // by default the CP field must be in request
+        // by default the connector object is built with an empty string.
+        sb.append("|CP");
+        sb.append(locationCode);
+        sb.append("|AY");
         sb.append(SIPConnector.getCheckSum(sb.toString()));
         // Now do the actual login:
         String results = sendReceive(sb.toString());
