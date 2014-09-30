@@ -46,9 +46,10 @@ import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
 
 /**
- * Helper class for formatting SIP requests.
+ * Manages any meaningful request that can be made through SIP2 requests. This
+ * naturally excludes things like customer update or create.
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SIPRequestBuilder extends ILSRequestBuilder
 {
@@ -56,8 +57,9 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     private final Properties messageProperties;
     public final static String LOCATION_CODE_TAG = "location-code"; // optional field in sip2.properties.
     /**
-     *
-     * @param debug the value of debug
+     * 
+     * @param debug True if you would like to see send received raw SIP2 messages
+     * and false otherwise.
      */
     SIPRequestBuilder(boolean debug)
     {
@@ -78,6 +80,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 .sipUser(user)
                 .timeout(timeout)
                 .locationCode(locationCode)
+                .debug(debug)
                 .build();
     }
 
@@ -192,12 +195,15 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         try
         {
             SIPStatusMessage message = new SIPStatusMessage(sipResponse);
-            if (message.isOnline().compareTo("Y") == 0)
+            if (message.isOnline())
             {
                 if (message.getPatronInfoPermitted().compareTo("Y") == 0)
                 {
-                    return true;
+                    System.out.println("**Warning: SIP2 patron info bit set to '" 
+                            + message.getPatronInfoPermitted() + "'");
+                    // but it doesn't mean you can't get patron info.
                 }
+                return true;
             }
         }
         catch (SIPException ex)
@@ -209,6 +215,16 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         return false;
     }
 
+    /**
+     * This method has throws a configuration exception because SIP2 is not capable
+     * of creating or updating user accounts. Were you thinking of NCIP perhaps?
+     * @param customer
+     * @param response
+     * @param normalizer
+     * @return throws {@link  ConfigurationException} if called. This is your signal
+     * that you have incorrectly selected 'sip2' for create or update protocols
+     * in the environment.properties file.
+     */
     @Override
     public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
@@ -216,6 +232,16 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 + "Please review your environment.properties configuration");
     }
 
+    /**
+     * This method has throws a configuration exception because SIP2 is not capable
+     * of creating or updating user accounts. Were you thinking of NCIP perhaps?
+     * @param customer
+     * @param response
+     * @param normalizer
+     * @return throws {@link  ConfigurationException} if called. This is your signal
+     * that you have incorrectly selected 'sip2' for create or update protocols
+     * in the environment.properties file.
+     */
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {

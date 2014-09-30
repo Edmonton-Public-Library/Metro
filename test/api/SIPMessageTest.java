@@ -126,21 +126,21 @@ public class SIPMessageTest
         
         SIPStatusMessage instance = new SIPStatusMessage(responseOne);
         String expResult = "Y";
-        // // System.out.println("IS_ONLINE:"+instance.isOnline());
-        String result = instance.isOnline();
+        // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        String result = instance.getOnlineStatus();
         assertEquals(expResult.compareTo(result), 0);
         
         instance = new SIPStatusMessage(responseTwo);
         expResult = "Y";
-        // // System.out.println("IS_ONLINE:"+instance.isOnline());
-        result = instance.isOnline();
+        // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        result = instance.getOnlineStatus();
         assertEquals(expResult.compareTo(result), 0);
         
         try
         {
             instance = new SIPStatusMessage("77PYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|ANSIPCHK|AY1AZE80C");
-            // // System.out.println("IS_ONLINE:"+instance.isOnline());
-            result = instance.isOnline();
+            // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+            result = instance.getOnlineStatus();
             assertTrue(result.isEmpty());
         }
         catch (Exception e)
@@ -151,9 +151,18 @@ public class SIPMessageTest
         
         instance = new SIPStatusMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
         expResult = "N";
-        // // System.out.println("IS_ONLINE:"+instance.isOnline());
-        result = instance.isOnline();
+        // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        result = instance.getOnlineStatus();
         assertEquals(expResult.compareTo(result), 0);
+        
+        // TRAC Response:
+        // 98YYYYYN30000320140930	1339572.00AO203|AMSangudo Public Library|BXYYYYYYYNYNNNYYNN|AFSystem status ok.|AGSystem status ok.|AY1AZD6AC
+        instance = new SIPStatusMessage("98YYYYYN30000320140930	1339572.00AO203|AMSangudo Public Library|BXYYYYYYYNYNNNYYNN|AFSystem status ok.|AGSystem status ok.|AY1AZD6AC");
+        expResult = "Y";
+        System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        result = instance.getOnlineStatus();
+        assertEquals(expResult.compareTo(result), 0);
+        assertTrue(instance.isOnline());
     }
 
     /**

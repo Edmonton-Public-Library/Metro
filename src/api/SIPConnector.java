@@ -32,18 +32,18 @@ import java.util.logging.Logger;
 import mecard.exception.SIPException;
 
 /**
- * SIP connection. Expects information to be formatted Usage:
+ * This class manages all the connections required to communicate with a SIP2 service
+ * including opening closing sockets and placing data on the wire. 
+ * Expects information to be formatted Usage:
  * <code>SIPConnector instance = new SIPConnector.Builder("eplapp","6001").build();</code>
  * <code>assertTrue(instance.test());</code>
  *
- * @author Andrew Nisbet
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SIPConnector
 {
-    // TODO: this class could be extended to be a full implementation of a SIP
-    // service class with a little work. The class is fine the way it is for Metro
-    // however for security reasons.
-
+    // This class could be extended to be a full implementation of a SIP
+    // service class with a little work. The class is fine the way it is for Metro however.
     public final static char CONNECTION_TERMINATOR = '\r';
     private static final int DEFAULT_TIMEOUT = 5000;
     private static int SEQUENCE_NUMBER = 0;
@@ -58,10 +58,10 @@ public class SIPConnector
     private PrintWriter out;
     private final String locationCode;
     private final boolean debug;
+    private boolean turnOnShowConfigSettingsOnDebug; // used to show config settings one time only.
 
     public static class Builder
     {
-
         private final int port;
         private final String host;
         private String institution;
@@ -70,6 +70,7 @@ public class SIPConnector
         private int timeout;
         private String locationCode;
         private boolean debug;
+        private boolean turnOnShowConfigSettingsOnDebug;
 
         /**
          * Creates builder with minimum constructor arguments.
@@ -84,8 +85,10 @@ public class SIPConnector
             try
             {
                 this.port = Integer.parseInt(port);
-            } catch (NumberFormatException ex)
+            } 
+            catch (NumberFormatException ex)
             {
+                if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
                 throw new SIPException(SIPConnector.class.getName()
                         + "the port number cannot be parsed as a number");
             }
@@ -93,6 +96,8 @@ public class SIPConnector
             // about all a customer is willing to wait for on the website.
             this.timeout = SIPConnector.DEFAULT_TIMEOUT;
             this.debug = false;
+            this.turnOnShowConfigSettingsOnDebug = false;
+            this.user = "";
         }
 
         /**
@@ -109,6 +114,7 @@ public class SIPConnector
             } 
             catch (NumberFormatException ex)
             {
+                if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
                 System.err.println("timeout set to invalid value. Expected long but got '"
                         + time + "'. Default of " + SIPConnector.DEFAULT_TIMEOUT
                         + " applied.");
@@ -125,16 +131,17 @@ public class SIPConnector
          */
         public Builder institution(String id)
         {
-            if (id != null && id.length() > 0)
+            if (id != null)
             {
                 this.institution = id;
             }
             return this;
         }
         
-        public Builder debug()
+        public Builder debug(boolean b)
         {
-            this.debug = true;
+            this.debug = b;
+            this.turnOnShowConfigSettingsOnDebug = b;
             return this;
         }
         
@@ -145,7 +152,7 @@ public class SIPConnector
          */
         public Builder locationCode(String location)
         {
-            if (location != null && location.length() > 0)
+            if (location != null)
             {
                 this.locationCode = location;
             }
@@ -160,7 +167,7 @@ public class SIPConnector
          */
         public Builder sipUser(String user)
         {
-            if (user != null && user.length() > 0)
+            if (user != null)
             {
                 this.user = user;
             }
@@ -175,7 +182,7 @@ public class SIPConnector
          */
         public Builder password(String password)
         {
-            if (password != null && password.length() > 0)
+            if (password != null)
             {
                 this.password = password;
             }
@@ -209,6 +216,19 @@ public class SIPConnector
         sipPassword = builder.password;
         locationCode = builder.locationCode;
         debug = builder.debug;
+        turnOnShowConfigSettingsOnDebug = builder.turnOnShowConfigSettingsOnDebug;
+    }
+    
+    /**
+     * The institutional ID is part of the get customer info request '63'. The 
+     * SIPConnector is told what the institutional ID is during configuration
+     * so the {@link SIPCommand} object needs to know what this value is.
+     * @return institutional id if set and an empty string if the value is unset 
+     * in configuration.  
+     */
+    String getInstitutionalID()
+    {
+        return this.institutionalId;
     }
 
     /**
@@ -219,7 +239,7 @@ public class SIPConnector
     public boolean test()
     {
         //sent:990   2.00AY1AZFCD8
-        //recv:98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C
+        //recv:98YYYYYN60000320130424    1135112.00AOInstiturional_id|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C
         // Response code:98
         //ACS Status Response
         //  (F) On-line Status:    Y
@@ -258,13 +278,9 @@ public class SIPConnector
         String testMessage = "990   2.00AY1AZ";
         String results = sendReceive(testMessage + SIPConnector.getCheckSum(testMessage));
         closeConnection();
-        SIPMessage m = new SIPMessage(results);
+        SIPStatusMessage m = new SIPStatusMessage(results);
         // On-line Status:    Y
-        if (m.getCodeMessage().startsWith("Y"))
-        {
-            return true;
-        }
-        return false;
+        return m.isOnline();
     }
 
     /**
@@ -278,10 +294,11 @@ public class SIPConnector
         openConnection();
         // This system's SIP may not require a username password for the command's
         // action. Check if they set it at build time.
-        if (sipUser != null)
+        if (sipUser.isEmpty() == false)
         {
             if (login() == false)
             {
+                if (debug) System.out.println("   DEBUG error: login failed, check your settings in sip2.properties.");
                 throw new SIPException(SIPConnector.class.getName()
                         + " SIP login failed, incorrect user name or password");
             }
@@ -336,6 +353,16 @@ public class SIPConnector
 
     private String sendReceive(String sipData)
     {
+        if (debug && turnOnShowConfigSettingsOnDebug)
+        {
+            System.out.println("Your settings in sip2.properties:");
+            System.out.println("          host: '" + this.host + "'");
+            System.out.println("          user: '" + this.sipUser + "'");
+            System.out.println("      password: '*******'");
+            System.out.println("Institution id: '" + this.institutionalId + "'");
+            System.out.println(" location code: '" + this.locationCode + "'");
+            this.turnOnShowConfigSettingsOnDebug = false;
+        }
         if (debug)
         {
             System.out.println("DEBUG send: -> '" + sipData + "'");
@@ -358,6 +385,7 @@ public class SIPConnector
             } 
             catch (IOException ex)
             {
+                if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
                 Logger.getLogger(SIPConnector.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (line != null)
@@ -422,12 +450,16 @@ public class SIPConnector
             sipSocket.setSoTimeout(timeout);
             in = new BufferedReader(new InputStreamReader(sipSocket.getInputStream()));
             out = new PrintWriter(sipSocket.getOutputStream());
-        } catch (UnknownHostException ex)
+        } 
+        catch (UnknownHostException ex)
         {
+            if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
             throw new SIPException(SIPConnector.class.getName()
                     + " the requested host '" + host + "' is unknown");
-        } catch (IOException ex)
+        } 
+        catch (IOException ex)
         {
+            if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
             throw new SIPException(SIPConnector.class.getName()
                     + " the request for sip connection was refused");
         }
@@ -442,6 +474,7 @@ public class SIPConnector
             sipSocket.close();
         } catch (IOException ex)
         {
+            if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
             Logger.getLogger(SIPConnector.class.getName()).log(Level.WARNING, ex.getMessage(), ex);
         }
     }

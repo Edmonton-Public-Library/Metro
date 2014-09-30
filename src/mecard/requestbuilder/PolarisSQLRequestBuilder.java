@@ -850,7 +850,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         ResponseTypes responseType = status.getStatus();
         switch(responseType)
         {
-            case SUCCESS:
+            case COMMAND_COMPLETED:
                 return true;
             default:
                 return false;

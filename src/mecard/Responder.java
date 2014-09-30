@@ -263,7 +263,7 @@ public class Responder
             if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
             {
                 UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
-                failFile.setStatus(status);
+                failFile.addUserData(customer);
                 System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
             }
@@ -300,7 +300,7 @@ public class Responder
             if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
             {
                 UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
-                failFile.setStatus(status);
+                failFile.setStatus(status); // TODO: fix as above.
                 System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
             }

@@ -30,6 +30,7 @@ public class SIPCommand implements Command
 {
     private final SIPConnector sipConnector;
     private final String queryString;
+    private final String institutionalID;
     
     public static class Builder
     {
@@ -72,6 +73,8 @@ public class SIPCommand implements Command
     private SIPCommand(Builder b)
     {
         this.sipConnector = b.connector;
+        // Will return an empty string if not set.
+        this.institutionalID = this.sipConnector.getInstitutionalID();
         if (b.isStatusRequest)
         {
             // St. Albert's    "990   2.00AY1AZFCD8";
@@ -102,7 +105,9 @@ public class SIPCommand implements Command
         {
             return request.append(SIPConnector.CONNECTION_TERMINATOR).toString();
         }
-        request.append("63                               AO|AA");
+        request.append("63                               AO");
+        request.append(institutionalID);
+        request.append("|AA");
         request.append(userId);
         request.append("|AD");
         request.append(userPin);

@@ -23,6 +23,7 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import java.io.File;
 import mecard.Response;
 import mecard.QueryTypes;
 import mecard.config.ConfigFileTypes;
@@ -238,11 +239,16 @@ public abstract class ILSRequestBuilder
      * This method is used for lost cards which get output to the customer load
      * directory. This directory is located in each ILS property file as a load-dir. 
      * Because the lost user has no insight into which ILS is being used the ILSBuilder
-     * must be able to signal the failed customer files with the load directory. 
+     * must be able to signal the failed customer files with the load directory.
+     * Automatically adds trailing file separator if required.
      * @return string of load directory.
      */
     public String getCustomerLoadDirectory()
     {
-        return loadDir;
+        if (loadDir.endsWith(File.separator))
+        {
+            return loadDir;
+        }
+        return loadDir + File.separator;
     }    
 }
