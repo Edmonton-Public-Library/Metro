@@ -26,6 +26,7 @@ import api.CustomerMessage;
 import api.DummyCommand;
 import api.SIPCustomerMessage;
 import api.SQLConnector;
+import api.SQLCustomerMessage;
 import api.SQLInsertCommand;
 import api.SQLSelectCommand;
 import api.SQLUpdateCommand;
@@ -873,18 +874,20 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        // TODO implement the remainder of this class.
-//        return new SQLCustomerMessage(stdout, true);
-        // Not necessary since for now Polaris uses SIP2 so 
-        return new SIPCustomerMessage(stdout);
+        // TODO implement the remainder of this class. Technically
+        // the PolarisSQLRequestBuilder can getCustomer() but use SIP2
+        // instead. Everyone does so so far. If you do decide to use
+        // polaris-sql in the environment.properties get-protocol you
+        // will need to finish this class.
+        return new SQLCustomerMessage(stdout, true);
     }
     
     /** Prints the flat user data to file in case something goes wrong.
      * 
      * @param customer Customer object.
-     * @param flatUser Customer as a flat user.
+     * @param userDataList Customer data as a list.
      */
-    private void printReceipt(Customer customer, List<String> flatUser)
+    private void printReceipt(Customer customer, List<String> userDataList)
     {
         String userDataFileName = this.loadDir // what does this 'directory' path look like.
                 + File.separator
@@ -893,6 +896,6 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 + ".txt"; // the data in the file isn't useful for SQL directly, it's just raw customer information.
         
         UserFile userFile = new UserFile(userDataFileName);
-        userFile.addUserData(flatUser);
+        userFile.addUserData(userDataList);
     }
 }

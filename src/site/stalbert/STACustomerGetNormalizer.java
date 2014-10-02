@@ -24,6 +24,7 @@ import api.CustomerMessage;
 import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.util.DateComparer;
 import mecard.util.Text;
 import site.CustomerGetNormalizer;
 
@@ -117,16 +118,16 @@ public class STACustomerGetNormalizer extends CustomerGetNormalizer
         }
                 
         // Date of birth in SIP PB not per standard.
-        String birthDate = SIPMessage.cleanDateTime(message.getField("PB"));
-        if (SIPMessage.isDate(birthDate))
+        String birthDate = DateComparer.cleanDateTime(message.getField("PB"));
+        if (DateComparer.isDate(birthDate))
         {
             customer.set(CustomerFieldTypes.DOB, birthDate); // St. Albert.
         }
         
         // Now we know that STA uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
-        String cleanDate = SIPMessage.cleanDateTime(message.getField("PE"));
-        if (SIPMessage.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
+        if (DateComparer.isDate(cleanDate))
         {
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }

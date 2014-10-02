@@ -23,10 +23,12 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import api.PolarisSIPCustomerMessage;
 import mecard.Response;
 import api.SIPCommand;
 import api.SIPConnector;
 import api.SIPCustomerMessage;
+import api.SIPMessage;
 import api.SIPStatusMessage;
 import java.util.Date;
 import java.util.Properties;
@@ -249,9 +251,35 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 + "Please review your environment.properties configuration");
     }
     
+    /**
+     * SIP2 is implemented differently on every ILS and most ILSs don't honour
+     * the tags that 3M specifies. This method will determine which version of
+     * SIPCustomerMessage should be returned. This accounts for variation of 
+     * SIP2 message responses between ILSs. 
+     * 
+     * This method is used for tailoring tests for the Responder like isGoodStanding(),
+     * the Responder is not liable for knowing the peculiarities of one SIP2 implementation
+     * to the next. Passing back a custom SIPMessage on request gets around this
+     * problem.
+     * 
+     * @param stdout
+     * @return customerMessage.
+     * @see SIPCustomerMessage
+     */
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        return new SIPCustomerMessage(stdout);
+        SIPMessage message = new SIPMessage(stdout);
+        SIPCustomerMessage cMessage;
+        switch (message.getILSType())
+        {
+            case POLARIS:
+                cMessage = new PolarisSIPCustomerMessage(stdout);
+                break;
+            default:
+                cMessage = new SIPCustomerMessage(stdout);
+               break;
+        } 
+         return cMessage;
     }
 }

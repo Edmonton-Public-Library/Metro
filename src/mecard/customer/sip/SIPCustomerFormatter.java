@@ -31,6 +31,7 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.util.Address3;
+import mecard.util.DateComparer;
 import mecard.util.Phone;
 import site.CustomerGetNormalizer;
 import site.calgary.CPLCustomerGetNormalizer;
@@ -151,6 +152,15 @@ public class SIPCustomerFormatter implements CustomerFormatter
 //          (R) Sequence Number : 0 :  matches what was sent
 //          (R) Checksum : ACC6 : Checksum OK
 // here we will fill in the customer attributes with the contents of s- the SIP message.
+        ////////////////////////////////////////////////////////
+        //
+        // This class can use the simple SIPCustomerMessage because
+        // this class just paints in the rough settings on the account
+        // It is up to the [LIB]GetCustomerNormalizer objects to refine
+        // data input for the user based on the site's own peculiar SIP2
+        // configurations.
+        //
+        ////////////////////////////////////////////////////////
         CustomerMessage sipMessage = new SIPCustomerMessage(s);
         customer.set(CustomerFieldTypes.ID, sipMessage.getField("AA"));
         customer.set(CustomerFieldTypes.PREFEREDNAME, sipMessage.getField("AE"));
@@ -161,16 +171,18 @@ public class SIPCustomerFormatter implements CustomerFormatter
         customer.set(CustomerFieldTypes.PHONE, phone.getUnformattedPhone());
         // Privilege date dates: horizon uses PE and puts profile in PA.
         // The test is slightly less expensive 
-        String expireDate = SIPMessage.cleanDateTime(sipMessage.getField("PA"));
-        if (SIPMessage.isDate(expireDate))
-        {
-            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expireDate);
-        }
-        String birthDate = SIPMessage.cleanDateTime(sipMessage.getField("PD"));
-        if (SIPMessage.isDate(birthDate))
-        {
-            customer.set(CustomerFieldTypes.DOB, birthDate);
-        }
+//        String expireDate = DateComparer.cleanDateTime(sipMessage.getField("PA"));
+//        if (DateComparer.isDate(expireDate))
+//        {
+//            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expireDate);
+//        }
+        customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, sipMessage.getDateField("PA"));
+//        String birthDate = DateComparer.cleanDateTime(sipMessage.getField("PD"));
+//        if (DateComparer.isDate(birthDate))
+//        {
+//            customer.set(CustomerFieldTypes.DOB, birthDate);
+//        }
+        customer.set(CustomerFieldTypes.DOB, sipMessage.getDateField("PD"));
         // SEX now handled in CustomerGetNormalizer and subclasses.
         // Complete address
         Address3 address = new Address3(sipMessage.getField("BD"));

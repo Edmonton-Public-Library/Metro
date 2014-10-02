@@ -39,6 +39,31 @@ public class DateComparerTest
     public DateComparerTest()
     {
     }
+    
+    /**
+     * Test of getYearsOld method, of class DateComparer.
+     */
+    @Test
+    public void testIsDateExpiry() throws Exception
+    {
+        System.out.println("== isValidDate ==");
+        assertTrue(DateComparer.isDate("19630822"));
+        assertFalse(DateComparer.isDate("235900STAFF"));
+    }
+    
+    /**
+     * Test of getYearsOld method, of class DateComparer.
+     */
+    @Test
+    public void testCleanDateTime() throws Exception
+    {
+        System.out.println("== cleanDateTime ==");
+        assertFalse(DateComparer.isDate("20131231    235900STAFF"));
+        System.out.println("DATE_VALID: "+DateComparer.isDate("20131231    235900STAFF"));
+        String newDate = DateComparer.cleanDateTime("20131231    235900STAFF");
+        System.out.println("DATE_VALID: "+DateComparer.cleanDateTime("20131231    235900STAFF"));
+        assertTrue(DateComparer.isDate(newDate));
+    }
 
     /**
      * Test of getYearsOld method, of class DateComparer.

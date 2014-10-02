@@ -6,6 +6,7 @@ import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.SIPException;
+import mecard.util.DateComparer;
 
 
 import org.junit.Test;
@@ -174,26 +175,29 @@ public class SIPMessageTest
         System.out.println("===cleanDateTime===");
         String possibleDate = "20131231    235900STAFF";
         String expResult = "20131231";
-        String result = SIPMessage.cleanDateTime(possibleDate);
+        String result = DateComparer.cleanDateTime(possibleDate);
         assertTrue(expResult.compareTo(result) == 0);
         
         
         SIPCustomerMessage instance = new SIPCustomerMessage("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PASTAFF|PB19680920|PCs|PE20140903    235900STAFF|PS20140903    235900STAFF|ZYs|AY1AZA949");
         possibleDate = instance.getField("PA");
         System.out.println("PA:"+possibleDate);
-        assertFalse(SIPMessage.isDate(possibleDate));
+        assertFalse(DateComparer.isDate(possibleDate));
         possibleDate = instance.getField("PE");
         System.out.println("PE:'"+possibleDate+"'");
-        assertFalse(SIPMessage.isDate(possibleDate));
-        System.out.println("CLEAN:'"+SIPMessage.cleanDateTime(possibleDate)+"'");
-        result = SIPMessage.cleanDateTime(possibleDate);
+        assertFalse(DateComparer.isDate(possibleDate));
+        System.out.println("CLEAN:'"+DateComparer.cleanDateTime(possibleDate)+"'");
+        result = DateComparer.cleanDateTime(possibleDate);
         expResult = "20140903";
         assertTrue(expResult.compareTo(result) == 0);
         
         SIPCustomerFormatter formatter = new SIPCustomerFormatter();
-        Customer c = formatter.getCustomer("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PA20140903    235900STAFF|PB19680920|PCs|PS20140903    235900STAFF|ZYs|AY1AZA949");
+        ////////////////////////// NOTE ////////////////////////////////
+        // The normalizer is part of this process and that is controlled in 
+        // the environment.properties.
+        Customer c = formatter.getCustomer("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PA20151003    235900STAFF|PB19680920|PCs|PS20140903    235900STAFF|ZYs|AY1AZA949");
         System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
-        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20140903") == 0);
+        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20151003") == 0);
         
 //        formatter = new SIPCustomerFormatter();
 //        c = formatter.getCustomer("64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB");
@@ -202,7 +206,7 @@ public class SIPMessageTest
         
         String cm = "64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB";
         instance = new SIPCustomerMessage(cm);
-        String cleanDate = SIPMessage.cleanDateTime(instance.getField("PE"));
+        String cleanDate = DateComparer.cleanDateTime(instance.getField("PE"));
         System.out.println("...CLEAN_DATE: '" + cleanDate + "'");
         assertTrue(cleanDate.equalsIgnoreCase("20150430"));
     }
@@ -242,9 +246,9 @@ public class SIPMessageTest
     public void testIsDate()
     {
         System.out.println("===isDate===");
-        assertTrue(SIPMessage.isDate("20010101"));
-        assertFalse(SIPMessage.isDate("20150430    235900"));
-        assertTrue(SIPMessage.isDate("20150430"));
+        assertTrue(DateComparer.isDate("20010101"));
+        assertFalse(DateComparer.isDate("20150430    235900"));
+        assertTrue(DateComparer.isDate("20150430"));
     }
 
     @Test

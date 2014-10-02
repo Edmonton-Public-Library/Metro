@@ -27,7 +27,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * This test class is almost useless, use the specific getNormalizer Test classes for each library
+ * for concise results.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SIPCustomerFormatterTest
@@ -50,7 +51,7 @@ public class SIPCustomerFormatterTest
         String expResult = "[\"21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
                 + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
         Customer result = instance.getCustomer(this.customerString);
-        assertEquals(expResult.compareTo(result.toString()), 0);
+        assertTrue(expResult.compareTo(result.toString()) == 0);
     }
 
     /**
@@ -67,6 +68,6 @@ public class SIPCustomerFormatterTest
         String expResult = "21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
                 + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
         Customer result = instance.getCustomer(s);
-        assertEquals(expResult.compareTo(result.toString()), 0);
+        assertTrue(expResult.compareTo(result.toString()) == 0);
     }
 }

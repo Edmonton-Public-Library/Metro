@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -214,5 +215,40 @@ public class DateComparer
         Date today = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.SQL_TIMESTAMP_FORMAT, LOCALE_US);
         return dateFormat.format(today);
+    }
+
+    /**
+     * This method accepts a possible dateField and returns a clean date.
+     * @param possibleDate example: '20131231    235900STAFF' worst case.
+     * @return cleaned string if date valid and parse-able as date and Protocol#DEFAULT_FIELD_VALUE
+     * otherwise.
+     */
+    public static String cleanDateTime(String possibleDate)
+    {
+        if (possibleDate == null)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+        String[] split = possibleDate.split("\\s{1,}");
+        if (split.length == 0 || isDate(split[0]) == false)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+        return split[0];
+    }
+
+    /**
+     * Tests if a string looks like a possible date. The check is not strict -
+     * a string of 8 digits.
+     * @param possibleDate string value. To bass must be 8 single digits like '20130822'.
+     * @return true if the string is likely to be an ANSI date and false otherwise.
+     */
+    public static boolean isDate(String possibleDate)
+    {
+        if (possibleDate == null)
+        {
+            return false;
+        }
+        return possibleDate.matches("^[1-2][0,9]\\d{2}[0-1][0-9][0-3][0-9]$");
     }
 }

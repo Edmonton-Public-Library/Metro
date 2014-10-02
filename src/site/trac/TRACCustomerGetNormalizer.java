@@ -46,14 +46,12 @@ public class TRACCustomerGetNormalizer extends CustomerGetNormalizer
             CustomerMessage message)
     {
 
-//        sent:93  CNuser|COpassword|CP|AY0AZF5D3
-//        recv:64              00120140501    114114000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEsthero@yrl.ab.ca|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY2AZA00A
+        // sent:63                               AO|AA29335002291042|AC2003|AD2003|AY2AZF1F1
+        // recv:64              00120141002    135321000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEstephaniethero@shaw.ca|BF780-962-2003|BC19751002    235959|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY2AZ9694
         // TRAC doesn't collect sex.
         // Their expiry is in field 'PX': 'PX20201025    235959'
-        String expireDate = SIPMessage.cleanDateTime(message.getField("PX"));
-        if (SIPMessage.isDate(expireDate))
-        {
-            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expireDate);
-        }
+        customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, message.getDateField("PX"));
+        customer.set(CustomerFieldTypes.DOB, message.getDateField("BC"));
+
     }
 }
