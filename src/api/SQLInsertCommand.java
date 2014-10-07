@@ -69,7 +69,7 @@ public class SQLInsertCommand implements Command
          */
         public Builder string(String cName, String value)
         {
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 SQLUpdateData d = new SQLUpdateData(cName, SQLData.Type.DATE, null);
                 this.columnList.add(d);
@@ -82,7 +82,7 @@ public class SQLInsertCommand implements Command
         
         public Builder date(String dName, String date)
         {
-            if (date == null || date.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(date))
             {
                 SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
                 this.columnList.add(d);
@@ -116,7 +116,7 @@ public class SQLInsertCommand implements Command
         
         public Builder smallInt(String sName, String smallValue)
         {
-            if (smallValue == null || smallValue.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(smallValue))
             {
                 SQLUpdateData d = new SQLUpdateData(sName, SQLData.Type.SMALL_INT, null);
                 this.columnList.add(d);
@@ -135,7 +135,7 @@ public class SQLInsertCommand implements Command
          */
         public Builder dateTime(String dName, String dateTime)
         {
-            if (dateTime == null || dateTime.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(dateTime))
             {
                 SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
                 this.columnList.add(d);
@@ -162,7 +162,7 @@ public class SQLInsertCommand implements Command
         
         public Builder tinyInt(String tName, String value)
         {
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 SQLUpdateData i = new SQLUpdateData(tName, SQLData.Type.TINY_INT, null);
                 this.columnList.add(i);
@@ -182,7 +182,7 @@ public class SQLInsertCommand implements Command
         
         public Builder setChar(String cName, String value)
         {
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 SQLUpdateData i = new SQLUpdateData(cName, SQLData.Type.CHAR, null);
                 this.columnList.add(i);
@@ -196,7 +196,7 @@ public class SQLInsertCommand implements Command
         
         public Builder integer(String iName, String value)
         {
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, null);
                 this.columnList.add(i);
@@ -207,6 +207,12 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Sets the specified field's value in the target table to null as defined
+         * by the JDBC definition of null.
+         * @param iName column name to store value.
+         * @return builder object.
+         */
         public Builder integer(String iName)
         {
             SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, null);
@@ -232,7 +238,7 @@ public class SQLInsertCommand implements Command
         {
             // Permits objects like PolarisSQLFormattedCustomer to explicitly set
             // a value to "NULL" and actually have it set to null, not "null" as a string.
-            if (amount == null || amount.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(amount))
             {
                 SQLUpdateData i = new SQLUpdateData(mName, SQLData.Type.MONEY, null);
                 this.columnList.add(i);
@@ -278,7 +284,7 @@ public class SQLInsertCommand implements Command
         public Builder bit(String bName, String value)
         {
             SQLUpdateData i;
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 i = new SQLUpdateData(bName, SQLData.Type.BIT, null);
                 this.columnList.add(i);
@@ -293,6 +299,24 @@ public class SQLInsertCommand implements Command
             i = new SQLUpdateData(bName, SQLData.Type.BIT, "false");
             this.columnList.add(i);
             return this;
+        }
+        
+        /**
+         * Tests if the argument is empty or null for sanitizing input for the
+         * query string.
+         * @param s string to test.
+         * @return true if the string is empty, null, or contains the literal
+         * string 'null' (case insensitively).
+         */
+        private boolean isNullOrEmpty(String s)
+        {
+            if (s == null               // null object type
+                    || s.isEmpty()      // empty string like optional birthdates
+                    || s.equalsIgnoreCase("NULL")) // explicit string "null" ingore case.
+            {
+                return true;
+            }
+            return false;
         }
         
         public SQLInsertCommand build()

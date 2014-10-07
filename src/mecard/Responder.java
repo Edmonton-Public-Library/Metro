@@ -37,6 +37,7 @@ import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
+import mecard.customer.DumpUser;
 import mecard.customer.UserFailFile;
 import mecard.customer.UserLostFile;
 import mecard.exception.BusyException;
@@ -249,8 +250,11 @@ public class Responder
         if (customer.isLostCard())
         {
             String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
-            UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
-            failFile.recordUserDataMessage(message);
+            // Record the user's data for diagnosis of problem later.
+            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.lost)
+                    .set(message)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
             response.setCode(ResponseTypes.LOST_CARD);
             response.setResponse(message);
             System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
@@ -262,8 +266,9 @@ public class Responder
             System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
             if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
             {
-                UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
-                failFile.addUserData(customer);
+                new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
                 System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
             }
@@ -286,8 +291,10 @@ public class Responder
         if (customer.isLostCard())
         {
             String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
-            UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
-            failFile.recordUserDataMessage(message);
+            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.lost)
+                    .set(message)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
             response.setCode(ResponseTypes.LOST_CARD);
             response.setResponse(message);
             System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
@@ -299,8 +306,9 @@ public class Responder
             System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
             if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
             {
-                UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
-                failFile.setStatus(status); // TODO: fix as above.
+                new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
                 System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
             }

@@ -20,7 +20,6 @@
  */
 package api;
 
-import static api.SQLInsertCommand.NULL;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -85,7 +84,7 @@ public class SQLUpdateCommand implements Command
         
         public Builder string(String cName, String value)
         {
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, null);
                 this.columnList.add(s);
@@ -98,7 +97,7 @@ public class SQLUpdateCommand implements Command
         
         public Builder date(String dName, String date)
         {
-            if (date == null || date.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(date))
             {
                 SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
                 this.columnList.add(d);
@@ -117,7 +116,7 @@ public class SQLUpdateCommand implements Command
          */
         public Builder dateTime(String dName, String dateTime)
         {
-            if (dateTime == null || dateTime.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(dateTime))
             {
                 SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
                 this.columnList.add(d);
@@ -130,7 +129,7 @@ public class SQLUpdateCommand implements Command
         
         public Builder integer(String iName, String value)
         {
-            if (value == null || value.compareToIgnoreCase(NULL) == 0)
+            if (this.isNullOrEmpty(value))
             {
                 SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.INT, null);
                 this.columnList.add(i);
@@ -155,6 +154,25 @@ public class SQLUpdateCommand implements Command
             this.columnList.add(i);
             return this;
         }
+        
+        /**
+         * Tests if the argument is empty or null for sanitizing input for the
+         * query string.
+         * @param s string to test.
+         * @return true if the string is empty, null, or contains the literal
+         * string 'null' (case insensitively).
+         */
+        private boolean isNullOrEmpty(String s)
+        {
+            if (s == null               // null object type
+                    || s.isEmpty()      // empty string like optional birthdates
+                    || s.equalsIgnoreCase("NULL")) // explicit string "null" ingore case.
+            {
+                return true;
+            }
+            return false;
+        }
+        
         
         public SQLUpdateCommand build()
         {

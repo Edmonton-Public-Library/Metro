@@ -38,6 +38,7 @@ import mecard.config.PropertyReader;
 import mecard.customer.horizon.BImportBat;
 import mecard.customer.UserFile;
 import mecard.exception.BImportException;
+import mecard.exception.ConfigurationException;
 import mecard.requestbuilder.BImportRequestBuilder;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import mecard.util.BImportResultParser;
@@ -113,7 +114,18 @@ public class BImportCustomerLoader
             }
             if (cmd.hasOption("a"))
             {
-                maxPIDAge = Integer.parseInt(cmd.getOptionValue("a"));
+                try
+                {
+                    maxPIDAge = Integer.parseInt(cmd.getOptionValue("a"));
+                }
+                catch (NumberFormatException e)
+                {
+                    System.out.println("*Warning: the value used on the '-a' flag, '"
+                            + cmd.getOptionValue("a") + "' cannot be "
+                            + "converted to an integer and is therefore an illegal value for "
+                            + "maximum PID file age. Maximum PID age set to: " 
+                            + maxPIDAge + " minutes.");
+                }
             }
             // get c option value
             String configDirectory = cmd.getOptionValue("c");
@@ -167,7 +179,7 @@ public class BImportCustomerLoader
             // and if it is old we will output a fail file.
             if (DateComparer.isGreaterThanMinutesOld(maxPIDAge, lock.lastModified()))
             {
-                UserFile pid = new UserFile(this.loadRequestBuilder.getLoadDir() + stalePid);
+                UserFile pid = new UserFile(this.loadRequestBuilder.getCustomerLoadDirectory() + stalePid);
                 List<String> messageList = new ArrayList<>();
                 messageList.add("PID file is more than " + String.valueOf(maxPIDAge) + " minutes old.");
                 messageList.add("BImport may have crashed, please check processes and remove PID file in necessary.");
@@ -192,13 +204,13 @@ public class BImportCustomerLoader
         // The process is find all the individual customer -data.txt files and 
         // glom all that data together in a -bimport.txt file for bulk loading.
         List<String> fileList = getFileList(
-                this.loadRequestBuilder.getLoadDir(), 
+                this.loadRequestBuilder.getCustomerLoadDirectory(), 
                 BImportRequestBuilder.DATA_FILE);
         if (debug)
         {
             System.out.println("DEBUG.run(): "
                 + "'" + fileList.size() + "'"
-                + " args: loadRequestBuilder.getLoadDir() : '" + this.loadRequestBuilder.getLoadDir() + "'"
+                + " args: loadRequestBuilder.getLoadDir() : '" + this.loadRequestBuilder.getCustomerLoadDirectory()+ "'"
                 + " BImportRequestBuilder.DATA_FILE: " + BImportRequestBuilder.DATA_FILE);
         }
         Command command = this.loadRequestBuilder.loadCustomers(fileList);
@@ -310,10 +322,10 @@ public class BImportCustomerLoader
          * @return The fully qualified path to the customer load directory 
          * specified in the bimport.properties file.
          */
-        final String getLoadDir()
-        {
-            return this.loadDir;
-        }
+//        final String getLoadDir()
+//        {
+//            return this.loadDir;
+//        }
         
         /**
          * Prepares the command that will load the bimport file.

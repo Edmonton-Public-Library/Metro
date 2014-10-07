@@ -48,7 +48,8 @@ public abstract class ILSRequestBuilder
 {
     // used by failed customer files to determine ILS
     // agnostically, where customers files are loaded from and stored.
-    protected String loadDir; 
+    protected String loadDir = "."; // Don't forget to set this in constructor of RequestBuilder.
+    
     /**
      *
      *
@@ -250,5 +251,5 @@ public abstract class ILSRequestBuilder
             return loadDir;
         }
         return loadDir + File.separator;
-    }    
+    }
 }

@@ -24,7 +24,6 @@ import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
 import mecard.Response;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,15 +31,14 @@ import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.symphony.FlatCustomerFormatter;
-import mecard.customer.UserFile;
 import mecard.config.PropertyReader;
 import api.FlatCustomerMessage;
+import mecard.customer.DumpUser;
 import mecard.customer.symphony.FlatFormattedCustomer;
 import mecard.customer.FormattedCustomer;
 import site.CustomerLoadNormalizer;
@@ -63,8 +61,6 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     private static List<String> dumpflatuser;
     private static List<String> loadFlatUserCreate;
     private static List<String> loadFlatUserUpdate;
-    public final static String USER_FILE_NAME_PREFIX  = "metro_user_";
-    public final static String SHELL_FILE_NAME_PREFIX = "metro_load_";
     private final String sshServer;
     private final Properties messageProperties;
     private final boolean debug;
@@ -158,7 +154,10 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
-        this.printReceipt(customer, flatFileLines);
+        // Output the customer's data to file for reference if they have questions.
+        new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
+                .set(flatFileLines)
+                .build();
         if (this.sshServer.isEmpty())
         {
             return new APICommand.Builder().cat(flatFileLines).commandLine(loadFlatUserCreate).build();
@@ -174,7 +173,10 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
-        this.printReceipt(customer, flatFileLines);
+        // Output the customer's data to file for reference if they have questions.
+        new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
+                .set(flatFileLines)
+                .build();
         if (this.sshServer.isEmpty())
         {
             return new APICommand.Builder().cat(flatFileLines).commandLine(loadFlatUserUpdate).build();
@@ -264,22 +266,6 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     {
         // TODO future release to include file cleanup and return false if you can't.
         return true;
-    }
-    
-    /** Prints the flat user data to file in case something goes wrong.
-     * 
-     * @param customer Customer object.
-     * @param flatUser Customer as a flat user.
-     */
-    private void printReceipt(Customer customer, List<String> flatUser)
-    {
-        String userDataFileName = this.loadDir 
-                + File.separator
-                + SymphonyRequestBuilder.USER_FILE_NAME_PREFIX 
-                + customer.get(CustomerFieldTypes.ID) 
-                + ".flat";
-        UserFile userFile = new UserFile(userDataFileName);
-        userFile.addUserData(flatUser);
     }
 
     @Override

@@ -41,7 +41,7 @@ import mecard.exception.ConfigurationException;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.13_08l"; // server version
+    public final static String VERSION           = "0.9.01_00"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -60,7 +60,7 @@ public class PropertyReader
     private static String DEBUG_SETTINGS_FILE    = "debug.properties";
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
-    private static String POLARIS_SQL_FILE      = "polaris_sql.properties";
+    private static String POLARIS_SQL_FILE       = "polaris_sql.properties";
         // There are no mandatory variables, so no checking is done.
     private static Properties polarisAPI;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.

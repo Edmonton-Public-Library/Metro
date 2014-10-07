@@ -24,16 +24,15 @@ import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
 import api.DummyCommand;
-import api.SIPCustomerMessage;
 import api.SQLConnector;
 import api.SQLCustomerMessage;
 import api.SQLInsertCommand;
 import api.SQLSelectCommand;
 import api.SQLUpdateCommand;
-import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Properties;
+import mecard.Protocol;
 import mecard.QueryTypes;
 import mecard.Response;
 import mecard.ResponseTypes;
@@ -45,8 +44,8 @@ import mecard.config.MessagesTypes;
 import mecard.config.PolarisTable;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
+import mecard.customer.DumpUser;
 import mecard.customer.FormattedCustomer;
-import mecard.customer.UserFile;
 import mecard.customer.polaris.PolarisSQLCustomerFormatter;
 import mecard.customer.polaris.PolarisSQLFormattedCustomer;
 import mecard.exception.ConfigurationException;
@@ -68,7 +67,6 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     private final String postalCodes        = "Polaris.PostalCodes";
     private final String addressTable       = "Polaris.Addresses";
     private final String patronAddresses    = "Polaris.PatronAddresses";
-    private final String USER_FILE_NAME_PREFIX  = "metro_user_";
     private final boolean debug;
     
     private final String host;
@@ -166,7 +164,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, fCustomer, response);
         List<String> userSQLFileLines = fCustomer.getFormattedCustomer();
-        this.printReceipt(customer, userSQLFileLines);
+        // Output the customer's data as a receipt in case they come back with questions.
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
+                .set(userSQLFileLines)
+                .build();
         // This is a class variable because the Responder will need to run the last command and return results.
         this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
             .user(user)
@@ -242,11 +243,18 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             System.out.println("PATRON_ID: '" + polarisPatronID + "'");
         }
         
-        // Get ready with dob and expiry in acceptable format.
-        // This is all done in FormattedCustomer now.
-        
-        String dob = fCustomer.getValue(PolarisTable.PatronRegistration.BIRTH_DATE.toString());
         String expiry = fCustomer.getValue(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString());
+        // Since DOB is an optional field some patrons from other libs are failing
+        // because they don't have one. We could put a fake one in or we could put 
+        // a null value in.
+        // See SQLInsert and SQLUpdateCommand, they both now guard for empty string
+        // "NULL" ignore case and null values, and Protocol.DEFAULT_FIELD_VALUE.
+        String dob = fCustomer.getValue(PolarisTable.PatronRegistration.BIRTH_DATE.toString());
+        if (dob.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        {
+            dob = "null"; // this could be set to '' or null, SQLInsertCommand or SQLUpdateCommand can handle those but
+            // we may need to print the value and both commands understand the text command 'null' or 'NULL'.
+        }
         if (debug)
         {
             System.out.println("---PatronID>"+polarisPatronID);
@@ -614,7 +622,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, fCustomer, response);
         List<String> userSQLFileLines = fCustomer.getFormattedCustomer();
-        this.printReceipt(customer, userSQLFileLines);
+        // Output the customer's data as a receipt in case they come back with questions.
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
+                .set(userSQLFileLines)
+                .build();
         // This is a class variable because the Responder will need to run the last command and return results.
         this.connector = new SQLConnector.Builder(host, driver, database)
             .user(user)
@@ -880,22 +891,5 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // polaris-sql in the environment.properties get-protocol you
         // will need to finish this class.
         return new SQLCustomerMessage(stdout, true);
-    }
-    
-    /** Prints the flat user data to file in case something goes wrong.
-     * 
-     * @param customer Customer object.
-     * @param userDataList Customer data as a list.
-     */
-    private void printReceipt(Customer customer, List<String> userDataList)
-    {
-        String userDataFileName = this.loadDir // what does this 'directory' path look like.
-                + File.separator
-                + this.USER_FILE_NAME_PREFIX 
-                + customer.get(CustomerFieldTypes.ID) 
-                + ".txt"; // the data in the file isn't useful for SQL directly, it's just raw customer information.
-        
-        UserFile userFile = new UserFile(userDataFileName);
-        userFile.addUserData(userDataList);
     }
 }
