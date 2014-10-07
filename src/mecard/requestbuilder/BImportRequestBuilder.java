@@ -93,7 +93,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         this.bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
-        this.loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
+        // Done because the tag is common to all ILS specific properties files.
+        this.loadDir = bimpProps.getProperty(PropertyReader.LOAD_DIR.toString());
         this.serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
         this.password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
         this.userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
