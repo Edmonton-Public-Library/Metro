@@ -38,8 +38,6 @@ import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
 import mecard.customer.DumpUser;
-import mecard.customer.UserFailFile;
-import mecard.customer.UserLostFile;
 import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;

@@ -21,12 +21,9 @@
 package site.trac;
 
 import api.CustomerMessage;
-import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
-import site.MeCardPolicy;
 
 /**
  *
