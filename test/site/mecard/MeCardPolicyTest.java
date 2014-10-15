@@ -104,7 +104,7 @@ public class MeCardPolicyTest
         result = p.isMinimumAgeByDate(c, customerMessage, sb);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         
-        assertTrue(false == result);
+        assertFalse(result);
     }
     
 /**
