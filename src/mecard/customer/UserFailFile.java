@@ -59,4 +59,16 @@ public class UserFailFile extends UserFile
         data.add(status.getStderr());
         this.addUserData(data);
     }
+
+    /**
+     * Adds the raw customer data to the fail file. Use this or the setStatus
+     * but not both.
+     * @param customer 
+     */
+    public void addUserData(Customer customer)
+    {
+        List<String> data = new ArrayList<>();
+        data.add(customer.toString());
+        this.addUserData(data);
+    }
 }

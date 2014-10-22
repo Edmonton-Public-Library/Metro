@@ -27,8 +27,9 @@ import java.util.Properties;
 import java.util.Set;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
+import mecard.exception.ConfigurationException;
 import mecard.exception.SIPException;
 
 /**
@@ -42,49 +43,31 @@ import mecard.exception.SIPException;
  */
 public class SIPMessage
 {
+    public enum IlsType
+    {
+        SIRSI_DYNIX("SIRSI_DYNIX"),
+        POLARIS("POLARIS");
+        
+        private final String type;
+
+        private IlsType(String s)
+        {
+            this.type = s;
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.type;
+        }
+    }
     protected HashMap<String, String> fields;
     protected final String originalMessage;
     protected final String code;
     protected final String codeBits;
     protected Properties messageProperties;
-
-    /**
-     * This method accepts a possible dateField and returns a clean date. 
-     * @param possibleDate example: '20131231    235900STAFF' worst case.
-     * @return cleaned string if date valid and parse-able as date and Protocol#DEFAULT_FIELD_VALUE
-     * otherwise.
-     */
-    public static String cleanDateTime(String possibleDate)
-    {
-        if (possibleDate == null)
-        {
-            return Protocol.DEFAULT_FIELD_VALUE;
-        }
-        // 20131231    235900STAFF
-        // Split if you can on whitespace
-        String[] split = possibleDate.split("\\s{1,}");
-        if (split.length == 0 || isDate(split[0]) == false)
-        {
-            return Protocol.DEFAULT_FIELD_VALUE;
-        }
-        return split[0];
-    }
-    
-     /**
-     * Tests if a string looks like a possible date. The check is not strict - 
-     * a string of 8 digits.
-     * @param possibleDate string value. To bass must be 8 single digits like '20130822'.
-     * @return true if the string is likely to be an ANSI date and false otherwise.
-     */
-    public static boolean isDate(String possibleDate)
-    {
-        if (possibleDate == null)
-        {
-            return false;
-        }
-        return possibleDate.matches("^[1-2][0,9]\\d{2}[0-1][0-9][0-3][0-9]$");
-//        return possibleDate.matches("\\d{8}");
-    }
+    protected final IlsType ilsType;
+    public final static String ILS_TYPE_TAG = "ils-type";  // optional field to adapt to new customerMessage type.
     
     /**
      * Constructor
@@ -94,17 +77,44 @@ public class SIPMessage
     public SIPMessage(String sipMessage)
             throws SIPException
     {
+        Properties sip2Properties = PropertyReader.getProperties(ConfigFileTypes.SIP2);
+        // get the value from the properties file, but if not found assume SIRSI_DYNIX 
+        // which will set the customerMessage type to a standard SIPCustomerMessage().
+        String whichIls = sip2Properties.getProperty(ILS_TYPE_TAG, IlsType.SIRSI_DYNIX.toString());
+        // whichIls can still be empty if a tag was entered but it was empty.
+        if (whichIls.isEmpty()) whichIls = IlsType.SIRSI_DYNIX.toString();
+        try
+        {
+            this.ilsType = IlsType.valueOf(whichIls);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw new ConfigurationException(" **Invalid option '" + whichIls + "' in sip2.properties."
+                    + " Either remove the tag for default of SIRSI_DYNIX or enter a valid ILS type.");
+        }
         // If the message we get is broken, it is most likely that the ILS is down.
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.originalMessage = sipMessage;
-        if (sipMessage.contains("|") == false)
+        String[] stringFields;
+        if (sipMessage.contains("|"))
         {
-            throw new SIPException(this.messageProperties.getProperty(
-                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+            // Split the fields
+            stringFields = sipMessage.split("\\|");
+        }
+        else
+        {
+            // The login response contains no pipe, just the code, result bit, and checksum
+            if (sipMessage.contains("AY"))
+            {
+                stringFields = sipMessage.split("AY");
+            }
+            else // not a sip message.
+            {
+                throw new SIPException(this.messageProperties.getProperty(
+                    MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+            }
         }
         this.fields = new HashMap<>();
-        // Split the fields
-        String[] stringFields = sipMessage.split("\\|");
         try
         {
             this.code = stringFields[0].substring(0, 2);
@@ -199,5 +209,16 @@ public class SIPMessage
     public String toString()
     {
         return this.originalMessage;
+    }
+    
+    /** 
+     * returns the type of ILS from the sip2.properties file.
+     * @return SIRSI_DYNIX by default if 'ils-type' element is not an entry in 
+     * the properties file. Options are SIRSI_DYNIX, POLARIS or no entry. Don't use
+     * an empty tag.
+     */
+    public SIPMessage.IlsType getILSType()
+    {
+        return this.ilsType;
     }
 }

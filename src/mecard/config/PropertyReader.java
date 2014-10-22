@@ -1,6 +1,22 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
  */
 package mecard.config;
 
@@ -15,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mecard.exception.ConfigurationException;
 
 /**
  * Property reader reads all the configuration files and ensures that required
@@ -24,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.8.13_08l"; // server version
+    public final static String VERSION           = "0.9.01_01"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -36,15 +53,16 @@ public class PropertyReader
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
-    private static String POLARIS_PROPERTY_FILE  = "polaris.properties";
+    private static String POLARIS_PAPI_FILE      = "papi.properties";
     private static String ENVIRONMENT_FILE       = "environment.properties";
     private static String SIP2_FILE              = "sip2.properties";
     private static String BIMPORT_CITY_MAPPING   = "city_st.properties";
     private static String DEBUG_SETTINGS_FILE    = "debug.properties";
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
+    private static String POLARIS_SQL_FILE       = "polaris_sql.properties";
         // There are no mandatory variables, so no checking is done.
-    private static Properties polaris;            // Default properties needed by Polaris.
+    private static Properties polarisAPI;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
     private static Properties bimport;            // Properties Metro needs to operate BImport.
     private static Properties environment;        // Basic envrionment values.
@@ -53,6 +71,7 @@ public class PropertyReader
     private static Properties debugProperties;    // Optional config for debugging.
     private static Properties systemVariables;    // Optional no mandatory fields.
     private static Properties messagesProperties; // Messages tailored by local library.
+    private static Properties SQLProperties;      // Optional config for sites that use POLARIS_SQL for transactions.
     
     /**
      * Parses a list of ',' comma separated types from a given entry in the 
@@ -103,13 +122,14 @@ public class PropertyReader
         System.out.println(new Date() + " CONFIG: dir set to '" + CONFIG_DIR + "'");
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
-        POLARIS_PROPERTY_FILE  = CONFIG_DIR + POLARIS_PROPERTY_FILE;
+        POLARIS_PAPI_FILE      = CONFIG_DIR + POLARIS_PAPI_FILE;
         MESSAGES_PROPERTY_FILE = CONFIG_DIR + MESSAGES_PROPERTY_FILE;
         ENVIRONMENT_FILE       = CONFIG_DIR + ENVIRONMENT_FILE;
         SIP2_FILE              = CONFIG_DIR + SIP2_FILE;
         BIMPORT_CITY_MAPPING   = CONFIG_DIR + BIMPORT_CITY_MAPPING;
         DEBUG_SETTINGS_FILE    = CONFIG_DIR + DEBUG_SETTINGS_FILE;
         VARIABLES_FILE         = CONFIG_DIR + VARIABLES_FILE;
+        POLARIS_SQL_FILE       = CONFIG_DIR + POLARIS_SQL_FILE;
     }
     
     /**
@@ -138,7 +158,7 @@ public class PropertyReader
                     if (symphony.get(sType.toString()) == null)
                     {
                         String msg = "'" + sType + "' unset in " + PropertyReader.SYMPHONY_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return symphony;
@@ -151,7 +171,7 @@ public class PropertyReader
                     if (environment.get(lType.toString()) == null)
                     {
                         String msg = "'" + lType + "' unset in " + PropertyReader.ENVIRONMENT_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return environment;
@@ -164,7 +184,7 @@ public class PropertyReader
                     if (sip2.get(sType.toString()) == null)
                     {
                         String msg = "'" + sType + "' unset in " + PropertyReader.SIP2_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return sip2;
@@ -177,7 +197,7 @@ public class PropertyReader
                     if (bimport.get(bType.toString()) == null)
                     {
                         String msg = "'" + bType + "' unset in " + PropertyReader.BIMPORT_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return bimport;
@@ -194,7 +214,7 @@ public class PropertyReader
                     if (debugProperties.get(dType.toString()) == null)
                     {
                         String msg = "'" + dType + "' unset in " + PropertyReader.DEBUG_SETTINGS_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return debugProperties;
@@ -203,28 +223,41 @@ public class PropertyReader
                 systemVariables = readPropertyFile(PropertyReader.VARIABLES_FILE);
                 return systemVariables;
                 
-            case POLARIS:
-                    polaris = readPropertyFile(PropertyReader.POLARIS_PROPERTY_FILE);
+            case PAPI:
+                polarisAPI = readPropertyFile(PropertyReader.POLARIS_PAPI_FILE);
                 // now check that all mandetory values are here.
-                for (PolarisPropertyTypes pType : PolarisPropertyTypes.values())
+                for (PAPIPropertyTypes pType : PAPIPropertyTypes.values())
                 {
-                    if (polaris.get(pType.toString()) == null)
+                    if (polarisAPI.get(pType.toString()) == null)
                     {
-                        String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        String msg = "'" + pType + "' unset in " + PropertyReader.POLARIS_PAPI_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
-                return polaris;
+                return polarisAPI;
+            // POLARIS_SQL required properties if the user is using POLARIS_SQL for any protocol.    
+            case POLARIS_SQL:
+                SQLProperties = readPropertyFile(PropertyReader.POLARIS_SQL_FILE);
+                // now check that all mandetory values are here.
+                for (PolarisSQLPropertyTypes sType : PolarisSQLPropertyTypes.values())
+                {
+                    if (SQLProperties.get(sType.toString()) == null)
+                    {
+                        String msg = "'" + sType + "' unset in " + PropertyReader.POLARIS_SQL_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
+                    }
+                }
+                return SQLProperties;
                 
             case MESSAGES:
                 messagesProperties = readPropertyFile(PropertyReader.MESSAGES_PROPERTY_FILE);
                 // now check that all mandetory values are here.
-                for (MessagesConfigTypes mType : MessagesConfigTypes.values())
+                for (MessagesTypes mType : MessagesTypes.values())
                 {
                     if (messagesProperties.get(mType.toString()) == null)
                     {
                         String msg = "'" + mType + "' unset in " + PropertyReader.MESSAGES_PROPERTY_FILE;
-                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new NullPointerException());
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
                     }
                 }
                 return messagesProperties;

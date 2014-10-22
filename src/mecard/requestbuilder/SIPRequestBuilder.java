@@ -23,10 +23,12 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import api.PolarisSIPCustomerMessage;
 import mecard.Response;
 import api.SIPCommand;
 import api.SIPConnector;
 import api.SIPCustomerMessage;
+import api.SIPMessage;
 import api.SIPStatusMessage;
 import java.util.Date;
 import java.util.Properties;
@@ -35,26 +37,31 @@ import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.SIPException;
 import mecard.config.PropertyReader;
+import mecard.exception.ConfigurationException;
+import site.CustomerLoadNormalizer;
 
 /**
- * Helper class for formatting SIP requests.
+ * Manages any meaningful request that can be made through SIP2 requests. This
+ * naturally excludes things like customer update or create.
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class SIPRequestBuilder extends ILSRequestBuilder
 {
     private static SIPConnector sipServer;
     private final Properties messageProperties;
+    public final static String LOCATION_CODE_TAG = "location-code"; // optional field in sip2.properties.
     /**
-     *
-     * @param debug the value of debug
+     * 
+     * @param debug True if you would like to see send received raw SIP2 messages
+     * and false otherwise.
      */
     SIPRequestBuilder(boolean debug)
     {
@@ -66,6 +73,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         String password = sipProps.getProperty(SipPropertyTypes.PASSWORD.toString(), "");
         String timeout = sipProps.getProperty(SipPropertyTypes.TIMEOUT.toString());
         String institutionId = sipProps.getProperty(SipPropertyTypes.INSTITUTION_ID.toString(), "");
+        String locationCode = sipProps.getProperty(SIPRequestBuilder.LOCATION_CODE_TAG.toString(), ""); // if not found an empty string is forwarded to the builder.
         sipServer = new SIPConnector
                 .Builder(host, port)
                 .sipUser(user)
@@ -73,6 +81,8 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 .institution(institutionId)
                 .sipUser(user)
                 .timeout(timeout)
+                .locationCode(locationCode)
+                .debug(debug)
                 .build();
     }
 
@@ -88,7 +98,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerFormatter getFormatter()
     {
-        return new SIPFormatter();
+        return new SIPCustomerFormatter();
     }
 
     @Override
@@ -117,7 +127,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 if (isSuccessful(status.getStdout()) == false)
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                     System.out.println("SIP2 service currently not available.");
                     result = false;
                 }
@@ -139,7 +149,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_FOUND.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                     System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
                     result = false;
                 }
@@ -147,7 +157,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.UNAUTHORIZED);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.USERID_PIN_MISMATCH.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
                     System.out.println("User pin does not match the one on record.");
                     result = false;
                 }
@@ -162,7 +172,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
             case UPDATE_CUSTOMER:
             default:
                 response.setCode(ResponseTypes.UNKNOWN);
-                response.setResponse(messageProperties.getProperty(MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println(SIPRequestBuilder.class.getName() 
                         + " doesn't know how to execute the query type: "
                         + commandType.name());
@@ -187,12 +197,15 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         try
         {
             SIPStatusMessage message = new SIPStatusMessage(sipResponse);
-            if (message.isOnline().compareTo("Y") == 0)
+            if (message.isOnline())
             {
                 if (message.getPatronInfoPermitted().compareTo("Y") == 0)
                 {
-                    return true;
+                    System.out.println("**Warning: SIP2 patron info bit set to '" 
+                            + message.getPatronInfoPermitted() + "'");
+                    // but it doesn't mean you can't get patron info.
                 }
+                return true;
             }
         }
         catch (SIPException ex)
@@ -204,9 +217,69 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         return false;
     }
 
+    /**
+     * This method has throws a configuration exception because SIP2 is not capable
+     * of creating or updating user accounts. Were you thinking of NCIP perhaps?
+     * @param customer
+     * @param response
+     * @param normalizer
+     * @return throws {@link  ConfigurationException} if called. This is your signal
+     * that you have incorrectly selected 'sip2' for create or update protocols
+     * in the environment.properties file.
+     */
+    @Override
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    {
+        throw new ConfigurationException("SIP2 does not support account creation "
+                + "Please review your environment.properties configuration");
+    }
+
+    /**
+     * This method has throws a configuration exception because SIP2 is not capable
+     * of creating or updating user accounts. Were you thinking of NCIP perhaps?
+     * @param customer
+     * @param response
+     * @param normalizer
+     * @return throws {@link  ConfigurationException} if called. This is your signal
+     * that you have incorrectly selected 'sip2' for create or update protocols
+     * in the environment.properties file.
+     */
+    @Override
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    {
+        throw new ConfigurationException("SIP2 does not support account update "
+                + "Please review your environment.properties configuration");
+    }
+    
+    /**
+     * SIP2 is implemented differently on every ILS and most ILSs don't honour
+     * the tags that 3M specifies. This method will determine which version of
+     * SIPCustomerMessage should be returned. This accounts for variation of 
+     * SIP2 message responses between ILSs. 
+     * 
+     * This method is used for tailoring tests for the Responder like isGoodStanding(),
+     * the Responder is not liable for knowing the peculiarities of one SIP2 implementation
+     * to the next. Passing back a custom SIPMessage on request gets around this
+     * problem.
+     * 
+     * @param stdout
+     * @return customerMessage.
+     * @see SIPCustomerMessage
+     */
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        return new SIPCustomerMessage(stdout);
+        SIPMessage message = new SIPMessage(stdout);
+        SIPCustomerMessage cMessage;
+        switch (message.getILSType())
+        {
+            case POLARIS:
+                cMessage = new PolarisSIPCustomerMessage(stdout);
+                break;
+            default:
+                cMessage = new SIPCustomerMessage(stdout);
+               break;
+        } 
+         return cMessage;
     }
 }

@@ -22,7 +22,7 @@ package mecard.config;
 
 /**
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public enum ConfigFileTypes
 {
@@ -31,7 +31,8 @@ public enum ConfigFileTypes
     SIP2,
     BIMPORT,
     BIMPORT_CITY_MAPPING,
-    POLARIS,
+    PAPI,
+    POLARIS_SQL,   // Used for general POLARIS_SQL API transactions.
     DEBUG, // used with DummyResponder, this file contains canned results to return to client.
     VARS,  // System variables like PATH, UPATH, etc.
     MESSAGES;  // Custom messages for each library.

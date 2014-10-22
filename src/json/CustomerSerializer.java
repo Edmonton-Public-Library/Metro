@@ -29,7 +29,7 @@ import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
 
 /**
- *
+ * Serializes a {@link mecard.customer.Customer} into JSON.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class CustomerSerializer implements JsonSerializer<Customer>

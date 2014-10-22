@@ -32,7 +32,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-    /**
+/**
  *
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
@@ -43,7 +43,11 @@ public class MeCardPolicyTest
     
     public MeCardPolicyTest()
     {
-        this.meta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|PCEPL-THREE|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
+        this.meta = "64YYYY      Y   00020130606    115820000000000000000100000000AO"
+                + "|AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|CB0040"
+                + "|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4"
+                + "|BEilsteam@epl.ca|BHUSD|PA20150321    235900|PD20050303|PCEPL-THREE"
+                + "|PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         String custReq =
                 "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
@@ -65,7 +69,8 @@ public class MeCardPolicyTest
         System.out.println("==isGoodStanding==");
         StringBuilder sb = new StringBuilder();
         MeCardPolicy policy = MeCardPolicy.getInstanceOf(false);
-        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AY1AZB304";
+//        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AY1AZB304";
+        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AFPatron has blocks.|AY1AZB304";
         CustomerMessage customerMessage = new SIPCustomerMessage(msg);
         boolean result = policy.isInGoodStanding(c, customerMessage, sb);
         boolean expected= false;
@@ -99,7 +104,7 @@ public class MeCardPolicyTest
         result = p.isMinimumAgeByDate(c, customerMessage, sb);
 //        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
         
-        assertTrue(false == result);
+        assertFalse(result);
     }
     
 /**
@@ -151,14 +156,17 @@ public class MeCardPolicyTest
         StringBuilder sb = new StringBuilder();
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
-        boolean result = p.isValidExpiryDate(c, customerMessage, sb);
-        boolean expected= true;
-        assertTrue(expected == result);
-
-        c.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, "20120602");
-        result = p.isValidExpiryDate(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        System.out.println("VALID EXPIRY???: '" +customerMessage.getField("PA")+ "'");
+        assertFalse(p.isValidExpiryDate(c, customerMessage, sb));
+        System.out.println("VALID EXPIRY???: '" +customerMessage.getDateField("PA")+ "'");
+        String newDate = customerMessage.getDateField("PA");
+        c.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, newDate);
+        assertTrue(p.isValidExpiryDate(c, customerMessage, sb));
+        
+        System.out.println("VALID EXPIRY???: '" +customerMessage.getDateField("BX")+ "'");
+        newDate = customerMessage.getDateField("BX");
+        c.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, newDate);
+        assertFalse(p.isValidExpiryDate(c, customerMessage, sb));
     }
     
     /**

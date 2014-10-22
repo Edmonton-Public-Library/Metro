@@ -29,6 +29,24 @@ import java.util.List;
 public final class Text 
 {
 
+    /**
+     * Returns the first word of a sentence if there is one and an empty string 
+     * if there isn't.
+     * @param sentence a string of text.
+     * @return the first word from the parameter as specified by Java white space
+     * regex definition.
+     */
+    public static String firstWord(String sentence)
+    {
+        if (sentence == null || sentence.isEmpty()) return "";
+        String[] words = sentence.split("\\s{1,}");
+        if (words.length > 0)
+        {
+            return words[0].trim();
+        }
+        return "";
+    }
+
     
     private Text(){}
     /**
@@ -56,6 +74,31 @@ public final class Text
             capNext = (ACTIONABLE_DELIMITERS.indexOf((int) c) >= 0); // explicit cast not needed
         }
         return sb.toString();
+    }
+    
+    /**
+     * Given a blob of text that contains new line characters, find the line
+     * that matches the 'matchThis' parameter and return the line.
+     * @param content if null an empty string is returned. some output that 
+     * contains several lines. If empty an empty string will be returned.
+     * @param matchThis if null an empty string is returned. If the parameter 
+     * is empty, the original content is returned in its unaltered entirety.
+     * @return line content that matches or an empty string if not found.
+     */
+    public static String matchLine(String content, String matchThis)
+    {
+        if (content == null || matchThis == null) return "";
+        if (content.isEmpty()) return "";
+        if (matchThis.isEmpty()) return content;
+        String[] lines = content.split("\\n");
+        for (int i = 0; i < lines.length; i++)
+        {
+            if (lines[i].contains(matchThis))
+            {
+                return lines[i].trim();
+            }
+        }
+        return "";
     }
     
     /**
@@ -136,12 +179,36 @@ public final class Text
      */
     public static String lastWord(String sentence)
     {
-        int pos = sentence.lastIndexOf(" ");
-        if (pos < 0)
+        if (sentence == null || sentence.isEmpty()) return "";
+        String[] words = sentence.split("\\s{1,}");
+        if (words.length > 1)
+        {
+            return words[words.length -1].trim();
+        }
+        return "";
+    }
+    
+    /**
+     * Returns the last 'nth' word in the sentence. 
+     * @param sentence the sentence to parse out. 
+     * @param which the word index you would like. '0' indexed. 
+     * Example: String input = "399565 399566 399567 399568"
+     * lastWord(input, 1) returns '399567'
+     * lastWord(input, 0) returns '399568'
+     * lastWord(input, -1) returns ''
+     * lastWord(input, 100) returns ''
+     * @return the last nth word in the sentence.
+     */
+    public static String lastWord(String sentence, int which)
+    {
+        if (sentence == null || sentence.isEmpty()) return "";
+        String[] words = sentence.split("\\s{1,}");
+        int whichWordFromTheBack = words.length -which;
+        if (whichWordFromTheBack < 0 || whichWordFromTheBack >= words.length)
         {
             return "";
         }
-        return sentence.substring(pos).trim();
+        return words[words.length -which].trim();
     }
     
     /**

@@ -1,6 +1,7 @@
 
 package mecard.customer;
 
+import mecard.customer.horizon.BimportUserFile;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;

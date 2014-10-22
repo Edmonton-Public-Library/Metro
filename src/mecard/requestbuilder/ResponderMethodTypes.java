@@ -31,7 +31,9 @@ public enum ResponderMethodTypes
     SYMPHONY_API("symphony-api"), // SQL or API  
     SIP2("sip2"),
     BIMPORT("bimport"), 
-    DEBUG("dummy");
+    DEBUG("dummy"), 
+    POLARIS_API("polaris-api"), // restful service. untested.
+    POLARIS_SQL("polaris-sql"); 
     
     private String type;
     

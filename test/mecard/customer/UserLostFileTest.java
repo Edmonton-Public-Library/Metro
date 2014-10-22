@@ -1,11 +1,8 @@
 
 package mecard.customer;
 
-import api.CommandStatus;
 import java.io.File;
 import mecard.config.CustomerFieldTypes;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

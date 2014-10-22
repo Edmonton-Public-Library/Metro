@@ -30,10 +30,11 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.util.DateComparer;
 import mecard.config.PropertyReader;
 import mecard.util.Text;
+
 
 
 /**
@@ -76,14 +77,15 @@ public class MeCardPolicy
         this.lostCardSentinals        = new ArrayList<>();
         
         Properties messageProps     = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        failMinAgeTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_MIN_AGE_TEST.toString());
-        failLostCardTest     = messageProps.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
-        failGoodstandingTest = messageProps.getProperty(MessagesConfigTypes.FAIL_GOODSTANDING_TEST.toString());
-        failReciprocalTest   = messageProps.getProperty(MessagesConfigTypes.FAIL_RECIPROCAL_TEST.toString());
-        failResidencyTest    = messageProps.getProperty(MessagesConfigTypes.FAIL_RESIDENCY_TEST.toString());
-        failEmailTest        = messageProps.getProperty(MessagesConfigTypes.FAIL_EMAIL_TEST.toString());
-        failExpiryTest       = messageProps.getProperty(MessagesConfigTypes.FAIL_EXPIRY_TEST.toString());
-        failCompletenessTest = messageProps.getProperty(MessagesConfigTypes.FAIL_COMPLETENESS_TEST.toString());
+        failMinAgeTest       = messageProps.getProperty(MessagesTypes.FAIL_MIN_AGE_TEST.toString());
+        failLostCardTest     = messageProps.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
+        failGoodstandingTest = messageProps.getProperty(MessagesTypes.FAIL_GOODSTANDING_TEST.toString());
+        failReciprocalTest   = messageProps.getProperty(MessagesTypes.FAIL_RECIPROCAL_TEST.toString());
+        failResidencyTest    = messageProps.getProperty(MessagesTypes.FAIL_RESIDENCY_TEST.toString());
+        failEmailTest        = messageProps.getProperty(MessagesTypes.FAIL_EMAIL_TEST.toString());
+        failExpiryTest       = messageProps.getProperty(MessagesTypes.FAIL_EXPIRY_TEST.toString());
+        failCompletenessTest = messageProps.getProperty(MessagesTypes.FAIL_COMPLETENESS_TEST.toString());
+
         Properties props     = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         // TODO: If we find a reciprocal.properties, or non_resident.properties, or juvenile.properties
         // load the types for testing.
@@ -237,7 +239,24 @@ public class MeCardPolicy
      */
     public boolean isMinimumAge(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        if (juvenileTypes.isEmpty())
+        // run through all the juv profile types and if one matches then
+        // no can do.
+        // Fail if the account matches listed bTypes.
+        String customerType = meta.getCustomerProfile();
+        for (String profile: juvenileTypes)
+        {
+            if (customerType.compareTo(profile) == 0) // if we match on a non resident bType we aren't a resident.
+            {
+                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+                s.append(failMinAgeTest);
+                return false;
+            }
+        }
+        // So didn't match profile of a Juv, but that just means that doesn't 
+        // prove that they are min age, so let's check that.
+        // If there is a DOB for the customer check that the computed date is
+        // greater than the min age.
+        if (customer.isEmpty(CustomerFieldTypes.DOB) == false)
         {
             // to get here the library doesn't have juvenile types so we need to compute by date.
             if (this.isMinimumAgeByDate(customer, meta, s) == false)
@@ -247,21 +266,10 @@ public class MeCardPolicy
                 return false;
             }
         }
-        else
-        {
-            // run through all the juv profile types and if one matches then
-            // no can do.
-            String customerType = meta.getCustomerProfile();
-            for (String str: juvenileTypes)
-            {
-                if (customerType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
-                {
-                    customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
-                    s.append(failMinAgeTest);
-                    return false;
-                }
-            }
-        }
+        // All else can pass through, so in summary:
+        // If they didn't match a Juv profile AND their computed date is less 
+        // than the min age they will get rejected. The bad part is if they don't 
+        // have a birthday and aren't explicitly a juv profile they're good.
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
         return true;
     }

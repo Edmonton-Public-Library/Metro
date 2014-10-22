@@ -22,7 +22,10 @@
 
 package mecard.util;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,6 +38,31 @@ public class DateComparerTest
     
     public DateComparerTest()
     {
+    }
+    
+    /**
+     * Test of getYearsOld method, of class DateComparer.
+     */
+    @Test
+    public void testIsDateExpiry() throws Exception
+    {
+        System.out.println("== isValidDate ==");
+        assertTrue(DateComparer.isDate("19630822"));
+        assertFalse(DateComparer.isDate("235900STAFF"));
+    }
+    
+    /**
+     * Test of getYearsOld method, of class DateComparer.
+     */
+    @Test
+    public void testCleanDateTime() throws Exception
+    {
+        System.out.println("== cleanDateTime ==");
+        assertFalse(DateComparer.isDate("20131231    235900STAFF"));
+        System.out.println("DATE_VALID: "+DateComparer.isDate("20131231    235900STAFF"));
+        String newDate = DateComparer.cleanDateTime("20131231    235900STAFF");
+        System.out.println("DATE_VALID: "+DateComparer.cleanDateTime("20131231    235900STAFF"));
+        assertTrue(DateComparer.isDate(newDate));
     }
 
     /**
@@ -146,15 +174,22 @@ public class DateComparerTest
     }
 
     /**
-     * Test of ANSIToConfigDate method, of class DateComparer.
+     * Test of getRFC1123Date method, of class DateComparer.
      */
     @Test
-    public void testANSIToConfigDate() throws Exception
+    public void testGetRFC1123Date()
     {
         System.out.println("ANSIToConfigDate");
         String ANSIDate = "";
         String expResult = "";
-        String result = DateComparer.ANSIToConfigDate(ANSIDate);
+        String result = "";
+        try
+        {
+            result = DateComparer.ANSIToConfigDate(ANSIDate);
+        } catch (ParseException ex)
+        {
+            Logger.getLogger(DateComparerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -174,5 +209,16 @@ public class DateComparerTest
         long olderThan = justMade - 16 * 60 * 1000;
         assertTrue(DateComparer.isGreaterThanMinutesOld(15,  justMade));
         assertFalse(DateComparer.isGreaterThanMinutesOld(15, olderThan));
+    }
+
+    /**
+     * Test of getNowSQLTimeStamp method, of class DateComparer.
+     */
+    @Test
+    public void testGetNowSQLTimeStamp()
+    {
+        System.out.println("===getNowSQLTimeStamp===");
+        String result = DateComparer.getNowSQLTimeStamp();
+        System.out.println("TIMESTAMP_NOW:>>"+result+"<<");
     }
 }

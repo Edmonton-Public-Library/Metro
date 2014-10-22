@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.customer.horizon;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -31,6 +31,9 @@ import mecard.config.BImportTableTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PropertyReader;
+import mecard.customer.Customer;
+import mecard.customer.FormattedCustomer;
+import mecard.customer.FormattedTable;
 import mecard.requestbuilder.BImportRequestBuilder;
 import mecard.util.AlbertaCity;
 import mecard.util.City;
@@ -213,7 +216,7 @@ public final class BImportFormattedCustomer implements FormattedCustomer
      * @param email
      * @return String value of email account name (without the domain).
      */
-    protected String computeEmailName(String email) 
+    public String computeEmailName(String email) 
     {
         return email.split("@")[0];
     }

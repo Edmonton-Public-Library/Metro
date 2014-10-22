@@ -27,6 +27,8 @@ public interface Command
     /**
      * Wrapper that executes the command.
      *
+     * @return Status of the commands execution. System dependant, but the {@link CommandStatus}
+     * object has facilities for retrieving the processes exit code, stderr, and stdout.
      */
     CommandStatus execute();
     

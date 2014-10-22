@@ -20,7 +20,7 @@
  */
 package api;
 
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.exception.SIPException;
 
 /**
@@ -35,7 +35,7 @@ public class SIPStatusMessage extends SIPMessage
         if (this.code.compareTo("98") != 0) // Not a status response message
         {
             throw new SIPException(this.messageProperties.getProperty(
-                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    MessagesTypes.UNAVAILABLE_SERVICE.toString()));
         }
     }
     
@@ -71,7 +71,7 @@ public class SIPStatusMessage extends SIPMessage
      * a status request the result will be an empty string, otherwise the 
      * result could be either 'Y' or 'N'.
      */
-    public final String isOnline()
+    public final String getOnlineStatus()
     {
         // We return a string instead of a boolean because we can have 3 results,
         // "", "Y" or "N". Getting an empty string would have to be interpreted
@@ -90,5 +90,18 @@ public class SIPStatusMessage extends SIPMessage
             return result.toString();
         }
         return result.toString();
+    }
+    
+    /**
+     * Tests if the SIPStatusMessage reports status of online.
+     * @return true if online and false otherwise.
+     */
+    public final boolean isOnline()
+    {
+        if (this.getOnlineStatus().compareTo("N") == 0)
+        {
+            return false;
+        }
+        return true;
     }
 }

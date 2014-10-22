@@ -18,13 +18,14 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.customer;
+package mecard.customer.horizon;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import mecard.config.BImportTableTypes;
+import mecard.customer.FormattedTable;
 
 /**
  * Single line of either a header or data file.

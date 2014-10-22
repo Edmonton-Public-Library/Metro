@@ -4,9 +4,9 @@ package site.chinook;
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.FlatFormattedCustomer;
+import mecard.customer.symphony.FlatFormattedCustomer;
 import mecard.customer.FormattedCustomer;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import site.shortgrass.SLSCustomerNormalizer;
@@ -31,7 +31,7 @@ public class CARCustomerNormalizerTest
     public void testFinalize()
     {
         System.out.println("==finalize==");
-        SIPFormatter formatter = new SIPFormatter();
+        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
         
         Customer unformattedCustomer = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESherman, William Tecumseh|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 Savannah Street T1A 3N7|BEanton@shortgrass.ca|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZAC20");
         FormattedCustomer formattedCustomer = new FlatFormattedCustomer(unformattedCustomer);

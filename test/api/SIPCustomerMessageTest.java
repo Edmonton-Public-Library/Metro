@@ -22,6 +22,7 @@ package api;
 
 import mecard.config.CustomerFieldTypes;
 import mecard.util.Address3;
+import mecard.util.DateComparer;
 import mecard.util.Phone;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,12 +40,18 @@ import static org.junit.Assert.*;
 
 public class SIPCustomerMessageTest
 {
+    public enum WhichLib
+    {
+        TRAC,
+        AWB_MEMBERS;
+    }
     private final String goodStanding;
     private final String juvenile;
     private final String suspended;
     private final String nonResident;
     private final String expired;
     private final String lost;
+    private final WhichLib library;
     
     public SIPCustomerMessageTest()
     {
@@ -69,14 +76,32 @@ public class SIPCustomerMessageTest
 //        Recall Overdue :                     
 //        Too Many Items Billed :
         // these are returned from CAR (ChinookArch).
-//        this.goodStanding = "64              00020140113    130709000000000000000000000000AO|AA25021000719291|AESherman, William Tecumseh|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 Savannah Street Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF(403) 529-0550|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY0AZA330";
-        this.suspended    = "64YYYY          00020140113    151335000000000000000100000000AO|AA25021000719309|AEJackson, Jonathan|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 5.00|BD31 Chansellorsville Street apt. 3 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD19740121|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFUser BARRED|AY0AZ9DD7";
-        this.juvenile     = "64              00020140113    151542000000000000000000000000AO|AA25021000719333|AEMcClellan, George|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD34 Potomac Ave., apt. 45 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD20051203|PCSGMEDCH|PEMEDICINEHA|PFCHILD|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZA637";
-        this.nonResident  = "64              00020140113    151711000000000000000000000000AO|AA25021000719325|AEGrant, Hiram Ulysses|AQSGMED|BZ0050|CA0100|CB0999|BLY|CQY|BV 0.00|BD11 Shiloh Street Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD19690304|PCSGMEDNRI|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY2AZA5F7";
-        this.expired      = "64YYYY          00020140113    151758000000000000000100000000AO|AA25021000719317|AELee, Robert Edward|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 5.00|BD18 Appomattox Street, apt. 9 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20120409    235900|PD19640119|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFYou membership has expired. To renew your membership, please contact your library.|AY3AZ84E4";
-        this.lost         = "64YYYYY         00020140220    094400000000000000000100000000AOst|AA22222000929152|AECirculation test #2|AQst|BZ0030|CA0100|CB0200|BLY|BHCAD|CC9.99|BD5 St. Anne Street, St. Albert, AB, T8N 3Z9|BEktroppmann@sapl.ca|BF780-459-1537|DJCirculation test #2|LG0|PB19510618|PCra|PE20140812    235900|PS20140812    235900|ZYra|AF#Lost card - please refer to the circulation desk.|AY0AZ954A";
+        library = WhichLib.TRAC;
         
-        this.goodStanding = "64          	00020140605	093800000000000000000000000000AOmain|AA25555000907877|AESmith John|AQmain|BZ0025|CA0026|CB0099|BLY|CQY|BHCAN|CC15.|BD151 MacDonald Dr., Fort McMurray, AB, T9H 5C5|BEcarlos.moran@fmpl.ca|BF780-743-7800|DJSmith John|LGeng|PCa|PE20160222	235900|PS20160222	235900|ZYa|AY1AZAD86";
+        if (library == WhichLib.AWB_MEMBERS)
+        {
+            //        this.goodStanding = "64              00020140113    130709000000000000000000000000AO|AA25021000719291|AESherman, William Tecumseh|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 Savannah Street Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF(403) 529-0550|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY0AZA330";
+            this.suspended    = "64YYYY          00020140113    151335000000000000000100000000AO|AA25021000719309|AEJackson, Jonathan|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 5.00|BD31 Chansellorsville Street apt. 3 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD19740121|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFUser BARRED|AY0AZ9DD7";
+            this.juvenile     = "64              00020140113    151542000000000000000000000000AO|AA25021000719333|AEMcClellan, George|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD34 Potomac Ave., apt. 45 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD20051203|PCSGMEDCH|PEMEDICINEHA|PFCHILD|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZA637";
+            this.nonResident  = "64              00020140113    151711000000000000000000000000AO|AA25021000719325|AEGrant, Hiram Ulysses|AQSGMED|BZ0050|CA0100|CB0999|BLY|CQY|BV 0.00|BD11 Shiloh Street Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20150108    235900|PD19690304|PCSGMEDNRI|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY2AZA5F7";
+            this.expired      = "64YYYY          00020140113    151758000000000000000100000000AO|AA25021000719317|AELee, Robert Edward|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 5.00|BD18 Appomattox Street, apt. 9 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20120409    235900|PD19640119|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFYou membership has expired. To renew your membership, please contact your library.|AY3AZ84E4";
+            this.lost         = "64YYYYY         00020140220    094400000000000000000100000000AOst|AA22222000929152|AECirculation test #2|AQst|BZ0030|CA0100|CB0200|BLY|BHCAD|CC9.99|BD5 St. Anne Street, St. Albert, AB, T8N 3Z9|BEktroppmann@sapl.ca|BF780-459-1537|DJCirculation test #2|LG0|PB19510618|PCra|PE20140812    235900|PS20140812    235900|ZYra|AF#Lost card - please refer to the circulation desk.|AY0AZ954A";
+
+            this.goodStanding = "64          	00020140605	093800000000000000000000000000AOmain|AA25555000907877|AESmith John|AQmain|BZ0025|CA0026|CB0099|BLY|CQY|BHCAN|CC15.|BD151 MacDonald Dr., Fort McMurray, AB, T9H 5C5|BEcarlos.moran@fmpl.ca|BF780-743-7800|DJSmith John|LGeng|PCa|PE20160222	235900|PS20160222	235900|ZYa|AY1AZAD86";
+        }
+        else // (library == WhichLib.TRAC)
+        {
+            this.suspended    = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD433 King Street, Spruce Grove, AB T7X 3B4|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|"
+                    + "AFPatron has blocks.|AY1AZB304";
+            this.juvenile     = "64              00120140428    115309000000000000000000000000AO203|AA29335002093893|AEAlberta, Rose|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BC|"
+                    + "PA9|PEASGY|PS|U4(none)|U5|PZT5M 3E1|PX20141222    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY1AZAB23";
+            this.nonResident  = "64              00120140428    115309000000000000000000000000AO203|AA29335002093893|AEAlberta, Rose|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BC|PA20|PEASGY|PS|U4(none)|U5|PZT5M 3E1|PX20141222    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY1AZAB23";
+            this.expired      = "64YYYY          00120140428    115042000000000000000000000000AO203|AA29335002201306|AEDanson, Ted A|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 2Y1|BErstuart@acsisecure.com|BF780-939-5343|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 2Y1|PX20110101    235959|PYY|AFExpired|AGExpired|AY3AZ9AC0";
+            // lost card is undefined on Polaris
+            this.lost         = "64              00120141001    133308000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEstephaniethero@shaw.ca|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|"
+                    + "AFLOSTCARD|AGLOSTCARD|AY1AZ9D50";
+            this.goodStanding = "64              00120141001    133308000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEstephaniethero@shaw.ca|BC|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY1AZ9D50";
+        }
         
 //        recv:64              00020140304    070512000000000000000000000000AO|AA21817002446849|AEGAMACHE, ARMAND|AQLPL|BZ9999|CA9999|CB9999|BLY|CQY|BV 0.00|BDBOX 43 LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234|BEpwauters@hotmail.com|BF403-555-1234|BHUSD|PA20150218    235900|PD|PCLPLADULT|PELETHCITY|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY0AZACA0
     }
@@ -114,7 +139,7 @@ public class SIPCustomerMessageTest
         
     }
     
-    private void printContents(SIPMessage sipMessage)
+    private void printContents(CustomerMessage sipMessage)
     {
         System.out.println(CustomerFieldTypes.ID + ":" + sipMessage.getField("AA"));
         System.out.println(CustomerFieldTypes.PREFEREDNAME + ":" + sipMessage.getField("AE"));
@@ -125,26 +150,26 @@ public class SIPCustomerMessageTest
         System.out.println(CustomerFieldTypes.PHONE + ":" + phone.getUnformattedPhone());
         // Privilege date dates: horizon uses PE and puts profile in PA.
         // The test is slightly less expensive 
-        String cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PA"));
-        if (SIPMessage.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PA"));
+        if (DateComparer.isDate(cleanDate))
         {
             System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
         }
         // PE can also be privilege expires, so if PA fails try this field.
         else
         {
-            cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PE"));
+            cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PE"));
             System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
         }
         // DOB same thing
-        cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PB"));
-        if (SIPMessage.isDate(cleanDate))
+        cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PB"));
+        if (DateComparer.isDate(cleanDate))
         {
-            System.out.println(CustomerFieldTypes.DOB + ":" + SIPMessage.cleanDateTime(sipMessage.getField("PB"))); // Strathcona.
+            System.out.println(CustomerFieldTypes.DOB + ":" + DateComparer.cleanDateTime(sipMessage.getField("PB"))); // Strathcona.
         }
         else
         {
-            cleanDate = SIPMessage.cleanDateTime(sipMessage.getField("PD"));
+            cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PD"));
             System.out.println(CustomerFieldTypes.DOB + ":" + cleanDate);
         }
         System.out.println(CustomerFieldTypes.SEX + ":" + sipMessage.getField("PF"));
@@ -170,12 +195,24 @@ public class SIPCustomerMessageTest
     public void testGetMessage()
     {
         System.out.println("==getMessage==");
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
-        sipMessage = new SIPCustomerMessage(this.lost);
-        assertTrue(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
-        assertTrue(sipMessage.isTrue(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
-        assertFalse(sipMessage.isFalse(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        if (library == WhichLib.AWB_MEMBERS)
+        {
+            SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            sipMessage = new SIPCustomerMessage(this.lost);
+            assertTrue(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            assertTrue(sipMessage.isTrue(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            assertFalse(sipMessage.isFalse(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        }
+        else
+        {
+            SIPCustomerMessage sipMessage = new PolarisSIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            sipMessage = new PolarisSIPCustomerMessage(this.lost);
+            assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            assertFalse(sipMessage.isTrue(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            assertFalse(sipMessage.isFalse(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        }
     }
 
     /**
@@ -185,18 +222,36 @@ public class SIPCustomerMessageTest
     public void testGetStanding()
     {
         System.out.println("==getStanding==");
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertFalse(sipMessage.cardReportedLost());
-        sipMessage = new SIPCustomerMessage(this.suspended);
-        assertFalse(sipMessage.isInGoodStanding());
-        sipMessage = new SIPCustomerMessage(this.expired);
-        assertFalse(sipMessage.isInGoodStanding());
-        sipMessage = new SIPCustomerMessage(this.lost);
-        assertFalse(sipMessage.isInGoodStanding());
-        sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertTrue(sipMessage.isInGoodStanding());
-        sipMessage = new SIPCustomerMessage(this.nonResident);
-        assertTrue(sipMessage.isInGoodStanding());
+        if (library == WhichLib.AWB_MEMBERS)
+        {
+            SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.cardReportedLost());
+            sipMessage = new SIPCustomerMessage(this.suspended);
+            assertFalse(sipMessage.isInGoodStanding());
+            sipMessage = new SIPCustomerMessage(this.expired);
+            assertFalse(sipMessage.isInGoodStanding());
+            sipMessage = new SIPCustomerMessage(this.lost);
+            assertFalse(sipMessage.isInGoodStanding());
+            sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertTrue(sipMessage.isInGoodStanding());
+            sipMessage = new SIPCustomerMessage(this.nonResident);
+            assertTrue(sipMessage.isInGoodStanding());
+        }
+        else
+        {
+            SIPCustomerMessage sipMessage = new PolarisSIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.cardReportedLost());
+            sipMessage = new PolarisSIPCustomerMessage(this.suspended);
+            assertFalse(sipMessage.isInGoodStanding());
+            sipMessage = new PolarisSIPCustomerMessage(this.expired);
+            assertFalse(sipMessage.isInGoodStanding());
+            sipMessage = new PolarisSIPCustomerMessage(this.lost);
+            assertFalse(sipMessage.isInGoodStanding());
+            sipMessage = new PolarisSIPCustomerMessage(this.goodStanding);
+            assertTrue(sipMessage.isInGoodStanding());
+            sipMessage = new PolarisSIPCustomerMessage(this.nonResident);
+            assertTrue(sipMessage.isInGoodStanding());
+        }
     }
 
     /**
@@ -206,12 +261,20 @@ public class SIPCustomerMessageTest
     public void testCardReportedLost()
     {
         System.out.println("==cardReportedLost==");
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertFalse(sipMessage.cardReportedLost());
-        sipMessage = new SIPCustomerMessage(this.lost);
-        assertTrue(sipMessage.cardReportedLost());
+        SIPCustomerMessage sipMessage;
+        if (library == WhichLib.AWB_MEMBERS)
+        {
+            sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.cardReportedLost());
+            sipMessage = new SIPCustomerMessage(this.lost);
+            assertTrue(sipMessage.cardReportedLost());
+        }
+        else // For Polaris this doesn't have much meaning.
+        {
+            sipMessage = new PolarisSIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.cardReportedLost());
+            sipMessage = new SIPCustomerMessage(this.lost);
+            assertFalse(sipMessage.cardReportedLost());
+        }
     }
-
-
-
 }

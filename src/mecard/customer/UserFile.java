@@ -58,8 +58,12 @@ public class UserFile
         this.data.addAll(data);
         this.writeContent();
     }
-    
-    private void writeContent()
+
+    /**
+     *
+     * @return the boolean
+     */
+    public boolean writeContent()
     {
         File dataFile = createFile(this.filePath);
         BufferedWriter bWriter;
@@ -78,7 +82,9 @@ public class UserFile
             String msg = "unable to create \n'" + dataFile.getPath() 
                     + "' file.";
             System.out.println("IOException:" + msg);
+            return false;
         }
+        return true;
     }
     
     /**

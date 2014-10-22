@@ -24,7 +24,7 @@ package mecard.config;
  * These are custom messages libraries can tailor as return messages to customers.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum MessagesConfigTypes
+public enum MessagesTypes
 {
     SUCCESS_JOIN("success-join"),
     SUCCESS_UPDATE("success-update"),
@@ -46,7 +46,7 @@ public enum MessagesConfigTypes
     
     private String type;
     
-    private MessagesConfigTypes(String s)
+    private MessagesTypes(String s)
     {
         this.type = s;
     }

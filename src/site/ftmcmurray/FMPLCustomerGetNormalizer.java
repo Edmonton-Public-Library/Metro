@@ -24,6 +24,7 @@ import api.CustomerMessage;
 import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
 
 /**
@@ -51,8 +52,8 @@ public class FMPLCustomerGetNormalizer extends CustomerGetNormalizer
         }
         // Now we know that Horizon uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
-        String cleanDate = SIPMessage.cleanDateTime(message.getField("PE"));
-        if (SIPMessage.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
+        if (DateComparer.isDate(cleanDate))
         {
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }

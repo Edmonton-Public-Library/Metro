@@ -25,15 +25,15 @@ import mecard.ResponseTypes;
 
 public class CommandStatus
 {
-    private ResponseTypes status;
-    private StringBuffer stdout;
-    private StringBuffer stderr;
+    protected ResponseTypes status;
+    protected StringBuffer stdout;
+    protected StringBuffer stderr;
     
     CommandStatus()
     { 
-        stdout = new StringBuffer();
-        stderr = new StringBuffer();
-        status = ResponseTypes.INIT;
+        this.stdout = new StringBuffer();
+        this.stderr = new StringBuffer();
+        this.status = ResponseTypes.INIT;
     }
     
     void setStarted()
@@ -59,7 +59,7 @@ public class CommandStatus
         this.stdout.append("\n");
         this.stderr.append(value);
         this.stderr.append("\n");
-        status = ResponseTypes.COMMAND_COMPLETED;
+        this.status = ResponseTypes.COMMAND_COMPLETED;
     }
 
     void setError(Throwable th)
@@ -67,19 +67,36 @@ public class CommandStatus
         this.stderr.append(th.getMessage());
         this.status = ResponseTypes.ERROR;
     }
+    
+    /** Allows specific {@link ResponseTypes} to be recorded. {@link #setEnded(int) }
+     * performs a similar task but the response code is always set to {@link ResponseTypes#COMMAND_COMPLETED}
+     * This method will actually set the the status to a value that can be used
+     * later for computing the success of one command before continuing onto another.
+     * 
+     * @param t the response type of the command that executed.
+     * @see #setEnded(int) 
+     */
+    void setResponseType(ResponseTypes value)
+    {
+        this.stdout.append(value.ordinal());
+        this.stdout.append("\n");
+        this.stderr.append(value.ordinal());
+        this.stderr.append("\n");
+        this.status = value;
+    }
 
     public ResponseTypes getStatus() 
     {
-        return status;
+        return this.status;
     }
 
     public String getStdout() 
     {
-        return stdout.toString();
+        return this.stdout.toString();
     }
 
     public String getStderr() 
     {
-        return stderr.toString();
+        return this.stderr.toString();
     }
 }

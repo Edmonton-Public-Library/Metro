@@ -32,6 +32,7 @@ public enum MemberTypes
     PKL, // Parklands Regional Library
     SLS, // Shortgrass Library System
     CAR, // Chinook Arch Regional Library System
+    TRAC, // Trac including Yellowhead, Peace, and Northern Lights and Marigold, don't forget Marigold.
     CPL, // Calgary Public Library.
     FMPL, // Fort McMurray Public Library
     RDPL; // Red Deer Public Library

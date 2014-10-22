@@ -16,29 +16,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- *
  */
-package mecard.config;
+package mecard.customer.polaris;
+
+import java.util.List;
+import mecard.customer.Customer;
+import mecard.customer.CustomerFormatter;
 
 /**
- * Mandatory property types of the Polaris config file. Note that there are
- * fields 
+ * Formats the {@link mecard.customer.Customer} into the Polaris consumable form.
+ * The form of a customer is outlined in the Polaris API manual and can be submitted
+ * as either JSON or XML. This class will handle the TRAC version, but with enough
+ * wiggle room to handle the other.
+ * 
+ * Note that TRAC uses SIP2 so this class is stubbs only.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public enum PolarisPropertyTypes
+public class PAPICustomerFormatter implements CustomerFormatter
 {
-    LOAD_DIR("load-dir");     // Directory where to find customer files to load.
-    
-    private String type;
 
-    private PolarisPropertyTypes(String s)
+    @Override
+    public Customer getCustomer(List<String> list)
     {
-        this.type = s;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String toString()
+    public Customer getCustomer(String s)
     {
-        return this.type;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

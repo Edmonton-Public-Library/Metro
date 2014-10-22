@@ -23,6 +23,7 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import java.io.File;
 import mecard.Response;
 import mecard.QueryTypes;
 import mecard.config.ConfigFileTypes;
@@ -31,7 +32,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -47,7 +48,8 @@ public abstract class ILSRequestBuilder
 {
     // used by failed customer files to determine ILS
     // agnostically, where customers files are loaded from and stored.
-    protected String loadDir; 
+    protected String loadDir = "."; // Don't forget to set this in constructor of RequestBuilder.
+    
     /**
      *
      *
@@ -129,6 +131,16 @@ public abstract class ILSRequestBuilder
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'DEBUG' (dummy) ");
             return new DummyRequestBuilder(debug);
         }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_API' ");
+            return new PAPIRequestBuilder(debug);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_SQL.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_SQL' ");
+            return new PolarisSQLRequestBuilder(debug);
+        }
         else
         {
             throw new UnsupportedCommandException(configRequestedService + 
@@ -142,7 +154,7 @@ public abstract class ILSRequestBuilder
      * interpretation of request results, and non-standard field use. For example;
      * consider that EPL uses the field "PF" to designate patron sex, but Shortgrass
      * uses the field 'PF'. That being the case both libraries can subclass a 
-     * {@link SIPFormatter} for additional customized SIP2 result interpretation.
+     * {@link SIPCustomerFormatter} for additional customized SIP2 result interpretation.
      * @return CustomerFormatter.
      */
     public abstract CustomerFormatter getFormatter();
@@ -156,11 +168,11 @@ public abstract class ILSRequestBuilder
      * @param response Buffer to contain useful response information.
      * @return Command for execution of this query type.
      */
-    public Command getCustomerCommand(String userId, String userPin, Response response)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support get customer information.");
-    }
+    public abstract Command getCustomerCommand(
+            String userId, 
+            String userPin, 
+            Response response
+    );
     
     /**
      * Creates a user based on the supplied customer, which must not be null.
@@ -170,12 +182,12 @@ public abstract class ILSRequestBuilder
      * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to create a customer.
      */
-    
-    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support customer creation.");
-    }
+    public abstract Command getCreateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer
+    );
+ 
 
     /**
      * Updates a user based on the supplied customer, which must not be null.
@@ -185,12 +197,11 @@ public abstract class ILSRequestBuilder
      * @param normalizer the value of normalizer
      * @return command that can be executed on the ILS to update a customer.
      */
-    
-    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support update customer.");
-    }
+    public abstract Command getUpdateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer
+    );
 
     /**
      * Gets the status of the ILS.
@@ -198,11 +209,7 @@ public abstract class ILSRequestBuilder
      * @param response
      * @return APICommand necessary to test the ILS status.
      */
-    public Command getStatusCommand(Response response)
-    {
-        throw new UnsupportedCommandException("The requested protocol listed in "
-                + "environment.properties does not support system status");
-    }
+    public abstract Command getStatusCommand(Response response);
     
     /**
      * Interprets the results of the ILS command into a meaningful message for
@@ -223,7 +230,7 @@ public abstract class ILSRequestBuilder
     public abstract boolean tidy();
 
     /**
-     * 
+     * Retrieves the customer message object for analysis in a service-agnostic format.
      * @param stdout The data returned from getCustomer request as output from the ILS.
      * @return customer data from the original source in a universally query-able form.
      */
@@ -234,9 +241,15 @@ public abstract class ILSRequestBuilder
      * directory. This directory is located in each ILS property file as a load-dir. 
      * Because the lost user has no insight into which ILS is being used the ILSBuilder
      * must be able to signal the failed customer files with the load directory.
+     * Automatically adds trailing file separator if required.
+     * @return string of load directory.
      */
     public String getCustomerLoadDirectory()
     {
-        return loadDir;
+        if (loadDir.endsWith(File.separator))
+        {
+            return loadDir;
+        }
+        return loadDir + File.separator;
     }
 }

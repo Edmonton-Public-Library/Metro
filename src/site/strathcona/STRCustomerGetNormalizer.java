@@ -24,6 +24,7 @@ import api.CustomerMessage;
 import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.util.DateComparer;
 import mecard.util.Text;
 import site.CustomerGetNormalizer;
 
@@ -134,15 +135,15 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
         customer.set(CustomerFieldTypes.PREFEREDNAME, upperCaseFieldText);
         
         // Date of birth in SIP PB not per standard.
-        String DOBDate = SIPMessage.cleanDateTime(message.getField("PB"));
-        if (SIPMessage.isDate(DOBDate))
+        String DOBDate = DateComparer.cleanDateTime(message.getField("PB"));
+        if (DateComparer.isDate(DOBDate))
         {
             customer.set(CustomerFieldTypes.DOB, DOBDate); // Strathcona.
         }
         // Now we know that STR uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
-        String cleanDate = SIPMessage.cleanDateTime(message.getField("PE"));
-        if (SIPMessage.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
+        if (DateComparer.isDate(cleanDate))
         {
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }

@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.ConfigurationException;
@@ -37,8 +37,7 @@ import mecard.exception.MetroSecurityException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
-import mecard.customer.UserFailFile;
-import mecard.customer.UserLostFile;
+import mecard.customer.DumpUser;
 import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
@@ -51,7 +50,6 @@ import site.MeCardPolicy;
  */
 public class Responder
 {
-    
     protected Request request;
     protected final boolean debug;
     private final Properties messageProperties;
@@ -197,13 +195,13 @@ public class Responder
             // this can happen if the user is barred, underage, non-resident, reciprocal, lostcard
             // or missing key information.
             response.setCode(ResponseTypes.FAIL);
-            response.setResponse(messageProperties.getProperty(MessagesConfigTypes.FAIL_METRO_POLICY.toString()));
+            response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_METRO_POLICY.toString()));
             response.setResponse(failedTests.toString());
             response.setCustomer(null);
             System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStdout());
             System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStderr());
         }
-        
+        requestBuilder.tidy();
     }
     
     /**
@@ -218,6 +216,7 @@ public class Responder
         requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
         System.out.println(new Date() + " STAT_STDOUT:"+status.getStdout());
         System.out.println(new Date() + " STAT_STDERR:"+status.getStderr());
+        requestBuilder.tidy();
     }
     
     /**
@@ -248,9 +247,12 @@ public class Responder
         // manually later.
         if (customer.isLostCard())
         {
-            String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
-            UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
-            failFile.recordUserDataMessage(message);
+            String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
+            // Record the user's data for diagnosis of problem later.
+            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.lost)
+                    .set(message)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
             response.setCode(ResponseTypes.LOST_CARD);
             response.setResponse(message);
             System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
@@ -262,12 +264,14 @@ public class Responder
             System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
             if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
             {
-                UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
-                failFile.setStatus(status);
+                new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
                 System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
             }
         }
+        requestBuilder.tidy();
     }
 
     /**
@@ -284,9 +288,11 @@ public class Responder
         Command command = requestBuilder.getUpdateUserCommand(customer, response, normalizer);
         if (customer.isLostCard())
         {
-            String message = messageProperties.getProperty(MessagesConfigTypes.FAIL_LOSTCARD_TEST.toString());
-            UserLostFile failFile = new UserLostFile(customer, requestBuilder.getCustomerLoadDirectory());
-            failFile.recordUserDataMessage(message);
+            String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
+            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.lost)
+                    .set(message)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
             response.setCode(ResponseTypes.LOST_CARD);
             response.setResponse(message);
             System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
@@ -298,12 +304,14 @@ public class Responder
             System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
             if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
             {
-                UserFailFile failFile = new UserFailFile(customer, requestBuilder.getCustomerLoadDirectory());
-                failFile.setStatus(status);
+                new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
+                    .set(customer) // explicitly outputs user data.
+                    .build();
                 System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
                 throw new ConfigurationException();
             }
         }
+        requestBuilder.tidy();
     }
 
     /**

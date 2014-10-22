@@ -1,4 +1,6 @@
 package mecard.customer;
+import mecard.customer.horizon.BImportFormattedCustomer;
+import mecard.customer.horizon.BImportTable;
 import java.util.HashMap;
 import java.util.List;
 import json.RequestDeserializer;

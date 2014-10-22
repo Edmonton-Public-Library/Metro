@@ -1,4 +1,6 @@
 package mecard.customer;
+import mecard.customer.symphony.FlatFormattedCustomer;
+import mecard.customer.symphony.FlatFormattedTable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +104,7 @@ public class FlatFormattedCustomerTest
     {
         System.out.println("==insertTable==");
         FormattedCustomer formatter = new FlatFormattedCustomer(customer);
-        FormattedTable table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, new HashMap<String, String>());
+        FormattedTable table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, new HashMap<String, String>());
         formatter.insertTable(table, 1);
         List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
@@ -111,7 +113,7 @@ public class FlatFormattedCustomerTest
         }
         
         formatter = new FlatFormattedCustomer(customer);
-        table = FlatTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, new HashMap<String, String>());
+        table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, new HashMap<String, String>());
         formatter.insertTable(table, 99);
         result = formatter.getFormattedCustomer();
         for (String s: result)

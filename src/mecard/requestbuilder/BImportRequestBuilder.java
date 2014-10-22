@@ -34,15 +34,16 @@ import mecard.ResponseTypes;
 import mecard.config.BImportPropertyTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.MessagesConfigTypes;
+import mecard.config.MessagesTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
-import mecard.customer.BImportFormattedCustomer;
-import mecard.customer.BimportUserFile;
+import mecard.customer.horizon.BImportFormattedCustomer;
+import mecard.customer.horizon.BimportUserFile;
 import mecard.customer.UserFile;
+import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -92,7 +93,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         this.bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
-        this.loadDir = bimpProps.getProperty(BImportPropertyTypes.LOAD_DIR.toString());
+        // Done because the tag is common to all ILS specific properties files.
+        this.loadDir = bimpProps.getProperty(PropertyReader.LOAD_DIR.toString());
         this.serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
         this.password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
         this.userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
@@ -182,14 +184,14 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_JOIN.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_JOIN.toString()));
                     System.out.println(new Date() + "Customer account successfully create.");
                     result = true;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_CREATED.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
                     System.out.println(new Date() + "Customer account failed to create.");
                     result = false;
                 }
@@ -200,14 +202,14 @@ public class BImportRequestBuilder extends ILSRequestBuilder
                 if (resultString.contains(BImportRequestBuilder.SUCCESS_MARKER))
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.SUCCESS_UPDATE.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_UPDATE.toString()));
                     System.out.println(new Date() + "Customer account successfully updated.");
                     result = true;
                 }
                 else
                 {
                     response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesConfigTypes.ACCOUNT_NOT_UPDATED.toString()));
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
                     System.out.println(new Date() + "Customer account failed to update.");
                     result = false;
                 }
@@ -235,9 +237,22 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
+    public Command getCustomerCommand(String userId, String userPin, Response response)
+    {
+        throw new ConfigurationException("BImport does not support account queries "
+                + "Please review your environment.properties configuration");
+    }
+
+    @Override
+    public Command getStatusCommand(Response response)
+    {
+        throw new ConfigurationException("BImport cannot test ILS status "
+                + "Please review your environment.properties configuration");
+    }
+    
+    @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
         throw new UnsupportedOperationException("Not supported in BImport.");
     }
-
 }

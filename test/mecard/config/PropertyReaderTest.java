@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author metro
+ * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public class PropertyReaderTest
 {
@@ -64,8 +64,11 @@ public class PropertyReaderTest
         Properties debugProps = PropertyReader.getProperties(ConfigFileTypes.DEBUG);
         debugProps.list(System.out);
         
-        Properties polarisProps = PropertyReader.getProperties(ConfigFileTypes.POLARIS);
+        Properties polarisProps = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         polarisProps.list(System.out);
+        
+        Properties sqlProps = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
+        sqlProps.list(System.out);
         
         Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         messageProps.list(System.out);

@@ -84,7 +84,7 @@ public class PostalCodeTest
         assertEquals(expResult, result);
         
         postalCode = "H0H0H0bima";
-        expResult = "H0H 0H0bima";
+        expResult = "H0H0H0bima";
         result = PostalCode.formatPostalCode(postalCode);
         assertEquals(expResult, result);
 

@@ -32,10 +32,11 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
-import mecard.customer.FlatUserFormatter;
-import mecard.customer.SIPFormatter;
+import mecard.customer.symphony.FlatCustomerFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
+import mecard.customer.polaris.PolarisSQLCustomerFormatter;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -75,12 +76,18 @@ public class DummyRequestBuilder extends ILSRequestBuilder
     {
         if (this.format.compareToIgnoreCase(ResponderMethodTypes.SIP2.toString()) == 0)
         {
-            return new SIPFormatter();
+            return new SIPCustomerFormatter();
         }
         else if (this.format.compareToIgnoreCase(ResponderMethodTypes.SYMPHONY_API.toString()) == 0)
         {
-            return new FlatUserFormatter();
+            return new FlatCustomerFormatter();
         }
+        // You __can__ get a customer from the polaris SQL request but it's just a stub now. Use SIP2.
+        else if (this.format.compareToIgnoreCase(ResponderMethodTypes.POLARIS_SQL.toString()) == 0)
+        {
+            return new PolarisSQLCustomerFormatter();
+        }
+        ///////////// TODO: fix so it returns something reasonable OR other formatters for consistency.
         // BImport doesn't have a formatter; neither does dummy, so if you are asking for one
         // there is a problem with the call you are making.
         throw new DummyException(DummyRequestBuilder.class.getName() 

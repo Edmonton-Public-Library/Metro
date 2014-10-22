@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.SIPFormatter;
+import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.SIPException;
+import mecard.util.DateComparer;
 
 
 import org.junit.Test;
@@ -20,12 +21,14 @@ public class SIPMessageTest
     private final String responseTwo;
     private final String responseOne;
     private final String responseThree;
+    private final String responseLogin;
     
     public SIPMessageTest()
     {
         this.responseOne = "98YYYYNN01000320130808    1509002.00AOst|AMSt. Albert Public Library|BXYYYYYYYYYYYYYYYY|ANUnassigned|VNSIP 2.00.106 SirsiDynix Inc. 7.5.074.40|AY1AZD3FA";
         this.responseTwo = "98YYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYYYYYNNYYY|ANSIPCHK|AY1AZE80C";
         this.responseThree = "B|";
+        this.responseLogin = "941AY1AZFDFC";
     }
 
     /**
@@ -124,21 +127,21 @@ public class SIPMessageTest
         
         SIPStatusMessage instance = new SIPStatusMessage(responseOne);
         String expResult = "Y";
-        // // System.out.println("IS_ONLINE:"+instance.isOnline());
-        String result = instance.isOnline();
+        // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        String result = instance.getOnlineStatus();
         assertEquals(expResult.compareTo(result), 0);
         
         instance = new SIPStatusMessage(responseTwo);
         expResult = "Y";
-        // // System.out.println("IS_ONLINE:"+instance.isOnline());
-        result = instance.isOnline();
+        // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        result = instance.getOnlineStatus();
         assertEquals(expResult.compareTo(result), 0);
         
         try
         {
             instance = new SIPStatusMessage("77PYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|ANSIPCHK|AY1AZE80C");
-            // // System.out.println("IS_ONLINE:"+instance.isOnline());
-            result = instance.isOnline();
+            // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+            result = instance.getOnlineStatus();
             assertTrue(result.isEmpty());
         }
         catch (Exception e)
@@ -149,9 +152,18 @@ public class SIPMessageTest
         
         instance = new SIPStatusMessage("98NYYYYN60000320130424    1135112.00AOEPLMNA|AMEPLMNA|BXYYYYYYYNYYYNNYYY|ANSIPCHK|AY1AZE80C");
         expResult = "N";
-        // // System.out.println("IS_ONLINE:"+instance.isOnline());
-        result = instance.isOnline();
+        // // System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        result = instance.getOnlineStatus();
         assertEquals(expResult.compareTo(result), 0);
+        
+        // TRAC Response:
+        // 98YYYYYN30000320140930	1339572.00AO203|AMSangudo Public Library|BXYYYYYYYNYNNNYYNN|AFSystem status ok.|AGSystem status ok.|AY1AZD6AC
+        instance = new SIPStatusMessage("98YYYYYN30000320140930	1339572.00AO203|AMSangudo Public Library|BXYYYYYYYNYNNNYYNN|AFSystem status ok.|AGSystem status ok.|AY1AZD6AC");
+        expResult = "Y";
+        System.out.println("IS_ONLINE:"+instance.getOnlineStatus());
+        result = instance.getOnlineStatus();
+        assertEquals(expResult.compareTo(result), 0);
+        assertTrue(instance.isOnline());
     }
 
     /**
@@ -163,35 +175,38 @@ public class SIPMessageTest
         System.out.println("===cleanDateTime===");
         String possibleDate = "20131231    235900STAFF";
         String expResult = "20131231";
-        String result = SIPMessage.cleanDateTime(possibleDate);
+        String result = DateComparer.cleanDateTime(possibleDate);
         assertTrue(expResult.compareTo(result) == 0);
         
         
         SIPCustomerMessage instance = new SIPCustomerMessage("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PASTAFF|PB19680920|PCs|PE20140903    235900STAFF|PS20140903    235900STAFF|ZYs|AY1AZA949");
         possibleDate = instance.getField("PA");
         System.out.println("PA:"+possibleDate);
-        assertFalse(SIPMessage.isDate(possibleDate));
+        assertFalse(DateComparer.isDate(possibleDate));
         possibleDate = instance.getField("PE");
         System.out.println("PE:'"+possibleDate+"'");
-        assertFalse(SIPMessage.isDate(possibleDate));
-        System.out.println("CLEAN:'"+SIPMessage.cleanDateTime(possibleDate)+"'");
-        result = SIPMessage.cleanDateTime(possibleDate);
+        assertFalse(DateComparer.isDate(possibleDate));
+        System.out.println("CLEAN:'"+DateComparer.cleanDateTime(possibleDate)+"'");
+        result = DateComparer.cleanDateTime(possibleDate);
         expResult = "20140903";
         assertTrue(expResult.compareTo(result) == 0);
         
-        SIPFormatter formatter = new SIPFormatter();
-        Customer c = formatter.getCustomer("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PA20140903    235900STAFF|PB19680920|PCs|PS20140903    235900STAFF|ZYs|AY1AZA949");
+        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
+        ////////////////////////// NOTE ////////////////////////////////
+        // The normalizer is part of this process and that is controlled in 
+        // the environment.properties.
+        Customer c = formatter.getCustomer("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PA20151003    235900STAFF|PB19680920|PCs|PS20140903    235900STAFF|ZYs|AY1AZA949");
         System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
-        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20140903") == 0);
+        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20151003") == 0);
         
-//        formatter = new SIPFormatter();
+//        formatter = new SIPCustomerFormatter();
 //        c = formatter.getCustomer("64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB");
 //        System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
 //        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20140903") == 0);
         
         String cm = "64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB";
         instance = new SIPCustomerMessage(cm);
-        String cleanDate = SIPMessage.cleanDateTime(instance.getField("PE"));
+        String cleanDate = DateComparer.cleanDateTime(instance.getField("PE"));
         System.out.println("...CLEAN_DATE: '" + cleanDate + "'");
         assertTrue(cleanDate.equalsIgnoreCase("20150430"));
     }
@@ -231,14 +246,21 @@ public class SIPMessageTest
     public void testIsDate()
     {
         System.out.println("===isDate===");
-        assertTrue(SIPMessage.isDate("20010101"));
-        assertFalse(SIPMessage.isDate("20150430    235900"));
-        assertTrue(SIPMessage.isDate("20150430"));
+        assertTrue(DateComparer.isDate("20010101"));
+        assertFalse(DateComparer.isDate("20150430    235900"));
+        assertTrue(DateComparer.isDate("20150430"));
     }
 
-    /**
-     * Test of isEmpty method, of class SIPMessage.
-     */
+    @Test
+    public void testLogin()
+    {
+        System.out.println("== Login ==");
+        SIPMessage instance = new SIPMessage(this.responseLogin);
+        String result = instance.getCodeMessage();
+        System.out.println("LOGIN_RESULT: '" + result +"'");
+        assertTrue("1".compareTo(result) == 0);
+    }
+
 //    @Test
 //    public void testIsEmpty()
 //    {

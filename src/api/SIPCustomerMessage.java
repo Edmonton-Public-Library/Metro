@@ -20,8 +20,10 @@
  */
 package api;
 
-import mecard.config.MessagesConfigTypes;
+import mecard.Protocol;
+import mecard.config.MessagesTypes;
 import mecard.exception.SIPException;
+import mecard.util.DateComparer;
 
 /**
  * Parses SIP2 customer information into a generally usable format.
@@ -60,8 +62,26 @@ public class SIPCustomerMessage
         if (this.code.compareTo("64") != 0) // Not a customer response message
         {
             throw new SIPException(this.messageProperties.getProperty(
-                    MessagesConfigTypes.UNAVAILABLE_SERVICE.toString()));
+                    MessagesTypes.UNAVAILABLE_SERVICE.toString()));
         } 
+    }
+    
+    @Override
+    public String getDateField(String fieldName)
+    {
+        String possibleDate = getField(fieldName);
+        // 'Never' is a valid date time for Symphony.
+        if (possibleDate.equalsIgnoreCase("NEVER"))
+        {
+            return possibleDate;
+        }
+        // Else 
+        possibleDate = DateComparer.cleanDateTime(getField(fieldName));
+        if (DateComparer.isDate(possibleDate))
+        {
+            return possibleDate;
+        }
+        return Protocol.DEFAULT_FIELD_VALUE;
     }
     
     /**
@@ -70,7 +90,7 @@ public class SIPCustomerMessage
      * If the message doesn't represent a customer 
      */
     @Override
-    public final String getCustomerProfile()
+    public String getCustomerProfile()
     {
         String profile = this.getField("PC");
         if (profile == null)
@@ -84,7 +104,7 @@ public class SIPCustomerMessage
      * 
      * @return String of the message field (AF).
      */
-    public final String getMessage()
+    public String getMessage()
     {
         String message = this.getField("AF");
         if (message == null)
@@ -232,4 +252,5 @@ public class SIPCustomerMessage
         // customer IS in good standing.
         return ! this.isTrue(PATRON_STATUS_FLAGS.CHARGE_PRIVILEGES_DENIED);
     }
+
 }

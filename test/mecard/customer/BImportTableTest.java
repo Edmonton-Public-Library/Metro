@@ -1,5 +1,6 @@
 
 package mecard.customer;
+import mecard.customer.horizon.BImportTable;
 import java.util.HashMap;
 import mecard.config.BImportTableTypes;
 import org.junit.Test;
@@ -90,84 +91,6 @@ public class BImportTableTest
         HashMap<String, String> dataFields = null;
         BImportTable expResult = null;
         BImportTable result = BImportTable.getInstanceOf(type, dataFields);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setValue method, of class BImportTable.
-     */
-    @Test
-    public void testSetValue()
-    {
-        System.out.println("setValue");
-        String key = "";
-        String value = "";
-        BImportTable instance = null;
-        boolean expResult = false;
-        boolean result = instance.setValue(key, value);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getValue method, of class BImportTable.
-     */
-    @Test
-    public void testGetValue()
-    {
-        System.out.println("getValue");
-        String key = "";
-        BImportTable instance = null;
-        String expResult = "";
-        String result = instance.getValue(key);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getHeader method, of class BImportTable.
-     */
-    @Test
-    public void testGetHeader()
-    {
-        System.out.println("getHeader");
-        BImportTable instance = null;
-        String expResult = "";
-        String result = instance.getHeader();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getData method, of class BImportTable.
-     */
-    @Test
-    public void testGetData()
-    {
-        System.out.println("getData");
-        BImportTable instance = null;
-        String expResult = "";
-        String result = instance.getData();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getName method, of class BImportTable.
-     */
-    @Test
-    public void testGetName()
-    {
-        System.out.println("getName");
-        BImportTable instance = null;
-        String expResult = "";
-        String result = instance.getName();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
