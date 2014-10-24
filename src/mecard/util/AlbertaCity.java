@@ -859,6 +859,8 @@ public final class AlbertaCity extends City
         cityMap.put("Rosedale Valley", "6120");
         cityMap.put("Stauffer", "6130");
         cityMap.put("Water Valley", "6140");
+        cityMap.put("Lancaster Park", "6150");
+        cityMap.put("St. Brides", "6160");
         
         boolean hasDisplayedMessage = false;
         // Now we overlay place name records with config requested codes for BImport.
