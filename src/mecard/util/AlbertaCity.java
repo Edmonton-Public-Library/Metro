@@ -28,7 +28,6 @@ import java.util.Properties;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
-import mecard.exception.ConfigurationException;
 
 /**
  * Source:
@@ -849,7 +848,30 @@ public final class AlbertaCity extends City
         cityMap.put("Water Valley", "6140");
         cityMap.put("Lancaster Park", "6150");
         cityMap.put("St. Brides", "6160");
-        
+        // Additions from TRAC (Northern Lights).
+        cityMap.put("Alsike", "6170");
+        cityMap.put("Atikameg", "6171");
+        cityMap.put("Bay Tree", "6172");
+        cityMap.put("Bear Canyon", "6173");
+        cityMap.put("Blueberry Mountain", "6174");
+        cityMap.put("Bonanza", "6175");
+        cityMap.put("Calais", "6176");
+        cityMap.put("Cherry Point", "6177");
+        cityMap.put("Clairmont", "6178");
+        cityMap.put("Crooked Creek", "6179");
+        cityMap.put("Deadwood", "6180");
+        cityMap.put("Driftpile", "6181");
+        cityMap.put("Gordondale", "6182");
+        cityMap.put("Hondo", "6183");
+        cityMap.put("Hotchkiss", "6184");
+        cityMap.put("Jean Cote", "6185");
+        cityMap.put("Keg River", "6186");
+        cityMap.put("Meander River", "6187");
+        cityMap.put("Paddle Prairie", "6188");
+        cityMap.put("Silver Valley", "6189");
+        cityMap.put("Sunset House", "6190");
+        cityMap.put("Eureka River", "6191");
+
         boolean isSpellingMistake = false;
         // Now we overlay place name records with config requested codes for BImport.
         Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
