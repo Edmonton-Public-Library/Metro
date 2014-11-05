@@ -28,6 +28,7 @@ import java.util.Properties;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
+import mecard.exception.ConfigurationException;
 
 /**
  * Source:
@@ -59,19 +60,6 @@ public final class AlbertaCity extends City
             instance = new AlbertaCity();
         }
         return instance;
-    }
-    
-    @Override
-    public String getPlaceNameLike(String placeNameFragment)
-    {
-        for (String fullPlaceName: cityMap.keySet())
-        {
-            if (fullPlaceName.toLowerCase().endsWith(placeNameFragment.toLowerCase()))
-            {
-                return fullPlaceName;
-            }
-        }
-        return "";
     }
     
     @Override
@@ -862,45 +850,32 @@ public final class AlbertaCity extends City
         cityMap.put("Lancaster Park", "6150");
         cityMap.put("St. Brides", "6160");
         
-        boolean hasDisplayedMessage = false;
+        boolean isSpellingMistake = false;
         // Now we overlay place name records with config requested codes for BImport.
         Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
         for(String customPlaceName : properties.stringPropertyNames())
         {
-            // Here we will check what the operator has put in the city_st table
-            // properties as names of places. We need to match more loosly since 
-            // it is so difficult to unify spelling with case consideratons.
-            // This next piece of code will check if this place is an official 
-            // place name of Alberta and if so will normalize it with the desired
-            // place-name code.
-            String placeNameTesting = this.getPlaceNameLike(customPlaceName);
-            if (placeNameTesting.length() == 0)
+            
+            if (cityMap.get(customPlaceName) == null)
             {
-                // The keys in the property files are stored in lower case. We can insist
-                // but just in case let's initial cap the city names there. To get
-                // here we didn't match on an official place name, but we will add
-                // it anyway, so clean up the given name to insert as a key.
-                placeNameTesting = Text.toDisplayCase(customPlaceName);
-            }
-            // Now get the property file's associated code for the given place name
-            // (real place name or otherwise).
-            String preferedCode = properties.getProperty(customPlaceName);
-            if (cityMap.containsKey(placeNameTesting) == false)
-            {
-                if (hasDisplayedMessage == false)
+                // if this is the first spelling mistake, put this title but
+                // only once, any other spelling mistakes will just be listed below it.
+                if (isSpellingMistake == false)
                 {
                     System.out.println(new Date() +
                             " The following not recognized as official "
-                            + "Alberta place name(s):\n"
-                            + "'" + customPlaceName + "::" + preferedCode + "'");
-                    hasDisplayedMessage = true;
+                            + "Alberta place name(s):");
                 }
-                else
-                {
-                    System.out.println("'" + customPlaceName + "::" + preferedCode + "'");
-                }
+                System.out.println("=>'" + customPlaceName + "'<=");
+                isSpellingMistake = true;
+                continue;
             }
-            cityMap.put(placeNameTesting, preferedCode);
+            // Now get the property file's associated code for the given place name
+            // (real place name or otherwise). This is the code the ILS admin put 
+            // in the properties file. 
+            String preferedCode = properties.getProperty(customPlaceName);
+            cityMap.put(customPlaceName, preferedCode);
+//            System.out.println(">> overwrite: '" + customPlaceName + "' with '" + preferedCode + "'");
         }
     }
 }
