@@ -871,7 +871,8 @@ public final class AlbertaCity extends City
         cityMap.put("Silver Valley", "6189");
         cityMap.put("Sunset House", "6190");
         cityMap.put("Eureka River", "6191");
-
+        cityMap.put("Lake Isle", "6192");
+        
         boolean isSpellingMistake = false;
         // Now we overlay place name records with config requested codes for BImport.
         Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
