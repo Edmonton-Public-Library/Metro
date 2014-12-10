@@ -46,6 +46,7 @@ import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.DumpUser;
 import mecard.customer.FormattedCustomer;
+import mecard.customer.UserLostFile;
 import mecard.customer.polaris.PolarisSQLCustomerFormatter;
 import mecard.customer.polaris.PolarisSQLFormattedCustomer;
 import mecard.exception.ConfigurationException;
@@ -661,6 +662,25 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         if (this.debug)
         {
             System.out.println("PATRON_ID: '" + polarisPatronID + "'");
+        }
+        // Horizon systems play fast and loose with lost cards. They don't keep
+        // track of the previous user id so the customer returns, melibraries.ca thinks
+        // that they should be an update but they are actually a replaced card.
+        // Horizon systems can't tell us that the account is lost so we guard for it here.
+        if (polarisPatronID.isEmpty())
+        {
+            System.out.println("PATRON_ID: Couldn't find the patron's ID for updating.");
+            // Duplicates user.
+            // return this.getCreateUserCommand(customer, response, normalizer);
+            // or we could do a LOST card but we don't get the original ID from horizon systems.
+            UserLostFile lostCustomer = new UserLostFile(customer, this.getCustomerLoadDirectory());
+            lostCustomer.recordUserDataMessage("Lost customer possibly from Horizon system (?), "
+                    + "search by customer ID.");
+            return new DummyCommand.Builder()
+                .setStatus(0)
+                .setStderr("We may already have you registered, but by a different card number."
+                        + " Please contact staff for assistance with updating your account.")
+                .build();
         }
         // Get the date today in system format
         String today; // Get ready with dob and expiry in acceptable format.

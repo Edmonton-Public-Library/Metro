@@ -46,7 +46,7 @@ public class UserLostFile extends UserFile
     public UserLostFile(Customer customer, String loadDirectory)
     {
         super(loadDirectory + customer.get(CustomerFieldTypes.ID) + ".lost");
-        System.out.println("Creating lost file: " + loadDirectory
+        System.out.println("Creating lost file: " + loadDirectory + " :: "
                 + customer.get(CustomerFieldTypes.ID) + ".lost");
         this.customer = customer;
     }

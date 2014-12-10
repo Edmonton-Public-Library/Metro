@@ -3,6 +3,7 @@ package mecard.customer;
 
 import java.io.File;
 import mecard.config.CustomerFieldTypes;
+import mecard.requestbuilder.SymphonyRequestBuilder;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -36,7 +37,7 @@ public class UserLostFileTest
         assertTrue(instance.isLostCard());
         instance.set(CustomerFieldTypes.ALTERNATE_ID, "22222012345678");
         instance.set(CustomerFieldTypes.ID, "22222012222222");
-        UserLostFile userFile = new UserLostFile(instance, "");
+        UserLostFile userFile = new UserLostFile(instance, new SymphonyRequestBuilder(true).getCustomerLoadDirectory());
         userFile.recordUserDataMessage("LOST CARD detected. This message is read from message.properties normally.");
         File f = new File("22222012222222.lost");
         assertTrue(f.exists());
