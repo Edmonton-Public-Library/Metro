@@ -633,13 +633,18 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             .user(user)
             .password(password)
             .build();
-        
-        // Then recover the PatronID associated with this user.
+        // Add code to first check for LOSTCARD and if found search on ALT_ID field first.
+        String oldOrNewBarCode = fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString());
+        if (customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD) &&
+               ! customer.isEmpty(CustomerFieldTypes.ALTERNATE_ID))
+        {
+            oldOrNewBarCode = customer.get(CustomerFieldTypes.ALTERNATE_ID);
+        }
         SQLSelectCommand getPatronIDCommand = new SQLSelectCommand.Builder(this.connector, this.patronsTable)
             .string(PolarisTable.Patrons.PATRON_ID.toString())
-            .whereString(PolarisTable.Patrons.BARCODE.toString(), 
-                    fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString()))
+            .whereString(PolarisTable.Patrons.BARCODE.toString(), oldOrNewBarCode)
             .build();
+        
         CommandStatus status = getPatronIDCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
