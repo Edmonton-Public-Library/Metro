@@ -634,11 +634,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             .password(password)
             .build();
         // Add code to first check for LOSTCARD and if found search on ALT_ID field first.
+        boolean isLostCard = false;
         String oldOrNewBarCode = fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString());
         if (customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD) &&
                ! customer.isEmpty(CustomerFieldTypes.ALTERNATE_ID))
         {
             oldOrNewBarCode = customer.get(CustomerFieldTypes.ALTERNATE_ID);
+            isLostCard = true;
         }
         SQLSelectCommand getPatronIDCommand = new SQLSelectCommand.Builder(this.connector, this.patronsTable)
             .string(PolarisTable.Patrons.PATRON_ID.toString())
@@ -686,6 +688,24 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .setStderr("We may already have you registered, but by a different card number."
                         + " Please contact staff for assistance with updating your account.")
                 .build();
+        }
+        // Confirmed: replace the old bar code with the replacement bar code.
+        else if (isLostCard)
+        {
+            SQLUpdateCommand updatePatronsBarcode = new SQLUpdateCommand.Builder(this.connector, this.patronsTable)
+                .string(PolarisTable.Patrons.BARCODE.toString(), fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString()))
+                .whereInteger(PolarisTable.Patrons.PATRON_ID.toString(), polarisPatronID)
+                .build();
+            status = updatePatronsBarcode.execute();
+            if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+            {
+                System.out.println("**error failed to update patron's barcode: "
+                        + this.patronsTable);
+                return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()))
+                    .build();
+            } 
         }
         // Get the date today in system format
         String today; // Get ready with dob and expiry in acceptable format.
