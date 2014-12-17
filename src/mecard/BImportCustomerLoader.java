@@ -38,7 +38,6 @@ import mecard.config.PropertyReader;
 import mecard.customer.horizon.BImportBat;
 import mecard.customer.UserFile;
 import mecard.exception.BImportException;
-import mecard.exception.ConfigurationException;
 import mecard.requestbuilder.BImportRequestBuilder;
 import static mecard.requestbuilder.BImportRequestBuilder.FILE_NAME_PREFIX;
 import mecard.util.BImportResultParser;
