@@ -634,13 +634,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             .password(password)
             .build();
         // Add code to first check for LOSTCARD and if found search on ALT_ID field first.
-        boolean isLostCard = false;
         String oldOrNewBarCode = fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString());
-        if (customer.isFlagDefined(CustomerFieldTypes.ISLOSTCARD) &&
-               ! customer.isEmpty(CustomerFieldTypes.ALTERNATE_ID))
+        if (customer.isLostCard())
         {
             oldOrNewBarCode = customer.get(CustomerFieldTypes.ALTERNATE_ID);
-            isLostCard = true;
         }
         SQLSelectCommand getPatronIDCommand = new SQLSelectCommand.Builder(this.connector, this.patronsTable)
             .string(PolarisTable.Patrons.PATRON_ID.toString())
@@ -690,7 +687,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .build();
         }
         // Confirmed: replace the old bar code with the replacement bar code.
-        else if (isLostCard)
+        else if (customer.isLostCard())
         {
             SQLUpdateCommand updatePatronsBarcode = new SQLUpdateCommand.Builder(this.connector, this.patronsTable)
                 .string(PolarisTable.Patrons.BARCODE.toString(), fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString()))

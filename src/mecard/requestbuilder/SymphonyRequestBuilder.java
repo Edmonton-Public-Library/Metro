@@ -23,6 +23,7 @@ import api.APICommand;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import api.DummyCommand;
 import mecard.Response;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +39,8 @@ import mecard.customer.CustomerFormatter;
 import mecard.customer.symphony.FlatCustomerFormatter;
 import mecard.config.PropertyReader;
 import api.FlatCustomerMessage;
+import java.io.File;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.DumpUser;
 import mecard.customer.symphony.FlatFormattedCustomer;
 import mecard.customer.FormattedCustomer;
@@ -154,6 +157,26 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
+        // Handle lost cards. We do that here before we end up loading the customer as new.
+        // This should rarely get used, pretty much ME thinks its a create but the home
+        // library has passed it on as a LOST card with the alt id.
+        if (customer.isLostCard())
+        {
+            StringBuilder fileName = new StringBuilder(this.loadDir);
+            if (this.loadDir.endsWith(File.separator) == false)
+            {
+                fileName.append(File.separator);
+            }
+            fileName.append(customer.get(CustomerFieldTypes.ALTERNATE_ID));
+            new DumpUser.Builder(fileName.toString(), DumpUser.FileType.lost)
+                .set(flatFileLines)
+                .build();
+            return new DummyCommand.Builder()
+                .setStatus(0)
+                .setStdout(messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString()))
+                .build();
+        }
+        // Carry on with a regular build.
         // Output the customer's data to file for reference if they have questions.
         new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
                 .set(flatFileLines)
@@ -173,6 +196,24 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
+        // Handle lost cards. We do that here before we end up loading the customer as new.
+        if (customer.isLostCard())
+        {
+            StringBuilder fileName = new StringBuilder(this.loadDir);
+            if (this.loadDir.endsWith(File.separator) == false)
+            {
+                fileName.append(File.separator);
+            }
+            fileName.append(customer.get(CustomerFieldTypes.ALTERNATE_ID));
+            new DumpUser.Builder(fileName.toString(), DumpUser.FileType.lost)
+                .set(flatFileLines)
+                .build();
+            return new DummyCommand.Builder()
+                .setStatus(0)
+                .setStdout(messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString()))
+                .build();
+        }
+        // Else handle regular customer load.
         // Output the customer's data to file for reference if they have questions.
         new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
                 .set(flatFileLines)
