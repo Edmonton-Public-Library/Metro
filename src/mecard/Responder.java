@@ -241,35 +241,24 @@ public class Responder
         normalizer.normalizeOnCreate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
         Command command = requestBuilder.getCreateUserCommand(customer, response, normalizer);
-        // Don't create users that are lost cards. They have to be done manually by
-        // the 'lost card' process. Wait until here before testing because we can 
-        // normalize all the customer information and store it so it can be loaded 
-        // manually later.
         if (customer.isLostCard())
         {
-            String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
-            // Record the user's data for diagnosis of problem later.
-            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.lost)
-                    .set(message)
-                    .set(customer) // explicitly outputs user data.
-                    .build();
-            response.setCode(ResponseTypes.LOST_CARD);
-            response.setResponse(message);
-            System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
+            // The responder now lets the RequestBuilder sub-systems handle this because some can now
+            // process lost cards, and even those that don't can output the customer file in a system
+            // dependant way that is abstracted away for the duties of the Responder. It also prevents
+            // multipule messages from displaying to the customer.
+            System.out.println(new Date() + " REPLACEMENT_CARD:" + customer.get(CustomerFieldTypes.ID));
         }
-        else // Regular customer registration.
+        CommandStatus status = command.execute();
+        System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
+        if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
         {
-            CommandStatus status = command.execute();
-            System.out.println(new Date() + " CRAT_STDOUT:"+status.getStdout());
-            System.out.println(new Date() + " CRAT_STDERR:"+status.getStderr());
-            if (requestBuilder.isSuccessful(QueryTypes.CREATE_CUSTOMER, status, response) == false)
-            {
-                new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
-                    .set(customer) // explicitly outputs user data.
-                    .build();
-                System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
-                throw new ConfigurationException();
-            }
+            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
+                .set(customer) // explicitly outputs user data.
+                .build();
+            System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
+            throw new ConfigurationException();
         }
         requestBuilder.tidy();
     }
@@ -288,28 +277,22 @@ public class Responder
         Command command = requestBuilder.getUpdateUserCommand(customer, response, normalizer);
         if (customer.isLostCard())
         {
-            String message = messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString());
-            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.lost)
-                    .set(message)
-                    .set(customer) // explicitly outputs user data.
-                    .build();
-            response.setCode(ResponseTypes.LOST_CARD);
-            response.setResponse(message);
-            System.out.println(new Date() + " LOST_CARD:"+customer.get(CustomerFieldTypes.ID));
+            // The responder now lets the RequestBuilder sub-systems handle this because some can now
+            // process lost cards, and even those that don't can output the customer file in a system
+            // dependant way that is abstracted away for the duties of the Responder. It also prevents
+            // multipule messages from displaying to the customer.
+            System.out.println(new Date() + " REPLACEMENT_CARD:" + customer.get(CustomerFieldTypes.ID));
         }
-        else // Regular customer update.
+        CommandStatus status = command.execute();
+        System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
+        System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
+        if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
         {
-            CommandStatus status = command.execute();
-            System.out.println(new Date() + " UPDT_STDOUT:"+status.getStdout());
-            System.out.println(new Date() + " UPDT_STDERR:"+status.getStderr());
-            if (requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response) == false)
-            {
-                new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
-                    .set(customer) // explicitly outputs user data.
-                    .build();
-                System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
-                throw new ConfigurationException();
-            }
+            new DumpUser.Builder(customer, requestBuilder.getCustomerLoadDirectory(), DumpUser.FileType.fail)
+                .set(customer) // explicitly outputs user data.
+                .build();
+            System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
+            throw new ConfigurationException();
         }
         requestBuilder.tidy();
     }
@@ -326,7 +309,6 @@ public class Responder
      * @param response
      * @return customer load normalizer.
      */
-    
     public CustomerLoadNormalizer getNormalizerPreformatCustomer(Customer customer, Response response)
     {
         if (customer == null)

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013, 2014  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,20 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         // initial formatting of the customer
                 // Basic borrower table.
         HashMap<String, String> customerTable = new HashMap<>();
-        customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ID));
+        // Fix lost user cards we do that here:
+        //M- borrower: 11-14-1985; 04-09-2015; DXXXXX, TXXXXXX; 8426; 21221000000001 (old barcode)
+        //borrower_phone: 780-489-2222; h-noTC
+        //borrower_address: 3000 18A STREET NW;  ;8426;tds59@hotmail.com; tds59; T6T 0M4; 1; 1
+        //borrower_barcode: 21221000000000 (new barcode)
+        //borrower_bstat: a
+        if (c.isLostCard())
+        {
+            customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ALTERNATE_ID));
+        }
+        else
+        {
+            customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ID));
+        }
         customerTable.put(BImportDBFieldTypes.NAME.toString(), (c.get(CustomerFieldTypes.LASTNAME) 
                 + ", " + c.get(CustomerFieldTypes.FIRSTNAME)));
         try
