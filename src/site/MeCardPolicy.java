@@ -334,7 +334,7 @@ public class MeCardPolicy
      */
     public boolean isEmailable(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        if (customer.isEmpty(CustomerFieldTypes.EMAIL))
+        if (! Text.isValidEmail(customer.get(CustomerFieldTypes.EMAIL)))
         {
             if (DEBUG)
             {
