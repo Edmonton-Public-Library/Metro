@@ -30,7 +30,22 @@ import java.util.regex.Pattern;
  */
 public final class Text 
 {
+
+    
     private Text(){}
+    
+    /**
+     * Cleans a name of '*' characters. Some ILSs include this in the name.
+     * 
+     * @param name
+     * @return name cleaned of '*'.
+     */
+    public static String cleanName(String name)
+    {
+        if (name == null) return "";
+        return name.replace("*", "");
+    }
+    
     /**
      * Returns the first word of a sentence if there is one and an empty string 
      * if there isn't.
@@ -253,12 +268,12 @@ public final class Text
     }
     
     /**
-     * This method cleans any string in clean off the end of the string along 
-     * with any surrounding white space and returns the remainder.
-     * @param clean string to clean off.
+     * This method cleanNames any string in cleanName off the end of the string along 
+ with any surrounding white space and returns the remainder.
+     * @param clean string to cleanName off.
      * @param sentence
-     * @return the sentence cleaned of clean or sentence untouched if clean
-     * wasn't found.
+     * @return the sentence cleanNameed of cleanName or sentence untouched if cleanName
+ wasn't found.
      */
     public static String cleanTrailing(String clean, String sentence)
     {
