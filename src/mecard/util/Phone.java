@@ -53,45 +53,32 @@ public class Phone
      * @return formatted phone number (area code)-(exchange)-(phone).
      */
     public static final String formatPhone(String p, boolean debug)
-    { 
-        if (p == null)
+    {
+        String formattedPhone = "000-000-0000";
+        if (p == null) return formattedPhone;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < p.length(); i++)
         {
-            return "";
+            if (Character.isDigit(p.charAt(i)))
+            {
+                sb.append(p.charAt(i));
+            }
         }
-        String phNum = p.trim();
-        if (phNum.isEmpty())
+        // Should now contain just numbers and if correct should be 10 digits for 
+        // North AM phones, otherwise it is not a good phone number.
+        if (sb.length() != 10)
         {
-            return "";
+            return formattedPhone;
         }
-        // any space delimited phone numbers should be converted.
-        phNum = phNum.replace("(", "");
-        phNum = phNum.replace(")", " ");
-        phNum = phNum.replace(" ", DEFAULT_PHONE_DELIMITER);
-        if (phNum.contains(DEFAULT_PHONE_DELIMITER))
+        else
         {
-            return phNum;
+            // Do in this order or the length changes and offset is off by one.
+            sb.insert(6, DEFAULT_PHONE_DELIMITER);
+            sb.insert(3, DEFAULT_PHONE_DELIMITER);
         }
-        int len = phNum.length();
-        if (phNum.length() < 4)
-        {
-            return p;
-        }
-        // now get the phone number
-        String phoneNumber = phNum.substring(len -4);
-        if (debug) System.out.println("PHONE_NUM:"+phoneNumber);
-        if (phNum.length() < 7) return phoneNumber;
-        String exchange = phNum.substring((len -7), (len -4));
-        if (debug) System.out.println("EXCHG:"+exchange);
-        if (phNum.length() < 10) 
-        {
-            return exchange + DEFAULT_PHONE_DELIMITER +
-               phoneNumber;
-        }
-        String areaCode = phNum.substring(0, (len -7));
-        if (debug) System.out.println("AREA:"+areaCode);
-        return areaCode + DEFAULT_PHONE_DELIMITER +
-               exchange + DEFAULT_PHONE_DELIMITER +
-               phoneNumber;
+        formattedPhone = sb.toString();
+        if (debug) System.out.println("PHONE_NUM:" + formattedPhone);
+        return formattedPhone;
     }
     
     public String getUnformattedPhone()

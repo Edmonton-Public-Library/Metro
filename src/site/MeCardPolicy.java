@@ -117,7 +117,11 @@ public class MeCardPolicy
      */
     public void normalizeCustomerFields(Customer customer)
     {
-        String customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.FIRSTNAME));
+        String customerData = Text.cleanName(customer.get(CustomerFieldTypes.FIRSTNAME));
+        customer.set(CustomerFieldTypes.FIRSTNAME, customerData);
+        customerData = Text.cleanName(customer.get(CustomerFieldTypes.LASTNAME));
+        customer.set(CustomerFieldTypes.LASTNAME, customerData);
+        customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.FIRSTNAME));
         customer.set(CustomerFieldTypes.FIRSTNAME, customerData);
         customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.LASTNAME));
         customer.set(CustomerFieldTypes.LASTNAME, customerData);
@@ -334,7 +338,7 @@ public class MeCardPolicy
      */
     public boolean isEmailable(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        if (customer.isEmpty(CustomerFieldTypes.EMAIL))
+        if (! Text.isValidEmail(customer.get(CustomerFieldTypes.EMAIL)))
         {
             if (DEBUG)
             {

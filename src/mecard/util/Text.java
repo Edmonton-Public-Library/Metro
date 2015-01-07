@@ -21,6 +21,8 @@
 package mecard.util;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * General text handling static methods are found here.
@@ -29,6 +31,21 @@ import java.util.List;
 public final class Text 
 {
 
+    
+    private Text(){}
+    
+    /**
+     * Cleans a name of '*' characters. Some ILSs include this in the name.
+     * 
+     * @param name
+     * @return name cleaned of '*'.
+     */
+    public static String cleanName(String name)
+    {
+        if (name == null) return "";
+        return name.replace("*", "");
+    }
+    
     /**
      * Returns the first word of a sentence if there is one and an empty string 
      * if there isn't.
@@ -47,8 +64,25 @@ public final class Text
         return "";
     }
 
-    
-    private Text(){}
+    /**
+     * Does a check if the string parameter is a valid-looking email. Note it 
+     * does not check the email account itself.
+     * @param email
+     * @return true if the string is a well formed email address string and false
+     * otherwise.
+     */
+    public static boolean isValidEmail(String email)
+    {
+        // Special thanks to Mkyong founder of Mkyong.com
+        // http://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression/
+	String EMAIL_PATTERN = 
+		"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+		+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
     /**
      * Converts strings to proper case. Used for normalizing names and streets
      * to a proper case convention. One of the libraries uses UPPERCASE for
@@ -234,12 +268,12 @@ public final class Text
     }
     
     /**
-     * This method cleans any string in clean off the end of the string along 
-     * with any surrounding white space and returns the remainder.
-     * @param clean string to clean off.
+     * This method cleanNames any string in cleanName off the end of the string along 
+ with any surrounding white space and returns the remainder.
+     * @param clean string to cleanName off.
      * @param sentence
-     * @return the sentence cleaned of clean or sentence untouched if clean
-     * wasn't found.
+     * @return the sentence cleanNameed of cleanName or sentence untouched if cleanName
+ wasn't found.
      */
     public static String cleanTrailing(String clean, String sentence)
     {

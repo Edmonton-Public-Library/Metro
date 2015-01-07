@@ -43,17 +43,17 @@ public class PhoneTest
         assertEquals(expResult, result);
         
         p = "804366077    ";
-        expResult = "436-6077";
+        expResult = "000-000-0000";
         result = Phone.formatPhone(p);
         assertEquals(expResult, result);
         
         p = "366077";
-        expResult = "6077";
+        expResult = "000-000-0000";
         result = Phone.formatPhone(p);
         assertEquals(expResult, result);
         
         p = "077";
-        expResult = "077";
+        expResult = "000-000-0000";
         result = Phone.formatPhone(p);
         assertEquals(expResult, result);
     }
@@ -77,17 +77,17 @@ public class PhoneTest
         assertEquals(expResult, result);
         
         Phone phone = new Phone(null);
-        expResult = "";
+        expResult = "000-000-0000";
         result = phone.toString();
         assertEquals(expResult, result);
         
         phone = new Phone("");
-        expResult = "";
+        expResult = "000-000-0000";
         result = phone.toString();
         assertEquals(expResult, result);
         
         phone = new Phone("    ");
-        expResult = "";
+        expResult = "000-000-0000";
         result = phone.toString();
         assertEquals(expResult, result);
     }
@@ -104,6 +104,51 @@ public class PhoneTest
         String result = Phone.formatPhone(p);
         assertTrue(expResult.compareTo(result) == 0);
         System.out.println("RESULT:"+result);
+        
+        p = "780 436 6071";
+        result = Phone.formatPhone(p);
+        assertTrue("780-436-6071".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "40394813-81s-taff";
+        result = Phone.formatPhone(p);
+        assertTrue("403-948-1381".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "40394652-49e-mail";
+        result = Phone.formatPhone(p);
+        assertTrue("403-946-5249".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "403.7-42.-0868";
+        result = Phone.formatPhone(p);
+        assertTrue("403-742-0868".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "867.8-75.-7658";
+        result = Phone.formatPhone(p);
+        assertTrue("867-875-7658".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        p = "403.7-42.-0868";
+        result = Phone.formatPhone(p);
+        assertTrue("403-742-0868".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "4033182-542-cell";
+        result = Phone.formatPhone(p);
+        assertTrue("403-318-2542".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "123";
+        result = Phone.formatPhone(p);
+        assertTrue("000-000-0000".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
+        p = "527-4943";
+        result = Phone.formatPhone(p);
+        assertTrue("000-000-0000".compareTo(result) == 0);
+        System.out.println("RESULT:"+result);
+        
         System.out.println("===formatPhone===");
     }
 }

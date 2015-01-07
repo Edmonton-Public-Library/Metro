@@ -421,4 +421,56 @@ public class TextTest
         e = "this, is one, line";
         assertTrue(r.compareTo(e) == 0);
     }
+    
+    @Test
+    public void testIsValidEmail()
+    {
+        System.out.println("====== testIsValidEmail ======");
+        String content = "anisbet@epl.ca";
+        assertTrue(Text.isValidEmail(content));
+        content = "anisbet.epl.ca";
+        assertFalse(Text.isValidEmail(content));
+        content = "anisbet@epl";
+        assertFalse(Text.isValidEmail(content));
+        content = "anisbet@epl";
+        assertFalse(Text.isValidEmail(content));
+        content = "@epl.ca";
+        assertFalse(Text.isValidEmail(content));
+        content = "anisbet@epl.ca email";
+        assertFalse(Text.isValidEmail(content));
+        content = " ";
+        assertFalse(Text.isValidEmail(content));
+        content = "";
+        assertFalse(Text.isValidEmail(content));
+        content = "X";
+        assertFalse(Text.isValidEmail(content));
+    }
+    
+    @Test
+    public void testCleanName()
+    {
+        System.out.println("====== testCleanName ======");
+        String content = "anisbet@epl.ca";
+        assertTrue(Text.cleanName(content).compareTo("anisbet@epl.ca") == 0);
+        content = "*ascroft";
+        assertTrue(Text.cleanName(content).compareTo("ascroft") == 0);
+        content = "Mcintosh*";
+        assertTrue(Text.cleanName(content).compareTo("Mcintosh") == 0);
+        content = "Stankievech*";
+        assertTrue(Text.cleanName(content).compareTo("Stankievech") == 0);
+        content = "Kubke*";
+        assertTrue(Text.cleanName(content).compareTo("Kubke") == 0);
+        content = "*tieu";
+        assertTrue(Text.cleanName(content).compareTo("tieu") == 0);
+        content = "*lawley";
+        assertTrue(Text.cleanName(content).compareTo("lawley") == 0);
+        content = "Steven Fry*";
+        assertTrue(Text.cleanName(content).compareTo("Steven Fry") == 0);
+        content = null;
+        assertTrue(Text.cleanName(content).compareTo("") == 0);
+        content = "";
+        assertTrue(Text.cleanName(content).compareTo("") == 0);
+        content = "*";
+        assertTrue(Text.cleanName(content).compareTo("") == 0);
+    }
 }
