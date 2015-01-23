@@ -23,6 +23,7 @@ package site.edmonton;
 import api.CustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.util.Address3;
 import site.CustomerGetNormalizer;
 
 /**
@@ -95,5 +96,18 @@ public class EPLCustomerGetNormalizer extends CustomerGetNormalizer
 //          (R) Checksum : ACC6 : Checksum OK
         // here we will fill in the customer attributes with the contents of s- the SIP message.
         customer.set(CustomerFieldTypes.SEX, message.getField("PF"));
+        // Complete address
+        System.out.println("===ADDRESS===\nShould be in field BD>>"
+                + message.getField("BD") + "<<");
+        Address3 address = new Address3(message.getField("BD"));
+        System.out.println(CustomerFieldTypes.STREET + ":" + address.getStreet());
+        System.out.println(CustomerFieldTypes.CITY + ":" + address.getCity());
+        System.out.println(CustomerFieldTypes.PROVINCE + ":" + address.getProvince());
+        System.out.println(CustomerFieldTypes.POSTALCODE + ":" + address.getPostalCode());
+        // Next careful, EPL gloms the phone on the end of the address, but if a lib returns
+        // the phone in the correct field parsing this will erase the phone we already
+        // collected.
+        System.out.println(CustomerFieldTypes.PHONE + ":" + address.getPhone());
+        System.out.println("===ADDRESS===\n\n");
     }
 }

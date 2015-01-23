@@ -22,7 +22,6 @@ package mecard.customer.sip;
 
 import api.CustomerMessage;
 import api.SIPCustomerMessage;
-import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
 import mecard.config.ConfigFileTypes;
@@ -31,7 +30,6 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.util.Address3;
-import mecard.util.DateComparer;
 import mecard.util.Phone;
 import site.CustomerGetNormalizer;
 import site.calgary.CPLCustomerGetNormalizer;
@@ -168,7 +166,13 @@ public class SIPCustomerFormatter implements CustomerFormatter
         customer.set(CustomerFieldTypes.EMAIL, sipMessage.getField("BE"));
         // Phone object
         Phone phone = new Phone(sipMessage.getField("BF"));
-        customer.set(CustomerFieldTypes.PHONE, phone.getUnformattedPhone());
+        // added this because one change was to have a default phone number of
+        // 000-000-0000 used for Horizon empty phone numbers to improve loading.
+        // Before the phone would just get '' but now it could return 00000000000.
+        if (phone.isUnset() == false)
+        {
+            customer.set(CustomerFieldTypes.PHONE, phone.getUnformattedPhone());
+        }
         // Privilege date dates: horizon uses PE and puts profile in PA.
         // The test is slightly less expensive 
 //        String expireDate = DateComparer.cleanDateTime(sipMessage.getField("PA"));

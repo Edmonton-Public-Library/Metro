@@ -76,7 +76,7 @@ public class SIPCustomerMessageTest
 //        Recall Overdue :                     
 //        Too Many Items Billed :
         // these are returned from CAR (ChinookArch).
-        library = WhichLib.TRAC;
+        library = WhichLib.AWB_MEMBERS;
         
         if (library == WhichLib.AWB_MEMBERS)
         {
@@ -87,7 +87,11 @@ public class SIPCustomerMessageTest
             this.expired      = "64YYYY          00020140113    151758000000000000000100000000AO|AA25021000719317|AELee, Robert Edward|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 5.00|BD18 Appomattox Street, apt. 9 Medicine Hat, AB T1A 3N7|BEanton@shortgrass.ca|BF403-529-0550|BHUSD|PA20120409    235900|PD19640119|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFYou membership has expired. To renew your membership, please contact your library.|AY3AZ84E4";
             this.lost         = "64YYYYY         00020140220    094400000000000000000100000000AOst|AA22222000929152|AECirculation test #2|AQst|BZ0030|CA0100|CB0200|BLY|BHCAD|CC9.99|BD5 St. Anne Street, St. Albert, AB, T8N 3Z9|BEktroppmann@sapl.ca|BF780-459-1537|DJCirculation test #2|LG0|PB19510618|PCra|PE20140812    235900|PS20140812    235900|ZYra|AF#Lost card - please refer to the circulation desk.|AY0AZ954A";
 
-            this.goodStanding = "64          	00020140605	093800000000000000000000000000AOmain|AA25555000907877|AESmith John|AQmain|BZ0025|CA0026|CB0099|BLY|CQY|BHCAN|CC15.|BD151 MacDonald Dr., Fort McMurray, AB, T9H 5C5|BEcarlos.moran@fmpl.ca|BF780-743-7800|DJSmith John|LGeng|PCa|PE20160222	235900|PS20160222	235900|ZYa|AY1AZAD86";
+            //this.goodStanding = "64          	00020140605	093800000000000000000000000000AOmain|AA25555000907877|AESmith John|AQmain|BZ0025|CA0026|CB0099|BLY|CQY|BHCAN|CC15.|BD151 MacDonald Dr., Fort McMurray, AB, T9H 5C5|BEcarlos.moran@fmpl.ca|BF780-743-7800|DJSmith John|LGeng|PCa|PE20160222	235900|PS20160222	235900|ZYa|AY1AZAD86";
+            // this one's phone doesn't work
+//            this.goodStanding = "64              00020150122    150320000000000000000000000001AO|AA21221021882359|AEJudson, Fred|                                                      AQEPLMNA|BZ0025|CA0041|CB0040|BLY|CQY|BV0.00|BD11610 - 74 Avenue NW Edmonton, AB T6G OG2 780-436-5522|BEfred.jud                                                      son@ualberta.ca|BHUSD|PA20160122    235900|PD19451127|PCEPL-ADULT|PFM|DB$0.00|DM$0.00|AFOK|AY1AZB154";
+            // this one's phone DOES work.
+            this.goodStanding = "64              00020150122    114616000000000014000000000003AO|AA21221022134396|AESmaill, Janel                                                      le Ashley|AQEPLIDY|BZ0025|CA0041|CB0040|BLY|CQY|BV0.00|BD2207 145 Avenue NW Edmonton, AB T5Y 1V1 780-902-9412|BE                                                      janelle.smaill@gmail.com|BHUSD|PA20150910    235900|PD19850501|PCEPL-ADULT|PFF|DB$0.00|DM$0.00|AFOK|AY1AZAD85";
         }
         else // (library == WhichLib.TRAC)
         {
@@ -114,9 +118,8 @@ public class SIPCustomerMessageTest
     {
         System.out.println("===getCustomerProfile===");
         SIPCustomerMessage sipMessage = new SIPCustomerMessage(goodStanding);
-        System.out.println("GOOD:>>"+sipMessage + "<<");
+        System.out.println("GOOD:>>" + sipMessage + "<<");
         this.printContents(sipMessage);
-        
         
         sipMessage = new SIPCustomerMessage(suspended);
         System.out.println("suspended:>>"+sipMessage + "<<");

@@ -149,6 +149,18 @@ public class PhoneTest
         assertTrue("000-000-0000".compareTo(result) == 0);
         System.out.println("RESULT:"+result);
         
+        Phone phone = new Phone("");
+        assertTrue(phone.isUnset());
+        
+        phone = new Phone("999-999-9999");
+        assertFalse(phone.isUnset());
+        
+        phone = new Phone("999-999-9999 bob");
+        assertFalse(phone.isUnset());
+        
+        phone = new Phone("1");
+        assertTrue(phone.isUnset());
+        
         System.out.println("===formatPhone===");
     }
 }

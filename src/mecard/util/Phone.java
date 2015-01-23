@@ -27,6 +27,8 @@ package mecard.util;
 public class Phone 
 {
     public final static CharSequence DEFAULT_PHONE_DELIMITER = "-";
+    public final static String DEFAULT_PHONE_NUMBER = "000-000-0000";
+    public final static String DEFAULT_UNFORMATTED_PHONE_NUMBER = "0000000000";
     private final String phone;
     
     public Phone(String p)
@@ -54,7 +56,7 @@ public class Phone
      */
     public static final String formatPhone(String p, boolean debug)
     {
-        String formattedPhone = "000-000-0000";
+        String formattedPhone = DEFAULT_PHONE_NUMBER;
         if (p == null) return formattedPhone;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < p.length(); i++)
@@ -81,6 +83,11 @@ public class Phone
         return formattedPhone;
     }
     
+    /**
+     * Returns the object's stored phone value. If the stored value is null
+     * or empty an empty string is returned.
+     * @return stored phone string with DEFAULT_PHONE_DELIMITER stripped.
+     */
     public String getUnformattedPhone()
     {
         if (phone == null)
@@ -88,6 +95,17 @@ public class Phone
             return "";
         }
         return phone.replace("-", "");
+    }
+    
+    /**
+     * 
+     * @return true if the stored phone number is the DEFAULT_PHONE_NUMBER or
+     * the DEFAULT_UNFORMATTED_PHONE_NUMBER, and false otherwise.
+     */
+    public boolean isUnset()
+    {
+        return (this.phone.compareTo(DEFAULT_PHONE_NUMBER) == 0
+            || this.phone.compareTo(DEFAULT_UNFORMATTED_PHONE_NUMBER) == 0);
     }
     
     @Override
