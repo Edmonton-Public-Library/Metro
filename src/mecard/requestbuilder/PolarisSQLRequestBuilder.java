@@ -338,8 +338,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .dateTime(PolarisTable.PatronRegistration.MERGE_DATE.toString()) // null
                 .integer(PolarisTable.PatronRegistration.MERGE_USER_ID.toString(), null)
                 .string(PolarisTable.PatronRegistration.MERGE_BARCODE.toString(), null)
-                .string(PolarisTable.PatronRegistration.CELL_PHONE.toString(), null)
-                .integer(PolarisTable.PatronRegistration.CELL_PHONE_CARRIER_ID.toString(), null)
+//                .string(PolarisTable.PatronRegistration.CELL_PHONE.toString(), null)
+//                .integer(PolarisTable.PatronRegistration.CELL_PHONE_CARRIER_ID.toString(), null)
                 .bit(PolarisTable.PatronRegistration.ENABLE_SMS.toString(), "0") 
                 .integer(PolarisTable.PatronRegistration.REQUEST_PICKUP_BRANCH_ID.toString(), null)
                 .integer(PolarisTable.PatronRegistration.PHONE1_CARRIER_ID.toString(), null)

@@ -21,9 +21,11 @@
 package site.trac;
 
 import mecard.Response;
+import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
+import mecard.util.Phone;
 import site.PolarisNormalizer;
 
 /**
@@ -64,6 +66,15 @@ public final class TRACCustomerNormalizer extends PolarisNormalizer
                 PolarisTable.PATRON_REGISTRATION,
                 PolarisTable.PatronRegistration.USER_5.toString(), 
                 "(none)");
+        // Default phone numbers '000-000-0000' could be problematic let's get rid of them here
+//        Phone phone = new Phone(customer.get(CustomerFieldTypes.PHONE));
+//        if (phone.isUnset())
+//        {
+//              // Here we remove, but it may be better to insert a different value.
+//            formattedCustomer.removeField(
+//                    PolarisTable.PATRON_REGISTRATION, 
+//                    PolarisTable.PatronRegistration.PHONE_VOICE_1.toString());
+//        }
     }
     
     @Override

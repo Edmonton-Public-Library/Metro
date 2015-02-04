@@ -119,9 +119,10 @@ public class PolarisTable
         USERNAME("Username"), //, 12, varchar, 50, 50, null, null, 1, null, null, 12, null, 50, 43, YES, 
         MERGE_DATE("MergeDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 44, YES, 
         MERGE_USER_ID("MergeUserID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 45, YES, 
-        MERGE_BARCODE("MergeBarcode"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 46, YES, 
-        CELL_PHONE("CellPhone"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 47, YES, 
-        CELL_PHONE_CARRIER_ID("CellPhoneCarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 48, YES, 
+        MERGE_BARCODE("MergeBarcode"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 46, YES,
+        // These two values seem to have dissappeared as valid column names, Feb. 4, 2015.
+//        CELL_PHONE("CellPhone"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 47, YES, 
+//        CELL_PHONE_CARRIER_ID("CellPhoneCarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 48, YES, 
         ENABLE_SMS("EnableSMS"), //, -7, bit, 1, 1, null, null, 1, null, null, -7, null, null, 49, YES, 
         REQUEST_PICKUP_BRANCH_ID("RequestPickupBranchID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 50, YES, 
         PHONE1_CARRIER_ID("Phone1CarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 51, YES, 

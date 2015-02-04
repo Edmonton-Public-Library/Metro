@@ -172,9 +172,9 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         }
         catch (ParseException e)
         {
-            System.out.println("**Warning failed to convert customer DOB, or expiry '" 
+            System.out.println("**Warning failed to convert customer DOB '" 
                     + customer.get(CustomerFieldTypes.DOB) 
-                    + "' or '"
+                    + "', or expiry '"
                     + customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)
                     + "'.");
         }
