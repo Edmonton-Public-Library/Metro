@@ -121,6 +121,7 @@ public class PolarisTable
         MERGE_USER_ID("MergeUserID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 45, YES, 
         MERGE_BARCODE("MergeBarcode"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 46, YES,
         // These two values seem to have dissappeared as valid column names, Feb. 4, 2015.
+        // as of Polaris 4.1R2 (Build 4.1.1439.2)
 //        CELL_PHONE("CellPhone"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 47, YES, 
 //        CELL_PHONE_CARRIER_ID("CellPhoneCarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 48, YES, 
         ENABLE_SMS("EnableSMS"), //, -7, bit, 1, 1, null, null, 1, null, null, -7, null, null, 49, YES, 
