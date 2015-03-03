@@ -49,6 +49,9 @@ public class DateComparerTest
         System.out.println("== isValidDate ==");
         assertTrue(DateComparer.isDate("19630822"));
         assertFalse(DateComparer.isDate("235900STAFF"));
+        // 20160209    235900
+        assertFalse(DateComparer.isDate("20160209    235900"));
+        assertTrue(DateComparer.isDate(DateComparer.cleanDateTime("20160209    235900")));
     }
     
     /**
