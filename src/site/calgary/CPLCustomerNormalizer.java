@@ -99,6 +99,14 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
             "CPLAWB" // TODO test for default load.
         );
         
+        // This doesn't load by default, but I don't have time to find out why,
+        // this will force the issue.
+        formattedCustomer.insertValue(
+            FlatUserExtendedFieldTypes.USER.name(),
+            FlatUserFieldTypes.USER_CATEGORY4.toString(),
+            "ALL"
+        );
+        
         // Suppress preferred user name.
         formattedCustomer.removeField(
             FlatUserExtendedFieldTypes.USER.name(),
