@@ -43,6 +43,7 @@ import mecard.exception.SIPException;
  */
 public class SIPMessage
 {
+
     public enum IlsType
     {
         SIRSI_DYNIX("SIRSI_DYNIX"),
@@ -108,8 +109,14 @@ public class SIPMessage
             {
                 stringFields = sipMessage.split("AY");
             }
-            else // not a sip message.
+            else if (sipMessage.contains("AZ"))
             {
+                stringFields = sipMessage.split("AZ");
+            }
+            else // unknown sip message type.
+            {
+                System.out.println("SIPMessage: *Error: unknown SIP2 message: '" 
+                        + sipMessage + "'.");
                 throw new SIPException(this.messageProperties.getProperty(
                     MessagesTypes.UNAVAILABLE_SERVICE.toString()));
             }
@@ -220,5 +227,16 @@ public class SIPMessage
     public SIPMessage.IlsType getILSType()
     {
         return this.ilsType;
+    }
+    
+    /**
+     * Tests a sip message to determine if it is a resend request.
+     * @return true if the message is a request to resend the sip message, and false otherwise.
+     */
+    boolean isResendRequest()
+    {
+        //DEBUG send: -> '93  CNSIPCHK51|COSELFC123|CP|AYF765'
+        //DEBUG recv: <- '96AZFEF6'
+        return this.getCode().compareTo("96") == 0;
     }
 }

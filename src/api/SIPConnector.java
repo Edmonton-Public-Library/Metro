@@ -59,6 +59,8 @@ public class SIPConnector
     private final String locationCode;
     private final boolean debug;
     private boolean turnOnShowConfigSettingsOnDebug; // used to show config settings one time only.
+    private final int MAX_RESENDS = 5;
+    private int resendAttempts;
 
     public static class Builder
     {
@@ -71,7 +73,7 @@ public class SIPConnector
         private String locationCode;
         private boolean debug;
         private boolean turnOnShowConfigSettingsOnDebug;
-
+        
         /**
          * Creates builder with minimum constructor arguments.
          *
@@ -208,15 +210,16 @@ public class SIPConnector
      */
     private SIPConnector(Builder builder)
     {
-        host = builder.host;
-        port = builder.port;
-        timeout = builder.timeout;
-        institutionalId = builder.institution;
-        sipUser = builder.user;
-        sipPassword = builder.password;
-        locationCode = builder.locationCode;
-        debug = builder.debug;
-        turnOnShowConfigSettingsOnDebug = builder.turnOnShowConfigSettingsOnDebug;
+        this.host = builder.host;
+        this.port = builder.port;
+        this.timeout = builder.timeout;
+        this.institutionalId = builder.institution;
+        this.sipUser = builder.user;
+        this.sipPassword = builder.password;
+        this.locationCode = builder.locationCode;
+        this.debug = builder.debug;
+        this.turnOnShowConfigSettingsOnDebug = builder.turnOnShowConfigSettingsOnDebug;
+        this.resendAttempts = 0;
     }
     
     /**
@@ -276,6 +279,7 @@ public class SIPConnector
         //  (R) Checksum : E80C : Checksum OK
         openConnection();
         String testMessage = "990   2.00AY1AZ";
+        this.resendAttempts = 0;
         String results = sendReceive(testMessage + SIPConnector.getCheckSum(testMessage));
         closeConnection();
         SIPStatusMessage m = new SIPStatusMessage(results);
@@ -303,6 +307,7 @@ public class SIPConnector
                         + " SIP login failed, incorrect user name or password");
             }
         }
+        this.resendAttempts = 0;
         String results = sendReceive(request);
         // We don't logout, we just close the connection.
         closeConnection();
@@ -335,6 +340,7 @@ public class SIPConnector
         sb.append("|AY");
         sb.append(SIPConnector.getCheckSum(sb.toString()));
         // Now do the actual login:
+        this.resendAttempts = 0;
         String results = sendReceive(sb.toString());
         SIPMessage m = new SIPMessage(results);
         if (m.getCodeMessage().compareTo("1") != 0)
@@ -372,9 +378,9 @@ public class SIPConnector
         {
             sipData += SIPConnector.CONNECTION_TERMINATOR;
         }
+        String line = null;
         out.print(sipData);
         out.flush();
-        String line = null;
         // This loop will exit after no more data arrives from the stream or
         // the socket connection timeout is exceeded.
         while (true)
@@ -396,6 +402,27 @@ public class SIPConnector
         if (debug)
         {
             System.out.println("DEBUG recv: <- '" + line + "'");
+        }
+        /** Request ACS Resend This message requests the ACS to re-transmit its 
+         * last message. It is sent by the SC to the ACS when the checksum in 
+         * the received message does not match the value calculated by the SC. 
+         * The ACS should respond by re-transmitting its last message.
+         * This message should never include a "sequence number"
+         * field, even when error detection is enabled. (see "Checksums and Sequence Numbers" below)
+         * but would include a "checksum" field since checksums are in use.
+         * 96
+        */
+        SIPMessage sipMessage = new SIPMessage(line);
+        if (sipMessage.isResendRequest())
+        {
+            if (this.resendAttempts >= MAX_RESENDS)
+            {
+                throw new SIPException(SIPConnector.class.getName()
+                        + "**Error: resend failed " + this.resendAttempts + " times.");
+            }
+            System.out.println("...resending message '" + sipData + "'");
+            this.resendAttempts++;
+            return this.sendReceive(sipData);
         }
         return line;
     }

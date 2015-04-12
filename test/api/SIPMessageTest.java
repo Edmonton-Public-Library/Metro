@@ -261,16 +261,16 @@ public class SIPMessageTest
         assertTrue("1".compareTo(result) == 0);
     }
 
-//    @Test
-//    public void testIsEmpty()
-//    {
-//        System.out.println("isEmpty");
-//        String field = "";
-//        SIPMessage instance = null;
-//        boolean expResult = false;
-//        boolean result = instance.isEmpty(field);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of getCode method, of class SIPMessage.
+     */
+    @Test
+    public void testIsResendRequest()
+    {
+        System.out.println("==isResendRequest==");
+        SIPMessage instance = new SIPMessage("941AY1AZFDFC");
+        assertFalse(instance.isResendRequest());
+        instance = new SIPMessage("96AZFEF6");
+        assertTrue(instance.isResendRequest());
+    }
 }
