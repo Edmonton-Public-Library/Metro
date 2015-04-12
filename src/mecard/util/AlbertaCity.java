@@ -835,9 +835,9 @@ public final class AlbertaCity extends City
         cityMap.put("Blairmore", "6010");
         cityMap.put("Bellevue", "6020");
         cityMap.put("Coleman", "6030");
-        cityMap.put("Crowsnest Pass", "6040");
+//        cityMap.put("Crowsnest Pass", "6040"); // duplicate
         cityMap.put("Darwell", "6050");
-        cityMap.put("Dewinton", "6060");
+//        cityMap.put("Dewinton", "6060"); // duplicate with De Winton
         cityMap.put("Fenn", "6070");
         cityMap.put("Frank", "6080");
         cityMap.put("Hillcrest", "6090");
@@ -857,14 +857,14 @@ public final class AlbertaCity extends City
         cityMap.put("Bonanza", "6175");
         cityMap.put("Calais", "6176");
         cityMap.put("Cherry Point", "6177");
-        cityMap.put("Clairmont", "6178");
+//        cityMap.put("Clairmont", "6178"); // duplicate
         cityMap.put("Crooked Creek", "6179");
-        cityMap.put("Deadwood", "6180");
+//        cityMap.put("Deadwood", "6180"); // duplicate
         cityMap.put("Driftpile", "6181");
         cityMap.put("Gordondale", "6182");
         cityMap.put("Hondo", "6183");
         cityMap.put("Hotchkiss", "6184");
-        cityMap.put("Jean Cote", "6185");
+//        cityMap.put("Jean Cote", "6185"); // duplicate 
         cityMap.put("Keg River", "6186");
         cityMap.put("Meander River", "6187");
         cityMap.put("Paddle Prairie", "6188");
