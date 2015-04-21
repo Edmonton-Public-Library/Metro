@@ -59,7 +59,7 @@ public class SIPConnector
     private final String locationCode;
     private final boolean debug;
     private boolean turnOnShowConfigSettingsOnDebug; // used to show config settings one time only.
-    private final int MAX_RESENDS = 5;
+    private final int MAX_RESENDS = 2;
     private int resendAttempts;
 
     public static class Builder
@@ -345,12 +345,27 @@ public class SIPConnector
         SIPMessage m = new SIPMessage(results);
         if (m.getCodeMessage().compareTo("1") != 0)
         {
-            return false;
+            // Here it seems that the simulator sends an additional checksum like this:
+            //Enter Message to Send:ff
+            //Preparing to send Free Form Message
+            //  Enter command up to sequence number:
+            //93  CNSIPCHK51|COSELFC123|CP|AYF765
+            //sent:93  CNSIPCHK51|COSELFC123|CP|AYF765AY0AZF518
+            //                                        ^       ^ - additional checksum and sequence number.
+            //recv:941AY0AZFDFD
+//            sb.append("AY").append(getSequenceNumber()).append("AZ").append(SIPConnector.getCheckSum(sb.toString()));
+            sb.append("AY0AZ").append(SIPConnector.getCheckSum(sb.toString()));
+            results = sendReceive(sb.toString());
+            m = new SIPMessage(results);
+            if (m.getCodeMessage().compareTo("1") != 0)
+            {
+                return false;
+            }
         }
         return true;
     }
 
-    public synchronized static int getSequenceNumber()
+    public static int getSequenceNumber()
     {
         int number = SIPConnector.SEQUENCE_NUMBER;
         SIPConnector.SEQUENCE_NUMBER = (SIPConnector.SEQUENCE_NUMBER + 1) % 10;
@@ -417,8 +432,9 @@ public class SIPConnector
         {
             if (this.resendAttempts >= MAX_RESENDS)
             {
-                throw new SIPException(SIPConnector.class.getName()
+                System.out.println(SIPConnector.class.getName()
                         + "**Error: resend failed " + this.resendAttempts + " times.");
+                return line; // send back what we got, what ever sent it may know what to do.
             }
             System.out.println("...resending message '" + sipData + "'");
             this.resendAttempts++;
