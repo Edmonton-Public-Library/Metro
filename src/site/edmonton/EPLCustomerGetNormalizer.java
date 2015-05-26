@@ -24,7 +24,9 @@ import api.CustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.Address3;
+import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
+import site.MeCardPolicy;
 
 /**
  *
@@ -109,5 +111,17 @@ public class EPLCustomerGetNormalizer extends CustomerGetNormalizer
         // collected.
         System.out.println(CustomerFieldTypes.PHONE + ":" + address.getPhone());
         System.out.println("===ADDRESS===\n\n");
+        
+        // Since EPL has moved all their patrons to no expiry date, the SIP2
+        // server has stopped sending the 'PA' field of patron expiry. Now we 
+        // haven't heard of another library in the federation that has this policy
+        // but we will take care of that here and now.
+        // Calgary' SIP server doesn't return a 'PA', expiry date field for lifetime
+        // memberships either. Let's fix our customer to something reasonable.
+        if (message.isEmpty("PA"))
+        {
+            String expiry = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
+        }
     }
 }
