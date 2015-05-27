@@ -874,6 +874,8 @@ public final class AlbertaCity extends City
         cityMap.put("Lake Isle", "6192");
         cityMap.put("Big Stone", "6193");
         cityMap.put("Bearspaw", "6194");
+        cityMap.put("Redwood Meadows", "6195");
+        cityMap.put("Morley", "6196");
         
         boolean isSpellingMistake = false;
         // Now we overlay place name records with config requested codes for BImport.
