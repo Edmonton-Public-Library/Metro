@@ -279,15 +279,8 @@ public class PropertyReader
                 {
                     return regionalNamesProperties;
                 }
-                regionalNamesProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_FILE);
-                // This will fetch a new region.properties file on start up. 
-                if (regionalNamesProperties == null || regionalNamesProperties.isEmpty())
-                {
-                    System.out.println("* generating new regional place name file...");
-                    PlaceNameWGet globalRegionalNameReader = new PlaceNameWGet();
-                    globalRegionalNameReader.generatePropertyFile();
-                }
-                // Try again...
+                PlaceNameWGet globalRegionalNameReader = new PlaceNameWGet();
+                globalRegionalNameReader.generatePropertyFile();
                 regionalNamesProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_FILE);
                 if (regionalNamesProperties.isEmpty())
                 {

@@ -112,9 +112,8 @@ public final class AlbertaCity extends City
         for (String key: placeNames.stringPropertyNames())
         {
             cityMap.put(key, placeNames.getProperty(key));
-            System.out.println("Adding: '" + key + "' with code " + placeNames.getProperty(key));
         }
-        
+        System.out.println("Read " + placeNames.size() + " place names.");
         boolean isSpellingMistake = false;
         // Now we overlay place name records with config requested codes for BImport
         // which will be empty if the ILS is not a Horizon system.

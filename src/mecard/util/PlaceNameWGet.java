@@ -110,7 +110,7 @@ public class PlaceNameWGet
             } 
             catch (IOException e)
             {
-               String msg = "**Error unable to read HTTP connection. Please check configuration.";
+               String msg = "**Error unable to fetch region place name content. Please check configuration.";
                throw new ConfigurationException(msg);
             }
        }

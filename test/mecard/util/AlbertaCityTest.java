@@ -28,7 +28,6 @@ public class AlbertaCityTest
         assertTrue(expResult.compareTo(result) == 0);
         
         ciyName = "Heisler";
-        instance = AlbertaCity.getInstanceOf();
         expResult = "0145";
         result = instance.getCityCode(ciyName);
         assertTrue(expResult.compareTo(result) == 0);
