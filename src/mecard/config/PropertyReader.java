@@ -41,7 +41,7 @@ import mecard.exception.ConfigurationException;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.9.01_01q_07"; // server version
+    public final static String VERSION           = "0.9.05"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -61,6 +61,8 @@ public class PropertyReader
     private static String VARIABLES_FILE         = "sysvar.properties"; // these are system specific variables, like PATH.
     private static String MESSAGES_PROPERTY_FILE = "messages.properties";
     private static String POLARIS_SQL_FILE       = "polaris_sql.properties";
+    private static String REGIONAL_NAMES_CONFIG_FILE = "region_config.properties"; // Where to get the properties by URL.
+    private static String REGIONAL_NAMES_FILE    = "region.properties"; // File that contains the actual names locally.
         // There are no mandatory variables, so no checking is done.
     private static Properties polarisAPI;            // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
@@ -72,6 +74,8 @@ public class PropertyReader
     private static Properties systemVariables;    // Optional no mandatory fields.
     private static Properties messagesProperties; // Messages tailored by local library.
     private static Properties SQLProperties;      // Optional config for sites that use POLARIS_SQL for transactions.
+    private static Properties regionalNameConfigProperties; // Location of global XML properties file.
+    private static Properties regionalNamesProperties;// Names of places, lookup for util.city and derivations.
     
     /**
      * Parses a list of ',' comma separated types from a given entry in the 
@@ -83,7 +87,6 @@ public class PropertyReader
      * to be parsed into a list for returning.
      * @param list the value of list 
      */
-     
     public static void loadDelimitedEntry(
             Properties props, LibraryPropertyTypes libraryPropertyTypes, List<String> list)
     {
@@ -130,6 +133,8 @@ public class PropertyReader
         DEBUG_SETTINGS_FILE    = CONFIG_DIR + DEBUG_SETTINGS_FILE;
         VARIABLES_FILE         = CONFIG_DIR + VARIABLES_FILE;
         POLARIS_SQL_FILE       = CONFIG_DIR + POLARIS_SQL_FILE;
+        REGIONAL_NAMES_CONFIG_FILE = CONFIG_DIR + REGIONAL_NAMES_CONFIG_FILE;
+        REGIONAL_NAMES_FILE    = CONFIG_DIR + REGIONAL_NAMES_FILE;
     }
     
     /**
@@ -140,6 +145,11 @@ public class PropertyReader
 //    {
 //        return CONFIG_DIR;
 //    }
+    
+    public final static String getRegionFileName()
+    {
+        return REGIONAL_NAMES_FILE;
+    }
     
     /**
      * Gets specific properties from a configuration file.
@@ -261,6 +271,25 @@ public class PropertyReader
                     }
                 }
                 return messagesProperties;
+                
+            case REGIONAL_NAMES:
+                // If there is a local version of the regional names properties
+                regionalNamesProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_FILE);
+                return regionalNamesProperties;
+                
+            case REGIONAL_NAMES_CONFIG:
+                // If there is a local version of the regional names properties
+                regionalNameConfigProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_CONFIG_FILE);
+                // now check that all mandetory values are here.
+                for (RegionalNamesConfigurationTypes rType : RegionalNamesConfigurationTypes.values())
+                {
+                    if (regionalNameConfigProperties.get(rType.toString()) == null)
+                    {
+                        String msg = "'" + rType + "' unset in " + PropertyReader.REGIONAL_NAMES_CONFIG_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
+                    }
+                }
+                return regionalNameConfigProperties;
                 
             default:
                 throw new UnsupportedOperationException("unsupported property file");

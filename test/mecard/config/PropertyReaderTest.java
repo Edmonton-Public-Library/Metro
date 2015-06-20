@@ -72,6 +72,12 @@ public class PropertyReaderTest
         
         Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         messageProps.list(System.out);
+        
+        Properties regionalConfigProps = PropertyReader.getProperties(ConfigFileTypes.REGIONAL_NAMES_CONFIG);
+        regionalConfigProps.list(System.out);
+        
+        Properties regionalNames = PropertyReader.getProperties(ConfigFileTypes.REGIONAL_NAMES);
+        regionalNames.list(System.out);
     }
 
     /**
