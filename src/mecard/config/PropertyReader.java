@@ -32,6 +32,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mecard.exception.ConfigurationException;
+import mecard.util.PlaceNameWGet;
 
 /**
  * Property reader reads all the configuration files and ensures that required
@@ -274,11 +275,33 @@ public class PropertyReader
                 
             case REGIONAL_NAMES:
                 // If there is a local version of the regional names properties
+                if (regionalNamesProperties != null) 
+                {
+                    return regionalNamesProperties;
+                }
                 regionalNamesProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_FILE);
+                // This will fetch a new region.properties file on start up. 
+                if (regionalNamesProperties == null || regionalNamesProperties.isEmpty())
+                {
+                    System.out.println("* generating new regional place name file...");
+                    PlaceNameWGet globalRegionalNameReader = new PlaceNameWGet();
+                    globalRegionalNameReader.generatePropertyFile();
+                }
+                // Try again...
+                regionalNamesProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_FILE);
+                if (regionalNamesProperties.isEmpty())
+                {
+                    String msg = "**Error, failed to generate regional names file. Is there a connection issue? Please check configuration. "; 
+                    throw new ConfigurationException(msg);
+                }
                 return regionalNamesProperties;
                 
             case REGIONAL_NAMES_CONFIG:
                 // If there is a local version of the regional names properties
+                if (regionalNameConfigProperties != null)
+                {
+                    return regionalNameConfigProperties;
+                }
                 regionalNameConfigProperties = readPropertyFile(PropertyReader.REGIONAL_NAMES_CONFIG_FILE);
                 // now check that all mandetory values are here.
                 for (RegionalNamesConfigurationTypes rType : RegionalNamesConfigurationTypes.values())

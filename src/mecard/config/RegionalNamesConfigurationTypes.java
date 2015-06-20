@@ -26,7 +26,8 @@ package mecard.config;
  */
 public enum RegionalNamesConfigurationTypes
 {
-    URL("url");
+    URL("url"), 
+    REFRESH("refresh");
     
     private String type;
     

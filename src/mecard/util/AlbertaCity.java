@@ -23,13 +23,11 @@ package mecard.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
-import mecard.exception.ConfigurationException;
 
 /**
  * Source:
@@ -109,31 +107,19 @@ public final class AlbertaCity extends City
         // If we don't have a region.properties file get a new one from the URL 
         // listed in region_config.properties. See PropertyReader for more information.
         Properties placeNames = PropertyReader.getProperties(ConfigFileTypes.REGIONAL_NAMES);
-        if (placeNames.isEmpty())
-        {
-            System.out.println("* generating new regional place name file...");
-            PlaceNameWGet globalRegionalNameReader = new PlaceNameWGet();
-            globalRegionalNameReader.setNames(cityMap);
-        }
-        // Try again...
-        placeNames = PropertyReader.getProperties(ConfigFileTypes.REGIONAL_NAMES);
-        if (placeNames.isEmpty())
-        {
-            String msg = "**Error, failed to generate regional names file. Is there a connection issue? Please check configuration. "; 
-            throw new ConfigurationException(msg);
-        }
         // Now load all those names into the hashmap for processing as before.
         cityMap = new HashMap<>();
         for (String key: placeNames.stringPropertyNames())
         {
             cityMap.put(key, placeNames.getProperty(key));
-//            System.out.println("Adding: " + key + " with code " + placeNames.getProperty(key));
+            System.out.println("Adding: '" + key + "' with code " + placeNames.getProperty(key));
         }
         
         boolean isSpellingMistake = false;
-        // Now we overlay place name records with config requested codes for BImport.
-        Properties properties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
-        for(String customPlaceName : properties.stringPropertyNames())
+        // Now we overlay place name records with config requested codes for BImport
+        // which will be empty if the ILS is not a Horizon system.
+        Properties bimportCodeProperties = PropertyReader.getProperties(ConfigFileTypes.BIMPORT_CITY_MAPPING);
+        for(String customPlaceName : bimportCodeProperties.stringPropertyNames())
         {
             
             if (cityMap.get(customPlaceName) == null)
@@ -153,7 +139,7 @@ public final class AlbertaCity extends City
             // Now get the property file's associated code for the given place name
             // (real place name or otherwise). This is the code the ILS admin put 
             // in the properties file. 
-            String preferedCode = properties.getProperty(customPlaceName);
+            String preferedCode = bimportCodeProperties.getProperty(customPlaceName);
             cityMap.put(customPlaceName, preferedCode);
 //            System.out.println(">> overwrite: '" + customPlaceName + "' with '" + preferedCode + "'");
         }

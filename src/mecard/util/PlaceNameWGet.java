@@ -27,7 +27,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
@@ -55,13 +54,18 @@ public class PlaceNameWGet
     }
 
     /**
-     * Loads the hash map with place names and codes. Please ensure hash map
-     * is not null.
-     * @param cityMap 
+     * Generates the regional list of names and codes from the remote canonical version. 
      */
-    void setNames(HashMap<String, String> cityMap)
+    public void generatePropertyFile()
     {
 //        String urlString = "http://wiki.melibraries.ca/citycodes.xml";
+        String refreshRate = configProperties.getProperty(RegionalNamesConfigurationTypes.REFRESH.toString());
+        if (isTimeToRefresh(refreshRate) == false)
+        {
+            System.out.println("- not time to refresh region.properties file."
+                    + " change 'refresh' property in region_config.properties file.");
+            return;
+        }
         String urlString = configProperties.getProperty(RegionalNamesConfigurationTypes.URL.toString());
         URL url;
         try 
@@ -84,14 +88,14 @@ public class PlaceNameWGet
         }
     }
 
-    private void createRegionalPlaceNamePropertiesFile(HttpURLConnection con)
+    private void createRegionalPlaceNamePropertiesFile(HttpURLConnection connection)
     {
-        if(con != null)
+        if(connection != null)
         {
             try 
             {			
                BufferedReader br = 
-                    new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
                String input;
                List<String> fileContents = new ArrayList<>();
                while ((input = br.readLine()) != null)
@@ -106,8 +110,18 @@ public class PlaceNameWGet
             } 
             catch (IOException e)
             {
-               e.printStackTrace();
+               String msg = "**Error unable to read HTTP connection. Please check configuration.";
+               throw new ConfigurationException(msg);
             }
        }
+    }
+
+    private boolean isTimeToRefresh(String refreshRate)
+    {
+        switch (refreshRate.toUpperCase())
+        {
+            case "NEVER": return false;
+            default: return true; // if there is a spelling error default to always refresh.
+        }
     }
 }
