@@ -79,11 +79,13 @@ public class PlaceNameWGet
         catch (MalformedURLException e) 
         {
             String msg = "**Error reading citycodes URL. Please check configuration.";
+            System.out.println(msg);
             throw new ConfigurationException(msg);
         } 
         catch (IOException e) 
         {
             String msg = "**Error unable to read citycodes from configured URL. Please check configuration.";
+            System.out.println(msg);
             throw new ConfigurationException(msg);
         }
     }
@@ -111,6 +113,7 @@ public class PlaceNameWGet
             catch (IOException e)
             {
                String msg = "**Error unable to fetch region place name content. Please check configuration.";
+               System.out.println(msg);
                throw new ConfigurationException(msg);
             }
        }
@@ -118,6 +121,13 @@ public class PlaceNameWGet
 
     private boolean isTimeToRefresh(String refreshRate)
     {
+        if (refreshRate == null)
+        {
+            String msg = "**Error reading citycodes URL. Please check configuration.";
+            System.out.println(msg + " is '" + PropertyReader.getRegionalConfigFileName() +
+                    "' missing?");
+            throw new ConfigurationException(msg);
+        }
         switch (refreshRate.toUpperCase())
         {
             case "NEVER": return false;
