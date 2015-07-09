@@ -26,14 +26,16 @@ package mecard.config;
  */
 public enum ConfigFileTypes
 {
-    SYMPHONY,
-    ENVIRONMENT, 
-    SIP2,
-    BIMPORT,
-    BIMPORT_CITY_MAPPING,
+    SYMPHONY,   // Configuration related to Symphony ILS only.
+    ENVIRONMENT,  // General configuration for the application.
+    SIP2,      // SIP2 settings.
+    BIMPORT,   // Maps bimport settings.
+    BIMPORT_CITY_MAPPING, // Maps city names to codes for Horizon users.
     PAPI,
     POLARIS_SQL,   // Used for general POLARIS_SQL API transactions.
     DEBUG, // used with DummyResponder, this file contains canned results to return to client.
     VARS,  // System variables like PATH, UPATH, etc.
+    REGIONAL_NAMES_CONFIG, // Configuration on where to get a fresh region names property file.
+    REGIONAL_NAMES, // List of sanctioned regional names XML properties file.
     MESSAGES;  // Custom messages for each library.
 }
