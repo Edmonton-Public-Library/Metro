@@ -271,8 +271,15 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         //        (Phone) , NULL , NULL, (Email) , (Password) , GETDATE() , (Expiry) , (Expiry) , 
         //        GETDATE() , 'Not in the List' , NULL , NULL , '(none)' , '(none)' , (Gender) , NULL , 
         //        GETDATE() , NULL , 0 , NULL , 2 , NULL , 0 , NULL , 0 , NULL, NULL, NULL, NULL , 
-        //        0 , [(NameLast)+', '+(NameFirst)]* , 0 , 0 , 2 , [(NameFirst)+' '+ (NameLast)]* , 
-        //        NULL , NULL , NULL , NULL, NULL , NULL , 0 , NULL , NULL , NULL , NULL , NULL , NULL )
+        //        0 , [(NameLast)+', '+(NameFirst)]* , 0 , 0 , 2 , [(NameFirst)+' '+ (NameLast)]* ,
+        // We need to add three more values to the end
+        // ExcludeFromAlmostOverdueAutoRenew	bit	Indicates whether the patron is to be excluded from receiving Almost overdue/Auto Renew notices.
+        // ExcludeFromPatronRecExpiration	bit	Indicates whether the patron is to be excluded from receiving patron record expiration reminder notices.
+        // ExcludeFromInactivePatron            bit	Indicates whether the patron is to be excluded from receiving patron inactivity reminder notices.
+        // ExcludeFromAlmostOverdueAutoRenew = 1
+        // ExcludeFromPatronRecExpiration = 1
+        // ExcludeFromInactivePatron = 1
+        //        NULL , NULL , NULL , NULL, NULL , NULL , 0 , NULL , NULL , NULL , NULL , NULL , NULL, 1 , 1 , 1 )
         //        *NOTE - concatenate values in [ ]. 
         // *** Column titles and expected values ***
         SQLInsertCommand createPatronRegistrationCommand = new SQLInsertCommand.Builder(connector, this.patronRegistration)
@@ -347,6 +354,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .integer(PolarisTable.PatronRegistration.PHONE3_CARRIER_ID.toString(), null)
                 .integer(PolarisTable.PatronRegistration.ERECEIPT_OPTION_ID.toString(), null)
                 .tinyInt(PolarisTable.PatronRegistration.TXT_PHONE_NUMBER.toString())
+                .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_ALMOST_OVERDUE_AUTO_RENEW.toString(), "1")
+                .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_PATRON_REC_EXPIRATION.toString(), "1")
+                .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_INACTIVE_PATRON.toString(), "1")
                 .build();
         status = createPatronRegistrationCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -749,6 +759,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     expiry)
             .setChar(PolarisTable.PatronRegistration.GENDER.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
+             // Missing from original update command.
+            .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), 
+                    fCustomer.getValue(PolarisTable.PatronRegistration.BIRTH_DATE.toString()))
             .string(PolarisTable.PatronRegistration.PATRON_FULL_NAME.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.PATRON_FULL_NAME.toString()))
             .string(PolarisTable.PatronRegistration.PATRON_FIRST_LAST_NAME.toString(), 

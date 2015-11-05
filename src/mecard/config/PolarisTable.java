@@ -130,9 +130,12 @@ public class PolarisTable
         PHONE2_CARRIER_ID("Phone2CarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 52, YES, 
         PHONE3_CARRIER_ID("Phone3CarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 53, YES, 
         ERECEIPT_OPTION_ID("eReceiptOptionID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 54, YES, 
-        TXT_PHONE_NUMBER("TxtPhoneNumber"); //, -6, tinyint, 3, 1, 0, 10, 1, null, null, -6, null, null, 55, YES,
+        TXT_PHONE_NUMBER("TxtPhoneNumber"), //, -6, tinyint, 3, 1, 0, 10, 1, null, null, -6, null, null, 55, YES,
+        EXCLUDE_FROM_ALMOST_OVERDUE_AUTO_RENEW("ExcludeFromAlmostOverdueAutoRenew"), // bit, default = 1
+        EXCLUDE_FROM_PATRON_REC_EXPIRATION("ExcludeFromPatronRecExpiration"), // bit, default = 1
+        EXCLUDE_FROM_INACTIVE_PATRON("ExcludeFromInactivePatron"); // bit, default = 1
         
-        private String type;
+        private final String type;
 
         private PatronRegistration(String s)
         {
