@@ -67,6 +67,11 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
                     FlatUserFieldTypes.USER_CATEGORY2.toString(), 
                     unformattedCustomer.get(CustomerFieldTypes.SEX));
         }
+        // No matter what ME customer give implied consent to contact via email when they join.
+        formattedCustomer.insertValue(
+                    FlatUserExtendedFieldTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY5.toString(), 
+                    "ECONSENT");
         this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
     }
 }
