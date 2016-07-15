@@ -66,6 +66,10 @@ public class DateComparerTest
         String newDate = DateComparer.cleanDateTime("20131231    235900STAFF");
         System.out.println("DATE_VALID: "+DateComparer.cleanDateTime("20131231    235900STAFF"));
         assertTrue(DateComparer.isDate(newDate));
+        
+        String newParklandDate = DateComparer.cleanDateTime("20170607    235900");
+        System.out.println("\n\nDATE_VALID: "+newParklandDate);
+        assertTrue(DateComparer.isDate(newParklandDate));
     }
 
     /**
@@ -76,7 +80,7 @@ public class DateComparerTest
     {
         System.out.println("==getYearsOld==");
         String date = "19630822"; // "08/22/1963"
-        int expResult = 50;
+        int expResult = 52;
         int result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         

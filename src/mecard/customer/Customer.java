@@ -143,8 +143,8 @@ public class Customer //extends ProtocolPayload
     /**
      * Tests if a given field is empty.
      * @param customerFieldTypes field to test.
-     * @return true if the field is set to {@link Protocol#DEFAULT_FIELD_VALUE} or 
-     * is null, and false otherwise.
+     * @return true if the field is set to {@link Protocol#DEFAULT_FIELD_VALUE}, 
+     * is null, or an empty string, and false otherwise.
      */
     public boolean isEmpty(CustomerFieldTypes customerFieldTypes)
     {

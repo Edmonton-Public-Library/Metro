@@ -20,12 +20,15 @@
 */
 package site.trac;
 
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisTable;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
-import mecard.util.Phone;
+import mecard.util.DateComparer;
 import site.PolarisNormalizer;
 
 /**
@@ -66,7 +69,7 @@ public final class TRACCustomerNormalizer extends PolarisNormalizer
                 PolarisTable.PATRON_REGISTRATION,
                 PolarisTable.PatronRegistration.USER_5.toString(), 
                 "(none)");
-        // Default phone numbers '000-000-0000' could be problematic let's get rid of them here
+// Default phone numbers '000-000-0000' could be problematic let's get rid of them here
 //        Phone phone = new Phone(customer.get(CustomerFieldTypes.PHONE));
 //        if (phone.isUnset())
 //        {
@@ -75,6 +78,22 @@ public final class TRACCustomerNormalizer extends PolarisNormalizer
 //                    PolarisTable.PATRON_REGISTRATION, 
 //                    PolarisTable.PatronRegistration.PHONE_VOICE_1.toString());
 //        }
+        if (customer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
+        {
+            String expiry = DateComparer.getFutureDate(365);
+            try
+            {
+                expiry = DateComparer.ANSIToConfigDate(expiry);
+            } 
+            catch (ParseException ex)
+            {
+                Logger.getLogger(TRACCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(),
+                expiry);
+        }
     }
     
     @Override

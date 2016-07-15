@@ -87,7 +87,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.debug          = debug;
         Properties properties = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         // Done because the tag is common to all ILS specific properties files.
-        this.loadDir        = properties.getProperty(PropertyReader.LOAD_DIR.toString());
+        this.loadDir        = properties.getProperty(PropertyReader.LOAD_DIR);
         this.host           = properties.getProperty(PolarisSQLPropertyTypes.HOST.toString());
         this.driver         = properties.getProperty(PolarisSQLPropertyTypes.CONNECTOR_TYPE.toString()); // AKA connector-type.
         this.database       = properties.getProperty(PolarisSQLPropertyTypes.DATABASE.toString());

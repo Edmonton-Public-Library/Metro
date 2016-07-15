@@ -143,41 +143,57 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 PolarisTable.PatronRegistration.PASSWORD.toString(), 
                 customer.get(CustomerFieldTypes.PIN));
         // Expiration and DOB date.
-        String dob;
-        String expiry;
-        String lastUpdated; // used for account updates.
+        String dob         = "";
+        String expiry      = "";
+        String lastUpdated = ""; // used for account updates. Should be set to TODAY.
         try
         {
-            dob         = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.DOB));
-            expiry      = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
-            lastUpdated = DateComparer.ANSIToConfigDate(DateComparer.ANSIToday());
-            this.insertValue(
-                PolarisTable.PATRON_REGISTRATION, 
-                PolarisTable.PatronRegistration.BIRTH_DATE.toString(), 
-                dob);
-            this.insertValue(
-                PolarisTable.PATRON_REGISTRATION, 
-                PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), 
-                expiry);
-            // Set to the customer's expiry date.
-            this.insertValue(
-                PolarisTable.PATRON_REGISTRATION, 
-                PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), 
-                expiry);
-            // This value is used when updating a customer.
-            this.insertValue(
-                PolarisTable.PATRON_REGISTRATION, 
-                PolarisTable.PatronRegistration.UPDATE_DATE.toString(), 
-                lastUpdated);
+            dob = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.DOB));
         }
         catch (ParseException e)
         {
             System.out.println("**Warning failed to convert customer DOB '" 
-                    + customer.get(CustomerFieldTypes.DOB) 
-                    + "', or expiry '"
-                    + customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)
-                    + "'.");
+                    + customer.get(CustomerFieldTypes.DOB)
+                    + "'. Please check system date config in environment properties.");
         }
+        try
+        {
+            expiry = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+        }
+        catch (ParseException e)
+        {
+            System.out.println("**Warning failed to convert customer EXPIRY '" 
+                    + customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)
+                    + "'. Please check system date config in environment properties.");
+        }
+        try
+        {
+            lastUpdated = DateComparer.ANSIToConfigDate(DateComparer.ANSIToday());
+        }
+        catch (ParseException e)
+        {
+            System.out.println("**Warning failed to convert ANSI date (TODAY)'. "
+                    + "Please check system date config in environment properties.");
+        }
+        this.insertValue(
+            PolarisTable.PATRON_REGISTRATION, 
+            PolarisTable.PatronRegistration.BIRTH_DATE.toString(), 
+            dob);
+        this.insertValue(
+            PolarisTable.PATRON_REGISTRATION, 
+            PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), 
+            expiry);
+        // Set to the customer's expiry date.
+        this.insertValue(
+            PolarisTable.PATRON_REGISTRATION, 
+            PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), 
+            expiry); // Uses the expiry date as the date to next check the account, as per TRAC request.
+        // This value is used when updating a customer.
+        this.insertValue(
+            PolarisTable.PATRON_REGISTRATION, 
+            PolarisTable.PatronRegistration.UPDATE_DATE.toString(), 
+            lastUpdated);
+        
         // Gender
         this.insertValue(
                 PolarisTable.PATRON_REGISTRATION, 

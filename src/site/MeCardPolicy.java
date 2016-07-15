@@ -468,7 +468,11 @@ public class MeCardPolicy
         String expiryDate = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
         // Symphony systems will return 'NEVER' for lifetime members, however they are
         // throttled to a year on another library system, which is only fair.
-        if (expiryDate.equalsIgnoreCase("NEVER"))
+        // Turns out that it is becoming more common for libraries not to have
+        // expiry dates. EPL doesn't have them, nor does CPL. Horizon may return 
+        // an empty field. To adjust for this let's test for empty date strings.
+        if (expiryDate.equalsIgnoreCase("NEVER") || 
+                customer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
         {
             // set the customer's expiry to 365 days from now and output the message.
             String newExpiryOneYearFromNow = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
