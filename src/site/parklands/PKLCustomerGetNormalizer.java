@@ -21,7 +21,6 @@
 package site.parklands;
 
 import api.CustomerMessage;
-import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
@@ -46,7 +45,7 @@ public class PKLCustomerGetNormalizer extends CustomerGetNormalizer
     {
         // AF field will contain '#Incorrect password' if the customer enters an invalid pin
         // This gets past from the SIP server if no validation is set.
-        if (message.getField("AF").compareToIgnoreCase("#Incorrect password") == 0)
+        if (message.getField("AF").startsWith("#Incorrect password"))
         {
             customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
         }

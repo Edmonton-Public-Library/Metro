@@ -25,7 +25,6 @@ import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
-import mecard.util.Text;
 import site.CustomerGetNormalizer;
 
 /**
@@ -112,7 +111,7 @@ public class STACustomerGetNormalizer extends CustomerGetNormalizer
         // TODO: customize message testing in SIPRequestBuilder to test a standard
         // message or value, and have each emmitter test and set that value based
         // on the message from the SIP server at the host library.
-        if (message.getField("AF").compareToIgnoreCase("#Incorrect password") == 0)
+        if (message.getField("AF").startsWith("#Incorrect password"))
         {
             customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
         }
