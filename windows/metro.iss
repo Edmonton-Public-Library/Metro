@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MeCard Metro Server"
-#define MyAppVersion "0.9.00_01"
+#define MyAppVersion "0.9.06_03_p"
 #define MyAppPublisher "Edmonton Public Library"
 #define MyAppURL "https://github.com/Edmonton_Public_Library/Metro"
 #define MyAppExeName "install.bat"
@@ -50,8 +50,8 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\fluent-hc-4.3.4.ja
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\httpclient-4.3.4.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-logging-1.1.3.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\mysql-connector-java-5.1.31-bin.jar"; DestDir: "{app}\dist\lib"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc4.jar"; DestDir: "{app}\dist\lib"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc.jar"; DestDir: "{app}\dist\lib"
+; Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc4.jar"; DestDir: "{app}\dist\lib"
+; Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc.jar"; DestDir: "{app}\dist\lib"
 ; Once Polaris comes on line we need to include this lib for PAPI security.
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-codec-1.8.jar"; DestDir: "{app}\dist\lib"
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\manager.bat"; DestDir: "{app}\windows"
