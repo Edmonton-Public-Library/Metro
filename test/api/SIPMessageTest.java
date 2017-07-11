@@ -209,6 +209,10 @@ public class SIPMessageTest
         String cleanDate = DateComparer.cleanDateTime(instance.getField("PE"));
         System.out.println("...CLEAN_DATE: '" + cleanDate + "'");
         assertTrue(cleanDate.equalsIgnoreCase("20150430"));
+        // TODO: Test this string
+        String cmOther = "64              00020170711    075000000000000000000000000000AOsps|AA21974012381670|AEDUGUID, JENNIFER|AQsps|BZ0150|CA0020|CB0150|BLY|CQY|BD10255 PRINCESS ELIZABETH AVENUE, Sherwood Park, AB, T5G 0Y1|BEjduguid@sclibrary.ca|BF780-862-4431|DHJENNIFER|DJDUGUID|PAstaff|PB19750517|PCs|PE20171231    235900staff|PS20171231    235900staff|ZYs|AY1AZA47A";
+        instance = new SIPCustomerMessage(cmOther);
+        System.out.println("...ADDRESS for Jennifer: '" + instance.getField("BD") + "'");
     }
 
     /**

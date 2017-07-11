@@ -286,6 +286,15 @@ public class TextTest
         
         userPin = "a";
         assertFalse(Text.isMaximumDigits(userPin, 0)); // Intersting corner case.
+        
+        userPin = "";
+        assertFalse(Text.isMaximumDigits(userPin, 4)); // 
+        
+        userPin = null;
+        assertFalse(Text.isMaximumDigits(userPin, 4));
+        
+        userPin = null;
+        assertFalse(Text.isMaximumDigits(userPin, -10));
     }
 
     /**

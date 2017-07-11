@@ -156,6 +156,7 @@ public final class Text
      */
     public static boolean isMaximumDigits(String s, int maxLength)
     {
+        if (s == null || maxLength < 0) return false;
         return s.matches("\\d{" + maxLength + "}");
     }
     
