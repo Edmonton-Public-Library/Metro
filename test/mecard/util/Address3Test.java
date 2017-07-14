@@ -103,7 +103,7 @@ public class Address3Test
     public void testAddress()
     {
                
-        System.out.println("=== Address27 JENN ===");
+        System.out.println("=== Address27 ===");
         String thisAddress = "10255 PRINCESS ELIZABETH AVENUE, Sherwood Park, AB, T5G 0Y1";
         System.out.println("ADDR_COMPLETE:"+thisAddress);
         Address3 instance = new Address3(thisAddress);
