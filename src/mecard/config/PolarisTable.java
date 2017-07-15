@@ -58,7 +58,7 @@ public class PolarisTable
         LOST_ITEM_COUNT("LostItemCount"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 12, YES, 
         CHARGES_AMOUNT("ChargesAmount"), //, 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 13, NO, 
         CREDITS_AMOUNT("CreditsAmount"); // 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 14, NO,
-        private String type;
+        private final String type;
 
         private Patrons(String s)
         {
@@ -133,7 +133,20 @@ public class PolarisTable
         TXT_PHONE_NUMBER("TxtPhoneNumber"), //, -6, tinyint, 3, 1, 0, 10, 1, null, null, -6, null, null, 55, YES,
         EXCLUDE_FROM_ALMOST_OVERDUE_AUTO_RENEW("ExcludeFromAlmostOverdueAutoRenew"), // bit, default = 1
         EXCLUDE_FROM_PATRON_REC_EXPIRATION("ExcludeFromPatronRecExpiration"), // bit, default = 1
-        EXCLUDE_FROM_INACTIVE_PATRON("ExcludeFromInactivePatron"); // bit, default = 1
+        EXCLUDE_FROM_INACTIVE_PATRON("ExcludeFromInactivePatron"), // bit, default = 1
+        /* July 13, 2017
+        Taking a look at the stored procedures surrounding the Patron 
+        Registration Create and Update processes, it looks as though the 
+        ObfuscatedPassword and PasswordHash columns are generated using functions. 
+        The PasswordHash is generated using the dbo.ILS_HashPassword function 
+        and the ObfuscatedPassword is calculated using the dbo.ILS_ObfuscateText 
+        function. Here is an example of how they are used in the 
+        Circ_UpdatePatron stored procedure:
+        [PasswordHash] = dbo.ILS_HashPassword(@strPassword),
+        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(@strPassword
+        */
+        PASSWORD_HASH("PasswordHash"),
+        OBFUSCATED_PASSWORD("ObfuscatedPassword");
         
         private final String type;
 

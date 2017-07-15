@@ -45,7 +45,8 @@ public class PolarisSQLFormattedTable implements FormattedTable
     /**
      * Use this if you already have a hash of keys and values of PolarisTable column
      * names as keys and values to be stored as values.
-     * @param headDataMap 
+     * @param name - name of the table.
+     * @param headDataMap - hash map of data to store.
      */
     public PolarisSQLFormattedTable(String name, HashMap<String, String> headDataMap)
     {

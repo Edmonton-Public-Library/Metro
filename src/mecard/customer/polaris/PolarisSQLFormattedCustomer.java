@@ -366,11 +366,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
      */
     private boolean containsKey(FormattedTable table, String key)
     {
-        if (table.getValue(key).isEmpty() == false)
-        {
-            return true;
-        }
-        return false;
+        return table.getValue(key).isEmpty() == false;
     }
 
     /**
