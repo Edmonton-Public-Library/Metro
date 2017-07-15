@@ -363,6 +363,9 @@ public final class Address3
             {
                 this.value = matcher.group().toUpperCase();
                 s.delete(matcher.start(), matcher.end());
+                s = new StringBuilder(s.toString().trim());
+//                if (s.charAt(s.length() -1) == ' ')
+//                    s.deleteCharAt(s.length() -1);
                 return true;
             }
             return false;
@@ -397,7 +400,7 @@ public final class Address3
             String possibleProvince = Text.lastWord(s.toString().trim());
             if (this.test(possibleProvince))
             {
-                int pos = s.indexOf(possibleProvince);
+                int pos = s.lastIndexOf(possibleProvince);
                 if (pos >= 0)
                 {
                     s.delete(pos, pos + possibleProvince.length());

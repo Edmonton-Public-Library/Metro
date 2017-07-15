@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2017  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,6 @@ import java.util.regex.Pattern;
  */
 public final class Text 
 {
-
-    
     private Text(){}
     
     /**
@@ -125,11 +123,11 @@ public final class Text
         if (content.isEmpty()) return "";
         if (matchThis.isEmpty()) return content;
         String[] lines = content.split("\\n");
-        for (int i = 0; i < lines.length; i++)
+        for (String line : lines)
         {
-            if (lines[i].contains(matchThis))
+            if (line.contains(matchThis))
             {
-                return lines[i].trim();
+                return line.trim();
             }
         }
         return "";
@@ -269,12 +267,12 @@ public final class Text
     }
     
     /**
-     * This method cleanNames any string in cleanName off the end of the string along 
- with any surrounding white space and returns the remainder.
+     * This method cleanNames any string in cleanName off the end of the 
+     * string along with any surrounding white space and returns the remainder.
      * @param clean string to cleanName off.
      * @param sentence
-     * @return the sentence cleanNameed of cleanName or sentence untouched if cleanName
- wasn't found.
+     * @return the sentence cleanNameed of cleanName or sentence untouched 
+     * if cleanName wasn't found.
      */
     public static String cleanTrailing(String clean, String sentence)
     {
