@@ -14,7 +14,7 @@ public class TextTest
     public TextTest()
     {
     }
-    
+
     @Test
     public void testNthLastWord()
     {

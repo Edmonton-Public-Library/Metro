@@ -48,6 +48,7 @@ public abstract class City
      * Does a lookup for city code in the city_st.properties file. The city code
      * is required and the codes are defined by each library that uses Horizon.
      * @param fullCityName
+     * @param debug - true to turn on debugging.
      * @return city code suitable for this instance of Horizon's city_st.
      * @deprecated 
      */
