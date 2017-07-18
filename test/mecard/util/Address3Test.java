@@ -104,10 +104,10 @@ public class Address3Test
     {
                
         System.out.println("=== Address27 ===");
-        String thisAddress = "10255 PRINCESS ELIZABETH AVENUE, Sherwood Park, AB, T5G 0Y1";
+        String thisAddress = "10988 PRINCESS ELIZABETH AVENUE, Sherwood Park, AB, T5G 0Y1";
         System.out.println("ADDR_COMPLETE:"+thisAddress);
         Address3 instance = new Address3(thisAddress);
-        String STREET = "10255 Princess Elizeth Avenue";
+        String STREET = "10988 Princess Elizabeth Avenue";
         String CITY = "Sherwood Park";
         String POSTALC = "T5G 0Y1";
         String PROVINC = "AB";
