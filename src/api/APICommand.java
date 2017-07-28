@@ -27,13 +27,18 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mecard.config.PropertyReader;
 import mecard.config.ConfigFileTypes;
 
 /**
  * Builds commands ready for execution.
+ * There are 2 types, command line and pipe. Command line allows the invocation
+ * of an executable on the host system, pipe allows data to be streamed into
+ * an executable on the host system.
  *
- * @author metro
+ * @author <anisbet@epl.ca>
  */
 public class APICommand implements Command
 {
@@ -42,6 +47,12 @@ public class APICommand implements Command
     //    private final APICommand command;
     private final List<String> cmdArgs;
     private final List<String> stdinData;
+    
+    public enum APICommandTypes
+    {
+        CMD_LINE,      // Invokes a command line executable.
+        CMD_PIPE;      // pipes textual data into a system command.
+    }
 
     public static class Builder
     {
@@ -128,8 +139,7 @@ public class APICommand implements Command
          * Builds the command and returns a reference to it.
          *
          * @return APICommand reference. Usage: APICommand cmd = new
-         * APICommand.Builder(status,
-         * APICommandTypes.WC).echo("21221012345678").build();
+         * APICommand.Builder().echo("21221012345678").build();
          */
         public APICommand build()
         {
