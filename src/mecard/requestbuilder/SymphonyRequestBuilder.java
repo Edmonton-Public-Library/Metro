@@ -54,7 +54,7 @@ import site.CustomerLoadNormalizer;
  * UnsupportedOperationException. The way around it is to devise some symphony
  * API that would return the status then implement it in this calls, then switch
  * the extends ILSRequestAdaptor to implements ILSRequestBuilder.
- * @author Andrew Nisbet
+ * @author Andrew Nisbet <anisbet@epl.ca>
  * @see UnsupportedOperationException
  * @see ILSRequestBuilder
  */
@@ -65,6 +65,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     private static List<String> loadFlatUserCreate;
     private static List<String> loadFlatUserUpdate;
     private final String sshServer;
+    public final static String sshDeferMarker = "DEFER:";
     private final Properties messageProperties;
     private final boolean debug;
     
@@ -74,7 +75,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         Properties symphonyProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         String homeLibrary = symphonyProps.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString());
-        this.loadDir = symphonyProps.getProperty(PropertyReader.LOAD_DIR.toString());
+        this.loadDir = symphonyProps.getProperty(PropertyReader.LOAD_DIR);
         // This is an optional tag that if included will run the commands remotely.
         // sshServer should now have either the name of the ssh server or "" if not defined.
         this.sshServer = symphonyProps.getProperty(PropertyReader.SSH_TAG, "");
@@ -178,13 +179,40 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         }
         // Carry on with a regular build.
         // Output the customer's data to file for reference if they have questions.
-        new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
+        DumpUser dumpUser = new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
                 .set(flatFileLines)
                 .build();
-        if (this.sshServer.isEmpty())
+        // This loads the account without ssh, that is, if the service is running 
+        // on the same server as the ILS.
+        if (this.sshServer.isEmpty()) // or missing all together.
         {
             return new APICommand.Builder().cat(flatFileLines).commandLine(loadFlatUserCreate).build();
         }
+        // So the <entry key="ssh">[user]@[someserver.com]</entry> entry isn't
+        // empty, it could be using an external script for loading users. This
+        // is used for more complicated load proceedures, like broken link lib-
+        // braries on Rehat.
+        if (this.sshServer.startsWith(SymphonyRequestBuilder.sshDeferMarker))
+        {
+            // the part after the marker is the path to the executable that
+            // will load the customer accounts using any method of it's choosing.
+            String customerLoaderExecutable = this.sshServer.substring(
+                    SymphonyRequestBuilder.sshDeferMarker.length());
+            List<String> commandsList = new ArrayList<>();
+            commandsList.add(customerLoaderExecutable);
+            // Pass in any arguments that the customerLoaderExecutable script.
+            // The script that I have written just takes the user file as an 
+            // argument and does the testing to see if the customer needs 
+            // update or create, but if you have another script mentioned in 
+            // the <entry key="ssh">DEFER:/metro/Logs/customer/loaduser.sh</entry> entry
+            // you could update this to send a flag.
+            commandsList.add(dumpUser.getPath());
+            commandsList.add("CREATE"); // my script will ignore this extra arg.
+            return new APICommand.Builder().commandLine(commandsList).build();
+        }
+        // This runs if the ssh tag is used in the symphony.properties file and
+        // is the default configuration for all Unix variant ILSs so far.
+        // <entry key="ssh">[user]@[someserver.com]</entry>
         return new APICommand.Builder(this.sshServer).cat(flatFileLines).commandLine(loadFlatUserCreate).build();
     }
     
@@ -215,13 +243,40 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         }
         // Else handle regular customer load.
         // Output the customer's data to file for reference if they have questions.
-        new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
+        DumpUser dumpUser = new DumpUser.Builder(customer, loadDir, DumpUser.FileType.flat)
                 .set(flatFileLines)
                 .build();
         if (this.sshServer.isEmpty())
         {
             return new APICommand.Builder().cat(flatFileLines).commandLine(loadFlatUserUpdate).build();
         }
+        // So the <entry key="ssh">[user]@[someserver.com]</entry> entry isn't
+        // empty, it could be using an external script for loading users. This
+        // is used for more complicated load proceedures, like broken link lib-
+        // braries on Rehat.
+        if (this.sshServer.startsWith(SymphonyRequestBuilder.sshDeferMarker))
+        {
+            // the part after the marker is the path to the executable that
+            // will load the customer accounts using any method of it's choosing.
+            String customerLoaderExecutable = this.sshServer.substring(
+                    SymphonyRequestBuilder.sshDeferMarker.length());
+            List<String> commandsList = new ArrayList<>();
+            commandsList.add(customerLoaderExecutable);
+            // Pass in any arguments that the customerLoaderExecutable script.
+            commandsList.add(dumpUser.getPath());
+            // Pass in any arguments that the customerLoaderExecutable script.
+            // The script that I have written just takes the user file as an 
+            // argument and does the testing to see if the customer needs 
+            // update or create, but if you have another script mentioned in 
+            // the <entry key="ssh">DEFER:/metro/Logs/customer/loaduser.sh</entry> entry
+            // you could update this to send a flag.
+            commandsList.add("UPDATE"); // my script doesn't use this but any
+            // other script could to determine the intentions of the ME server.
+            return new APICommand.Builder().commandLine(commandsList).build();
+        }
+        // This runs if the ssh tag is used in the symphony.properties file and
+        // is the default configuration for all Unix variant ILSs so far.
+        // <entry key="ssh">[user]@[someserver.com]</entry>
         return new APICommand.Builder(this.sshServer).cat(flatFileLines).commandLine(loadFlatUserUpdate).build();
     }
 
@@ -234,7 +289,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        boolean result = false;
+        boolean result;
         switch (commandType)
         {
 //            case GET_STATUS: // currently handled by default case b/c there is no simple status for Symphony, and we use SIP2.
