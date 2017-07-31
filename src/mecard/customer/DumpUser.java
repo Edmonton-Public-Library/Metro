@@ -29,7 +29,7 @@ import mecard.config.CustomerFieldTypes;
 
 /**
  * Dumps user data to a file. Used to write receipts, lost card, and fail card data.
- * @author anisbet
+ * @author anisbet <anisbet@epl.ca>
  */
 public class DumpUser
 {
@@ -190,5 +190,13 @@ public class DumpUser
         // create a new one.
         file = new File(name);
         return file;
+    }
+    
+    /**
+     * Returns a string of the path of the DumpUser file.
+     */
+    public String getPath()
+    {
+        return this.path;
     }
 }
