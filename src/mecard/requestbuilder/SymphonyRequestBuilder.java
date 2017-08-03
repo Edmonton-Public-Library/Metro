@@ -92,6 +92,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // /s/sirsi/Unicorn/Bin/loadflatuser -aA -bA -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
         // This also works in testing and is more forgiving.
         // /s/sirsi/Unicorn/Bin/loadflatuser -aU -bU -l"ADMIN|PCGUI-DISP" -mc -n -y"EPLMNA"
+        // Create user command.
         loadFlatUserCreate.add("loadflatuser");
         loadFlatUserCreate.add("-aU"); // Add base.
         loadFlatUserCreate.add("-bU"); // Add extended.
@@ -207,7 +208,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
             // the <entry key="ssh">DEFER:/metro/Logs/customer/loaduser.sh</entry> entry
             // you could update this to send a flag.
             commandsList.add(dumpUser.getPath());
-            commandsList.add("CREATE"); // my script will ignore this extra arg.
+            commandsList.add("CREATE"); // loaduser.sh script look for this argument.
             return new APICommand.Builder().commandLine(commandsList).build();
         }
         // This runs if the ssh tag is used in the symphony.properties file and
@@ -270,8 +271,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
             // update or create, but if you have another script mentioned in 
             // the <entry key="ssh">DEFER:/metro/Logs/customer/loaduser.sh</entry> entry
             // you could update this to send a flag.
-            commandsList.add("UPDATE"); // my script doesn't use this but any
-            // other script could to determine the intentions of the ME server.
+            commandsList.add("UPDATE"); // loaduser.sh script look for this argument.
             return new APICommand.Builder().commandLine(commandsList).build();
         }
         // This runs if the ssh tag is used in the symphony.properties file and
