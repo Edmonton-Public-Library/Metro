@@ -21,41 +21,34 @@
 #
 # Author:  Andrew Nisbet, Edmonton Public Library
 # Rev:
-#          0.0 - Dev.
+#          0.3 - Create tested, now to add update.
+#          0.2 - Dev.
 #
 ########################################################################
-# SSH_SERVER="sirsi@10.110.2.4"  # ILS within the Shortgrass network.
-SSH_SERVER="sirsi@edpl-t.library.ualberta.ca"  # Test system at EPL.
-USER="ADMIN|PCGUI-DISP"
-LIBRARY="EPLMNA"
-TMP_DIR="/tmp"
-
-# Tests if a user exists in the ILS.
-# param:  flat file of user information. File must exist prior to calling.
-# return: 1 if the user has an account with that user id, and 0 if they don't.
-user_not_exist()
-{
-	local flat="$1"
-	local user_id=$(grep USER_ID "$flat" | awk 'NF>1{print $NF}' | sed -e 's/^..//')
-	# If we failed to grab the user id, then return 1, which means they exist, the
-	# caller will likely try to update the account which will fail if it doesn't exist
-	# which in this case is what we want.
-	if [ -z "$user_id" ]; then
-		printf "** error couldn't read the user's id from the file '%s'\n" "$flat" >&2
-		return 2
-	fi
-	local tmp_file="$TMP_DIR/tmp.$$"
-	# sshpass -p"YOUR PASSWORD" ssh -t -t "$SSH_SERVER" << EOSSH >$tmp_file
-	# export LD_LIBRARY_PATH=:/s/sirsi/Unicorn/Oracle_client/10.2.0.3:/s/sirsi/Unicorn/Oracle_client/10.2.0.3:/usr/local/sirsi/lib64/:/s/sirsi/Unicorn/Oracle_client/10.2.0.2
-	ssh -t -t "$SSH_SERVER" << EOSSH >$tmp_file
-echo "$user_id" | seluser -iB
-exit
-EOSSH
-	grep "error number 111" "$tmp_file" 2>&1 > /dev/null
-	local status=$?
-	rm "$tmp_file"
-	echo $status
-}
+### Site specific values
+SSH_SERVER="sirsi@edpl-t.library.ualberta.ca"  # ILS site specific
+# This value is used to compile the customer data into a form consumable by the 'here-doc'.
+ILS="SOLARIS"                  # Type of unix the ILS is running, site specific, see below.
+LIBRARY="EPLMNA"               # Default library for customer, site specific
+# The error log can go anywhere and be named anything, but this makes sense.
+ERROR="/home/ils/metro/logs/loaduser.log"
+# The password file can be named anything and can be located anywhere
+# but it should only include the password and no other lines or characters.
+PASSWORD_FILE="/home/ils/metro/config/loaduser_ssh.txt"
+###
+# This script is able to load customers on the ILS even if the ILS doesn't 
+# have a public SSH key for this server. You can also specify special variables
+# to be populated after login by setting them after the ssh and sshpass commands.
+# Example: 
+# export LD_LIBRARY_PATH=:/s/sirsi/Unicorn/Oracle_client/10.2.0.3:/s/sirsi/Unicorn/Oracle_client/10.2.0.3:/usr/local/sirsi/lib64/:/s/sirsi/Unicorn/Oracle_client/10.2.0.2
+# Any variable that needs to be set can be defined this way.
+# The ME Server calls the create with "CREATE" or "UPDATE", but can be extended.
+# See: mecard.requestbuilder.SymphonyRequestBuilder for definition.
+API_SWITCHES="-aU -bU -mc"     # Create user.
+USER="ADMIN|PCGUI-DISP"        # Load user for Symphony logging, site specific
+DATE=$(date +%Y-%m-%d_%_H:%M:%S)
+echo "=== $DATE" >>$ERROR
+PASSWORD=$(cat "$PASSWORD_FILE" 2>>$ERROR)
 
 # Loads customer data from file and executes it via SSH adding variables as
 # required.
@@ -63,54 +56,64 @@ EOSSH
 # return: 0 if everything went well and 1 otherwise.
 load_customer()
 {
-	if [ -z "$1" ]; then
-		printf "*** error empty file name argument.\n" >&2
-		return
-	fi
-	# TODO: Add check if this is a load or an update.
-	local user_test=$(user_not_exist "$1")
-	# API to use, default is to update. If there's a problem we just output file name.
-	# Will return the number of lines, characters and words in the flat on error.
-	local API="wc" 
-	if [ -z "$user_test" ]; then
-		printf "** error, caller didn't return. Is the process hung?\n" >&2
-		return 1
-	elif [ "$user_test" -eq 2 ]; then
-		printf "** error, failed to parse input file, is it a flat file?\n" >&2
-		return 1
-	elif [ "$user_test" -eq 1 ]; then
-		printf "user exists marking for update.\n" >&2
-		# Create the user.
-		API="loadflatuser -aR -bR -mu -n -y$LIBRARY"
-	elif [ "$user_test" -eq 0 ]; then
-		printf "loading user.\n" >&2
-		# Update customer
-		API="loadflatuser -aU -bU -mc -n -y$LIBRARY"
-	else
-		printf "** error, can't determine if this is an update or create.\n" >&2
-		mv "$1" "$1.fail" # Save the file as a fail file for admin to check and load later.
-		return 1
-	fi
-	# Add a trailing '\' to each line - except the last - in this way we can echo all the flat data from one variable.
-	local customer=$(cat "$1" | sed -e '$ ! s/$/\\/')
-	# sshpass -p"YOUR PASSWORD" ssh -t -t "$SSH_SERVER" << EOSSH >$tmp_file
-	# export LD_LIBRARY_PATH=:/s/sirsi/Unicorn/Oracle_client/10.2.0.3:/s/sirsi/Unicorn/Oracle_client/10.2.0.3:/usr/local/sirsi/lib64/:/s/sirsi/Unicorn/Oracle_client/10.2.0.2
-	ssh -t -t "$SSH_SERVER" << EOSSH
-echo "$customer" | $API -l"$USER"
+        if [ -z "$1" ]; then
+                echo "*** error empty argument." >>$ERROR
+                return
+        fi
+
+        # Save customer ID for error log.
+        local user_id=$(grep USER_ID "$1" | awk 'NF>1{print $NF}' | sed -e 's/^..//')
+        echo "user_id: $user_id" >>$ERROR
+        # API to use, default is to update if exists and create if not.
+        # Add a trailing '\' to each line - except the last - in this
+        # way we can echo all the flat data from one variable.
+        if [ "$ILS" == "REDHAT" ]; then
+                local customer=$(cat "$1" | sed -e '$ ! s/$/\n\\/')    # Required at Shortgrass.
+        elif [ "$ILS" == "SOLARIS" ]; then
+                local customer=$(cat "$1" | sed -e '$ ! s/$/\\/')      # Ubuntu at EPL.
+        else
+                local customer=$(cat "$1" | sed -e '$ ! s/$/\n\\/')    # Default to modern unix.
+        fi
+        # If there is no password then we assume the ILS has a public key for this machine.
+        if [ -z "$PASSWORD" ]; then
+                ssh -t "$SSH_SERVER" << EOSSH 2>>$ERROR
+echo "$customer" | loadflatuser $API_SWITCHES -n -y$LIBRARY -l"$USER"
 exit
 EOSSH
-}  # The output is interpreted by the caller (ME server).
-
-
-FLAT_FILE=$1
-if [ -s "$1" ]; then
-	result=$(load_customer "$FLAT_FILE")
-	if [ -z "$result" ]; then
-		printf "*** error occured while loading customer account.\n" >&2
-	else
-		printf "%s\n" "$result"
-	fi
+        else # We use this to authenticate automatically without typing the password.
+                sshpass -p"$PASSWORD" ssh -t "$SSH_SERVER" << EOSSH 2>>$ERROR
+echo "$customer" | loadflatuser $API_SWITCHES -n -y$LIBRARY -l"$USER"
+exit
+EOSSH
+        fi
+}
+if [ -z "$2" ]; then
+        echo "*WARN expected argument 'CREATE' or 'UPDATE', but got none. Defaulting to $API_SWITCHES" >>$ERROR
 else
-	printf "*** error argument entered is either empty, not a file, or the file was not found.\n" >&2
+        case "$2" in
+        UPDATE)
+                echo "UPDATE selected.\n" >>$ERROR
+                API_SWITCHES="-aR -bR -mu"
+                ;;
+        CREATE)
+                echo "CREATE selected.\n" >>$ERROR
+                API_SWITCHES="-aU -bU -mc"
+                ;;
+	*)
+		echo "*WARN expected argument 'CREATE' or 'UPDATE', but got '$2'. Defaulting to $API_SWITCHES" >>$ERROR
+                API_SWITCHES="-aR -bR -mu"
+		;;
+        esac
+fi
+if [ -s "$1" ]; then
+        result=$(load_customer "$1")
+        if [ -z "$result" ]; then
+                echo "*** error occurred while creating or updating customer account."  >>$ERROR
+        else
+                echo "user_key: $result successfully loaded." >>$ERROR
+        fi
+else
+        echo "*** error argument entered is either empty, not a file, or the file was not found." >>$ERROR
 fi
 # EOF
+
