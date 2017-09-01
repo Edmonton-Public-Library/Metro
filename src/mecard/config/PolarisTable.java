@@ -144,6 +144,10 @@ public class PolarisTable
         Circ_UpdatePatron stored procedure:
         [PasswordHash] = dbo.ILS_HashPassword(@strPassword),
         [ObfuscatedPassword] = dbo.ILS_ObfuscateText(@strPassword
+        
+                        Type	   Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+        PasswordHash    varchar    no           256                     yes             no                      yes                     SQL_Latin1_General_CP1_CS_AS
+        ObfuscatedPassword varchar no           256                     yes             no                      yes                     SQL_Latin1_General_CP1_CS_AS
         */
         PASSWORD_HASH("PasswordHash"),
         OBFUSCATED_PASSWORD("ObfuscatedPassword");
