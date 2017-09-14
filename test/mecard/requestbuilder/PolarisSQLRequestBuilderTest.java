@@ -57,7 +57,7 @@ public class PolarisSQLRequestBuilderTest
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         customer = request.getCustomer();
-        test = WhichTest.GET_CUSTOMER;
+        test = WhichTest.CREATE_CUSTOMER; //CREATE_CUSTOMER GET_CUSTOMER
     }
     
     @Test
@@ -163,7 +163,7 @@ public class PolarisSQLRequestBuilderTest
                     // EmailAddress, 12, varchar, 64,
                     .string("EmailAddress")
                     // Password, 12, varchar, 16,
-                    .string("Password")
+//                    .string("Password") // DEPRECATED.
                     // EntryDate, 11, datetime, 23,
                     .date("EntryDate")      // TEST this, this seems fishy. Could also use DateCompares date methods.
                     // ExpirationDate, 11, datetime, 2
@@ -234,9 +234,9 @@ public class PolarisSQLRequestBuilderTest
                     // MergeBarcode, 12, varchar, 20,
                     .string("MergeBarcode")
                     // CellPhone,  NULL
-                    .string("CellPhone")
+//                    .string("CellPhone") // DEPRECATED.
                     // CellPhoneCarrierID,  NULL
-                    .string("CellPhoneCarrierID")
+//                    .string("CellPhoneCarrierID")  // DEPRECATED.
                     // EnableSMS,  0
                     .string("EnableSMS")  // ***** This is a bit field, TODO test.     
                     // RequestPickupBranchID,  NULL
@@ -251,6 +251,7 @@ public class PolarisSQLRequestBuilderTest
                     .string("eReceiptOptionID")
                     // TxtPhoneNumber, -6, tinyint, 3 TxtPhoneNumber,  NULL
                     .string("TxtPhoneNumber")
+                    .string("DoNotShowEReceiptPrompt")
                     .build();
 
             status = selectPatronRegistration.execute();

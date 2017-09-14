@@ -164,13 +164,10 @@ public class SQLUpdateCommand implements Command
          */
         private boolean isNullOrEmpty(String s)
         {
-            if (s == null               // null object type
+            // explicit string "null" ingore case.
+            return s == null               // null object type
                     || s.isEmpty()      // empty string like optional birthdates
-                    || s.equalsIgnoreCase("NULL")) // explicit string "null" ingore case.
-            {
-                return true;
-            }
-            return false;
+                    || s.equalsIgnoreCase("NULL");
         }
         
         
@@ -228,48 +225,49 @@ public class SQLUpdateCommand implements Command
             columnNumber++;
             if (dType.getValue() == null)
             {
-                if (dType.getType() == SQLData.Type.INT)
+                if (null != dType.getType())
+                switch (dType.getType())
                 {
-                    pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
-                }
-                else if (dType.getType() == SQLData.Type.DATE)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.DATE);
-                }
-                else if (dType.getType() == SQLData.Type.TIMESTAMP)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
-                }
-                else if (dType.getType() == SQLData.Type.CHAR)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.CHAR);
-                }
-                else // dType.getType() == SQLData.Type.STRING
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                    case INT:
+                        pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+                        break;
+                    case DATE:
+                        pStatement.setNull(columnNumber, java.sql.Types.DATE);
+                        break;
+                    case TIMESTAMP:
+                        pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
+                        break;
+                    case CHAR:
+                        pStatement.setNull(columnNumber, java.sql.Types.CHAR);
+                        break;
+                // dType.getType() == SQLData.Type.STRING
+                    default:
+                        pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                        break;
                 }
             }
             else // Statement doesn't include a null value.
             {
-                if (dType.getType() == SQLData.Type.INT)
+                if (null != dType.getType())
+                switch (dType.getType())
                 {
-                    pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.DATE)
-                {
-                    pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.TIMESTAMP)
-                {
-                    pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.CHAR)
-                {   // Char handled as String JDBC.
-                    pStatement.setString(columnNumber, dType.getValue());
-                }
-                else // dType.getType() == SQLData.Type.STRING
-                {
-                    pStatement.setString(columnNumber, dType.getValue());
+                    case INT:
+                        pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
+                        break;
+                    case DATE:
+                        pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
+                        break;
+                    case TIMESTAMP:
+                        pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(dType.getValue()));
+                        break;
+                    case CHAR:
+                        // Char handled as String JDBC.
+                        pStatement.setString(columnNumber, dType.getValue());
+                        break;
+                // dType.getType() == SQLData.Type.STRING
+                    default:
+                        pStatement.setString(columnNumber, dType.getValue());
+                        break;
                 }
             }
         }
@@ -277,48 +275,49 @@ public class SQLUpdateCommand implements Command
         columnNumber++;
         if (this.where.getValue() == null)
         {
-            if (this.where.getType() == SQLData.Type.INT)
+            if (null != this.where.getType())
+            switch (this.where.getType())
             {
-                pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
-            }
-            else if (this.where.getType() == SQLData.Type.DATE)
-            {
-                pStatement.setNull(columnNumber, java.sql.Types.DATE);
-            }
-            else if (this.where.getType() == SQLData.Type.TIMESTAMP)
-            {
-                pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
-            }
-            else if (this.where.getType() == SQLData.Type.CHAR)
-            {
-                pStatement.setNull(columnNumber, java.sql.Types.CHAR);
-            }
-            else // dType.getType() == SQLData.Type.STRING
-            {
-                pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                case INT:
+                    pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+                    break;
+                case DATE:
+                    pStatement.setNull(columnNumber, java.sql.Types.DATE);
+                    break;
+                case TIMESTAMP:
+                    pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
+                    break;
+                case CHAR:
+                    pStatement.setNull(columnNumber, java.sql.Types.CHAR);
+                    break;
+            // dType.getType() == SQLData.Type.STRING
+                default:
+                    pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                    break;
             }
         }
         else // Statement doesn't include a null value.
         {
-            if (this.where.getType() == SQLData.Type.INT)
+            if (null != this.where.getType())
+            switch (this.where.getType())
             {
-                pStatement.setInt(columnNumber, Integer.valueOf(this.where.getValue()));
-            }
-            else if (this.where.getType() == SQLData.Type.DATE)
-            {
-                pStatement.setDate(columnNumber, java.sql.Date.valueOf(this.where.getValue()));
-            }
-            else if (this.where.getType() == SQLData.Type.TIMESTAMP)
-            {
-                pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(this.where.getValue()));
-            }
-            else if (this.where.getType() == SQLData.Type.CHAR)
-            {   // Char handled as String JDBC.
-                pStatement.setString(columnNumber, this.where.getValue());
-            }
-            else // dType.getType() == SQLData.Type.STRING
-            {
-                pStatement.setString(columnNumber, this.where.getValue());
+                case INT:
+                    pStatement.setInt(columnNumber, Integer.valueOf(this.where.getValue()));
+                    break;
+                case DATE:
+                    pStatement.setDate(columnNumber, java.sql.Date.valueOf(this.where.getValue()));
+                    break;
+                case TIMESTAMP:
+                    pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(this.where.getValue()));
+                    break;
+                case CHAR:
+                    // Char handled as String JDBC.
+                    pStatement.setString(columnNumber, this.where.getValue());
+                    break;
+            // dType.getType() == SQLData.Type.STRING
+                default:
+                    pStatement.setString(columnNumber, this.where.getValue());
+                    break;
             }
         }
         return pStatement;

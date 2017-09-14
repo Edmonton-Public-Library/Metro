@@ -41,6 +41,27 @@ public final class SQLUpdateData extends SQLData
     {
         return this.value;
     }
+    
+    /**
+     * Sets the object as a query string, that is, in an insert statement
+     * this object would be represented by the '?' in this SQL query:
+     * INSERT INTO Table VALUES (?);
+     * @return the query string representation of this object.
+     */
+    public String toQueryString()
+    {
+        switch (this.dataType)
+        {
+            case STORED_PROCEEDURE:
+                if (this.value == null || this.value.isEmpty())
+                {
+                    return "{call " + this.name + "()}";
+                }
+                return "{call " + this.name + "(?)}";
+            default:
+                return "?";
+        }
+    }
 
     @Override
     public String toString()
@@ -49,10 +70,14 @@ public final class SQLUpdateData extends SQLData
         {
             return this.name + " is null";
         }
-        if (this.dataType == Type.INT)
+        switch (this.dataType)
         {
-            return this.name + "=" + this.value;
+            case INT:
+                return this.name + "=" + this.value;
+            case STORED_PROCEEDURE:
+                return "{call " + this.name + "(" + this.value + ")}";
+            default:
+                return this.name + "='" + this.value + "'";
         }
-        return this.name + "='" + this.value + "'";
     }    
 }
