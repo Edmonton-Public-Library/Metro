@@ -358,6 +358,7 @@ public class PolarisSQLRequestBuilderTest
             // This command is the last untested or failed command to run from 
             // requestBuilder.getCreateUserCommand
             Command command = requestBuilder.getCreateUserCommand(customer, response, normalizer);
+            System.out.println("COMMAND:'"+command.toString()+"'");
             CommandStatus status = command.execute();
             System.out.println("STATUS_out:'"+status.getStdout()+"'");
             System.out.println("STATUS_err:'"+status.getStderr()+"'");

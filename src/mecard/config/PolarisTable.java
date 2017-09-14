@@ -57,7 +57,13 @@ public class PolarisTable
         CLAIM_COUNT("ClaimCount"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 11, YES, 
         LOST_ITEM_COUNT("LostItemCount"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 12, YES, 
         CHARGES_AMOUNT("ChargesAmount"), //, 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 13, NO, 
-        CREDITS_AMOUNT("CreditsAmount"); // 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 14, NO,
+        CREDITS_AMOUNT("CreditsAmount"), // 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 14, NO,
+        /** New to Polaris v.5.2:3 ***/
+        RECORD_STATUS_ID("RecordStatusID"), //, 4, int, 10, 4, 0, 10, 0, null, ((1)), 4, null, null, 15, NO, 
+        RECORD_STATUS_DATE("RecordStatusDate"), // 11, datetime, 23, 16, 3, null, 0, null, (getdate()), 9, 3, null, 16, NO, 
+        YTD_YOU_SAVED_AMOUNT("YTDYouSavedAmount"), // 3, money, 19, 21, 4, 10, 0, null, ((0)), 3, null, null, 17, NO, 
+        LIFE_TIME_YOU_SAVED_AMOUNT("LifetimeYouSavedAmount"); // 3, money, 19, 21, 4, 10, 0, null, ((0)), 3, null, null, 18, NO, 
+        
         private final String type;
 
         private Patrons(String s)

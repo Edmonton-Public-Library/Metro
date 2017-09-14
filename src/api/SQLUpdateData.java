@@ -27,6 +27,7 @@ package api;
 public final class SQLUpdateData extends SQLData
 {
     private String value; 
+    private final static String PROCEDURE_INVOCATION = "fn";
     public SQLUpdateData(String name, SQLData.Type dType, String value)
     {
         super(name, dType);
@@ -55,9 +56,9 @@ public final class SQLUpdateData extends SQLData
             case STORED_PROCEEDURE:
                 if (this.value == null || this.value.isEmpty())
                 {
-                    return "{call " + this.name + "()}";
+                    return "{" + PROCEDURE_INVOCATION + " " + this.name + "()}";
                 }
-                return "{call " + this.name + "(?)}";
+                return "{" + PROCEDURE_INVOCATION + " " + this.name + "(?)}";
             default:
                 return "?";
         }
@@ -68,14 +69,14 @@ public final class SQLUpdateData extends SQLData
     {
         if (this.value == null)
         {
-            return this.name + " is null";
+            return this.name + "=NULL";
         }
         switch (this.dataType)
         {
             case INT:
                 return this.name + "=" + this.value;
             case STORED_PROCEEDURE:
-                return "{call " + this.name + "(" + this.value + ")}";
+                return "{" + PROCEDURE_INVOCATION + " " + this.name + "(" + this.value + ")}";
             default:
                 return this.name + "='" + this.value + "'";
         }

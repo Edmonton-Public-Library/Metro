@@ -56,7 +56,7 @@ public class SQLInsertCommandTest
     public void testToString()
     {
         System.out.println("==toString==");
-        SQLInsertCommand instance = new SQLInsertCommand.Builder(connector, "Polaris.PatronRegistration")
+        SQLInsertCommand instance = new SQLInsertCommand.Builder(connector, "Polaris.PatronRegistration", true)
             .integer(PolarisTable.PatronRegistration.PATRON_ID.toString(), customer.get(CustomerFieldTypes.ID).substring(0, 5))
             .smallInt(PolarisTable.PatronRegistration.LANGUAGE_ID.toString(), 
                     "1")
@@ -125,7 +125,7 @@ public class SQLInsertCommandTest
             .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_PATRON_REC_EXPIRATION.toString(), "1")
             .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_INACTIVE_PATRON.toString(), "1")
             .bit(PolarisTable.PatronRegistration.DO_NOT_SHOW_E_RECEIPT_PROMPT.toString(), "1")
-            .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
+//            .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
             .build();
         System.out.println(">>>" + instance.toString());
     }

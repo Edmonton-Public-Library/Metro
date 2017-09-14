@@ -196,6 +196,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             .integer(PolarisTable.Patrons.LOST_ITEM_COUNT.toString(), "0")
             .money(PolarisTable.Patrons.CHARGES_AMOUNT.toString(), "0")
             .money(PolarisTable.Patrons.CREDITS_AMOUNT.toString(), "0")
+            .integer(PolarisTable.Patrons.RECORD_STATUS_ID.toString(), "1")
+            .dateTimeNow(PolarisTable.Patrons.RECORD_STATUS_DATE.toString())
+            .money(PolarisTable.Patrons.YTD_YOU_SAVED_AMOUNT.toString(), "0")
+            .money(PolarisTable.Patrons.LIFE_TIME_YOU_SAVED_AMOUNT.toString(), "0")
             .build();
         
         // Create this entry in the Patrons table.
@@ -282,8 +286,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         //        NULL , NULL , NULL , NULL, NULL , NULL , 0 , NULL , NULL , NULL , NULL , NULL , NULL, 1 , 1 , 1 )
         //        *NOTE - concatenate values in [ ]. 
         // *** Column titles and expected values ***
-        String customerPassword = customer.get(CustomerFieldTypes.PIN);
-        SQLInsertCommand createPatronRegistrationCommand = new SQLInsertCommand.Builder(connector, this.patronRegistration)
+//        String customerPassword = customer.get(CustomerFieldTypes.PIN);
+        SQLInsertCommand createPatronRegistrationCommand = new SQLInsertCommand.Builder(connector, this.patronRegistration, true)
                 .integer(PolarisTable.PatronRegistration.PATRON_ID.toString(), polarisPatronID)
                 .smallInt(PolarisTable.PatronRegistration.LANGUAGE_ID.toString(), 
                         fCustomer.getValue(PolarisTable.PatronRegistration.LANGUAGE_ID.toString()))
@@ -359,8 +363,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_PATRON_REC_EXPIRATION.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_INACTIVE_PATRON.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.DO_NOT_SHOW_E_RECEIPT_PROMPT.toString(), "1")
-                .procedure("Polaris.Circ_SetPatronPassword", customerPassword)
+//                .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
+//                .procedure("ILS_HashPassword", customer.get(CustomerFieldTypes.PIN))
+//                .procedure("ILS_ObfuscateText", customer.get(CustomerFieldTypes.PIN))
                 .build();
+//        [HashedPassword]     = dbo.ILS_HashPassword(password)
+//        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(password)
+
         status = createPatronRegistrationCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {

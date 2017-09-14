@@ -41,12 +41,14 @@ public class SQLInsertCommand implements Command
     private final SQLConnector connector;
     private final List<SQLUpdateData> columnList;
     private final String table;
+    private final boolean usesNamedColumns;
     
     public static class Builder
     {
         private SQLConnector connector;
         private String table; // The name of the table.
         private List<SQLUpdateData> columnList; // Column names you wish to see in selection.
+        private boolean usesNamedColumns;
         
         public Builder(SQLConnector s, String tableName)
         {
@@ -57,8 +59,23 @@ public class SQLInsertCommand implements Command
                 throw new ConfigurationException();
             }
             this.connector  = s;
-            this.table = tableName;
+            this.table      = tableName;
             this.columnList = new ArrayList<>();
+            this.usesNamedColumns = false;
+        }
+        
+        public Builder(SQLConnector s, String tableName, boolean useNamedColumQuery)
+        {
+            if (s == null)
+            {
+                System.out.println(SQLInsertCommand.class.getName() 
+                        + " received null connector as argument.");
+                throw new ConfigurationException();
+            }
+            this.connector  = s;
+            this.table      = tableName;
+            this.columnList = new ArrayList<>();
+            this.usesNamedColumns = useNamedColumQuery;
         }
         
         /**
@@ -348,6 +365,7 @@ public class SQLInsertCommand implements Command
         this.connector = builder.connector;
         this.columnList= builder.columnList;
         this.table     = builder.table;
+        this.usesNamedColumns = builder.usesNamedColumns;
     }
     
     /**
@@ -360,27 +378,33 @@ public class SQLInsertCommand implements Command
         // insert INTO software (station, title, DateInstalled) values (45, "Adobe Acrobat", curdate());
         statementStrBuilder.append("INSERT INTO ");
         statementStrBuilder.append(this.table);
-        /*
-        Normally in an insert command we specify it like so:
-        INSERT INTO Table (col_name_1, col_name_2) VALUES ("one", "two");
-        but we need to insert into the table with a  
-        
-        // INSERT INTO Students VALUES (100,'Zara','Ali', {d '2001-12-16'});
-        // https://www.tutorialspoint.com/jdbc/jdbc-stored-procedure.htm
-        statementStrBuilder.append(" (");
-        for (int i = 0; i < this.columnList.size(); i++)
+        if (this.usesNamedColumns)
         {
-            SQLUpdateData sqlData = this.columnList.get(i);
-            statementStrBuilder.append(sqlData.getName());
-            if (i + 1 != this.columnList.size())
+            /*
+            Normally in an insert command we specify it like so:
+            INSERT INTO Table (col_name_1, col_name_2) VALUES ("one", "two");
+            but we need to insert into the table with a  
+
+            // INSERT INTO Students VALUES (100,'Zara','Ali', {d '2001-12-16'});
+            // https://www.tutorialspoint.com/jdbc/jdbc-stored-procedure.htm*/
+            statementStrBuilder.append(" (");
+
+            for (int i = 0; i < this.columnList.size(); i++)
             {
-                statementStrBuilder.append(", ");
+                SQLUpdateData sqlData = this.columnList.get(i);
+                statementStrBuilder.append(sqlData.getName());
+                if (i + 1 != this.columnList.size())
+                {
+                    statementStrBuilder.append(", ");
+                }
             }
+            // We do not allow an empty where clause to limit the update.
+            statementStrBuilder.append(") VALUES (");
         }
-        // We do not allow an empty where clause to limit the update.
-        statementStrBuilder.append(") VALUES (");
-        */
-        statementStrBuilder.append(" VALUES (");
+        else
+        {
+            statementStrBuilder.append(" VALUES (");
+        }
         for (int i = 0; i < this.columnList.size(); i++)
         {
             SQLUpdateData sqlData = this.columnList.get(i);
@@ -514,17 +538,19 @@ public class SQLInsertCommand implements Command
     @Override
     public String toString()
     {
-        StringBuffer sBuff = new StringBuffer();
+        StringBuilder sBuff = new StringBuilder();
         sBuff.append(this.getStatementString());
 //        sBuff.append(this.get)
         for (int i = 0; i < this.columnList.size(); i++)
         {
             SQLUpdateData sqlData = this.columnList.get(i);
-            int columnNumber = i + 1;
-            sBuff.append(sqlData.toString());
-            sBuff.append("\n");
+            sBuff.append("\n")
+                    .append("col.")
+                    .append(i + 1)
+                    .append("->")
+                    .append(sqlData.toString());
         }
-      
+        sBuff.append("\n");
         return sBuff.toString();
     } 
 }

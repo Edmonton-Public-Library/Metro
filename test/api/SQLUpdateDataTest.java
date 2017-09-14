@@ -46,7 +46,7 @@ public class SQLUpdateDataTest
     {
         System.out.println("== toQueryString ==");
         SQLUpdateData sqlData = new SQLUpdateData("Polaris.ILS_HashPassword", SQLData.Type.STORED_PROCEEDURE, "S3cr3t");
-        String expResult = "{call Polaris.ILS_HashPassword(?)}";
+        String expResult = "{fn Polaris.ILS_HashPassword(?)}";
         String result = sqlData.toQueryString();
         System.out.println("RESULT:" + result);
         assertTrue(result.compareTo(expResult) == 0);

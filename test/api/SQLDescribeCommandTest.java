@@ -4,6 +4,7 @@ package api;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PolarisSQLPropertyTypes;
+import mecard.config.PolarisTable;
 import mecard.config.PropertyReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -40,7 +41,7 @@ public class SQLDescribeCommandTest
     {
         System.out.println("===Describe execute===");
         // use this version for query DESCRIBE table
-        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, "PatronRegistration")
+        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, PolarisTable.POSTAL_CODES) //PatronRegistration, Patrons, Addresses, PostalCodes
                 .build();
         System.out.println("COMMAND==>"+describe.toString()+"<==");
         CommandStatus status = describe.execute();
@@ -48,9 +49,6 @@ public class SQLDescribeCommandTest
         System.out.println("== Describe execute ==\n");
         CommandStatus expResult = null;
         CommandStatus result = describe.execute();
-//        assertEquals(expResult, result);
-        
-        
     }
     
 }
