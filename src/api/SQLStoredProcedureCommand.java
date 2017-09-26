@@ -136,6 +136,7 @@ public class SQLStoredProcedureCommand implements Command
             statementStrBuilder = new StringBuilder(statementStrBuilder.substring(0, (statementStrBuilder.length() -1)));
         }
         statementStrBuilder.append(")}");
+        System.out.println(">>>>>>" + statementStrBuilder.toString());
         return statementStrBuilder.toString();
     }
     
@@ -154,7 +155,7 @@ public class SQLStoredProcedureCommand implements Command
         for (int i = 0; i < this.columnList.size(); i++)
         {
             SQLUpdateData sqlData = this.columnList.get(i);
-            pStatement.setString(i, sqlData.getValue());
+            pStatement.setString((i +1), sqlData.getValue());
         } 
         return pStatement;
     }

@@ -393,7 +393,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 new SQLStoredProcedureCommand.Builder(
                         connector, 
                         "Polaris.Circ_SetPatronPassword", 
-                        "EXEC")
+                        "call")
                 .integer("nPatronID", polarisPatronID)
                 .string("szPassword", customer.get(CustomerFieldTypes.PIN))
                 .build();
