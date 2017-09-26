@@ -11,6 +11,7 @@ import json.RequestDeserializer;
 import mecard.Request;
 import mecard.Response;
 import mecard.config.ConfigFileTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
@@ -52,7 +53,7 @@ public class PolarisSQLRequestBuilderTest
         
         String custReq =
 //                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12222 144 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
-                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"William, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H2\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804961212\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"William\\\"}\"}";
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346000\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012346000\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"William, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H2\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804961212\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"William\\\"}\"}";
 //                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Awsome, Richard\\\",\\\"STREET\\\":\\\"11111 111 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H1\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19690822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Richard\\\",\\\"LASTNAME\\\":\\\"Awesome\\\"}\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
@@ -200,27 +201,27 @@ public class PolarisSQLRequestBuilderTest
                     // StatisticalClassID, 4, int, 10,
                     .integer("StatisticalClassID")     // null for integer id(?)
                     // CollectionExempt, -7, bit, 1,
-                    .integer("CollectionExempt")  // ***** This is a bit field, TODO test.
+                    .integer("CollectionExempt")
                     // AltEmailAddress, 12, varchar, 64,
                     .string("AltEmailAddress")
                     // ExcludeFromOverdues, -7, bit, 1,
-                    .integer("ExcludeFromOverdues")  // ***** This is a bit field, TODO test.
+                    .integer("ExcludeFromOverdues")
                     // SDIEmailAddress, 12, varchar, 150,
                     .string("SDIEmailAddress")
                     // SDIEmailFormatID, 4, int, 10,
                     .integer("SDIEmailFormatID")        // null integer value.
                     // 
-                    .integer("SDIPositiveAssent")  // ***** This is a bit field, TODO test.
+                    .integer("SDIPositiveAssent")
                     // SDIPositiveAssentDate, 11, datetime, 23,
                     .date("SDIPositiveAssentDate")
                     // DeletionExempt, -7, bit, 1,
-                    .integer("DeletionExempt")  // ***** This is a bit field, TODO test.
+                    .integer("DeletionExempt")
                     // PatronFullName, 12, varchar, 100,
                     .string("PatronFullName")
                     // ExcludeFromHolds, -7, bit, 1,
-                    .integer("ExcludeFromHolds")  // ***** This is a bit field, TODO test.
+                    .integer("ExcludeFromHolds")
                     // ExcludeFromBills, -7, bit, 1,
-                    .integer("ExcludeFromBills")  // ***** This is a bit field, TODO test.
+                    .integer("ExcludeFromBills")
                     // EmailFormatID, 4, int, 10,
                     .integer("EmailFormatID")
                     // PatronFirstLastName, 12, varchar, 100,
@@ -238,7 +239,7 @@ public class PolarisSQLRequestBuilderTest
                     // CellPhoneCarrierID,  NULL
 //                    .string("CellPhoneCarrierID")  // DEPRECATED.
                     // EnableSMS,  0
-                    .string("EnableSMS")  // ***** This is a bit field, TODO test.     
+                    .string("EnableSMS")    
                     // RequestPickupBranchID,  NULL
                     .string("RequestPickupBranchID")
                     // Phone1CarrierID, , NULL

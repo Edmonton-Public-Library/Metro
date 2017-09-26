@@ -156,6 +156,23 @@ public class SQLUpdateCommand implements Command
         }
         
         /**
+         * Stores a (stored) procedure call with a single string parameter.
+         * @param procedureName name of the procedure qualified by the database
+         * where the procedure is defined. Example: 'Polaris.Circ_SetPatronPassword'
+         * @param procedureParameter string argument to add to the procedure call.
+         * @return Builder.
+         */
+        public Builder procedure(String procedureName, String procedureParameter)
+        {
+            SQLUpdateData i = new SQLUpdateData(
+                    procedureName, 
+                    SQLData.Type.STORED_PROCEEDURE, 
+                    procedureParameter);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
          * Tests if the argument is empty or null for sanitizing input for the
          * query string.
          * @param s string to test.

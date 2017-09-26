@@ -28,6 +28,7 @@ import api.SQLConnector;
 import api.SQLCustomerMessage;
 import api.SQLInsertCommand;
 import api.SQLSelectCommand;
+import api.SQLStoredProcedureCommand;
 import api.SQLUpdateCommand;
 import java.text.ParseException;
 import java.util.List;
@@ -363,12 +364,11 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_PATRON_REC_EXPIRATION.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_INACTIVE_PATRON.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.DO_NOT_SHOW_E_RECEIPT_PROMPT.toString(), "1")
-//                .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
-//                .procedure("ILS_HashPassword", customer.get(CustomerFieldTypes.PIN))
-//                .procedure("ILS_ObfuscateText", customer.get(CustomerFieldTypes.PIN))
+                // Calling a procedure in the insert command does work but not for 
+                // hashing the password. You can do this but for our purposes use SQLStoredProcedure object.
+//                .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN)) 
                 .build();
-//        [HashedPassword]     = dbo.ILS_HashPassword(password)
-//        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(password)
+
 
         status = createPatronRegistrationCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -382,6 +382,34 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
                     .build();
         }
+        ////////////////////// Handle Password  ////////////////////////////
+        // 
+        // So the engineer recommends that we call the stored procedure after
+        // loading the PatronRegistration table.
+        //        [HashedPassword]     = dbo.ILS_HashPassword(password)
+        //        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(password)
+        //        .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
+        SQLStoredProcedureCommand callHashPasswordCommand = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.Circ_SetPatronPassword", 
+                        "EXEC")
+                .integer("nPatronID", polarisPatronID)
+                .string("szPassword", customer.get(CustomerFieldTypes.PIN))
+                .build();
+        status = callHashPasswordCommand.execute();
+        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+        {
+            System.out.println("**error failed to create customer data " 
+                    + customer.get(CustomerFieldTypes.ID) + " in table: "
+                    + this.patronRegistration);
+            // When this command gets run it returns a useful message and error status for customer.
+            return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+                    .build();
+        }
+        //////////////////////// end  Pasword Hashing ///////////////////////////
         
         // *** ADD POSTAL CODE ***
 //

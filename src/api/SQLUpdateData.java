@@ -24,10 +24,10 @@ package api;
  * Manages data type expectations for SQL queries.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class SQLUpdateData extends SQLData
+public class SQLUpdateData extends SQLData
 {
     private String value; 
-    private final static String PROCEDURE_INVOCATION = "fn";
+    private String PROCEDURE_INVOCATION = "fn";
     public SQLUpdateData(String name, SQLData.Type dType, String value)
     {
         super(name, dType);
@@ -41,6 +41,16 @@ public final class SQLUpdateData extends SQLData
     public String getValue()
     {
         return this.value;
+    }
+    
+    /**
+     * This allows you to control the how the procedure is called. Typically
+     * you would use 'call', 'fn', or 'EXEC'.
+     * @param invocation 
+     */
+    public void setProcedureInvocation(String invocation)
+    {
+        this.PROCEDURE_INVOCATION = invocation;
     }
     
     /**
@@ -75,8 +85,6 @@ public final class SQLUpdateData extends SQLData
         {
             case INT:
                 return this.name + "=" + this.value;
-            case STORED_PROCEEDURE:
-                return "{" + PROCEDURE_INVOCATION + " " + this.name + "(" + this.value + ")}";
             default:
                 return this.name + "='" + this.value + "'";
         }
