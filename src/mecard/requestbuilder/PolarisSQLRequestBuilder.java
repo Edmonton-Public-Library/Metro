@@ -818,7 +818,35 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .setStatus(1)
                 .setStderr(messages.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()))
                 .build();
-        } 
+        }
+        ////////////////////// Handle Password  ////////////////////////////
+        // 
+        // So the engineer recommends that we call the stored procedure after
+        // loading the PatronRegistration table.
+        //        [HashedPassword]     = dbo.ILS_HashPassword(password)
+        //        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(password)
+        //        .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
+        SQLStoredProcedureCommand callHashPasswordCommand = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.Circ_SetPatronPassword", 
+                        "call")
+                .integer("nPatronID", polarisPatronID)
+                .string("szPassword", customer.get(CustomerFieldTypes.PIN))
+                .build();
+        status = callHashPasswordCommand.execute();
+        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+        {
+            System.out.println("**error failed to create customer data " 
+                    + customer.get(CustomerFieldTypes.ID) + " in table: "
+                    + this.patronRegistration);
+            // When this command gets run it returns a useful message and error status for customer.
+            return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+                    .build();
+        }
+        //////////////////////// end  Pasword Hashing ///////////////////////////
         // Get the postal code id for the 
         SQLSelectCommand selectPostalCodeID = new SQLSelectCommand.Builder(connector, this.postalCodes)
             .string(PolarisTable.PostalCodes.POSTAL_CODE_ID.toString())
