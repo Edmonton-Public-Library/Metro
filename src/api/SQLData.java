@@ -38,7 +38,8 @@ public class SQLData
         TIMESTAMP_NOW,
         SMALL_INT,
         CHAR,
-        TINY_INT;
+        TINY_INT,
+        STORED_PROCEEDURE;
     }
     
     protected final String name;

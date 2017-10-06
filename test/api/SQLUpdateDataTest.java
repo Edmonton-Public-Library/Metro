@@ -25,7 +25,7 @@ public class SQLUpdateDataTest
     {
         System.out.println("== toString ==");
         SQLUpdateData sqlData = new SQLUpdateData("Comment", SQLData.Type.STRING, "NULL");
-        String expResult = "Comment IS NULL";
+        String expResult = "Comment='NULL'";
         String result = sqlData.toString();
         System.out.println("RESULT:" + result);
         assertTrue(result.compareTo(expResult) == 0);
@@ -35,10 +35,24 @@ public class SQLUpdateDataTest
         System.out.println("RESULT:" + result);
         assertTrue(result.compareTo(expResult) == 0);
         sqlData = new SQLUpdateData("Owner",SQLData.Type.STRING, "Andrew");
-        expResult = "Owner=\"Andrew\"";
+        expResult = "Owner='Andrew'";
         result = sqlData.toString();
         System.out.println("RESULT:" + result);
         assertTrue(result.compareTo(expResult) == 0);
     }
     
+    @Test
+    public void testToQueryString()
+    {
+        System.out.println("== toQueryString ==");
+        SQLUpdateData sqlData = new SQLUpdateData("Polaris.ILS_HashPassword", SQLData.Type.STORED_PROCEEDURE, "S3cr3t");
+        String expResult = "{fn Polaris.ILS_HashPassword(?)}";
+        String result = sqlData.toQueryString();
+        System.out.println("RESULT:" + result);
+        assertTrue(result.compareTo(expResult) == 0);
+        expResult = "S3cr3t";
+        result = sqlData.getValue();
+        System.out.println("STORED VALUE:" + result);
+        assertTrue(result.compareTo(expResult) == 0);
+    }
 }

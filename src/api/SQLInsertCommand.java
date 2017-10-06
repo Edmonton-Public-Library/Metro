@@ -41,12 +41,14 @@ public class SQLInsertCommand implements Command
     private final SQLConnector connector;
     private final List<SQLUpdateData> columnList;
     private final String table;
+    private final boolean usesNamedColumns;
     
     public static class Builder
     {
         private SQLConnector connector;
         private String table; // The name of the table.
         private List<SQLUpdateData> columnList; // Column names you wish to see in selection.
+        private boolean usesNamedColumns;
         
         public Builder(SQLConnector s, String tableName)
         {
@@ -57,8 +59,23 @@ public class SQLInsertCommand implements Command
                 throw new ConfigurationException();
             }
             this.connector  = s;
-            this.table = tableName;
+            this.table      = tableName;
             this.columnList = new ArrayList<>();
+            this.usesNamedColumns = false;
+        }
+        
+        public Builder(SQLConnector s, String tableName, boolean useNamedColumQuery)
+        {
+            if (s == null)
+            {
+                System.out.println(SQLInsertCommand.class.getName() 
+                        + " received null connector as argument.");
+                throw new ConfigurationException();
+            }
+            this.connector  = s;
+            this.table      = tableName;
+            this.columnList = new ArrayList<>();
+            this.usesNamedColumns = useNamedColumQuery;
         }
         
         /**
@@ -274,6 +291,23 @@ public class SQLInsertCommand implements Command
         }
         
         /**
+         * Stores a (stored) procedure call with a single string parameter.
+         * @param procedureName name of the procedure qualified by the database
+         * where the procedure is defined. Example: 'Polaris.Circ_SetPatronPassword'
+         * @param procedureParameter string argument to add to the procedure call.
+         * @return Builder.
+         */
+        public Builder procedure(String procedureName, String procedureParameter)
+        {
+            SQLUpdateData i = new SQLUpdateData(
+                    procedureName, 
+                    SQLData.Type.STORED_PROCEEDURE, 
+                    procedureParameter);
+            this.columnList.add(i);
+            return this;
+        }
+        
+        /**
          * Creates a SQL bit field.
          * @param bName must be a string of either true or '1', anything else 
          * will be interpreted as being a bit value of '0'. Null permitted permitted.
@@ -310,13 +344,10 @@ public class SQLInsertCommand implements Command
          */
         private boolean isNullOrEmpty(String s)
         {
-            if (s == null               // null object type
+            // explicit string "null" ingore case.
+            return s == null               // null object type
                     || s.isEmpty()      // empty string like optional birthdates
-                    || s.equalsIgnoreCase("NULL")) // explicit string "null" ingore case.
-            {
-                return true;
-            }
-            return false;
+                    || s.equalsIgnoreCase("NULL");
         }
         
         public SQLInsertCommand build()
@@ -334,122 +365,145 @@ public class SQLInsertCommand implements Command
         this.connector = builder.connector;
         this.columnList= builder.columnList;
         this.table     = builder.table;
+        this.usesNamedColumns = builder.usesNamedColumns;
     }
     
-    private PreparedStatement getPreparedStatement() throws SQLException
+    /**
+     * 
+     * @return String version of the insert statement.
+     */
+    private String getStatementString()
     {
-        Connection connection;
-        PreparedStatement pStatement;
         StringBuilder statementStrBuilder = new StringBuilder();
         // insert INTO software (station, title, DateInstalled) values (45, "Adobe Acrobat", curdate());
         statementStrBuilder.append("INSERT INTO ");
         statementStrBuilder.append(this.table);
-        statementStrBuilder.append(" (");
-        for (int i = 0; i < this.columnList.size(); i++)
+        if (this.usesNamedColumns)
         {
-            SQLUpdateData dType = this.columnList.get(i);
-            statementStrBuilder.append(dType.getName());
-            if (i + 1 != this.columnList.size())
+            /*
+            Normally in an insert command we specify it like so:
+            INSERT INTO Table (col_name_1, col_name_2) VALUES ("one", "two");
+            but we need to insert into the table with a  
+
+            // INSERT INTO Students VALUES (100,'Zara','Ali', {d '2001-12-16'});
+            // https://www.tutorialspoint.com/jdbc/jdbc-stored-procedure.htm*/
+            statementStrBuilder.append(" (");
+
+            for (int i = 0; i < this.columnList.size(); i++)
             {
-                statementStrBuilder.append(", ");
+                SQLUpdateData sqlData = this.columnList.get(i);
+                statementStrBuilder.append(sqlData.getName());
+                if (i + 1 != this.columnList.size())
+                {
+                    statementStrBuilder.append(", ");
+                }
             }
+            // We do not allow an empty where clause to limit the update.
+            statementStrBuilder.append(") VALUES (");
         }
-        // We do not allow an empty where clause to limit the update.
-        statementStrBuilder.append(") VALUES (");
+        else
+        {
+            statementStrBuilder.append(" VALUES (");
+        }
         for (int i = 0; i < this.columnList.size(); i++)
         {
-            statementStrBuilder.append("?");
+            SQLUpdateData sqlData = this.columnList.get(i);
+            statementStrBuilder.append(sqlData.toQueryString());
             if (i + 1 != this.columnList.size())
             {
                 statementStrBuilder.append(", ");
             }
         }
         statementStrBuilder.append(")");
+        return statementStrBuilder.toString();
+    }
+    
+    private PreparedStatement getPreparedStatement() throws SQLException
+    {
+        Connection connection;
+        PreparedStatement pStatement;
         connection = this.connector.getConnection();
-        pStatement = connection.prepareStatement(statementStrBuilder.toString());
-        // Now change the values in the prepared statement to include null values.
+        pStatement = connection.prepareStatement(this.getStatementString());
+        // Now add the values to the prepareStatement.
         for (int i = 0; i < this.columnList.size(); i++)
         {
-            SQLUpdateData dType = this.columnList.get(i);
+            SQLUpdateData sqlData = this.columnList.get(i);
             int columnNumber = i + 1;
-            if (dType.getValue() == null)
+            if (sqlData.getValue() == null)
             {
-                if (dType.getType() == SQLData.Type.INT)
+                if (null != sqlData.getType())
+                switch (sqlData.getType())
                 {
-                    pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
-                }
-                else if (dType.getType() == SQLData.Type.DATE)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.DATE);
-                }
-                else if (dType.getType() == SQLData.Type.MONEY)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.DECIMAL);
-                }
-                else if (dType.getType() == SQLData.Type.BIT)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.BIT);
-                }
-                else if (dType.getType() == SQLData.Type.TIMESTAMP)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
-                }
-                else if (dType.getType() == SQLData.Type.SMALL_INT)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.SMALLINT);
-                }
-                else if (dType.getType() == SQLData.Type.TINY_INT)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.TINYINT);
-                }
-                else if (dType.getType() == SQLData.Type.CHAR)
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.CHAR);
-                }
-                else // dType.getType() == SQLData.Type.STRING
-                {
-                    pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                    case INT:
+                        pStatement.setNull(columnNumber, java.sql.Types.INTEGER);
+                        break;
+                    case DATE:
+                        pStatement.setNull(columnNumber, java.sql.Types.DATE);
+                        break;
+                    case MONEY:
+                        pStatement.setNull(columnNumber, java.sql.Types.DECIMAL);
+                        break;
+                    case BIT:
+                        pStatement.setNull(columnNumber, java.sql.Types.BIT);
+                        break;
+                    case TIMESTAMP:
+                        pStatement.setNull(columnNumber, java.sql.Types.TIMESTAMP);
+                        break;
+                    case SMALL_INT:
+                        pStatement.setNull(columnNumber, java.sql.Types.SMALLINT);
+                        break;
+                    case TINY_INT:
+                        pStatement.setNull(columnNumber, java.sql.Types.TINYINT);
+                        break;
+                    case CHAR:
+                        pStatement.setNull(columnNumber, java.sql.Types.CHAR);
+                        break;
+                    case STORED_PROCEEDURE:
+                        break; // we don't have to add anything, there are no params if null
+                        // it's just a call with an empty parameter list, like 'today()'.
+                // sqlData.getType() == SQLData.Type.STRING
+                    default:
+                        pStatement.setNull(columnNumber, java.sql.Types.VARCHAR);
+                        break;
                 }
             }
             else // Statement doesn't include a null value.
             {
-                if (dType.getType() == SQLData.Type.INT)
+                if (null != sqlData.getType())
+                switch (sqlData.getType())
                 {
-                    pStatement.setInt(columnNumber, Integer.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.DATE)
-                {
-                    pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.MONEY)
-                {
-//                    pStatement.setDate(columnNumber, Date.valueOf(dType.getValue()));
-                    BigDecimal bd = new BigDecimal(dType.getValue());
-                    pStatement.setBigDecimal(columnNumber, bd);
-                }
-                else if (dType.getType() == SQLData.Type.BIT)
-                {
-                    pStatement.setBoolean(columnNumber, Boolean.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.TIMESTAMP)
-                {
-                    pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.SMALL_INT)
-                {
-                    pStatement.setShort(columnNumber, Short.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.TINY_INT)
-                {   // Tiny int similar to SMALL_INT for JDBC.
-                    pStatement.setShort(columnNumber, Short.valueOf(dType.getValue()));
-                }
-                else if (dType.getType() == SQLData.Type.CHAR)
-                {   // Char handled as String JDBC.
-                    pStatement.setString(columnNumber, dType.getValue());
-                }
-                else // dType.getType() == SQLData.Type.STRING
-                {
-                    pStatement.setString(columnNumber, dType.getValue());
+                    case INT:
+                        pStatement.setInt(columnNumber, Integer.valueOf(sqlData.getValue()));
+                        break;
+                    case DATE:
+                        pStatement.setDate(columnNumber, Date.valueOf(sqlData.getValue()));
+                        break;
+                    case MONEY:
+                        //                    pStatement.setDate(columnNumber, Date.valueOf(sqlData.getValue()));
+                        BigDecimal bd = new BigDecimal(sqlData.getValue());
+                        pStatement.setBigDecimal(columnNumber, bd);
+                        break;
+                    case BIT:
+                        pStatement.setBoolean(columnNumber, Boolean.valueOf(sqlData.getValue()));
+                        break;
+                    case TIMESTAMP:
+                        pStatement.setTimestamp(columnNumber, java.sql.Timestamp.valueOf(sqlData.getValue()));
+                        break;
+                    case SMALL_INT:
+                        pStatement.setShort(columnNumber, Short.valueOf(sqlData.getValue()));
+                        break;
+                    case TINY_INT:
+                        // Tiny int similar to SMALL_INT for JDBC.
+                        pStatement.setShort(columnNumber, Short.valueOf(sqlData.getValue()));
+                        break;
+                    case CHAR:
+                        // Char handled as String JDBC so fall through to default; same as string.
+                    case STORED_PROCEEDURE:
+//                        fall through, same as string.
+                // sqlData.getType() == SQLData.Type.STRING
+                    default:
+                        pStatement.setString(columnNumber, sqlData.getValue());
+                        break;
                 }
             }
         }
@@ -484,19 +538,19 @@ public class SQLInsertCommand implements Command
     @Override
     public String toString()
     {
-        PreparedStatement pStatement = null;
-        String result;
-        try
+        StringBuilder sBuff = new StringBuilder();
+        sBuff.append(this.getStatementString());
+//        sBuff.append(this.get)
+        for (int i = 0; i < this.columnList.size(); i++)
         {
-            pStatement = this.getPreparedStatement();
-            result = pStatement.toString();
-            pStatement.close();
+            SQLUpdateData sqlData = this.columnList.get(i);
+            sBuff.append("\n")
+                    .append("col.")
+                    .append(i + 1)
+                    .append("->")
+                    .append(sqlData.toString());
         }
-        catch (SQLException ex)
-        {
-            result = "**error in statement '" + 
-                    pStatement + "'.\n" + ex.getMessage();
-        }
-        return result;
+        sBuff.append("\n");
+        return sBuff.toString();
     } 
 }

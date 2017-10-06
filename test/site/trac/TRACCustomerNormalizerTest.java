@@ -83,8 +83,8 @@ public class TRACCustomerNormalizerTest
         assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()));
         System.out.println("EMAIL_ADDRESS>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()) +"<<<");
         
-        assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.PASSWORD.toString()));
-        System.out.println("PASSWORD>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()) +"<<<");
+//        assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.PASSWORD.toString()));
+//        System.out.println("PASSWORD>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()) +"<<<");
         
         assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.BIRTH_DATE.toString()));
         System.out.println("BIRTH_DATE>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.BIRTH_DATE.toString()) +"<<<");

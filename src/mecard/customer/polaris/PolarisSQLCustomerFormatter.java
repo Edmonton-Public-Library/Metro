@@ -21,7 +21,6 @@
 package mecard.customer.polaris;
 
 import java.util.List;
-import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 

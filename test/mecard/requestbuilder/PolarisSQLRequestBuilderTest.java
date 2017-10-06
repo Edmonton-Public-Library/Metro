@@ -11,6 +11,7 @@ import json.RequestDeserializer;
 import mecard.Request;
 import mecard.Response;
 import mecard.config.ConfigFileTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
@@ -52,12 +53,12 @@ public class PolarisSQLRequestBuilderTest
         
         String custReq =
 //                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12222 144 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
-                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"William, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H2\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804961212\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"William\\\"}\"}";
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346000\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012346000\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"William, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H2\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804961212\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"William\\\"}\"}";
 //                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Awsome, Richard\\\",\\\"STREET\\\":\\\"11111 111 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H1\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19690822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Richard\\\",\\\"LASTNAME\\\":\\\"Awesome\\\"}\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         customer = request.getCustomer();
-        test = WhichTest.GET_CUSTOMER;
+        test = WhichTest.CREATE_CUSTOMER; //CREATE_CUSTOMER GET_CUSTOMER
     }
     
     @Test
@@ -163,7 +164,7 @@ public class PolarisSQLRequestBuilderTest
                     // EmailAddress, 12, varchar, 64,
                     .string("EmailAddress")
                     // Password, 12, varchar, 16,
-                    .string("Password")
+//                    .string("Password") // DEPRECATED.
                     // EntryDate, 11, datetime, 23,
                     .date("EntryDate")      // TEST this, this seems fishy. Could also use DateCompares date methods.
                     // ExpirationDate, 11, datetime, 2
@@ -200,27 +201,27 @@ public class PolarisSQLRequestBuilderTest
                     // StatisticalClassID, 4, int, 10,
                     .integer("StatisticalClassID")     // null for integer id(?)
                     // CollectionExempt, -7, bit, 1,
-                    .integer("CollectionExempt")  // ***** This is a bit field, TODO test.
+                    .integer("CollectionExempt")
                     // AltEmailAddress, 12, varchar, 64,
                     .string("AltEmailAddress")
                     // ExcludeFromOverdues, -7, bit, 1,
-                    .integer("ExcludeFromOverdues")  // ***** This is a bit field, TODO test.
+                    .integer("ExcludeFromOverdues")
                     // SDIEmailAddress, 12, varchar, 150,
                     .string("SDIEmailAddress")
                     // SDIEmailFormatID, 4, int, 10,
                     .integer("SDIEmailFormatID")        // null integer value.
                     // 
-                    .integer("SDIPositiveAssent")  // ***** This is a bit field, TODO test.
+                    .integer("SDIPositiveAssent")
                     // SDIPositiveAssentDate, 11, datetime, 23,
                     .date("SDIPositiveAssentDate")
                     // DeletionExempt, -7, bit, 1,
-                    .integer("DeletionExempt")  // ***** This is a bit field, TODO test.
+                    .integer("DeletionExempt")
                     // PatronFullName, 12, varchar, 100,
                     .string("PatronFullName")
                     // ExcludeFromHolds, -7, bit, 1,
-                    .integer("ExcludeFromHolds")  // ***** This is a bit field, TODO test.
+                    .integer("ExcludeFromHolds")
                     // ExcludeFromBills, -7, bit, 1,
-                    .integer("ExcludeFromBills")  // ***** This is a bit field, TODO test.
+                    .integer("ExcludeFromBills")
                     // EmailFormatID, 4, int, 10,
                     .integer("EmailFormatID")
                     // PatronFirstLastName, 12, varchar, 100,
@@ -234,11 +235,11 @@ public class PolarisSQLRequestBuilderTest
                     // MergeBarcode, 12, varchar, 20,
                     .string("MergeBarcode")
                     // CellPhone,  NULL
-                    .string("CellPhone")
+//                    .string("CellPhone") // DEPRECATED.
                     // CellPhoneCarrierID,  NULL
-                    .string("CellPhoneCarrierID")
+//                    .string("CellPhoneCarrierID")  // DEPRECATED.
                     // EnableSMS,  0
-                    .string("EnableSMS")  // ***** This is a bit field, TODO test.     
+                    .string("EnableSMS")    
                     // RequestPickupBranchID,  NULL
                     .string("RequestPickupBranchID")
                     // Phone1CarrierID, , NULL
@@ -251,6 +252,7 @@ public class PolarisSQLRequestBuilderTest
                     .string("eReceiptOptionID")
                     // TxtPhoneNumber, -6, tinyint, 3 TxtPhoneNumber,  NULL
                     .string("TxtPhoneNumber")
+                    .string("DoNotShowEReceiptPrompt")
                     .build();
 
             status = selectPatronRegistration.execute();
@@ -357,6 +359,7 @@ public class PolarisSQLRequestBuilderTest
             // This command is the last untested or failed command to run from 
             // requestBuilder.getCreateUserCommand
             Command command = requestBuilder.getCreateUserCommand(customer, response, normalizer);
+            System.out.println("COMMAND:'"+command.toString()+"'");
             CommandStatus status = command.execute();
             System.out.println("STATUS_out:'"+status.getStdout()+"'");
             System.out.println("STATUS_err:'"+status.getStderr()+"'");

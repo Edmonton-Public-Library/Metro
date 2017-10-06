@@ -24,9 +24,10 @@ package api;
  * Manages data type expectations for SQL queries.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public final class SQLUpdateData extends SQLData
+public class SQLUpdateData extends SQLData
 {
     private String value; 
+    private String PROCEDURE_INVOCATION = "fn";
     public SQLUpdateData(String name, SQLData.Type dType, String value)
     {
         super(name, dType);
@@ -41,18 +42,51 @@ public final class SQLUpdateData extends SQLData
     {
         return this.value;
     }
+    
+    /**
+     * This allows you to control the how the procedure is called. Typically
+     * you would use 'call', 'fn', or 'EXEC'.
+     * @param invocation 
+     */
+    public void setProcedureInvocation(String invocation)
+    {
+        this.PROCEDURE_INVOCATION = invocation;
+    }
+    
+    /**
+     * Sets the object as a query string, that is, in an insert statement
+     * this object would be represented by the '?' in this SQL query:
+     * INSERT INTO Table VALUES (?);
+     * @return the query string representation of this object.
+     */
+    public String toQueryString()
+    {
+        switch (this.dataType)
+        {
+            case STORED_PROCEEDURE:
+                if (this.value == null || this.value.isEmpty())
+                {
+                    return "{" + PROCEDURE_INVOCATION + " " + this.name + "()}";
+                }
+                return "{" + PROCEDURE_INVOCATION + " " + this.name + "(?)}";
+            default:
+                return "?";
+        }
+    }
 
     @Override
     public String toString()
     {
         if (this.value == null)
         {
-            return this.name + " is null";
+            return this.name + "=NULL";
         }
-        if (this.dataType == Type.INT)
+        switch (this.dataType)
         {
-            return this.name + "=" + this.value;
+            case INT:
+                return this.name + "=" + this.value;
+            default:
+                return this.name + "='" + this.value + "'";
         }
-        return this.name + "='" + this.value + "'";
     }    
 }

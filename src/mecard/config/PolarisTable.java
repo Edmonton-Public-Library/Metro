@@ -57,8 +57,14 @@ public class PolarisTable
         CLAIM_COUNT("ClaimCount"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 11, YES, 
         LOST_ITEM_COUNT("LostItemCount"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 12, YES, 
         CHARGES_AMOUNT("ChargesAmount"), //, 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 13, NO, 
-        CREDITS_AMOUNT("CreditsAmount"); // 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 14, NO,
-        private String type;
+        CREDITS_AMOUNT("CreditsAmount"), // 3, money, 19, 21, 4, 10, 0, null, null, 3, null, null, 14, NO,
+        /** New to Polaris v.5.2:3 ***/
+        RECORD_STATUS_ID("RecordStatusID"), //, 4, int, 10, 4, 0, 10, 0, null, ((1)), 4, null, null, 15, NO, 
+        RECORD_STATUS_DATE("RecordStatusDate"), // 11, datetime, 23, 16, 3, null, 0, null, (getdate()), 9, 3, null, 16, NO, 
+        YTD_YOU_SAVED_AMOUNT("YTDYouSavedAmount"), // 3, money, 19, 21, 4, 10, 0, null, ((0)), 3, null, null, 17, NO, 
+        LIFE_TIME_YOU_SAVED_AMOUNT("LifetimeYouSavedAmount"); // 3, money, 19, 21, 4, 10, 0, null, ((0)), 3, null, null, 18, NO, 
+        
+        private final String type;
 
         private Patrons(String s)
         {
@@ -85,7 +91,12 @@ public class PolarisTable
         PHONE_VOICE_2("PhoneVoice2"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 9, YES, 
         PHONE_VOICE_3("PhoneVoice3"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 10, YES, 
         EMAIL_ADDRESS("EmailAddress"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 11, YES, 
-        PASSWORD("Password"), //, 12, varchar, 16, 16, null, null, 1, null, null, 12, null, 16, 12, YES, 
+        /*
+        DEPRECATED: This field is no longer part of the schema. See PasswordHash and ObfuscatedPassword below for more 
+        information as of Polaris v.5.3:3
+        DEPRECATED but still referenced to get the customers pin from the PolarisSQLFormattedCustomer object.
+        */
+//        PASSWORD("Password"), // DEPRECATED:, 12, varchar, 16, 16, null, null, 1, null, null, 12, null, 16, 12, YES, 
         ENTRY_DATE("EntryDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 13, YES, 
         EXPIRATION_DATE("ExpirationDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 14, YES, 
         ADDR_CHECK_DATE("AddrCheckDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 15, YES, 
@@ -122,8 +133,8 @@ public class PolarisTable
         MERGE_BARCODE("MergeBarcode"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 46, YES,
         // These two values seem to have dissappeared as valid column names, Feb. 4, 2015.
         // as of Polaris 4.1R2 (Build 4.1.1439.2)
-//        CELL_PHONE("CellPhone"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 47, YES, 
-//        CELL_PHONE_CARRIER_ID("CellPhoneCarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 48, YES, 
+//        DEPRECATED: CELL_PHONE("CellPhone"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 47, YES, 
+//        DEPRECATED: CELL_PHONE_CARRIER_ID("CellPhoneCarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 48, YES, 
         ENABLE_SMS("EnableSMS"), //, -7, bit, 1, 1, null, null, 1, null, null, -7, null, null, 49, YES, 
         REQUEST_PICKUP_BRANCH_ID("RequestPickupBranchID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 50, YES, 
         PHONE1_CARRIER_ID("Phone1CarrierID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 51, YES, 
@@ -133,7 +144,26 @@ public class PolarisTable
         TXT_PHONE_NUMBER("TxtPhoneNumber"), //, -6, tinyint, 3, 1, 0, 10, 1, null, null, -6, null, null, 55, YES,
         EXCLUDE_FROM_ALMOST_OVERDUE_AUTO_RENEW("ExcludeFromAlmostOverdueAutoRenew"), // bit, default = 1
         EXCLUDE_FROM_PATRON_REC_EXPIRATION("ExcludeFromPatronRecExpiration"), // bit, default = 1
-        EXCLUDE_FROM_INACTIVE_PATRON("ExcludeFromInactivePatron"); // bit, default = 1
+        EXCLUDE_FROM_INACTIVE_PATRON("ExcludeFromInactivePatron"), // bit, default = 1
+        // New to Polaris schema 5.2.3
+        // Polaris, PatronRegistration, DoNotShowEReceiptPrompt, -7, bit, 1, 1, null, null, 0, null, ((0)), -7, null, null, 56, NO,
+        DO_NOT_SHOW_E_RECEIPT_PROMPT("DoNotShowEReceiptPrompt"), // bit, default = 1
+        /* July 13, 2017, Updated Sept. 1, 2017.
+        Taking a look at the stored procedures surrounding the Patron 
+        Registration Create and Update processes, it looks as though the 
+        ObfuscatedPassword and PasswordHash columns are generated using functions. 
+        The PasswordHash is generated using the dbo.ILS_HashPassword function 
+        and the ObfuscatedPassword is calculated using the dbo.ILS_ObfuscateText 
+        function. Here is an example of how they are used in the 
+        Circ_UpdatePatron stored procedure:
+        [PasswordHash] = dbo.ILS_HashPassword(@strPassword),
+        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(@strPassword
+        *** from the describe command.
+        Polaris, Polaris, PatronRegistration, PasswordHash,       12, varchar, 256, 256, null, null, 1, null, null, 12, null, 256, 57, YES, 
+        Polaris, Polaris, PatronRegistration, ObfuscatedPassword, 12, varchar, 256, 256, null, null, 1, null, null, 12, null, 256, 58, YES,
+        */
+        PASSWORD_HASH("PasswordHash"),               // These are not actually used directly. They get populated by a procedure call on Polaris.
+        OBFUSCATED_PASSWORD("ObfuscatedPassword");   // Example: callableStatement = con.prepareCall("{call Polaris.Circ_SetPatronPassword(?)}"); 
         
         private final String type;
 

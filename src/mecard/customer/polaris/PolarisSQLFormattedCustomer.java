@@ -138,10 +138,15 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 PolarisTable.PATRON_REGISTRATION, 
                 PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), 
                 customer.get(CustomerFieldTypes.EMAIL));
-        this.insertValue(
-                PolarisTable.PATRON_REGISTRATION, 
-                PolarisTable.PatronRegistration.PASSWORD.toString(), 
-                customer.get(CustomerFieldTypes.PIN));
+        /*
+        Plain-text passwords are no longer stored, they are stored in an 
+        obfuscated field and a hash password field that are populated by 
+        a stored proceedure {call Polaris.Circ_SetPatronPassword(?)}
+        */
+//        this.insertValue(
+//                PolarisTable.PATRON_REGISTRATION, 
+//                PolarisTable.PatronRegistration.PASSWORD.toString(), 
+//                customer.get(CustomerFieldTypes.PIN));
         // Expiration and DOB date.
         String dob         = "";
         String expiry      = "";
@@ -366,11 +371,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
      */
     private boolean containsKey(FormattedTable table, String key)
     {
-        if (table.getValue(key).isEmpty() == false)
-        {
-            return true;
-        }
-        return false;
+        return table.getValue(key).isEmpty() == false;
     }
 
     /**

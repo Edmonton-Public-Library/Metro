@@ -28,6 +28,7 @@ import api.SQLConnector;
 import api.SQLCustomerMessage;
 import api.SQLInsertCommand;
 import api.SQLSelectCommand;
+import api.SQLStoredProcedureCommand;
 import api.SQLUpdateCommand;
 import java.text.ParseException;
 import java.util.List;
@@ -74,7 +75,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     private final String driver;
     private final String database;
     private final String user;
-    private final String password;
+    private final String databasePassword;
     private final String creatorID;
     private final String organizationID;
     private final String patronCodeID;
@@ -92,7 +93,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.driver         = properties.getProperty(PolarisSQLPropertyTypes.CONNECTOR_TYPE.toString()); // AKA connector-type.
         this.database       = properties.getProperty(PolarisSQLPropertyTypes.DATABASE.toString());
         this.user           = properties.getProperty(PolarisSQLPropertyTypes.USERNAME.toString());
-        this.password       = properties.getProperty(PolarisSQLPropertyTypes.PASSWORD.toString());
+        this.databasePassword = properties.getProperty(PolarisSQLPropertyTypes.PASSWORD.toString());
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.PATRON_CODE_ID.toString());
@@ -116,7 +117,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.driver         = driver;
         this.database       = database;
         this.user           = user;
-        this.password       = password;
+        this.databasePassword       = password;
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
@@ -135,7 +136,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         System.out.println("USERID:" + barcode);
         this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
             .user(user)
-            .password(password)
+            .password(databasePassword)
             .build();
         SQLSelectCommand selectUser = new SQLSelectCommand.Builder(this.connector, this.patronsTable)
             .string(PolarisTable.Patrons.BARCODE.toString())
@@ -173,7 +174,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // This is a class variable because the Responder will need to run the last command and return results.
         this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
             .user(user)
-            .password(password)
+            .password(databasePassword)
             .build();
         
         //        INSERT INTO Polaris.Polaris.Patrons ( PatronCodeID , OrganizationID , CreatorID , ModifierID , Barcode , 
@@ -196,6 +197,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             .integer(PolarisTable.Patrons.LOST_ITEM_COUNT.toString(), "0")
             .money(PolarisTable.Patrons.CHARGES_AMOUNT.toString(), "0")
             .money(PolarisTable.Patrons.CREDITS_AMOUNT.toString(), "0")
+            .integer(PolarisTable.Patrons.RECORD_STATUS_ID.toString(), "1")
+            .dateTimeNow(PolarisTable.Patrons.RECORD_STATUS_DATE.toString())
+            .money(PolarisTable.Patrons.YTD_YOU_SAVED_AMOUNT.toString(), "0")
+            .money(PolarisTable.Patrons.LIFE_TIME_YOU_SAVED_AMOUNT.toString(), "0")
             .build();
         
         // Create this entry in the Patrons table.
@@ -282,7 +287,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         //        NULL , NULL , NULL , NULL, NULL , NULL , 0 , NULL , NULL , NULL , NULL , NULL , NULL, 1 , 1 , 1 )
         //        *NOTE - concatenate values in [ ]. 
         // *** Column titles and expected values ***
-        SQLInsertCommand createPatronRegistrationCommand = new SQLInsertCommand.Builder(connector, this.patronRegistration)
+//        String customerPassword = customer.get(CustomerFieldTypes.PIN);
+        SQLInsertCommand createPatronRegistrationCommand = new SQLInsertCommand.Builder(connector, this.patronRegistration, true)
                 .integer(PolarisTable.PatronRegistration.PATRON_ID.toString(), polarisPatronID)
                 .smallInt(PolarisTable.PatronRegistration.LANGUAGE_ID.toString(), 
                         fCustomer.getValue(PolarisTable.PatronRegistration.LANGUAGE_ID.toString()))
@@ -299,8 +305,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .string(PolarisTable.PatronRegistration.PHONE_VOICE_3.toString(), null)
                 .string(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), 
                         fCustomer.getValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()))
-                .string(PolarisTable.PatronRegistration.PASSWORD.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()))
+//                DEPRECATED: .string(PolarisTable.PatronRegistration.PASSWORD.toString(), 
+//                        fCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()))
                 .dateTimeNow(PolarisTable.PatronRegistration.ENTRY_DATE.toString())
                 .dateTime(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), expiry)
                 .dateTime(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), expiry)
@@ -345,8 +351,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .dateTime(PolarisTable.PatronRegistration.MERGE_DATE.toString()) // null
                 .integer(PolarisTable.PatronRegistration.MERGE_USER_ID.toString(), null)
                 .string(PolarisTable.PatronRegistration.MERGE_BARCODE.toString(), null)
-//                .string(PolarisTable.PatronRegistration.CELL_PHONE.toString(), null)
-//                .integer(PolarisTable.PatronRegistration.CELL_PHONE_CARRIER_ID.toString(), null)
+//                DEPRECATED: .string(PolarisTable.PatronRegistration.CELL_PHONE.toString(), null)
+//                DEPRECATED: .integer(PolarisTable.PatronRegistration.CELL_PHONE_CARRIER_ID.toString(), null)
                 .bit(PolarisTable.PatronRegistration.ENABLE_SMS.toString(), "0") 
                 .integer(PolarisTable.PatronRegistration.REQUEST_PICKUP_BRANCH_ID.toString(), null)
                 .integer(PolarisTable.PatronRegistration.PHONE1_CARRIER_ID.toString(), null)
@@ -357,7 +363,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_ALMOST_OVERDUE_AUTO_RENEW.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_PATRON_REC_EXPIRATION.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_INACTIVE_PATRON.toString(), "1")
+                .bit(PolarisTable.PatronRegistration.DO_NOT_SHOW_E_RECEIPT_PROMPT.toString(), "1")
+                // Calling a procedure in the insert command does work but not for 
+                // hashing the password. You can do this but for our purposes use SQLStoredProcedure object.
+//                .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN)) 
                 .build();
+
+
         status = createPatronRegistrationCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
@@ -370,6 +382,34 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
                     .build();
         }
+        ////////////////////// Handle Password  ////////////////////////////
+        // 
+        // So the engineer recommends that we call the stored procedure after
+        // loading the PatronRegistration table.
+        //        [HashedPassword]     = dbo.ILS_HashPassword(password)
+        //        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(password)
+        //        .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
+        SQLStoredProcedureCommand callHashPasswordCommand = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.Circ_SetPatronPassword", 
+                        "call")
+                .integer("nPatronID", polarisPatronID)
+                .string("szPassword", customer.get(CustomerFieldTypes.PIN))
+                .build();
+        status = callHashPasswordCommand.execute();
+        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+        {
+            System.out.println("**error failed to create customer data " 
+                    + customer.get(CustomerFieldTypes.ID) + " in table: "
+                    + this.patronRegistration);
+            // When this command gets run it returns a useful message and error status for customer.
+            return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+                    .build();
+        }
+        //////////////////////// end  Pasword Hashing ///////////////////////////
         
         // *** ADD POSTAL CODE ***
 //
@@ -641,7 +681,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // This is a class variable because the Responder will need to run the last command and return results.
         this.connector = new SQLConnector.Builder(host, driver, database)
             .user(user)
-            .password(password)
+            .password(databasePassword)
             .build();
         // Add code to first check for LOSTCARD and if found search on ALT_ID field first.
         String oldOrNewBarCode = fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString());
@@ -749,8 +789,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     fCustomer.getValue(PolarisTable.PatronRegistration.PHONE_VOICE_1.toString()))
             .string(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()))
-            .string(PolarisTable.PatronRegistration.PASSWORD.toString(), 
-                    fCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()))
+//            .string(PolarisTable.PatronRegistration.PASSWORD.toString(), 
+//                    fCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()))
+            // TODO: Add code to update hash and obfiscated code.
             .dateTime(PolarisTable.PatronRegistration.UPDATE_DATE.toString(), 
                     today)
             .dateTime(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), 
@@ -777,7 +818,35 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .setStatus(1)
                 .setStderr(messages.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()))
                 .build();
-        } 
+        }
+        ////////////////////// Handle Password  ////////////////////////////
+        // 
+        // So the engineer recommends that we call the stored procedure after
+        // loading the PatronRegistration table.
+        //        [HashedPassword]     = dbo.ILS_HashPassword(password)
+        //        [ObfuscatedPassword] = dbo.ILS_ObfuscateText(password)
+        //        .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN))
+        SQLStoredProcedureCommand callHashPasswordCommand = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.Circ_SetPatronPassword", 
+                        "call")
+                .integer("nPatronID", polarisPatronID)
+                .string("szPassword", customer.get(CustomerFieldTypes.PIN))
+                .build();
+        status = callHashPasswordCommand.execute();
+        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+        {
+            System.out.println("**error failed to create customer data " 
+                    + customer.get(CustomerFieldTypes.ID) + " in table: "
+                    + this.patronRegistration);
+            // When this command gets run it returns a useful message and error status for customer.
+            return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+                    .build();
+        }
+        //////////////////////// end  Pasword Hashing ///////////////////////////
         // Get the postal code id for the 
         SQLSelectCommand selectPostalCodeID = new SQLSelectCommand.Builder(connector, this.postalCodes)
             .string(PolarisTable.PostalCodes.POSTAL_CODE_ID.toString())

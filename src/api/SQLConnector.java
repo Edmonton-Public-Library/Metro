@@ -144,7 +144,23 @@ public class SQLConnector
                         SQLConnector.class.getName() 
                         + " unregistered JDBC driver type. (1024)"); // conspicuous easy to find message.
         }
-        
+        System.out.println("==connection layer");
+        System.out.println("driverName: "+driverName);
+        System.out.println("port: "+port);
+        System.out.println("url: "+url);
+        System.out.println("driverType: "+driverType);
+        System.out.println("==DB layer");
+        System.out.println("host: "+host);
+        System.out.println("sqlDatabase: "+sqlDatabase);
+        System.out.println("sqlUser: "+sqlUser);
+        System.out.print("sqlPassword: ");
+        for (String c: sqlPassword.split(""))
+        {
+            System.out.print("*");
+//            System.out.print(c);
+        }
+        System.out.println();
+
         try
         {
             Class.forName(this.driverName);
@@ -163,7 +179,7 @@ public class SQLConnector
         }
         catch (SQLException ex)
         {
-            System.out.println("SQL Connection failed: " + ex.getMessage());
+            System.err.println("=======> SQL Connection failed: " + ex.getMessage());
             throw new ConfigurationException("sql driver error");
         }
         
@@ -199,6 +215,10 @@ public class SQLConnector
         connectionURL.append("databaseName=");
         connectionURL.append(this.sqlDatabase);
         connectionURL.append(";");
+        // Not required for the current driver version.
+//        connectionURL.append("integratedSecurity=true;");
+//        connectionURL.append(this.sqlDatabase);
+//        connectionURL.append(";");
         System.out.println(">>>>"+connectionURL.toString()+"<<<<");
         return connectionURL.toString();
     }
