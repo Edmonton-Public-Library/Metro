@@ -41,7 +41,7 @@ public class SQLDescribeCommandTest
     {
         System.out.println("===Describe execute===");
         // use this version for query DESCRIBE table
-        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, PolarisTable.POSTAL_CODES) //PatronRegistration, Patrons, Addresses, PostalCodes
+        SQLDescribeCommand describe = new SQLDescribeCommand.Builder(connector, PolarisTable.ADDRESSES) //PatronRegistration, Patrons, Addresses, PostalCodes
                 .build();
         System.out.println("COMMAND==>"+describe.toString()+"<==");
         CommandStatus status = describe.execute();
