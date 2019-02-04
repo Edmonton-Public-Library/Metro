@@ -406,6 +406,10 @@ public class SIPConnector
             } 
             catch (IOException ex)
             {
+                // TODO: This produces spireous error messages if the ILS is down.
+                // So much so it will fill the partition and the service will stall.
+                // TODO: quit after a reasonable time or better create a message
+                // for a mailing system to deliver.
                 if (debug)System.out.println("DEBUG error: "+ ex.getMessage());
                 Logger.getLogger(SIPConnector.class.getName()).log(Level.SEVERE, null, ex);
             }
