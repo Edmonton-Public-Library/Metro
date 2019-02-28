@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,9 @@ import mecard.ResponseTypes;
 import mecard.exception.ConfigurationException;
 
 /**
- * Handles basic SQL selection statement via JDBC.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Handles basic SQL update statement via JDBC, providing all the convenience
+ * methods for preparing and executing an SQL update command.
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class SQLUpdateCommand implements Command
 {
@@ -40,6 +41,9 @@ public class SQLUpdateCommand implements Command
     private final String table;
     private final SQLUpdateData where;
     
+    /**
+     * Part of the Builder design pattern.
+     */
     public static class Builder
     {
         private SQLConnector connector;
@@ -47,6 +51,12 @@ public class SQLUpdateCommand implements Command
         private List<SQLUpdateData> columnList; // Column names you wish to see in selection.
         private SQLUpdateData where;
         
+        /**
+         * Constructor for the builder that requires a SQL connector and a table
+         * that is the target of this update command.
+         * @param s SQL connector.
+         * @param tableName 
+         */
         public Builder(SQLConnector s, String tableName)
         {
             if (s == null)
@@ -61,27 +71,66 @@ public class SQLUpdateCommand implements Command
             this.where = null;
         }
         
+        /**
+         * Sets a where clause for the update object, where the 'where' clause
+         * involves an string comparison.
+         * @param key the string field, or column.
+         * @param value the string to be stored.
+         * @return builder object. 
+         */
         public Builder whereString(String key, String value)
         {
             return this.where(value, SQLData.Type.STRING, value);
         }
         
+        /**
+         * Sets a where clause for the update object, where the 'where' clause
+         * involves an integer comparison.
+         * @param key the integer field, or column.
+         * @param value the integer to be stored.
+         * @return builder object.
+         */
         public Builder whereInteger(String key, String value)
         {
             return this.where(key, SQLData.Type.INT, value);
         }
         
+        /**
+         * Sets a where clause for the update, where the 'where' clause
+         * is a date comparison.
+         * @param key the date field, or column.
+         * @param value the date to be stored.
+         * @return builder object.
+         */
         public Builder whereDate(String key, String value)
         {
             return this.where(key, SQLData.Type.DATE, value);
         }
         
+        /**
+         * Sets a where clause for the update. SQLUpdateCommands are required
+         * to have a 'where' clause which is tested for before the builder object
+         * instantiates a new SQLUpdateCommand object. This method allows the 
+         * caller to specify a 'where' clause, but the other 'where*' methods
+         * are added for convenience. This should be used as a last resort.
+         * 
+         * @param key The target column of the 'where' clause.
+         * @param type the expected data type of the column.
+         * @param value the value that must match for the 'where' clause to be true.
+         * @return builder object.
+         */
         private Builder where(String key, SQLData.Type type, String value)
         {
             this.where = new SQLUpdateData(key, type, value);
             return this;
         }
         
+        /**
+         * Sets a column that has a string datatype.
+         * @param cName column name.
+         * @param value value to store in the column.
+         * @return builder object for construction of the SQL update command.
+         */
         public Builder string(String cName, String value)
         {
             if (this.isNullOrEmpty(value))
@@ -95,6 +144,12 @@ public class SQLUpdateCommand implements Command
             return this;
         }
         
+        /**
+         * Specifies a date field to update.
+         * @param dName field name.
+         * @param date updated date data.
+         * @return Builder object for the next operation.
+         */
         public Builder date(String dName, String date)
         {
             if (this.isNullOrEmpty(date))
@@ -127,6 +182,12 @@ public class SQLUpdateCommand implements Command
             return this;
         }
         
+        /** 
+         * Allows the update of an Integer field.
+         * @param iName
+         * @param value
+         * @return Builder object.
+         */
         public Builder integer(String iName, String value)
         {
             if (this.isNullOrEmpty(value))
@@ -187,7 +248,11 @@ public class SQLUpdateCommand implements Command
                     || s.equalsIgnoreCase("NULL");
         }
         
-        
+        /**
+         * Builds the SQL update command based on the values specified during
+         * the builder creation process.
+         * @return a new SQLUpdateCommand ready to execute.
+         */
         public SQLUpdateCommand build()
         {
             if (this.where == null || this.where.getValue().isEmpty())
@@ -198,6 +263,10 @@ public class SQLUpdateCommand implements Command
         }
     }
     
+    /**
+     * Private constructor. Used through the builder design pattern.
+     * @param builder 
+     */
     private SQLUpdateCommand(Builder builder)
     {
         this.connector  = builder.connector;
@@ -206,10 +275,15 @@ public class SQLUpdateCommand implements Command
         this.where      = builder.where;
     }
     
+    /**
+     * As the name suggests, prepares the SQL statement for execution.
+     * @return a well formed SQL update statement.
+     * @throws SQLException 
+     */
     private PreparedStatement getPreparedStatement() throws SQLException
     {
-        PreparedStatement pStatement = null;
-        Connection connection = null;
+        PreparedStatement pStatement;
+        Connection connection;
         StringBuilder statementStrBuilder = new StringBuilder();
         // update <table> set <col>=<value> where <condition>=<test>;
         statementStrBuilder.append("UPDATE ");

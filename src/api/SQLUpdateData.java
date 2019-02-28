@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,13 @@
 package api;
 
 /**
- * Manages data type expectations for SQL queries.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Associates a data value for a column and the intended data type of that 
+ * column in a single object.
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class SQLUpdateData extends SQLData
 {
-    private String value; 
+    private final String value; 
     private String PROCEDURE_INVOCATION = "fn";
     public SQLUpdateData(String name, SQLData.Type dType, String value)
     {
@@ -35,7 +36,10 @@ public class SQLUpdateData extends SQLData
     }
 
     /**
-     * 
+     * Gets the value to be stored in the column during an update or insert 
+     * operation. Values are always stored internally as strings, and coerced,
+     * or more accurately, converted into their appropriate data type during 
+     * an SQL INSERT of UPDATE command.
      * @return stored value which may be null.
      */
     public String getValue()

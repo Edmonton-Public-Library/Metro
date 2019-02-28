@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,10 @@ import mecard.ResponseTypes;
 import mecard.exception.ConfigurationException;
 
 /**
- *
- * @author anisbet
+ * This class is the equivalent of the SQL DESCRIBE command. This class
+ * isn't used in production but during testing to see if there are changes to
+ * a table, or just to confirm the schema of a table.
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class SQLDescribeCommand implements Command
 {
@@ -60,6 +62,10 @@ public class SQLDescribeCommand implements Command
         }
     }
     
+    /**
+     * Constructor for the DESCRIBE command.
+     * @param builder the builder object.
+     */
     private SQLDescribeCommand(Builder builder)
     {
         this.connector  = builder.connector;
@@ -79,7 +85,7 @@ public class SQLDescribeCommand implements Command
         }
     }
     
-        @Override
+    @Override
     public CommandStatus execute()
     {
         CommandStatus status = new CommandStatus();

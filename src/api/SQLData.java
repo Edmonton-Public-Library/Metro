@@ -21,10 +21,9 @@
 package api;
 
 /**
- * Convenience class for SQL statements and managing expected data types to and 
- * from the database.
+ * Convenience class for storing both data and data type for SQL statements.
  * 
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class SQLData
 {
@@ -42,19 +41,34 @@ public class SQLData
         STORED_PROCEEDURE;
     }
     
+    // Data name.
     protected final String name;
     protected final Type dataType;
+    
+    /**
+     * Constructor that takes the name of the data, and it's SQL type.
+     * @param name
+     * @param dType 
+     */
     public SQLData(String name, Type dType)
     {
         this.name = name;
         this.dataType = dType;
     }
 
+    /**
+     * Returns the SQL type of this data supplied at the time of creation.
+     * @return type of the data stored.
+     */
     public Type getType()
     {
         return this.dataType;
     }
 
+    /**
+     * The name of the data.
+     * @return the data's name property.
+     */
     public String getName()
     {
         return this.name;

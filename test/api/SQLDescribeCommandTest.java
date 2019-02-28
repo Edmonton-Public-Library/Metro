@@ -7,7 +7,6 @@ import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.PolarisTable;
 import mecard.config.PropertyReader;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
