@@ -728,6 +728,48 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
                 .build();
         }
+        // Marigold says we should include stored procedure calls to index the patron 
+        // after adding them to the database. Not necessary after updating.
+        ////////////////////// Handle Indexing  ////////////////////////////
+        // 
+        /////////////////// TODO: Test after releasing PRL. ////////////////
+//        SQLStoredProcedureCommand callGatherPatronKeywords = 
+//                new SQLStoredProcedureCommand.Builder(
+//                        connector, 
+//                        "Polaris.IDX_GatherPatronKeywords", 
+//                        "call")
+//                .integer("nPatronID", polarisPatronID)
+//                .build();
+//        status = callGatherPatronKeywords.execute();
+//        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+//        {
+//            System.out.println("**error failed to execute indexing proceedure "
+//                    + "Polaris.IDX_GatherPatronKeywords ");
+//            // When this command gets run it returns a useful message and error status for customer.
+//            return new DummyCommand.Builder()
+//                    .setStatus(1)
+//                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+//                    .build();
+//        }
+//        SQLStoredProcedureCommand callAddPatronKeywords = 
+//                new SQLStoredProcedureCommand.Builder(
+//                        connector, 
+//                        "Polaris.IDX_AddPatronKeywords", 
+//                        "call")
+//                .integer("nPatronID", polarisPatronID)
+//                .build();
+//        status = callAddPatronKeywords.execute();
+//        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+//        {
+//            System.out.println("**error failed to execute indexing proceedure "
+//                    + "Polaris.IDX_AddPatronKeywords ");
+//            // When this command gets run it returns a useful message and error status for customer.
+//            return new DummyCommand.Builder()
+//                    .setStatus(1)
+//                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+//                    .build();
+//        }
+        //////////////////////// end indexing  ///////////////////////////
         return insertPatronIDAddressID;
     }
 
