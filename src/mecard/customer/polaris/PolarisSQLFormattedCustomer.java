@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2019  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.PolarisTable;
+import mecard.config.PolarisVersion;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.FormattedCustomer;
@@ -49,14 +50,28 @@ import mecard.util.PostalCode;
 public class PolarisSQLFormattedCustomer implements FormattedCustomer
 {
     private final List<FormattedTable> customerAccount;
+    private final PolarisVersion version; // 5.2 at time of writing.
     
+    /** 
+     * Formats the customer object into an SQL statement ready to be executed.
+     * @param customer 
+     */
     public PolarisSQLFormattedCustomer(Customer customer)
     {
         // Create the master list of tables.
         this.customerAccount = new ArrayList<>();
         // Here is the contents of the properties file.
         Properties props = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
-        
+        // Set the version of customer conformance if set in polaris_sql.properties file.
+        String v = props.getProperty("conformance", "default");
+        if (v.endsWith("6.2"))
+        {
+            this.version = PolarisVersion.SIX_DOT_TWO;
+        }
+        else
+        {
+            this.version = PolarisVersion.DEFAULT;
+        }
         HashMap<String, String> table = new HashMap<>();
         PolarisSQLFormattedTable formattedTable = new PolarisSQLFormattedTable(PolarisTable.PATRONS, table);
         this.customerAccount.add(formattedTable);
@@ -261,11 +276,24 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 PolarisTable.Addresses.STREET_ONE.toString(), 
                 customer.get(CustomerFieldTypes.STREET));
         ///////////////// PatronAddresses ///////////////////////////
-        this.insertValue(
+        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        {
+            this.insertValue(
+                PolarisTable.PATRON_ADDRESSES, 
+                PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                // read from the properties file if properties file's 'conformance'
+                // <entry> is set to '... 6.2'. Then we use a different name and
+                // a different value. Instead of 'Home' we will use '1' (one).
+                props.getProperty(PolarisSQLPropertyTypes.ADDRESS_LABEL_ID.toString())); 
+        }
+        else  // PolarisVersion.DEFAULT...a-la 5.6 TRAC's version.
+        {
+            this.insertValue(
                 PolarisTable.PATRON_ADDRESSES, 
                 PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
                 // read from the properties file.
                 props.getProperty(PolarisSQLPropertyTypes.FREE_TEXT_LABEL.toString()));
+        }
     }
     
     @Override

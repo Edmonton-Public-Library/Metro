@@ -78,6 +78,9 @@ public class PolarisTable
         }
     }
     
+    /** 
+     * All the column names from with the PatronRegistration table.
+     */
     public enum PatronRegistration
     {
         PATRON_ID("PatronID"), // 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 1, NO, 
@@ -163,7 +166,9 @@ public class PolarisTable
         Polaris, Polaris, PatronRegistration, ObfuscatedPassword, 12, varchar, 256, 256, null, null, 1, null, null, 12, null, 256, 58, YES,
         */
         PASSWORD_HASH("PasswordHash"),               // These are not actually used directly. They get populated by a procedure call on Polaris.
-        OBFUSCATED_PASSWORD("ObfuscatedPassword");   // Example: callableStatement = con.prepareCall("{call Polaris.Circ_SetPatronPassword(?)}"); 
+        OBFUSCATED_PASSWORD("ObfuscatedPassword"),   // Example: callableStatement = con.prepareCall("{call Polaris.Circ_SetPatronPassword(?)}"); 
+        NAME_TITLE_ID("NameTitleID"),                // [int] NULL, this is new to Polaris 6.2
+	RBDIGITAL_PATRON_ID("RBdigitalPatronID");    // [int] NULL, this is new to Polaris 6.2
         
         private final String type;
 
@@ -230,7 +235,10 @@ public class PolarisTable
         PATRON_ID("PatronID"), //, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 1, NO, 
         ADDRESS_ID("AddressID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 2, YES, 
         ADDRESS_TYPE_ID("AddressTypeID"), //, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 3, NO, 
+        // The FreeTextLabel field has been replaced with AddressLabelID in Polaris 6.2.
         FREE_TEXT_LABEL("FreeTextLabel"), //, 12, varchar, 30, 30, null, null, 1, null, null, 12, null, 30, 4, YES, 
+        // Polaris 6.2
+        ADDRESS_LABEL_ID("AddressLabelID"), //, fk, int, NOT NULL -- default to the integer '1' which is 'Home' in previous versions of Polaris.
         VERIFIED("Verified"), //, -7, bit, 1, 1, null, null, 0, null, null, -7, null, null, 5, NO, 
         VERIFICATION_DATE("VerificationDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 6, YES, 
         POLARIS_USER_ID("PolarisUserID"); //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 7, YES,

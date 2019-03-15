@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MeCard Metro Server"
-#define MyAppVersion "0.9.06_03_p"
+#define MyAppVersion "0.9.07"
 #define MyAppPublisher "Edmonton Public Library"
 #define MyAppURL "https://github.com/Edmonton_Public_Library/Metro"
 #define MyAppExeName "install.bat"
@@ -96,7 +96,7 @@ Filename: "{app}\windows\uninstall.bat"; WorkingDir: "{app}"; Flags: shellexec
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\*"
-
+;============= added "'runas /env '+" when creating batch files for Windows server 2019.
 [Code]
 // Install batch creation
 function CreateInstallBatch(): boolean;
@@ -112,7 +112,7 @@ begin
   serverName := ExpandConstant('{#MyAppName}');
   SetArrayLength(lines, 3);
   lines[0] := 'REM Installs (updates) {#MyAppName}.';
-  lines[1] := filePath+'\windows\prunsrv.exe //US//Metro --Description="{#MyAppName}" --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //US//Metro --Description="{#MyAppName}" --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -133,7 +133,7 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM Starts {#MyAppName}.';
   //ES//Metro --Jvm=auto --Startup=auto --StartMode=jvm --Classpath=c:\metro\dist\MeCard.jar     --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;c:\metro\    --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath=c:\metro\logs --LogLevel=Info     --LogPrefix=metro --StdOutput=c:\metro\logs\stdout.txt --StdError=c:\metro\logs\stderr.txt
-  lines[1] := filePath+'\windows\prunsrv.exe //ES//Metro --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //ES//Metro --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -155,7 +155,7 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM Stops {#MyAppName}.';
   // c:\metro\windows\prunsrv.exe //SS//Metro            --Jvm=auto --Classpath=c:\metro\dist\MeCard.jar     --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop
-  lines[1] := filePath+'\windows\prunsrv.exe //SS//Metro --Jvm=auto --Classpath='+filePath+'\dist\MeCard.jar --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop'; 
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //SS//Metro --Jvm=auto --Classpath='+filePath+'\dist\MeCard.jar --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop'; 
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -177,7 +177,7 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM Stops {#MyAppName}.';
   // c:\metro\windows\prunsrv.exe //DS//Metro
-  lines[1] := filePath+'\windows\prunsrv.exe //DS//Metro'; 
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //DS//Metro'; 
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -199,13 +199,13 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM opens, manages {#MyAppName}.';
   // c:\metro\windows\prunmgr.exe //ES//Metro
-  lines[1] := filePath+'\windows\prunmgr.exe //ES//Metro'; 
+  lines[1] := 'runas /env '+filePath+'\windows\prunmgr.exe //ES//Metro'; 
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
 end;
 
-// Scheduler batch creation
+// Scheduler batch creation only for Horizon implementations
 function CreateScheduleBatch(): boolean;
 var
   fileName : string;
