@@ -21,11 +21,12 @@
 package mecard.config;
 
 /**
- * Supported versions of Polaris. Default is version 5.6.
+ * Supported versions of Polaris. Default is version 5.6 and coded in polaris_sql.properties 
+ * as 'default'.
  * @author Andrew Nisbet andrew.nisbet@epl.ca
  */
 public enum PolarisVersion
 {
-    DEFAULT,    // Polaris 5.6
-    SIX_DOT_TWO;
+    DEFAULT,     // Literally 'default' which is equivilent to Polaris 5.6.
+    SIX_DOT_TWO; // Polaris 6.2
 }

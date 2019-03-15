@@ -446,9 +446,9 @@ public class SQLInsertCommand implements Command
      */
     private SQLInsertCommand(Builder builder)
     {
-        this.connector = builder.connector;
-        this.columnList= builder.columnList;
-        this.table     = builder.table;
+        this.connector        = builder.connector;
+        this.columnList       = builder.columnList;
+        this.table            = builder.table;
         this.usesNamedColumns = builder.usesNamedColumns;
     }
     
