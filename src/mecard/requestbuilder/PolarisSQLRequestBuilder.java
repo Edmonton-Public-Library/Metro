@@ -620,7 +620,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 //        INSERT INTO Polaris.Polaris.PatronAddresses
 //        VALUES ( (PatronID) , (AddressID) , 4 , 'Home' , 0 , NULL , NULL )
 //        *Yes, must run this three times, one for each number value
-        // TODO: This is for the old version,
+        // NOTE: The order of insert MATTERS. See difference between SIX_DOT_TWO and DEFAULT.
         SQLInsertCommand insertPatronIDAddressID;
         if (this.version == PolarisVersion.SIX_DOT_TWO)
         {
@@ -628,12 +628,12 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "2")
-                // polaris_sql.properties contains a conformance string for this.
-                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
                 .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
                 .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                    // polaris_sql.properties contains a conformance string for this.
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
                 .build();
         }
         else
@@ -666,14 +666,14 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         if (this.version == PolarisVersion.SIX_DOT_TWO)
         {
             insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
-            .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
-            .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
-            .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
-            .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
+                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
                     fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
-            .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
-            .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
-            .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
             .build();
         }
         else  // PolarisVersion.DEFAULT aka 5.2, TRAC's system.
@@ -708,11 +708,11 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "4")
-                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
                 .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
                 .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
                 .build();
         }
         else
@@ -900,8 +900,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     fCustomer.getValue(PolarisTable.PatronRegistration.NAME_LAST.toString()))
             .string(PolarisTable.PatronRegistration.NAME_FIRST.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.NAME_FIRST.toString()))
-            .string(PolarisTable.PatronRegistration.NAME_MIDDLE.toString(),
-                    "unspecified")
+//            .string(PolarisTable.PatronRegistration.NAME_MIDDLE.toString(), "unspecified")
             .string(PolarisTable.PatronRegistration.PHONE_VOICE_1.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.PHONE_VOICE_1.toString()))
             .string(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), 

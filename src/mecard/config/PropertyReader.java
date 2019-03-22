@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,11 +38,11 @@ import mecard.util.PlaceNameWGet;
  * Property reader reads all the configuration files and ensures that required
  * values are included in each file. The property files are XML based. The order
  * of the elements in the property files are not important.
- * @author andrew
+ * @author Andrew Nisbet andrew.nisbet@epl.ca
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.9.07_01"; // server version
+    public final static String VERSION           = "0.9.07_02"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 

@@ -47,7 +47,9 @@ public enum PolarisSQLPropertyTypes
     // a foriegn key in the AddressLabels table. From the perspective of configuration
     // this value has changed where in 6.1 it was 'Home', the field in 6.2 takes
     // an integer values of 1, where 1='Home' in Table.AddressLabels.
-    ///// These become one-or-the-other required. depending on version of ILS.
+    ///// These become one-or-the-other required. depending on version of ILS so I'm making them
+    // optional, that is, both are an option but one or the other is required, so both must be
+    // defined in the polaris_sql.properties file. free-text-label should be 'Home', address-lable-id = 1.
     FREE_TEXT_LABEL("free-text-label"),   // *** Polaris 5.2
     ADDRESS_LABEL_ID("address-label-id"), // *** Polaris 6.2
     USER_1("user-1"),
