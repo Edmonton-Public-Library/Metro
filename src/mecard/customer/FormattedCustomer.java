@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,12 @@ package mecard.customer;
 import java.util.List;
 
 /**
- * Class for coordinating customer normalization and formatting. This class is 
- * responsible for acquiring the correct formatter, formatting the customer and
- * managing the customer's record entries during the creation of a new record
- * on the ILS.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Implementers normalize and format customer data into a format consumable
+ * by the resource that is loading or updating the information (like SQL). 
+ * This class is responsible for acquiring the correct formatter, formatting 
+ * the customer and managing the customer's record entries during the creation 
+ * of a new record on the ILS.
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public interface FormattedCustomer
 {

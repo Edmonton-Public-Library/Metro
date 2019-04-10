@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@
 package mecard.config;
 
 /**
- * Basic values needed to make a connection with a JDBC.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Basic values needed to make a connection with a JDBC, and default values
+ * for tables used during customer registration or update.
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public enum PolarisSQLPropertyTypes
 {
@@ -41,7 +42,16 @@ public enum PolarisSQLPropertyTypes
     DELIVERY_OPTION_ID("delivery-option-id"), // Integer value of default notice delivery method. email = 2.
     EMAIL_FORMAT_ID("email-format-id"),       // Not sure but the default value is 2.
     COUNTRY_ID("country-id"),         // Default country ID of the customer, Cananda = 2. Guess who is 1?
-    FREE_TEXT_LABEL("free-text-label"), // Free text lable string; "Home" might be a good choice.
+    // Free text lable string; "Home" might be a good choice. In Polaris 6.2 PatronAddresses removed the 
+    // next column and replaced it with an column called AddressLabelID, which can't be NULL because it's
+    // a foriegn key in the AddressLabels table. From the perspective of configuration
+    // this value has changed where in 6.1 it was 'Home', the field in 6.2 takes
+    // an integer values of 1, where 1='Home' in Table.AddressLabels.
+    ///// These become one-or-the-other required. depending on version of ILS so I'm making them
+    // optional, that is, both are an option but one or the other is required, so both must be
+    // defined in the polaris_sql.properties file. free-text-label should be 'Home', address-lable-id = 1.
+    FREE_TEXT_LABEL("free-text-label"),   // *** Polaris 5.2
+    ADDRESS_LABEL_ID("address-label-id"), // *** Polaris 6.2
     USER_1("user-1"),
     USER_2("user-2"),    // Case insensitive
     USER_3("user-3"),

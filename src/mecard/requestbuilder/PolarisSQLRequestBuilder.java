@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import mecard.config.PropertyReader;
 import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.PolarisTable;
+import mecard.config.PolarisVersion;
 import mecard.customer.Customer;
 import mecard.customer.CustomerFormatter;
 import mecard.customer.DumpUser;
@@ -57,7 +58,7 @@ import site.CustomerLoadNormalizer;
 
 /**
  * Manages messaging and work flow for requests to a Polaris ILS via POLARIS_SQL statements.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  * @since 0.8.14_00
  */
 public class PolarisSQLRequestBuilder extends ILSRequestBuilder
@@ -81,7 +82,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     private final String patronCodeID;
     private final Properties messages;
     private SQLConnector connector;    // private so it can be closed by Responder externally.
+    private final PolarisVersion version;
     
+    /**
+     * Creates the PolarisSQLRequestBuilder object, initializing basic parameters
+     * from the polaris_sql.properties file.
+     * @param debug 
+     */
     public PolarisSQLRequestBuilder(boolean debug)
     {
         messages = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
@@ -97,6 +104,14 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.PATRON_CODE_ID.toString());
+        if (properties.getProperty("conformance", "default").endsWith("6.2"))
+        {
+            this.version    = PolarisVersion.SIX_DOT_TWO;
+        }
+        else
+        {
+            this.version    = PolarisVersion.DEFAULT;
+        }
     }
     
     /**
@@ -117,10 +132,18 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.driver         = driver;
         this.database       = database;
         this.user           = user;
-        this.databasePassword       = password;
+        this.databasePassword  = password;
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
+        if (properties.getProperty("conformance", "default").endsWith("6.2"))
+        {
+            this.version    = PolarisVersion.SIX_DOT_TWO;
+        }
+        else
+        {
+            this.version    = PolarisVersion.DEFAULT;
+        }
     }
     
     @Override
@@ -156,7 +179,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // 
         // If you ever need to add different defaults:
         //   Make an entry in the 'polaris_sql.properties' file, adding an entry 
-        //   in PolarisSQLPropertyTypes for the correct spelling. Next change 
+        //   in mecard.config.PolarisSQLPropertyTypes for the correct spelling. Next change 
         //   the method builder argument to read from the formatted customer instead
         //   of the hard coded value. Add requisit changes to the PolarisSQLFormattedCustomer
         //   AND / OR add the values through the normalization finalize() method process.
@@ -367,6 +390,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 // Calling a procedure in the insert command does work but not for 
                 // hashing the password. You can do this but for our purposes use SQLStoredProcedure object.
 //                .procedure("Polaris.Circ_SetPatronPassword", customer.get(CustomerFieldTypes.PIN)) 
+                // TODO: Add new fields with default values(?)
                 .build();
 
 
@@ -596,17 +620,36 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 //        INSERT INTO Polaris.Polaris.PatronAddresses
 //        VALUES ( (PatronID) , (AddressID) , 4 , 'Home' , 0 , NULL , NULL )
 //        *Yes, must run this three times, one for each number value
-        SQLInsertCommand insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
-            .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
-            .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
-            .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "2")
-            // polaris_sql.properties
-            .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
-                    fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
-            .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
-            .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
-            .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
-            .build();
+        // NOTE: The order of insert MATTERS. See difference between SIX_DOT_TWO and DEFAULT.
+        SQLInsertCommand insertPatronIDAddressID;
+        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        {
+            insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
+                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "2")
+                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                    // polaris_sql.properties contains a conformance string for this.
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
+                .build();
+        }
+        else
+        {
+             insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
+                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "2")
+                // polaris_sql.properties
+                .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
+                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                .build();           
+        }
         status = insertPatronIDAddressID.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
@@ -620,16 +663,32 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .build();
         }
         // iteration number 2 for AddressTypeID 3
-        insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
-            .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
-            .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
-            .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
-            .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
-                    fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
-            .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
-            .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
-            .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        {
+            insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
+                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
+                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                    fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
             .build();
+        }
+        else  // PolarisVersion.DEFAULT aka 5.2, TRAC's system.
+        {
+            insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
+                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "3")
+                .string(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronAddresses.FREE_TEXT_LABEL.toString()))
+                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                .build();
+        }
         status = insertPatronIDAddressID.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
@@ -643,7 +702,22 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .build();
         }
         // iteration number 3 for AddressTypeID 4
-        insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
+        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        {
+            insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
+                .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
+                .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "4")
+                .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
+                .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
+                .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
+                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
+                .build();
+        }
+        else
+        {
+            insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_TYPE_ID.toString(), "4")
@@ -653,6 +727,49 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
                 .build();
+        }
+        // Marigold says we should include stored procedure calls to index the patron 
+        // after adding them to the database. Not necessary after updating.
+        ////////////////////// Handle Indexing  ////////////////////////////
+        // 
+        /////////////////// TODO: Test after releasing PRL. ////////////////
+//        SQLStoredProcedureCommand callGatherPatronKeywords = 
+//                new SQLStoredProcedureCommand.Builder(
+//                        connector, 
+//                        "Polaris.IDX_GatherPatronKeywords", 
+//                        "call")
+//                .integer("nPatronID", polarisPatronID)
+//                .build();
+//        status = callGatherPatronKeywords.execute();
+//        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+//        {
+//            System.out.println("**error failed to execute indexing proceedure "
+//                    + "Polaris.IDX_GatherPatronKeywords ");
+//            // When this command gets run it returns a useful message and error status for customer.
+//            return new DummyCommand.Builder()
+//                    .setStatus(1)
+//                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+//                    .build();
+//        }
+//        SQLStoredProcedureCommand callAddPatronKeywords = 
+//                new SQLStoredProcedureCommand.Builder(
+//                        connector, 
+//                        "Polaris.IDX_AddPatronKeywords", 
+//                        "call")
+//                .integer("nPatronID", polarisPatronID)
+//                .build();
+//        status = callAddPatronKeywords.execute();
+//        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+//        {
+//            System.out.println("**error failed to execute indexing proceedure "
+//                    + "Polaris.IDX_AddPatronKeywords ");
+//            // When this command gets run it returns a useful message and error status for customer.
+//            return new DummyCommand.Builder()
+//                    .setStatus(1)
+//                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+//                    .build();
+//        }
+        //////////////////////// end indexing  ///////////////////////////
         return insertPatronIDAddressID;
     }
 
@@ -783,8 +900,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     fCustomer.getValue(PolarisTable.PatronRegistration.NAME_LAST.toString()))
             .string(PolarisTable.PatronRegistration.NAME_FIRST.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.NAME_FIRST.toString()))
-            .string(PolarisTable.PatronRegistration.NAME_MIDDLE.toString(),
-                    "unspecified")
+//            .string(PolarisTable.PatronRegistration.NAME_MIDDLE.toString(), "unspecified")
             .string(PolarisTable.PatronRegistration.PHONE_VOICE_1.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.PHONE_VOICE_1.toString()))
             .string(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), 

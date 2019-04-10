@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
 
 /**
- * Utility class used to help with date conversions. Serveral classes use these
+ * Utility class used to help with date conversions. Several classes use these
  * methods and there are some things to remember:
  * <ol>
  * <li> Metro server, SIP2, Symphony all use ANSI dates ('yyyyMMdd') by default.
@@ -41,7 +41,7 @@ import mecard.config.PropertyReader;
  * is dates are inserted into Horizon based on what the user selected in their Windows 
  * desktop.
  * </ol>
- * @author andrew
+ * @author Andrew Nisbet andrew.nisbet@epl.ca
  */
 public class DateComparer
 {
@@ -59,7 +59,7 @@ public class DateComparer
     public final static String SQL_TIMESTAMP_FORMAT = CUSTOMER_DATE_FORMAT;
     
     /**
-     * GMT timezone - all HTTP dates are on GMT
+     * GMT time zone - all HTTP dates are on GMT
      */
     public final static TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
     public final static Locale LOCALE_US = Locale.US;

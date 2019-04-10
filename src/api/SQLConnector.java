@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import mecard.exception.ConfigurationException;
 
 /**
  * Builds the SQL connection based builder parameters.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca
  */
 public class SQLConnector
 {
@@ -132,7 +132,7 @@ public class SQLConnector
                 this.url         = getMySQL_URL();
                 this.driverType  = DriverType.MY_SQL;
                 break;
-            case "SQL_SERVER": // sqljdbc4.jar
+            case "SQL_SERVER": // sqljdbc42.jar for Java 8 compatability, tested.
                 this.driverName  = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
                 this.urlProtocol = "jdbc:sqlserver://";
                 this.port        = 1433;

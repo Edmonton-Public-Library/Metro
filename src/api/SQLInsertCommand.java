@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2019  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import mecard.util.DateComparer;
 
 /**
  * Handles basic SQL insert statement via JDBC.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class SQLInsertCommand implements Command 
 {
@@ -43,6 +43,9 @@ public class SQLInsertCommand implements Command
     private final String table;
     private final boolean usesNamedColumns;
     
+    /**
+     * The builder object that constructs the SQL Insert command.
+     */
     public static class Builder
     {
         private SQLConnector connector;
@@ -50,6 +53,12 @@ public class SQLInsertCommand implements Command
         private List<SQLUpdateData> columnList; // Column names you wish to see in selection.
         private boolean usesNamedColumns;
         
+        /**
+         * All SQL INSERT commands require a SQL connector, and a target table
+         * name for the insert command.
+         * @param s SQL connector which must not be null.
+         * @param tableName the target table for the insert.
+         */
         public Builder(SQLConnector s, String tableName)
         {
             if (s == null)
@@ -64,6 +73,16 @@ public class SQLInsertCommand implements Command
             this.usesNamedColumns = false;
         }
         
+        /**
+         * Another option for construction that specifies that the columns will 
+         * be specified along with the data for the columns. Typically used when
+         * populating some of all the possible columns of data. The remaining
+         * unmentioned columns are filled with default values.
+         * @param s SQL connector which must not be null.
+         * @param tableName the target table for the insert.
+         * @param useNamedColumQuery specifies that all columns will be named
+         * during the insert command. Best practice.
+         */
         public Builder(SQLConnector s, String tableName, boolean useNamedColumQuery)
         {
             if (s == null)
@@ -97,6 +116,12 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a date value into a named column.
+         * @param dName the name of the column.
+         * @param date the date value to be stored.
+         * @return builder object.
+         */
         public Builder date(String dName, String date)
         {
             if (this.isNullOrEmpty(date))
@@ -110,6 +135,11 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a null value into a named date column.
+         * @param dName the name of the column that is expected to be a date column.
+         * @return builder object.
+         */
         public Builder date(String dName)
         {
             SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.DATE, null);
@@ -117,6 +147,11 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a null value into a date time column.
+         * @param dName the name of the column that is expected to be a date column.
+         * @return builder object.
+         */
         public Builder dateTime(String dName)
         {
             SQLUpdateData d = new SQLUpdateData(dName, SQLData.Type.TIMESTAMP, null);
@@ -124,6 +159,13 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a null value into a column that is specified to take a small
+         * integer, or null value.
+         * @param sName the name of the column that is expected to be a small
+         * integer column.
+         * @return builder object.
+         */
         public Builder smallInt(String sName)
         {
             SQLUpdateData d = new SQLUpdateData(sName, SQLData.Type.SMALL_INT, null);
@@ -131,6 +173,14 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a small integer value into a column that is specified to 
+         * take a small integer, or null value in database schema.
+         * @param sName the name of the column that is expected to be a small
+         * integer column.
+         * @param smallValue the small integer value to be stored in said column.
+         * @return builder object.
+         */
         public Builder smallInt(String sName, String smallValue)
         {
             if (this.isNullOrEmpty(smallValue))
@@ -177,6 +227,13 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a tiny integer value into a column specified to take that 
+         * data type in the database schema.
+         * @param tName the name of the column to insert the data.
+         * @param value the value to be stored, the tiny integer.
+         * @return builder object.
+         */
         public Builder tinyInt(String tName, String value)
         {
             if (this.isNullOrEmpty(value))
@@ -190,6 +247,12 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Inserts a null value into a table column that is specified to take
+         * a tiny integer.
+         * @param tName column name.
+         * @return builder object.
+         */
         public Builder tinyInt(String tName)
         {
             SQLUpdateData i = new SQLUpdateData(tName, SQLData.Type.TINY_INT, null);
@@ -197,6 +260,12 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Sets a value in a database table to type CHAR.
+         * @param cName char column name.
+         * @param value the CHAR value to store.
+         * @return builder object.
+         */
         public Builder setChar(String cName, String value)
         {
             if (this.isNullOrEmpty(value))
@@ -211,6 +280,12 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Sets a value in a database table to type integer.
+         * @param iName column name.
+         * @param value the integer to store.
+         * @return builder object.
+         */
         public Builder integer(String iName, String value)
         {
             if (this.isNullOrEmpty(value))
@@ -237,9 +312,14 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
-        public Builder string(String iName)
+        /**
+         * Inserts a null in to a column that specifies 'string' in the schema.
+         * @param sName name of the string column.
+         * @return builder object.
+         */
+        public Builder string(String sName)
         {
-            SQLUpdateData i = new SQLUpdateData(iName, SQLData.Type.STRING, null);
+            SQLUpdateData i = new SQLUpdateData(sName, SQLData.Type.STRING, null);
             this.columnList.add(i);
             return this;
         }
@@ -268,8 +348,8 @@ public class SQLInsertCommand implements Command
         
         /**
          * Stores null money values.
-         * @param mName
-         * @return Builder
+         * @param mName name of the money column.
+         * @return Builder object.
          */
         public Builder money(String mName)
         {
@@ -280,8 +360,8 @@ public class SQLInsertCommand implements Command
         
         /**
          * Stores a bit value in SQL type of BIT.
-         * @param bName
-         * @return Builder.
+         * @param bName name of the 'bit' column.
+         * @return Builder object.
          */
         public Builder bit(String bName)
         {
@@ -350,6 +430,10 @@ public class SQLInsertCommand implements Command
                     || s.equalsIgnoreCase("NULL");
         }
         
+        /**
+         * Builds and returns the new SQLInsertCommand object.
+         * @return SQLInsertCommand.
+         */
         public SQLInsertCommand build()
         {
             return new SQLInsertCommand(this);
@@ -362,9 +446,9 @@ public class SQLInsertCommand implements Command
      */
     private SQLInsertCommand(Builder builder)
     {
-        this.connector = builder.connector;
-        this.columnList= builder.columnList;
-        this.table     = builder.table;
+        this.connector        = builder.connector;
+        this.columnList       = builder.columnList;
+        this.table            = builder.table;
         this.usesNamedColumns = builder.usesNamedColumns;
     }
     
@@ -418,6 +502,11 @@ public class SQLInsertCommand implements Command
         return statementStrBuilder.toString();
     }
     
+    /**
+     * As the name suggests, prepares the SQL statement for execution.
+     * @return a well formed SQL update statement.
+     * @throws SQLException 
+     */
     private PreparedStatement getPreparedStatement() throws SQLException
     {
         Connection connection;

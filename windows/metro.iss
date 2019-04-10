@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MeCard Metro Server"
-#define MyAppVersion "0.9.06_03_p"
+#define MyAppVersion "0.9.07"
 #define MyAppPublisher "Edmonton Public Library"
 #define MyAppURL "https://github.com/Edmonton_Public_Library/Metro"
 #define MyAppExeName "install.bat"
@@ -43,13 +43,15 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\MeCard.jar"; DestDir: "{app}\dist"; DestName: "MeCard.jar"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\README.TXT"; DestDir: "{app}\dist"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-cli-1.2.jar"; DestDir: "{app}\dist\lib"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-daemon-1.0.15.jar"; DestDir: "{app}\dist\lib"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-daemon-1.1.0.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\gson-2.2.4.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-codec-1.8.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\fluent-hc-4.3.4.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\httpclient-4.3.4.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\commons-logging-1.1.3.jar"; DestDir: "{app}\dist\lib"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\mysql-connector-java-5.1.31-bin.jar"; DestDir: "{app}\dist\lib"
+; The Java 8 compatable version of the JDBC.
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc42.jar"; DestDir: "{app}\dist\lib"
 ; Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc4.jar"; DestDir: "{app}\dist\lib"
 ; Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\sqljdbc.jar"; DestDir: "{app}\dist\lib"
 ; Once Polaris comes on line we need to include this lib for PAPI security.
@@ -57,24 +59,31 @@ Source: "C:\Users\ANisbet\Dropbox\development\MeCard\dist\lib\mysql-connector-ja
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\manager.bat"; DestDir: "{app}\windows"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\prunmgr.exe"; DestDir: "{app}\windows"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\prunsrv.exe"; DestDir: "{app}\windows"
+; These are generated automatically during installation. See code at end of file.
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\start.bat"; DestDir: "{app}\windows"
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\stop.bat"; DestDir: "{app}\windows"
 ;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\uninstall.bat"; DestDir: "{app}\windows"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\MssqlClient.exe"; DestDir: "{app}\MSSQLClient"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\BImport.exe"; DestDir: "{app}\bimport"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\DbCore75.dll"; DestDir: "{app}\bimport"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\MqDb75.dll"; DestDir: "{app}\bimport"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\MqOs275.dll"; DestDir: "{app}\bimport"
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\MqSys75.dll"; DestDir: "{app}\bimport"
+;== The stuff below is for Horizon sites only ==
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\MssqlClient.exe"; DestDir: "{app}\MSSQLClient"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\BImport.exe"; DestDir: "{app}\bimport"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\DbCore75.dll"; DestDir: "{app}\bimport"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\MqDb75.dll"; DestDir: "{app}\bimport"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\MqOs275.dll"; DestDir: "{app}\bimport"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\MqSys75.dll"; DestDir: "{app}\bimport"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metroschedule.bat"; DestDir: "{app}\windows"
+;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metro-template-header.txt"; DestDir: "{app}\windows"
+;== The stuff above is for Horizon sites only ==
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\bimport.properties"; DestDir: "{app}\config"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\region.properties"; DestDir: "{app}\config"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\region_config.properties"; DestDir: "{app}\config"
+Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\polaris_sql.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\city_st.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\debug.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\environment.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sip2.properties"; DestDir: "{app}\config"
 Source: "C:\Users\ANisbet\Dropbox\development\MeCard\config_templates\sysvar.properties"; DestDir: "{app}\config"
-;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\bimport\header.txt"; DestDir: "{app}\logs\Customers"; Flags: confirmoverwrite
-Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metroschedule.bat"; DestDir: "{app}\windows"
-;Source: "C:\Users\ANisbet\Dropbox\development\MeCard\windows\metro-template-header.txt"; DestDir: "{app}\windows"
+
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -96,7 +105,7 @@ Filename: "{app}\windows\uninstall.bat"; WorkingDir: "{app}"; Flags: shellexec
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\*"
-
+;============= added "'runas /env '+" when creating batch files for Windows server 2019.
 [Code]
 // Install batch creation
 function CreateInstallBatch(): boolean;
@@ -112,7 +121,7 @@ begin
   serverName := ExpandConstant('{#MyAppName}');
   SetArrayLength(lines, 3);
   lines[0] := 'REM Installs (updates) {#MyAppName}.';
-  lines[1] := filePath+'\windows\prunsrv.exe //US//Metro --Description="{#MyAppName}" --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //US//Metro --Description="{#MyAppName}" --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -133,7 +142,7 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM Starts {#MyAppName}.';
   //ES//Metro --Jvm=auto --Startup=auto --StartMode=jvm --Classpath=c:\metro\dist\MeCard.jar     --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;c:\metro\    --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath=c:\metro\logs --LogLevel=Info     --LogPrefix=metro --StdOutput=c:\metro\logs\stdout.txt --StdError=c:\metro\logs\stderr.txt
-  lines[1] := filePath+'\windows\prunsrv.exe //ES//Metro --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //ES//Metro --Jvm=auto --Startup=auto --StartMode=jvm --Classpath='+filePath+'\dist\MeCard.jar --StartClass=mecard.MetroService --StartMethod=start ++StartParams=-c;'+filePath+' --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop --LogPath='+filePath+'\logs --LogLevel=Info --LogPrefix=metro --StdOutput='+filePath+'\logs\stdout.txt --StdError='+filePath+'\logs\stderr.txt';
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -155,7 +164,7 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM Stops {#MyAppName}.';
   // c:\metro\windows\prunsrv.exe //SS//Metro            --Jvm=auto --Classpath=c:\metro\dist\MeCard.jar     --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop
-  lines[1] := filePath+'\windows\prunsrv.exe //SS//Metro --Jvm=auto --Classpath='+filePath+'\dist\MeCard.jar --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop'; 
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //SS//Metro --Jvm=auto --Classpath='+filePath+'\dist\MeCard.jar --StopMode=jvm --StopClass=mecard.MetroService --StopMethod=stop'; 
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -177,7 +186,7 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM Stops {#MyAppName}.';
   // c:\metro\windows\prunsrv.exe //DS//Metro
-  lines[1] := filePath+'\windows\prunsrv.exe //DS//Metro'; 
+  lines[1] := 'runas /env '+filePath+'\windows\prunsrv.exe //DS//Metro'; 
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
@@ -199,13 +208,13 @@ begin
   SetArrayLength(lines, 3);
   lines[0] := 'REM opens, manages {#MyAppName}.';
   // c:\metro\windows\prunmgr.exe //ES//Metro
-  lines[1] := filePath+'\windows\prunmgr.exe //ES//Metro'; 
+  lines[1] := 'runas /env '+filePath+'\windows\prunmgr.exe //ES//Metro'; 
   lines[2] := 'exit';
   Result := SaveStringsToFile(filename,lines,true);
   exit;
 end;
 
-// Scheduler batch creation
+// Scheduler batch creation only for Horizon implementations
 function CreateScheduleBatch(): boolean;
 var
   fileName : string;
