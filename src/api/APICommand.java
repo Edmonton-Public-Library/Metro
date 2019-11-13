@@ -47,6 +47,7 @@ public class APICommand implements Command
     //    private final APICommand command;
     private final List<String> cmdArgs;
     private final List<String> stdinData;
+    private final static boolean WINDOWS_OS = System.getProperty("os.name").startsWith("Windows");
     
     public enum APICommandTypes
     {
@@ -277,7 +278,13 @@ public class APICommand implements Command
         String[] returnValues = new String[cmdArgs.size()];
         for (int i = 0; i < cmdArgs.size(); i++)
         {
-            returnValues[i] = cmdArgs.get(i);
+            // if running on windows, \" needs to be replaced with \\\", see
+            // https://bugs.openjdk.java.net/browse/JDK-8131908 and
+            // https://docs.microsoft.com/en-us/cpp/cpp/parsing-cpp-command-line-arguments?redirectedfrom=MSDN&view=vs-2019
+            // Since Java String.replaceAll uses regular expression, we need to
+            // escape each \, hence replace \" with \\\\\" in order to transform
+            // -y"ELMNA" to -y\"ELMNA\" for ProcessBuilder.
+            returnValues[i] = WINDOWS_OS ? cmdArgs.get(i).replaceAll("\"", "\\\\\"") : cmdArgs.get(i);
         }
         return returnValues;
     }

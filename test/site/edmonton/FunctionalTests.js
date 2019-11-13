@@ -49,7 +49,7 @@ const start = function() {
     //    'FIRSTNAME': 'Mickey',
     //    'LASTNAME': 'Mouse'
     // };
-    const customer = {"ID":"21221900018731","PIN":"64058","PREFEREDNAME":"BILLY, Balzac","STREET":"7th Floor 10235 101 Street Nw","CITY":"Edmonton","PROVINCE":"AB","POSTALCODE":"H0P0H0","SEX":"M","EMAIL":"ilsadmins@epl.ca","PHONE":"780-496-4058","DOB":"19760823","PRIVILEGE_EXPIRES":"20201104","RESERVED":"User DELINQUENT","ALTERNATE_ID":"X","ISVALID":"Y","ISMINAGE":"Y","ISRECIPROCAL":"N","ISRESIDENT":"Y","ISGOODSTANDING":"Y","ISLOSTCARD":"N","FIRSTNAME":"Balzac","LASTNAME":"Billy"};
+    const customer = {"ID":"21221900018733","PIN":"64058","PREFEREDNAME":"BILLY, Balzac","STREET":"7th Floor 10235 101 Street Nw","CITY":"Edmonton","PROVINCE":"AB","POSTALCODE":"H0P0H0","SEX":"M","EMAIL":"ilsadmins@epl.ca","PHONE":"780-496-4058","DOB":"19760823","PRIVILEGE_EXPIRES":"20201104","RESERVED":"User DELINQUENT","ALTERNATE_ID":"X","ISVALID":"Y","ISMINAGE":"Y","ISRECIPROCAL":"N","ISRESIDENT":"Y","ISGOODSTANDING":"Y","ISLOSTCARD":"N","FIRSTNAME":"Balzac","LASTNAME":"Billy"};
 
     request({
       code: 'CREATE_CUSTOMER',
@@ -64,7 +64,7 @@ const start = function() {
     request({
       code: 'GET_CUSTOMER',
       authorityToken: token,
-      userId: '21221900018731',
+      userId: '21221900018733',
       pin: '64058',
       customer: 'null'}, done);
   });

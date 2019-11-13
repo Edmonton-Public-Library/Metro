@@ -96,10 +96,10 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         loadFlatUserCreate.add("loadflatuser");
         loadFlatUserCreate.add("-aU"); // Add base.
         loadFlatUserCreate.add("-bU"); // Add extended.
-        loadFlatUserCreate.add("-l\\\"ADMIN|PCGUI-DISP\\\"");
+        loadFlatUserCreate.add("-l\"ADMIN|PCGUI-DISP\"");
         loadFlatUserCreate.add("-mc"); // Create
         loadFlatUserCreate.add("-n"); // Turn off BRS checking if -n is used.
-        loadFlatUserCreate.add("-y\\\"" + homeLibrary + "\\\"");
+        loadFlatUserCreate.add("-y\"" + homeLibrary + "\"");
         loadFlatUserCreate.add("-d"); // write syslog. check Unicorn/Logs/error for results.
         // Update user command.
         loadFlatUserUpdate = new ArrayList<>();
