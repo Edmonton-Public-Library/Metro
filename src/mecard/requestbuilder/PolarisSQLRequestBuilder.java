@@ -104,9 +104,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.PATRON_CODE_ID.toString());
-        if (properties.getProperty("conformance", "default").endsWith("6.2"))
+        // Test for 'Polaris 6.*' in the properties file for version specific issues.
+        if (properties.getProperty("conformance", "default").matches("[p|P]olaris(\\s?)+6\\.*"))
         {
-            this.version    = PolarisVersion.SIX_DOT_TWO;
+            this.version    = PolarisVersion.SIX_DOT_TWO_ONWARD;
         }
         else
         {
@@ -136,9 +137,10 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
-        if (properties.getProperty("conformance", "default").endsWith("6.2"))
+        // Test for 'Polaris 6.*' in the properties file for version specific issues.
+        if (properties.getProperty("conformance", "default").matches("[p|P]olaris(\\s?)+6\\.*"))
         {
-            this.version    = PolarisVersion.SIX_DOT_TWO;
+            this.version    = PolarisVersion.SIX_DOT_TWO_ONWARD;
         }
         else
         {
@@ -620,9 +622,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
 //        INSERT INTO Polaris.Polaris.PatronAddresses
 //        VALUES ( (PatronID) , (AddressID) , 4 , 'Home' , 0 , NULL , NULL )
 //        *Yes, must run this three times, one for each number value
-        // NOTE: The order of insert MATTERS. See difference between SIX_DOT_TWO and DEFAULT.
+        // NOTE: The order of insert MATTERS. See difference between SIX_DOT_TWO_ONWARD and DEFAULT.
         SQLInsertCommand insertPatronIDAddressID;
-        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
             insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
@@ -663,7 +665,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .build();
         }
         // iteration number 2 for AddressTypeID 3
-        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
             insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
@@ -702,7 +704,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     .build();
         }
         // iteration number 3 for AddressTypeID 4
-        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
             insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)

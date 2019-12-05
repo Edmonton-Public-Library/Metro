@@ -64,9 +64,10 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         Properties props = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         // Set the version of customer conformance if set in polaris_sql.properties file.
         String v = props.getProperty("conformance", "default");
-        if (v.endsWith("6.2"))
+        // Test for 'Polaris 6.*' in the properties file for version specific issues.
+        if (v.matches("[p|P]olaris(\\s?)+6\\.*")) // 'Polaris 6.*'
         {
-            this.version = PolarisVersion.SIX_DOT_TWO;
+            this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
         }
         else
         {
@@ -276,7 +277,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 PolarisTable.Addresses.STREET_ONE.toString(), 
                 customer.get(CustomerFieldTypes.STREET));
         ///////////////// PatronAddresses ///////////////////////////
-        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
             this.insertValue(
                 PolarisTable.PATRON_ADDRESSES, 

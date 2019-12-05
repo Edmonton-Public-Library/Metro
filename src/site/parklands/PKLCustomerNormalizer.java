@@ -76,6 +76,11 @@ public final class PKLCustomerNormalizer extends PolarisNormalizer
 //                    PolarisTable.PATRON_REGISTRATION, 
 //                    PolarisTable.PatronRegistration.PHONE_VOICE_1.toString());
 //        }
+// 2019-12-04 RPL would like it to default to n/a or '1'.
+        formattedCustomer.insertValue(
+                PolarisTable.PATRON_REGISTRATION,
+                PolarisTable.PatronRegistration.GENDER.toString(),
+                "1");
         if (unformattedCustomer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
         {
             String expiry = DateComparer.getFutureDate(365);
