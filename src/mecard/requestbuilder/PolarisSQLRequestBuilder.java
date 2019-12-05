@@ -105,13 +105,16 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.PATRON_CODE_ID.toString());
         // Test for 'Polaris 6.*' in the properties file for version specific issues.
-        if (properties.getProperty("conformance", "default").matches("[p|P]olaris(\\s?)+6\\.*"))
+        String version = properties.getProperty("conformance", "default");
+        switch (version)
         {
-            this.version    = PolarisVersion.SIX_DOT_TWO_ONWARD;
-        }
-        else
-        {
-            this.version    = PolarisVersion.DEFAULT;
+            case "Polaris 6.2":
+            case "Polaris 6.3":
+                this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
+                break;
+            default:
+                this.version = PolarisVersion.DEFAULT;
+                break;
         }
     }
     
@@ -138,13 +141,16 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         // Test for 'Polaris 6.*' in the properties file for version specific issues.
-        if (properties.getProperty("conformance", "default").matches("[p|P]olaris(\\s?)+6\\.*"))
+        String version = properties.getProperty("conformance", "default");
+        switch (version)
         {
-            this.version    = PolarisVersion.SIX_DOT_TWO_ONWARD;
-        }
-        else
-        {
-            this.version    = PolarisVersion.DEFAULT;
+            case "Polaris 6.2":
+            case "Polaris 6.3":
+                this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
+                break;
+            default:
+                this.version = PolarisVersion.DEFAULT;
+                break;
         }
     }
     

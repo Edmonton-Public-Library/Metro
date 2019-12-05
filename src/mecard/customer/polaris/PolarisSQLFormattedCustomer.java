@@ -63,15 +63,16 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         // Here is the contents of the properties file.
         Properties props = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         // Set the version of customer conformance if set in polaris_sql.properties file.
-        String v = props.getProperty("conformance", "default");
-        // Test for 'Polaris 6.*' in the properties file for version specific issues.
-        if (v.matches("[p|P]olaris(\\s?)+6\\.*")) // 'Polaris 6.*'
+        String version = props.getProperty("conformance", "default");
+        switch (version)
         {
-            this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
-        }
-        else
-        {
-            this.version = PolarisVersion.DEFAULT;
+            case "Polaris 6.2":
+            case "Polaris 6.3":
+                this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
+                break;
+            default:
+                this.version = PolarisVersion.DEFAULT;
+                break;
         }
         HashMap<String, String> table = new HashMap<>();
         PolarisSQLFormattedTable formattedTable = new PolarisSQLFormattedTable(PolarisTable.PATRONS, table);
