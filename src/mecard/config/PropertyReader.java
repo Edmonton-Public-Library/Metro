@@ -42,7 +42,7 @@ import mecard.util.PlaceNameWGet;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "0.9.07_03_a"; // server version
+    public final static String VERSION           = "0.9.08"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 

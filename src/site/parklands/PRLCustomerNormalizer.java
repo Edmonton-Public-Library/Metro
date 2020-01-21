@@ -76,20 +76,35 @@ public final class PRLCustomerNormalizer extends PolarisNormalizer
 //                    PolarisTable.PATRON_REGISTRATION, 
 //                    PolarisTable.PatronRegistration.PHONE_VOICE_1.toString());
 //        }
-// 2019-12-04 PRL would like it to default to n/a or '1'.
-//        formattedCustomer.insertValue(
-//                PolarisTable.PATRON_REGISTRATION,
-//                PolarisTable.PatronRegistration.GENDER.toString(),
-//                "1");
-// 2020-01-21 An error messages is received saying 
-//**error executing statement 'SQLServerPreparedStatement:88'.
-//Invalid column name 'Gender'.
-//SQLException MSG:Invalid column name 'Gender'.
-//**error failed to create customer data 0000000xxxxxxx in table: Polaris.PatronRegistration
-// Explicitly remove the value from PRL's customer, but the insert statement still
-// adds it in its Builder object, so it will have to be tested in that class.
-        formattedCustomer.removeField(PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.GENDER.toString());
+// 2019-12-04 PRL would like it to default to n/a or GenderID=1, .
+// Update: 2020-01-20: GenderID        Description (From the 'Genders' table as of Polaris 6.3).
+//                     1                      N/A
+//                     2                      Female
+//                     3                      Male 
+// From the schema:
+// GENDER("GenderID"), //, 1, char, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, See PolarisTable.java.
+        String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
+        switch (sex)
+        {
+            case "M":
+                formattedCustomer.insertValue(
+                    PolarisTable.PATRON_REGISTRATION,
+                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    "3");
+                break;
+            case "F":
+                formattedCustomer.insertValue(
+                    PolarisTable.PATRON_REGISTRATION,
+                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    "2");
+                break;
+            default:
+                formattedCustomer.insertValue(
+                    PolarisTable.PATRON_REGISTRATION,
+                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    "1");
+                break;
+        }
         if (unformattedCustomer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
         {
             String expiry = DateComparer.getFutureDate(365);

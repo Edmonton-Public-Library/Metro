@@ -296,7 +296,7 @@ public class PAPIFormattedTable implements FormattedTable
     @Override
     public Set<String> getKeys() 
     {
-        HashMap cols = new HashMap<String, String>();
+        HashMap<String, String> cols = new HashMap<String, String>();
         
         for (PAPIElementOrder key: this.columns.keySet())
         {
