@@ -98,25 +98,6 @@ public class SQLInsertCommand implements Command
         }
         
         /**
-         * Inserts a string value into an SQL table.
-         * @param cName - name of the column in the table.
-         * @param value value to store which can be null, or "NULL".
-         * @return builder object.
-         */
-        public Builder string(String cName, String value)
-        {
-            if (this.isNullOrEmpty(value))
-            {
-                SQLUpdateData d = new SQLUpdateData(cName, SQLData.Type.DATE, null);
-                this.columnList.add(d);
-                return this;
-            }
-            SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, value);
-            this.columnList.add(s);
-            return this;
-        }
-        
-        /**
          * Inserts a date value into a named column.
          * @param dName the name of the column.
          * @param date the date value to be stored.
@@ -313,6 +294,25 @@ public class SQLInsertCommand implements Command
         }
         
         /**
+         * Inserts a string value into an SQL table.
+         * @param cName - name of the column in the table.
+         * @param value value to store which can be null, or "NULL".
+         * @return builder object.
+         */
+        public Builder string(String cName, String value)
+        {
+            if (this.isNullOrEmpty(value))
+            {
+                SQLUpdateData d = new SQLUpdateData(cName, SQLData.Type.DATE, null);
+                this.columnList.add(d);
+                return this;
+            }
+            SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, value);
+            this.columnList.add(s);
+            return this;
+        }
+        
+        /**
          * Inserts a null in to a column that specifies 'string' in the schema.
          * @param sName name of the string column.
          * @return builder object.
@@ -371,23 +371,6 @@ public class SQLInsertCommand implements Command
         }
         
         /**
-         * Stores a (stored) procedure call with a single string parameter.
-         * @param procedureName name of the procedure qualified by the database
-         * where the procedure is defined. Example: 'Polaris.Circ_SetPatronPassword'
-         * @param procedureParameter string argument to add to the procedure call.
-         * @return Builder.
-         */
-        public Builder procedure(String procedureName, String procedureParameter)
-        {
-            SQLUpdateData i = new SQLUpdateData(
-                    procedureName, 
-                    SQLData.Type.STORED_PROCEEDURE, 
-                    procedureParameter);
-            this.columnList.add(i);
-            return this;
-        }
-        
-        /**
          * Creates a SQL bit field.
          * @param bName must be a string of either true or '1', anything else 
          * will be interpreted as being a bit value of '0'. Null permitted permitted.
@@ -415,6 +398,23 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Stores a (stored) procedure call with a single string parameter.
+         * @param procedureName name of the procedure qualified by the database
+         * where the procedure is defined. Example: 'Polaris.Circ_SetPatronPassword'
+         * @param procedureParameter string argument to add to the procedure call.
+         * @return Builder.
+         */
+        public Builder procedure(String procedureName, String procedureParameter)
+        {
+            SQLUpdateData i = new SQLUpdateData(
+                    procedureName, 
+                    SQLData.Type.STORED_PROCEEDURE, 
+                    procedureParameter);
+            this.columnList.add(i);
+            return this;
+        }
+                
         /**
          * Tests if the argument is empty or null for sanitizing input for the
          * query string.
