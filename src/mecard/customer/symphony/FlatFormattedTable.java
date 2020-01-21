@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,13 @@
 package mecard.customer.symphony;
 
 import java.util.HashMap;
+import java.util.Set;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.customer.FormattedTable;
 
 /**
  * Represents one of the given sections of a flat file.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew@dev-ils.com
  */
 public class FlatFormattedTable implements FormattedTable
 {
@@ -153,5 +154,11 @@ public class FlatFormattedTable implements FormattedTable
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Set<String> getKeys() 
+    {
+        return this.columns.keySet();
     }
 }
