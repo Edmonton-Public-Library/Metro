@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2019  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import mecard.util.DateComparer;
 
 /**
  * Handles basic SQL insert statement via JDBC.
- * @author Andrew Nisbet <andrew.nisbet@epl.ca>
+ * @author Andrew Nisbet andrew@dev-ils.com
  */
 public class SQLInsertCommand implements Command 
 {
@@ -95,25 +95,6 @@ public class SQLInsertCommand implements Command
             this.table      = tableName;
             this.columnList = new ArrayList<>();
             this.usesNamedColumns = useNamedColumQuery;
-        }
-        
-        /**
-         * Inserts a string value into an SQL table.
-         * @param cName - name of the column in the table.
-         * @param value value to store which can be null, or "NULL".
-         * @return builder object.
-         */
-        public Builder string(String cName, String value)
-        {
-            if (this.isNullOrEmpty(value))
-            {
-                SQLUpdateData d = new SQLUpdateData(cName, SQLData.Type.DATE, null);
-                this.columnList.add(d);
-                return this;
-            }
-            SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, value);
-            this.columnList.add(s);
-            return this;
         }
         
         /**
@@ -313,6 +294,25 @@ public class SQLInsertCommand implements Command
         }
         
         /**
+         * Inserts a string value into an SQL table.
+         * @param cName - name of the column in the table.
+         * @param value value to store which can be null, or "NULL".
+         * @return builder object.
+         */
+        public Builder string(String cName, String value)
+        {
+            if (this.isNullOrEmpty(value))
+            {
+                SQLUpdateData d = new SQLUpdateData(cName, SQLData.Type.DATE, null);
+                this.columnList.add(d);
+                return this;
+            }
+            SQLUpdateData s = new SQLUpdateData(cName, SQLData.Type.STRING, value);
+            this.columnList.add(s);
+            return this;
+        }
+        
+        /**
          * Inserts a null in to a column that specifies 'string' in the schema.
          * @param sName name of the string column.
          * @return builder object.
@@ -371,23 +371,6 @@ public class SQLInsertCommand implements Command
         }
         
         /**
-         * Stores a (stored) procedure call with a single string parameter.
-         * @param procedureName name of the procedure qualified by the database
-         * where the procedure is defined. Example: 'Polaris.Circ_SetPatronPassword'
-         * @param procedureParameter string argument to add to the procedure call.
-         * @return Builder.
-         */
-        public Builder procedure(String procedureName, String procedureParameter)
-        {
-            SQLUpdateData i = new SQLUpdateData(
-                    procedureName, 
-                    SQLData.Type.STORED_PROCEEDURE, 
-                    procedureParameter);
-            this.columnList.add(i);
-            return this;
-        }
-        
-        /**
          * Creates a SQL bit field.
          * @param bName must be a string of either true or '1', anything else 
          * will be interpreted as being a bit value of '0'. Null permitted permitted.
@@ -415,6 +398,23 @@ public class SQLInsertCommand implements Command
             return this;
         }
         
+        /**
+         * Stores a (stored) procedure call with a single string parameter.
+         * @param procedureName name of the procedure qualified by the database
+         * where the procedure is defined. Example: 'Polaris.Circ_SetPatronPassword'
+         * @param procedureParameter string argument to add to the procedure call.
+         * @return Builder.
+         */
+        public Builder procedure(String procedureName, String procedureParameter)
+        {
+            SQLUpdateData i = new SQLUpdateData(
+                    procedureName, 
+                    SQLData.Type.STORED_PROCEEDURE, 
+                    procedureParameter);
+            this.columnList.add(i);
+            return this;
+        }
+                
         /**
          * Tests if the argument is empty or null for sanitizing input for the
          * query string.

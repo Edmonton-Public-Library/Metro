@@ -36,7 +36,7 @@ import site.calgary.CPLCustomerGetNormalizer;
 import site.chinook.CARCustomerGetNormalizer;
 import site.edmonton.EPLCustomerGetNormalizer;
 import site.ftmcmurray.FMPLCustomerGetNormalizer;
-import site.parklands.PKLCustomerGetNormalizer;
+import site.parklands.PRLCustomerGetNormalizer;
 import site.reddeer.RDPLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
 import site.stalbert.STACustomerGetNormalizer;
@@ -80,7 +80,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
                 this.customMessageInterpreter = new CPLCustomerGetNormalizer();
                 break;
             case "PKL":
-                this.customMessageInterpreter = new PKLCustomerGetNormalizer();
+                this.customMessageInterpreter = new PRLCustomerGetNormalizer();
                 break;
             case "FMPL":
                 this.customMessageInterpreter = new FMPLCustomerGetNormalizer();

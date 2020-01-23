@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,25 @@
  */
 package mecard.customer;
 
+import java.util.Set;
 
+/**
+ * Interface for tables of formatted customer data. Used to format raw customer
+ * data into FLAT files or SQL statements.
+ * @author anisbet andrew@dev-ils.com
+ */
 public interface FormattedTable
 {
 
     /**
      * Creates matching.
-     * @return properly formatted bimport data string for the table this represents.
+     * @return properly formatted customer data string for the table this represents.
      */
     String getData();
 
     /**
      *
-     * @return properly formatted bimport header string for the table this represents.
+     * @return properly formatted customer header string for the table this represents.
      */
     String getHeader();
 
@@ -64,13 +70,20 @@ public interface FormattedTable
     boolean setValue(String key, String value);
     
     /**
-     * Renames a key in the preserving the original stored value if any.
+     * Renames a key in the preserving the original stored value. It is not 
+     * permissible to add the replacement key if the original key is not found.
      * @param originalkey the original key name
      * @param replacementKey the new name for the key
      * @return true if the key could be renamed and false if there was no 
      * key found matching originalKey name. A false leaves the table unaltered.
      */
     boolean renameKey(String originalkey, String replacementKey);
+    
+    /**
+     * Returns all the column names from within the table.
+     * @return 
+     */
+    Set<String> getKeys();
     
     /**
      * Removes an entry from the user table. Specially used for libraries that 

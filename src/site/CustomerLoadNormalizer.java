@@ -34,7 +34,7 @@ import mecard.customer.FormattedCustomer;
 import site.calgary.CPLCustomerNormalizer;
 import site.chinook.CARCustomerNormalizer;
 import site.ftmcmurray.FMPLCustomerNormalizer;
-import site.parklands.PKLCustomerNormalizer;
+import site.parklands.PRLCustomerNormalizer;
 import site.reddeer.RDPLCustomerNormalizer;
 import site.shortgrass.SLSCustomerNormalizer;
 import site.stalbert.STACustomerNormalizer;
@@ -104,7 +104,7 @@ public abstract class CustomerLoadNormalizer
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.PKL.name()))
         {
-            normalizer = new PKLCustomerNormalizer(debug);
+            normalizer = new PRLCustomerNormalizer(debug);
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.SLS.name()))
         {

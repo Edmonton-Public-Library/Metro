@@ -161,6 +161,40 @@ public class PAPIFormattedTableTest
         // RIGHT:PAPIElementOrder.C_BARCODE.name()
         assertTrue(papiTable.setValue(PAPIElementOrder.C_LOGON_BRANCH_ID.name(), "12345"));
     }
+    
+    /**
+     * Test of getKeys method, of class PAPIFormattedTable.
+     */
+    @Test
+    public void testGetKeys()
+    {
+        System.out.println("==getKeys==");
+        PAPIFormattedTable papiTable = PAPIFormattedTable.getInstanceOf(PAPIFormattedTable.ContentType.XML);
+        // RIGHT:PAPIElementOrder.C_BARCODE.name()
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_LOGON_BRANCH_ID.name(), "12345"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_PATRON_BRANCH_ID.name(), String.valueOf(PAPIElementOrder.C_PATRON_BRANCH_ID.ordinal())));
+        assertTrue(papiTable.getValue(PAPIElementOrder.C_PATRON_BRANCH_ID.name()).compareTo("4") == 0);
+        // Test if the insertion doesn't matter for well formed order on output.
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_ERECEIPT_OPTION_ID.name(), "39"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_BARCODE.name(), "38"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_PASSWORD.name(), "29"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_DELIVERY_OPTION_ID.name(), String.valueOf(PAPIElementOrder.C_DELIVERY_OPTION_ID.ordinal())));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_EMAIL_ADDRESS.name(), "25"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_USER_1.name(), "16"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_NAME_LAST.name(), "14"));
+        
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_POSTAL_CODE.name(), "5"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_CITY.name(), "7"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_STATE.name(), "8"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_COUNTRY_ID.name(), "9"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_STREET_ONE.name(), "11"));
+        assertTrue(papiTable.setValue(PAPIElementOrder.C_NAME_FIRST.name(), "13"));
+        System.out.println("KEYS:");
+        for (String key: papiTable.getKeys())
+        {
+            System.out.println("KEY:" + key);
+        }
+    }
 
     /**
      * Test of renameKey method, of class PAPIFormattedTable.

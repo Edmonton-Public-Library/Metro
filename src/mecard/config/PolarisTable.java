@@ -109,7 +109,9 @@ public class PolarisTable
         USER_3("User3"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 19, YES, 
         USER_4("User4"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 20, YES, 
         USER_5("User5"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 21, YES, 
-        GENDER("Gender"), //, 1, char, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, 
+        // This column name is changing to 'GenderID' as of Polaris 6.3. The values come from a new table called 'Genders'.
+        // The table has 3 entries currently: 1=N/A, 2='Female', 3='Male'. 2020-01-20.
+        GENDER("GenderID"), //, 1, char, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, 
         BIRTH_DATE("Birthdate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 23, YES, 
         REGISTRATION_DATE("RegistrationDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 24, YES, 
         FORMER_ID("FormerID"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 25, YES, 
