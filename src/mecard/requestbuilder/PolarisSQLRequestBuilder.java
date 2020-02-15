@@ -110,6 +110,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         {
             case "Polaris 6.2":
             case "Polaris 6.3":
+            case "Polaris 6.4":
                 this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
                 break;
             default:
@@ -146,6 +147,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         {
             case "Polaris 6.2":
             case "Polaris 6.3":
+            case "Polaris 6.4":
                 this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
                 break;
             default:
@@ -352,7 +354,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                         fCustomer.getValue(PolarisTable.PatronRegistration.USER_4.toString())) // The none is actually (none) including the brackets. It actually links to a list of options.
                 .string(PolarisTable.PatronRegistration.USER_5.toString(), 
                         fCustomer.getValue(PolarisTable.PatronRegistration.USER_5.toString())) // Set these during customer normalization.
-                .setChar(PolarisTable.PatronRegistration.GENDER.toString(),   // single char.
+                .integer(PolarisTable.PatronRegistration.GENDER.toString(),   // set integer of GenderID field new to 6.3.
                         fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
                 .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), dob) 
                 .dateTimeNow(PolarisTable.PatronRegistration.REGISTRATION_DATE.toString())
@@ -739,44 +741,45 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // Marigold says we should include stored procedure calls to index the patron 
         // after adding them to the database. Not necessary after updating.
         ////////////////////// Handle Indexing  ////////////////////////////
-        // 
-        /////////////////// TODO: Test after releasing PRL. ////////////////
-//        SQLStoredProcedureCommand callGatherPatronKeywords = 
-//                new SQLStoredProcedureCommand.Builder(
-//                        connector, 
-//                        "Polaris.IDX_GatherPatronKeywords", 
-//                        "call")
-//                .integer("nPatronID", polarisPatronID)
-//                .build();
-//        status = callGatherPatronKeywords.execute();
-//        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
-//        {
-//            System.out.println("**error failed to execute indexing proceedure "
-//                    + "Polaris.IDX_GatherPatronKeywords ");
-//            // When this command gets run it returns a useful message and error status for customer.
-//            return new DummyCommand.Builder()
-//                    .setStatus(1)
-//                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
-//                    .build();
-//        }
-//        SQLStoredProcedureCommand callAddPatronKeywords = 
-//                new SQLStoredProcedureCommand.Builder(
-//                        connector, 
-//                        "Polaris.IDX_AddPatronKeywords", 
-//                        "call")
-//                .integer("nPatronID", polarisPatronID)
-//                .build();
-//        status = callAddPatronKeywords.execute();
-//        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
-//        {
-//            System.out.println("**error failed to execute indexing proceedure "
-//                    + "Polaris.IDX_AddPatronKeywords ");
-//            // When this command gets run it returns a useful message and error status for customer.
-//            return new DummyCommand.Builder()
-//                    .setStatus(1)
-//                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
-//                    .build();
-//        }
+        // GatherPatronKeywords
+        SQLStoredProcedureCommand callGatherPatronKeywords = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.IDX_GatherPatronKeywords", 
+                        "call")
+                .integer("nPatronID", polarisPatronID)
+                .returns("OTHER")
+                .build();
+        status = callGatherPatronKeywords.execute();
+        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+        {
+            System.out.println("**error failed to execute indexing proceedure "
+                    + "Polaris.IDX_GatherPatronKeywords ");
+            // When this command gets run it returns a useful message and error status for customer.
+            return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+                    .build();
+        }
+        // AddPatronKeywords
+        SQLStoredProcedureCommand callAddPatronKeywords = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.IDX_AddPatronKeywords", 
+                        "call")
+                .integer("nPatronID", polarisPatronID)
+                .build();
+        status = callAddPatronKeywords.execute();
+        if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
+        {
+            System.out.println("**error failed to execute indexing proceedure "
+                    + "Polaris.IDX_AddPatronKeywords ");
+            // When this command gets run it returns a useful message and error status for customer.
+            return new DummyCommand.Builder()
+                    .setStatus(1)
+                    .setStderr(messages.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()))
+                    .build();
+        }
         //////////////////////// end indexing  ///////////////////////////
         return insertPatronIDAddressID;
     }
@@ -922,7 +925,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     expiry)
             .dateTime(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), 
                     expiry)
-            .setChar(PolarisTable.PatronRegistration.GENDER.toString(), 
+            .integer(PolarisTable.PatronRegistration.GENDER.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
              // Missing from original update command.
             .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), 

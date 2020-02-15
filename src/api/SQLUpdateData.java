@@ -23,7 +23,7 @@ package api;
 /**
  * Associates a data value for a column and the intended data type of that 
  * column in a single object.
- * @author Andrew Nisbet <andrew.nisbet@epl.ca>
+ * @author Andrew Nisbet andrew@dev-ils.com
  */
 public class SQLUpdateData extends SQLData
 {

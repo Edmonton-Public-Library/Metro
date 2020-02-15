@@ -3,19 +3,14 @@ package api;
 
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
-import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.PropertyReader;
-import mecard.requestbuilder.PolarisSQLRequestBuilder;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author anisbet
  */
-
-
 public class SQLStoredProcedureCommandTest
 {
     private final SQLConnector connector;
@@ -50,5 +45,23 @@ public class SQLStoredProcedureCommandTest
                 .build();
         System.out.println(">>>>" + callHashPasswordCommand.toString());
     }
-    
+    /**
+     * Test of execute method, of class SQLStoredProcedureCommand with
+     * a expected return result set.
+     */
+    @Test
+    public void testCommandResults()
+    {
+        System.out.println("== test for result set ==");
+        SQLStoredProcedureCommand IDX_GatherPatronKeywords = 
+                new SQLStoredProcedureCommand.Builder(
+                        connector, 
+                        "Polaris.IDX_GatherPatronKeywords", 
+                        "call")
+                .integer("nPatronID", "123456")
+                .returns("OTHER")
+                .build();
+        System.out.println(">>>>" + IDX_GatherPatronKeywords.toString());
+    }
+
 }
