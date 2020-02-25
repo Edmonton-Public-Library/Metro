@@ -140,7 +140,7 @@ public class SQLStoredProcedureCommand implements Command
             // http://www.java2s.com/Code/Java/Database-SQL-JDBC/Gettinganoutputparameterfromastoredprocedure.htm
             // TODO: Finish this by adding code for receiving a return result (ResultSet).
             // All of this says that we need to make this a CallableStatement.
-            this.statementType = StatementType.PREPARED_STATEMENT;
+            this.statementType = StatementType.CALLABLE_STATEMENT;
             switch (returnType.toUpperCase())
             {
                 case "BOOLEAN":
@@ -311,6 +311,7 @@ public class SQLStoredProcedureCommand implements Command
                                 java.sql.JDBCType.OTHER);
                             break;
                     }
+                    
                     // Execute the SQL, and yes JDBC has helpfully called the insert statement executeUpdate.
                     cStatement.executeUpdate();
                     // Here I print the return result to output since the rest of 
@@ -370,7 +371,7 @@ public class SQLStoredProcedureCommand implements Command
         catch (SQLException ex)
         {
             System.out.println("**error executing statement: " +
-                    this.getStatementString() + "\n" +
+                    this.toString() + "\n" +
                     ex.getMessage());
             status.setError(ex);
             System.out.println("SQLException MSG:" + status.getStderr());

@@ -192,9 +192,11 @@ public class PolarisTable
         ADDRESS_ID("AddressID"), //, 4, int identity, 10, 4, 0, 10, 0, null, null, 4, null, null, 1, NO, 
         POSTAL_CODE_ID("PostalCodeID"), //, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 2, NO, 
         STREET_ONE("StreetOne"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 3, YES, 
-        STREET_TWO("StreetTwo"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES, 
+        STREET_TWO("StreetTwo"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES,
         ZIP_PLUS_FOUR("ZipPlusFour"), //, 12, varchar, 4, 4, null, null, 1, null, null, 12, null, 4, 5, YES, 
-        MUNICIPALITY_NAME("MunicipalityName"); //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 6, YES,
+        MUNICIPALITY_NAME("MunicipalityName"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 6, YES,
+        // Added 6.4 and reported by TRAC.
+        STREET_THREE("StreetThree"); //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES,
         
         private String type;
 
