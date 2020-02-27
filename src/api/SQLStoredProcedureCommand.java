@@ -65,7 +65,7 @@ public class SQLStoredProcedureCommand implements Command
         INTEGER,
         BOOLEAN;
     }
-    private ReturnType returnType;
+    private final ReturnType returnType;
     
     public static class Builder
     {
@@ -161,18 +161,24 @@ public class SQLStoredProcedureCommand implements Command
                     this.returnType = ReturnType.INTEGER;
                     break;
                 case "NVARCHAR":
-                    this.returnType = ReturnType.NONE;
+                    this.returnType = ReturnType.NVARCHAR;
                     break;
                 case "NONE":
+                    // Returns this object to a statement or a prepared statement.
+                    // Choose prepared statement as more likely, that is there 
+                    // will be a parameter passed at some point to the SPCall.
                     this.statementType = StatementType.PREPARED_STATEMENT;
                     this.returnType    = ReturnType.NONE;
                     break;
                 case "OTHER":
-                default:
-//                    ResultSet executeQuery (String SQL): Returns a ResultSet 
-//                    object. Use this method when you expect to get a result 
-//                    set, as you would with a SELECT statement.
+                    // ResultSet executeQuery (String SQL): Returns a ResultSet 
+                    // object. Use this method when you expect to get a result 
+                    // set, as you would with a SELECT statement.
                     // Use this because we don't need the results and the vendor
+                    // will likely return a proprietary object type.
+                    this.returnType = ReturnType.OTHER;
+                    break;
+                default:
                     // will likely return a proprietary object type.
                     this.returnType = ReturnType.OTHER;
                     break;
@@ -197,6 +203,7 @@ public class SQLStoredProcedureCommand implements Command
         this.procedureFunction = builder.procedureFunction;
         this.procedureInvocation = builder.procedureInvocation;
         this.statementType = builder.statementType;
+        this.returnType = builder.returnType;
     }
     
     /**
@@ -250,8 +257,7 @@ public class SQLStoredProcedureCommand implements Command
             switch (this.statementType)
             {
                 case STATEMENT:
-                    Statement statement = null;
-                    statement = connection.createStatement();
+                    Statement statement = connection.createStatement();
                     if (statement.execute(this.getStatementString()))
                     {
                         System.out.print("STATEMENT: '" +
@@ -270,11 +276,11 @@ public class SQLStoredProcedureCommand implements Command
                     // commands could use it.
                     break;
                 case CALLABLE_STATEMENT:
-                    CallableStatement cStatement = null;
+                    CallableStatement cStatement;
                     cStatement = connection.prepareCall(
-                            this.getStatementString(), 
-                            ResultSet.TYPE_FORWARD_ONLY, 
-                            ResultSet.CONCUR_READ_ONLY);
+                        this.getStatementString(),
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_READ_ONLY);
                     // Now add the parameter values
                     for (int i = 0; i < this.columnList.size(); i++)
                     {
@@ -304,8 +310,15 @@ public class SQLStoredProcedureCommand implements Command
                                 paramIndex, 
                                 java.sql.JDBCType.INTEGER);
                             break;
+                        case NONE:
+                            // don't register an output parameter at all.
+                            break;
                         case OTHER:
-                        default:   // this would include NONE.
+                            cStatement.registerOutParameter(
+                                paramIndex, 
+                                java.sql.JDBCType.OTHER);
+                            break;
+                        default:
                             cStatement.registerOutParameter(
                                 paramIndex, 
                                 java.sql.JDBCType.OTHER);
@@ -333,14 +346,17 @@ public class SQLStoredProcedureCommand implements Command
                                 cStatement.getBoolean(paramIndex) + "'\n");
                             break;
                         case OTHER:
-                        default:
                             System.out.println("return OTHER: returned object\n");
                             // We currently don't have a use for the results.
 //                            ResultSet resultSet = cStatement.getResultSet();
 //                            System.out.println("return OTHER: '" + 
 //                                cStatement.getGeneratedKeys() + "'\n");
                             System.out.println(
-                                    cStatement.getObject(paramIndex).toString());
+                                cStatement.getObject(paramIndex).toString());
+                            break;
+                        default:
+                            System.out.println("return OTHER: returned object (@ default).\n" +
+                                cStatement.getObject(paramIndex).toString());
                             break;
                     }
                     status.setEnded(ResponseTypes.OK.ordinal());
@@ -348,6 +364,7 @@ public class SQLStoredProcedureCommand implements Command
                     // Close the statement but not the connection other 
                     // commands could use it.
                     break;
+
                 case PREPARED_STATEMENT:
                 default:
                     PreparedStatement pStatement = null;

@@ -760,19 +760,19 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         ////////////////////// Handle Indexing  ////////////////////////////
         // GatherPatronKeywords
         SQLStoredProcedureCommand callGatherPatronKeywords = 
-                new SQLStoredProcedureCommand.Builder(
-                        connector, 
-                        "Polaris.IDX_GatherPatronKeywords", 
-                        "call")
-                .integer("nPatronID", polarisPatronID)
-                .returns("OTHER")
-                .build();
-        status = callGatherPatronKeywords.execute();
+            new SQLStoredProcedureCommand.Builder(
+                    connector, 
+                    "Polaris.IDX_GatherPatronKeywords", 
+                    "call")
+            .integer("nPatronID", polarisPatronID)
+            .returns("OTHER")
+            .build();
         if (debug)
         {
             System.out.print("SQL SPC: last callGatherPatronKeywords.execute() built and executed: " +
                 callGatherPatronKeywords.toString());
         }
+        status = callGatherPatronKeywords.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
         {
             System.out.println("**error failed to execute indexing proceedure "
