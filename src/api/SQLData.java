@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,12 @@ package api;
 /**
  * Convenience class for storing both data and data type for SQL statements.
  * 
- * @author Andrew Nisbet <andrew.nisbet@epl.ca>
+ * @author Andrew Nisbet andrew@dev-ils.com
  */
 public class SQLData
 {
-    public enum Type{
+    public enum Type
+    {
         STRING,
         DATE,
         INT,
@@ -38,7 +39,8 @@ public class SQLData
         SMALL_INT,
         CHAR,
         TINY_INT,
-        STORED_PROCEEDURE;
+        STORED_PROCEEDURE,
+        RESULT_SET;
     }
     
     // Data name.
