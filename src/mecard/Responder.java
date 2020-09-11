@@ -1,6 +1,7 @@
 /*
- * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ * Metro allows customers from any affiliate library to join any other 
+ * member library.
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +45,9 @@ import site.MeCardPolicy;
 
 /**
  * Responder object handles requests and responses to and from the ILS. The 
- * responder is the adaptor that requests commands from request builders and 
+ * responder is the adapter that requests commands from request builders and 
  * then executes them.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca or andrew@dev-ils.com
  */
 public class Responder
 {
@@ -81,7 +82,13 @@ public class Responder
     public static Response getExceptionResponse(RuntimeException ex)
     {
         Response response = new Response(ResponseTypes.UNKNOWN);
-        if (ex instanceof MetroSecurityException)
+        // It is possible to get a null exception object.
+        if (ex == null)
+        {
+            response.setResponse("Sorry, there was a problem contact "
+                    + " library staff for help with error 111.");
+        }
+        else if (ex instanceof MetroSecurityException)
         {
             response = new Response(ResponseTypes.UNAUTHORIZED);
         }
@@ -107,8 +114,10 @@ public class Responder
             response = new Response(ResponseTypes.CONFIG_ERROR);
             response.setResponse("TEST: DummyCommand intentionally threw error.");
         }
-        
-        response.setResponse(ex.getMessage());
+        else
+        {
+            response.setResponse(ex.getMessage());
+        }
         return response;
     }
     
@@ -152,7 +161,7 @@ public class Responder
      * object and or a message about the status of the command.
      * @param response object as a container for the results.
      */
-    public void getCustomer(Response response)
+    private void getCustomer(Response response)
     {
         String userId  = this.request.getUserId();
         String userPin = this.request.getUserPin();
@@ -208,7 +217,7 @@ public class Responder
      * Gets the status of the ILS server.
      * @param response
      */
-    public void getILSStatus(Response response)
+    private void getILSStatus(Response response)
     {
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_STATUS, debug);
         Command statusCommand = requestBuilder.getStatusCommand(response);
@@ -234,7 +243,7 @@ public class Responder
      * 
      * @param response object
      */
-    public void createCustomer(Response response)
+    private void createCustomer(Response response)
     {
         Customer customer = request.getCustomer();
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
@@ -266,10 +275,38 @@ public class Responder
     /**
      * Creates the ILS specific command to run to update a customer account, then
      * runs it and places the results into the response object.
+     * 
+     * If a customer has already registered with a library, but the account has 
+     * expired and been removed from the ILS, requesting an update
+     * may fail. To address this we first confirm the account exists before we
+     * try and update it.
      * @param response 
      */
-    public void updateCustomer(Response response)
+    private void updateCustomer(Response response)
     {
+        // coopt the request and change it to getCustomer() as step 1.
+        request.setCode(QueryTypes.GET_CUSTOMER);
+        Responder r = new Responder(request, debug);
+        switch (r.getResponse().code)
+        {
+            case FAIL:
+                // The responder specifically FAILs then create them. 
+                // Any issues will be sorted and reported by the
+                // createCustomer() method.
+                request.setCode(QueryTypes.CREATE_CUSTOMER);
+                createCustomer(response);
+                // We just went through the createCustomer process, success or fail
+                // don't proceed to update the customer.
+                return;
+            default:
+                // Anything other than 'FAIL' is disregarded because the response could
+                // have been SUCCESS, or OK, or CHANGE_PIN even, but in any case
+                // updateCustomer() will handle trying to update the account from here.
+                request.setCode(QueryTypes.UPDATE_CUSTOMER);
+                break;
+        }
+        
+        // Otherwise update the customer information.
         Customer customer = request.getCustomer();
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
         normalizer.normalizeOnUpdate(customer, response);

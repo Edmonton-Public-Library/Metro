@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,11 @@ package mecard;
 
 /**
  * The types of responses MeCard server is capable of producing. The order is
- * purposeful, lower ordinal values can be over written by higher ordinal values
+ * intentional, lower ordinal values can be over written by higher ordinal values
  * in the response object but not the other way around. This stops error messages
  * from being reset to SUCCESS by other well meaning processes.
  * @see Response
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca or andrew@dev-ils.com
  */
 public enum ResponseTypes
 {
