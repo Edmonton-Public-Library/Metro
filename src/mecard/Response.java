@@ -53,7 +53,20 @@ public final class Response
     }
     
     /**
-     * 
+     * Resets the response message string. Used by Responder objects that 
+     * reuse responses in order to maintain customer data continuity over 
+     * calls to check if exists before updating accounts.
+     * @return true if the message string was empty and false otherwise.
+     */
+    public boolean resetMessage()
+    {
+        boolean wasEmpty = this.responseMessage.isEmpty();
+        this.responseMessage = "";
+        return wasEmpty;
+    }
+    
+    /**
+     * Concatenates the argument string to the end of messages string.
      * @param s sets the response string.
      */
     public void setResponse(String s)

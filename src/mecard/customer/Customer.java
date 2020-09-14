@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import java.util.EnumMap;
  */
 public class Customer //extends ProtocolPayload
 {
-    private EnumMap<CustomerFieldTypes, String> customerFields;
+    private final EnumMap<CustomerFieldTypes, String> customerFields;
     
     public Customer()
     {
@@ -46,7 +46,7 @@ public class Customer //extends ProtocolPayload
      */
     public void setName(String name)
     {
-        if (name == null && name.length() == 0)
+        if (name == null || name.length() == 0)
         {
             return;
         }

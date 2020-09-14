@@ -271,7 +271,7 @@ public class Responder
         }
         requestBuilder.tidy();
     }
-
+    
     /**
      * Creates the ILS specific command to run to update a customer account, then
      * runs it and places the results into the response object.
@@ -285,11 +285,19 @@ public class Responder
     private void updateCustomer(Response response)
     {
         // coopt the request and change it to getCustomer() as step 1.
+        // This is to test if the account still exists on the ILS for updating.
+        // If it doesn't use the createCustomer method instead.
         request.setCode(QueryTypes.GET_CUSTOMER);
-        Responder r = new Responder(request, debug);
-        switch (r.getResponse().code)
+        Customer customer = request.getCustomer();
+        request.setUserId(customer.get(CustomerFieldTypes.ID));
+        request.setPin(customer.get(CustomerFieldTypes.PIN));
+        getCustomer(response);
+        // To stop multiple messages from being sent to the customer which 
+        // would cause confusion clear the response's message string.
+        response.resetMessage();
+        switch (response.getCode())
         {
-            case FAIL:
+            case FAIL: // user can't be found on ILS
                 // The responder specifically FAILs then create them. 
                 // Any issues will be sorted and reported by the
                 // createCustomer() method.
@@ -298,16 +306,13 @@ public class Responder
                 // We just went through the createCustomer process, success or fail
                 // don't proceed to update the customer.
                 return;
+                
             default:
-                // Anything other than 'FAIL' is disregarded because the response could
-                // have been SUCCESS, or OK, or CHANGE_PIN even, but in any case
-                // updateCustomer() will handle trying to update the account from here.
                 request.setCode(QueryTypes.UPDATE_CUSTOMER);
                 break;
         }
-        
+
         // Otherwise update the customer information.
-        Customer customer = request.getCustomer();
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
         normalizer.normalizeOnUpdate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.UPDATE_CUSTOMER, debug);
