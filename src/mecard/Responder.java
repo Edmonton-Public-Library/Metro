@@ -245,7 +245,59 @@ public class Responder
      */
     private void createCustomer(Response response)
     {
+        this.createCustomer(response, true);
+    }
+    
+    /**
+     * Converts the customer into a ILS-meaningful expression to create a 
+     * customer, then executes the command, and populates the argument 
+     * response with the results. During creation the customer information is
+     * checked for lost card status. This can be computed by the web site or
+     * from the originating ILS.
+     * 
+     * The web site should replace the customer's bar code in it's database 
+     * with the new bar code, once the metro server returns a successful message
+     * (ResponseTypes.LOST_CARD). The signal means the customer can't use the 
+     * card until they confirm with the guest library. Once done staff can run
+     * the 'lost card' process.
+     * 
+     * @param response object with messages for the customer and status codes.
+     * @param checkCustomerExists tells the 
+     */
+    private void createCustomer(Response response, boolean checkCustomerExists)
+    {
         Customer customer = request.getCustomer();
+        if (checkCustomerExists)
+        {
+            // coopt the request and change it to getCustomer() as step 1.
+            // This is to test if the account still exists on the ILS for updating.
+            // If it doesn't use the createCustomer method instead.
+            request.setCode(QueryTypes.GET_CUSTOMER);
+            request.setUserId(customer.get(CustomerFieldTypes.ID));
+            request.setPin(customer.get(CustomerFieldTypes.PIN));
+            getCustomer(response);
+            // To stop multiple messages from being sent to the customer which 
+            // would cause confusion clear the response's message string.
+            response.resetMessage();
+            switch (response.getCode())
+            {
+                case OK:
+                case SUCCESS: // user found on ILS
+                    // The responder specifically FAILs then create them. 
+                    // Any issues will be sorted and reported by the
+                    // createCustomer() method.
+                    request.setCode(QueryTypes.UPDATE_CUSTOMER);
+                    updateCustomer(response, false);
+                    // We just went through the createCustomer process, success or fail
+                    // don't proceed to update the customer.
+                    return;
+
+                default:
+                    request.setCode(QueryTypes.CREATE_CUSTOMER);
+                    break;
+            }
+        }
+        // Carry on with normal customer creation.
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
         normalizer.normalizeOnCreate(customer, response);
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.CREATE_CUSTOMER, debug);
@@ -281,35 +333,58 @@ public class Responder
      * may fail. To address this we first confirm the account exists before we
      * try and update it.
      * @param response 
+     * @param checkCustomerExists true if you want to check if the customer exists
+     * and false otherwise. If update checks for a customer and one can't be found
+     * it will call {@link #createCustomer(mecard.Response, boolean) createCustomer} 
+     * so the customer check isn't performed a second time.
      */
     private void updateCustomer(Response response)
     {
-        // coopt the request and change it to getCustomer() as step 1.
-        // This is to test if the account still exists on the ILS for updating.
-        // If it doesn't use the createCustomer method instead.
-        request.setCode(QueryTypes.GET_CUSTOMER);
+        this.updateCustomer(response, true);
+    }
+    
+    
+    /**
+     * Creates the ILS specific command to run to update a customer account, then
+     * runs it and places the results into the response object.
+     * 
+     * If a customer has already registered with a library, but the account has 
+     * expired and been removed from the ILS, requesting an update
+     * may fail. To address this we first confirm the account exists before we
+     * try and update it.
+     * @param response 
+     */
+    private void updateCustomer(Response response, boolean checkCustomerExists)
+    {
         Customer customer = request.getCustomer();
-        request.setUserId(customer.get(CustomerFieldTypes.ID));
-        request.setPin(customer.get(CustomerFieldTypes.PIN));
-        getCustomer(response);
-        // To stop multiple messages from being sent to the customer which 
-        // would cause confusion clear the response's message string.
-        response.resetMessage();
-        switch (response.getCode())
+        if (checkCustomerExists)
         {
-            case FAIL: // user can't be found on ILS
-                // The responder specifically FAILs then create them. 
-                // Any issues will be sorted and reported by the
-                // createCustomer() method.
-                request.setCode(QueryTypes.CREATE_CUSTOMER);
-                createCustomer(response);
-                // We just went through the createCustomer process, success or fail
-                // don't proceed to update the customer.
-                return;
-                
-            default:
-                request.setCode(QueryTypes.UPDATE_CUSTOMER);
-                break;
+            // coopt the request and change it to getCustomer() as step 1.
+            // This is to test if the account still exists on the ILS for updating.
+            // If it doesn't use the createCustomer method instead.
+            request.setCode(QueryTypes.GET_CUSTOMER);
+            request.setUserId(customer.get(CustomerFieldTypes.ID));
+            request.setPin(customer.get(CustomerFieldTypes.PIN));
+            getCustomer(response);
+            // To stop multiple messages from being sent to the customer which 
+            // would cause confusion clear the response's message string.
+            response.resetMessage();
+            switch (response.getCode())
+            {
+                case FAIL: // user can't be found on ILS
+                    // The responder specifically FAILs then create them. 
+                    // Any issues will be sorted and reported by the
+                    // createCustomer() method.
+                    request.setCode(QueryTypes.CREATE_CUSTOMER);
+                    createCustomer(response, false);
+                    // We just went through the createCustomer process, success or fail
+                    // don't proceed to update the customer.
+                    return;
+
+                default:
+                    request.setCode(QueryTypes.UPDATE_CUSTOMER);
+                    break;
+            }
         }
 
         // Otherwise update the customer information.
