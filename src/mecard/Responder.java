@@ -269,6 +269,7 @@ public class Responder
         Customer customer = request.getCustomer();
         if (checkCustomerExists)
         {
+            System.out.println(new Date() + " precheck if customer exists...");
             // coopt the request and change it to getCustomer() as step 1.
             // This is to test if the account still exists on the ILS for updating.
             // If it doesn't use the createCustomer method instead.
@@ -287,12 +288,14 @@ public class Responder
                     // Any issues will be sorted and reported by the
                     // createCustomer() method.
                     request.setCode(QueryTypes.UPDATE_CUSTOMER);
+                    System.out.println(new Date() + " customer exists, switching to update");
                     updateCustomer(response, false);
                     // We just went through the createCustomer process, success or fail
                     // don't proceed to update the customer.
                     return;
 
                 default:
+                    System.out.println(new Date() + " customer doesn't exist yet.");
                     request.setCode(QueryTypes.CREATE_CUSTOMER);
                     break;
             }
@@ -359,6 +362,7 @@ public class Responder
         Customer customer = request.getCustomer();
         if (checkCustomerExists)
         {
+            System.out.println(new Date() + " precheck if customer exists...");
             // coopt the request and change it to getCustomer() as step 1.
             // This is to test if the account still exists on the ILS for updating.
             // If it doesn't use the createCustomer method instead.
@@ -372,6 +376,8 @@ public class Responder
             switch (response.getCode())
             {
                 case FAIL: // user can't be found on ILS
+                    System.out.println(new Date() + " customer doesn't exist,"
+                            + " switching to create.");
                     // The responder specifically FAILs then create them. 
                     // Any issues will be sorted and reported by the
                     // createCustomer() method.
@@ -382,6 +388,7 @@ public class Responder
                     return;
 
                 default:
+                    System.out.println(new Date() + " customer exists, updating.");
                     request.setCode(QueryTypes.UPDATE_CUSTOMER);
                     break;
             }
