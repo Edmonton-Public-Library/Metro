@@ -11,7 +11,6 @@ import json.RequestDeserializer;
 import mecard.Request;
 import mecard.Response;
 import mecard.config.ConfigFileTypes;
-import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisSQLPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;

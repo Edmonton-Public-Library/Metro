@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,8 @@ import site.CustomerLoadNormalizer;
  * UnsupportedOperationException. The way around it is to devise some symphony
  * API that would return the status then implement it in this calls, then switch
  * the extends ILSRequestAdaptor to implements ILSRequestBuilder.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * 
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  * @see UnsupportedOperationException
  * @see ILSRequestBuilder
  */
@@ -65,7 +66,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     private static List<String> loadFlatUserCreate;
     private static List<String> loadFlatUserUpdate;
     private final String sshServer;
-    public final static String sshDeferMarker = "DEFER:";
+    public final static String SSH_DEFER_MARKER = "DEFER:";
     private final Properties messageProperties;
     private final boolean debug;
     
@@ -127,6 +128,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println(new Date() + "system is currently unavailable." + status.getStderr());
                 break;
+            case USER_NOT_FOUND:
             case FAIL:
                 response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 System.out.println(new Date() + "account not found." + status.getStderr());
@@ -193,12 +195,11 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // empty, it could be using an external script for loading users. This
         // is used for more complicated load proceedures, like broken link lib-
         // braries on Rehat.
-        if (this.sshServer.startsWith(SymphonyRequestBuilder.sshDeferMarker))
+        if (this.sshServer.startsWith(SymphonyRequestBuilder.SSH_DEFER_MARKER))
         {
             // the part after the marker is the path to the executable that
             // will load the customer accounts using any method of it's choosing.
-            String customerLoaderExecutable = this.sshServer.substring(
-                    SymphonyRequestBuilder.sshDeferMarker.length());
+            String customerLoaderExecutable = this.sshServer.substring(SymphonyRequestBuilder.SSH_DEFER_MARKER.length());
             List<String> commandsList = new ArrayList<>();
             commandsList.add(customerLoaderExecutable);
             // Pass in any arguments that the customerLoaderExecutable script.
@@ -255,12 +256,11 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
         // empty, it could be using an external script for loading users. This
         // is used for more complicated load proceedures, like broken link lib-
         // braries on Rehat.
-        if (this.sshServer.startsWith(SymphonyRequestBuilder.sshDeferMarker))
+        if (this.sshServer.startsWith(SymphonyRequestBuilder.SSH_DEFER_MARKER))
         {
             // the part after the marker is the path to the executable that
             // will load the customer accounts using any method of it's choosing.
-            String customerLoaderExecutable = this.sshServer.substring(
-                    SymphonyRequestBuilder.sshDeferMarker.length());
+            String customerLoaderExecutable = this.sshServer.substring(SymphonyRequestBuilder.SSH_DEFER_MARKER.length());
             List<String> commandsList = new ArrayList<>();
             commandsList.add(customerLoaderExecutable);
             // Pass in any arguments that the customerLoaderExecutable script.
@@ -298,6 +298,21 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.OK);
                 response.setResponse("Null command back at you...");
                 result = true;
+                break;
+            case TEST_CUSTOMER:
+                if (status.getStderr().contains("**error number 111"))
+                {
+                    response.setCode(ResponseTypes.USER_NOT_FOUND);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println("account not found.");
+                    result = false;
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse("Customer account found.");
+                    result = true;
+                }
                 break;
             case GET_CUSTOMER:    // see message below all can get an error 111.
                 if (status.getStderr().contains("**error number 111"))
@@ -368,5 +383,11 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public CustomerMessage getCustomerMessage(String stdout)
     {
         return new FlatCustomerMessage(stdout);
+    }
+
+    @Override
+    public Command testCustomerExists(String userId, String userPin, Response response) 
+    {
+        return getCustomerCommand(userId, userPin, response);
     }
 }

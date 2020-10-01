@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2020  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import mecard.util.DateComparer;
  * This CustomerMessage object always knows how to get the profile of the customer response
  * (again, usually SIP2)
  * 
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public interface CustomerMessage
 {
@@ -41,7 +41,18 @@ public interface CustomerMessage
      * @return customer's profile.
      */
     public String getCustomerProfile();
+    
+    /**
+     * Selects a specific value from a field of a well-formed returned message.
+     * If you think of a SIP2 message as having fields separated by '|' pipe 
+     * characters, and each field contains a code and value. The implementer 
+     * shall, given a named field, return the value in that field if possible.
+     * @param fieldName the named field in the returned message.
+     * @return Sting contents for a named field or an empty string if it couldn't
+     * be found, is undefined, or the existing field is empty.
+     */
     public String getField(String fieldName);
+    
     /**
      * The contract for this method states that the supplied field name shall be
      * a field name that may contain a date. If the retrieved field can be cleaned
@@ -86,4 +97,7 @@ public interface CustomerMessage
      * in good standing, and true otherwise.
      */
     public boolean isInGoodStanding();
+    
+    // TODO: Add this to subclasses.
+//    public boolean customerExists();
 }

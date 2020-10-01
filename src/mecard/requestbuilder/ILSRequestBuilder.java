@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ import site.CustomerLoadNormalizer;
  * to get the ILS status. In that case sub-class the ILSRequestAdaptor, and make 
  * sure you don't specify that method of response in the environment.properties
  * file.
- * @author andrew
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public abstract class ILSRequestBuilder
 {
@@ -69,6 +69,10 @@ public abstract class ILSRequestBuilder
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
                 break;
+            case TEST_CUSTOMER: // use the same service as you would for getCustomer.
+                                // but if you want to use a different service you will
+                                // have to create an entry for it in the environment 
+                                // properties file.
             case GET_CUSTOMER:
                 serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
@@ -210,6 +214,19 @@ public abstract class ILSRequestBuilder
      * @return APICommand necessary to test the ILS status.
      */
     public abstract Command getStatusCommand(Response response);
+    
+    /** Gets a command that tests if a customer can be found at the indicated
+     * library system.
+     * @param userId
+     * @param userPin
+     * @param response
+     * @return Command object that when executed, will answer the question.
+     */
+    public abstract Command testCustomerExists(
+            String userId, 
+            String userPin, 
+            Response response
+    );
     
     /**
      * Interprets the results of the ILS command into a meaningful message for

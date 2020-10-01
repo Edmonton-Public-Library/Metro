@@ -40,7 +40,8 @@ public enum ResponseTypes
     UNAVAILABLE,
     FAIL,
     CONFIG_ERROR,
-    UNAUTHORIZED, 
+    UNAUTHORIZED,
+    USER_NOT_FOUND,
     UNKNOWN, 
     ERROR; // Command was received but failed to execute either it was malformed, empty (null), or not supported.;
 }

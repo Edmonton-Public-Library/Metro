@@ -115,7 +115,8 @@ public class SIPRequestBuilder extends ILSRequestBuilder
      * @param commandType the value of commandType
      * @param status the value of status
      * @param response the value of response
-     * @return the boolean
+     * @return the true if the command was successful and false otherwise. The
+     * success depends on what type of query you make.
      */
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
@@ -165,6 +166,21 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
                     response.setCode(ResponseTypes.SUCCESS);
+                    result = true;
+                }
+                break;
+            case TEST_CUSTOMER:
+                if (status.getStatus() == ResponseTypes.USER_NOT_FOUND)
+                {
+                    response.setCode(ResponseTypes.USER_NOT_FOUND);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println(new Date() + "customer account not found.");
+                    result = false;
+                }
+                else 
+                {
+                    response.setCode(status.getStatus());
+                    response.setResponse(status.getStatus().name());
                     result = true;
                 }
                 break;
@@ -281,5 +297,16 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                break;
         } 
          return cMessage;
+    }
+
+    @Override
+    public Command testCustomerExists(
+            String userId, 
+            String userPin, 
+            Response response) 
+    {
+        // If we can get the customer information they exist. This could 
+        // be changed to use a different SIP2 message.
+        return getCustomerCommand(userId, userPin, response);
     }
 }

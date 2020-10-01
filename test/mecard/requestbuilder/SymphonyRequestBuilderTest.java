@@ -34,7 +34,7 @@ public class SymphonyRequestBuilderTest
     {
         System.out.println("==getCreateUserCommand==");
         String property = "DEFER:C:\\Users\\ANisbet\\Dropbox\\development\\MeCard";
-        String path = property.substring(SymphonyRequestBuilder.sshDeferMarker.length());
+        String path = property.substring(SymphonyRequestBuilder.SSH_DEFER_MARKER.length());
         System.out.println("DEFER= '" + path + "'");
     }
 

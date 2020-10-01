@@ -141,6 +141,9 @@ public class Responder
             case GET_CUSTOMER:
                 getCustomer(response);
                 break;
+            case TEST_CUSTOMER:
+                testCustomerExists(response);
+                break;
             case GET_STATUS:
                 getILSStatus(response);
                 break;
@@ -171,6 +174,7 @@ public class Responder
         Command command = requestBuilder.getCustomerCommand(userId, userPin, response);
         CommandStatus status = command.execute();
         CustomerFormatter customerFormatter = requestBuilder.getFormatter();
+        // Use the formatter to convert the returned SIP2 info into a ME customer object.
         Customer customer = customerFormatter.getCustomer(status.getStdout());
         response.setCustomer(customer);
         // we let the isSuccessful method test and set the customer validity.
@@ -211,6 +215,28 @@ public class Responder
             System.out.println(new Date() + " **Fail POLICY_OUT:"+status.getStderr());
         }
         requestBuilder.tidy();
+    }
+    
+        /**
+     * Tests if the customer has an account at the target library system.
+     * @param response 
+     */
+    private void testCustomerExists(Response response) 
+    {
+        String userId  = this.request.getUserId();
+        String userPin = this.request.getUserPin();
+        
+        // So all this stuff will be put to the SIPCommand
+        ILSRequestBuilder requestService = ILSRequestBuilder.getInstanceOf(
+                QueryTypes.TEST_CUSTOMER, debug);
+        Command command = requestService.getCustomerCommand(userId, userPin, response);
+        CommandStatus status = command.execute();
+        // fill in the response with status info and test.
+        requestService.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response);
+        // Make sure we don't return any customer information. It's still 
+        // available in the request if we need to update or create.
+        response.setCustomer(null);
+        requestService.tidy();
     }
     
     /**
@@ -273,32 +299,32 @@ public class Responder
             // coopt the request and change it to getCustomer() as step 1.
             // This is to test if the account still exists on the ILS for updating.
             // If it doesn't use the createCustomer method instead.
-            request.setCode(QueryTypes.GET_CUSTOMER);
+            // Get customer was designed to receive the user pin and ID already
+            // set in the request. Update and Create don't require it specifically.
+            request.setCode(QueryTypes.TEST_CUSTOMER);
             request.setUserId(customer.get(CustomerFieldTypes.ID));
             request.setPin(customer.get(CustomerFieldTypes.PIN));
-            getCustomer(response);
-            // To stop multiple messages from being sent to the customer which 
-            // would cause confusion clear the response's message string.
-            response.resetMessage();
-            switch (response.getCode())
+            testCustomerExists(response);
+            if (response.getCode() == ResponseTypes.USER_NOT_FOUND)
             {
-                case OK:
-                case SUCCESS: // user found on ILS
-                    // The responder specifically FAILs then create them. 
-                    // Any issues will be sorted and reported by the
-                    // createCustomer() method.
-                    request.setCode(QueryTypes.UPDATE_CUSTOMER);
-                    System.out.println(new Date() + " customer exists, switching to update");
-                    updateCustomer(response, false);
-                    // We just went through the createCustomer process, success or fail
-                    // don't proceed to update the customer.
-                    return;
-
-                default:
-                    System.out.println(new Date() + " customer doesn't exist yet.");
-                    request.setCode(QueryTypes.CREATE_CUSTOMER);
-                    break;
+                // This is the expected result for a create customer request.
+                request.setCode(QueryTypes.CREATE_CUSTOMER);
+                // To stop multiple messages from being sent to the customer which 
+                // would cause confusion clear the response's message string.
+                response.resetMessage();
+                System.out.println(new Date() + " customer doesn't exist yet.");
+                // and carry on with creating the customer.
             }
+            else // Account 'not found'. Even on fail safer to try to update an account.
+            {
+                request.setCode(QueryTypes.UPDATE_CUSTOMER);
+                // We just went through the createCustomer process, success or fail
+                // don't proceed to update the customer.
+                response.resetMessage();
+                System.out.println(new Date() + "Warn: customer exists, switching to update.");
+                updateCustomer(response, false);
+                return;
+            } 
         }
         // Carry on with normal customer creation.
         CustomerLoadNormalizer normalizer = getNormalizerPreformatCustomer(customer, response);
@@ -369,28 +395,25 @@ public class Responder
             request.setCode(QueryTypes.GET_CUSTOMER);
             request.setUserId(customer.get(CustomerFieldTypes.ID));
             request.setPin(customer.get(CustomerFieldTypes.PIN));
-            getCustomer(response);
+            testCustomerExists(response);
             // To stop multiple messages from being sent to the customer which 
             // would cause confusion clear the response's message string.
-            response.resetMessage();
-            switch (response.getCode())
+            if (response.getCode() == ResponseTypes.USER_NOT_FOUND)
             {
-                case FAIL: // user can't be found on ILS
-                    System.out.println(new Date() + " customer doesn't exist,"
-                            + " switching to create.");
-                    // The responder specifically FAILs then create them. 
-                    // Any issues will be sorted and reported by the
-                    // createCustomer() method.
-                    request.setCode(QueryTypes.CREATE_CUSTOMER);
-                    createCustomer(response, false);
-                    // We just went through the createCustomer process, success or fail
-                    // don't proceed to update the customer.
-                    return;
-
-                default:
-                    System.out.println(new Date() + " customer exists, updating.");
-                    request.setCode(QueryTypes.UPDATE_CUSTOMER);
-                    break;
+                System.out.println(new Date() + "Warn: customer doesn't exist "
+                        + "switching to create.");
+                request.setCode(QueryTypes.CREATE_CUSTOMER);
+                response.resetMessage();
+                createCustomer(response, false);
+                return;
+            }
+            else
+            {
+                // expected response.
+                System.out.println(new Date() + " customer exists, updating.");
+                request.setCode(QueryTypes.UPDATE_CUSTOMER);
+                response.resetMessage();
+                // And carry on with the udpate.
             }
         }
 
@@ -525,4 +548,5 @@ public class Responder
         System.out.println("Customer cleared.");
         return true;
     }
+
 }

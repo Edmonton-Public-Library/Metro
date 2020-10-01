@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ import site.CustomerLoadNormalizer;
 
 /**
  *
- * @author Andrew Nisbet
+ * @author Andrew Nisbet andrew.nisbet@epl.ca
  */
 public class DummyRequestBuilder extends ILSRequestBuilder
 {
@@ -106,7 +106,7 @@ public class DummyRequestBuilder extends ILSRequestBuilder
      * @param commandType the value of commandType
      * @param status the value of status
      * @param response the value of response
-     * @return the boolean
+     * @return true if the command succeeded and false otherwise.
      */
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
@@ -174,5 +174,14 @@ public class DummyRequestBuilder extends ILSRequestBuilder
     {
         // You could respond by creating a new canned CustomerMessage type.
         throw new UnsupportedOperationException("Not supported in Dummy command.");
+    }
+
+    @Override
+    public Command testCustomerExists(
+            String userId, 
+            String userPin, 
+            Response response) 
+    {
+        return getConfiguredResonse(null, response);
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,22 @@
  */
 package api;
 
+import mecard.ResponseTypes;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
+import java.util.Properties;
 import mecard.exception.SIPException;
 
 /**
- * 
- * @author andrew
+ * Implementation of SIP2 command.
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class SIPCommand implements Command
 {
     private final SIPConnector sipConnector;
     private final String queryString;
     private final String institutionalID;
+    private final String userNotFoundMessageString;
     
     public static class Builder
     {
@@ -38,15 +43,32 @@ public class SIPCommand implements Command
         private String pin;
         private final SIPConnector connector;
         private boolean isStatusRequest;
+        private String userNotFound;
         
+        /**
+         * Constructor requires SIP connection to already be available.
+         * @param s 
+         */
         public Builder(SIPConnector s)
         {
             this.connector = s;
             this.userId = "";
             this.pin = "";
             this.isStatusRequest = false;
+            Properties sip2Props = PropertyReader.getProperties(ConfigFileTypes.SIP2);
+            // The default _should_ work, but add a 'user-not-found' entry to 
+            // the sip2.properties file if your sip server returns a different
+            // message in the AF field when a customer lookup fails.
+            this.userNotFound = sip2Props.getProperty(
+                    "user-not-found", "User not found");
         }
         
+        /**
+         * Sets the customer's ID (barcode) and PIN.
+         * @param userId
+         * @param pin
+         * @return Builder
+         */
         public Builder setUser(String userId, String pin)
         {
             this.userId = userId;
@@ -54,12 +76,20 @@ public class SIPCommand implements Command
             return this;
         }
         
+        /**
+         * Sets a flag if the request is for ILS availability.
+         * @return Builder
+         */
         public Builder isStatusRequest()
         {
             this.isStatusRequest = true;
             return this;
         }
         
+        /**
+         * Factory method to build the SIP request command.
+         * @return 
+         */
         public SIPCommand build()
         {
             return new SIPCommand(this);
@@ -69,12 +99,14 @@ public class SIPCommand implements Command
     /**
      * If the user does not specify any userId or pin or that this is a status
      * request and MalformedCommandException will be thrown.
+     * @param Builder object.
      */
     private SIPCommand(Builder b)
     {
         this.sipConnector = b.connector;
         // Will return an empty string if not set.
         this.institutionalID = this.sipConnector.getInstitutionalID();
+        this.userNotFoundMessageString = b.userNotFound;
         if (b.isStatusRequest)
         {
             // St. Albert's    "990   2.00AY1AZFCD8";
@@ -82,9 +114,13 @@ public class SIPCommand implements Command
         }
         else
         {
-            if (b.userId.isEmpty() || b.pin.isEmpty())
+            if (b.userId.isEmpty())
             {
-                throw new SIPException("Supplied user id or pin (or both) were empty.");
+                throw new SIPException("Supplied user id was empty.");
+            }
+            if ( b.pin.isEmpty())
+            {
+                throw new SIPException("Supplied user pin was empty.");
             }
             this.queryString = patronInfoRequest(b.userId, b.pin);
         }
@@ -121,14 +157,26 @@ public class SIPCommand implements Command
     public CommandStatus execute()
     {
         CommandStatus status = new CommandStatus();
+        status.setResponseType(ResponseTypes.BUSY);
         try
         {
             status.setStdout(this.sipConnector.send(this.queryString));
+            status.setEnded(ResponseTypes.OK.ordinal());
+            // Check if we found the user or not. Even if this is a status
+            // request this won't pass. It may give false negative if any
+            // customer information contains 'User not found', but I'd want the
+            // request to fail just so we could meet a person that lives on 
+            // that street.
+            if (status.getStdout().contains(this.userNotFoundMessageString))
+            {
+                status.setResponseType(ResponseTypes.USER_NOT_FOUND);
+            }
         }
         catch(SIPException e)
         {
             // Can happen if the server is down, server not listening on port, login failed
             // or request timedout.
+            status.setResponseType(ResponseTypes.UNAVAILABLE);
             status.setStderr("service is currently unavailable");
             System.out.println("service is currently unavailable" + e.getMessage());
         }

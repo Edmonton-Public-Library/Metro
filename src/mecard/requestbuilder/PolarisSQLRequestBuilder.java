@@ -1171,4 +1171,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         // will need to finish this class.
         return new SQLCustomerMessage(stdout, true);
     }
+
+    @Override
+    public Command testCustomerExists(
+            String userId, 
+            String userPin, 
+            Response response) 
+    {
+        return getCustomerCommand(userId, userPin, response);
+    }
 }

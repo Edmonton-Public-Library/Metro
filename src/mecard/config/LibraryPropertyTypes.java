@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ package mecard.config;
 
 /**
  * The properties that are expected to be in the environment.xml file.
- * The enum values are manditory, others can be added, they will not be enforced.
- * @author metro
+ * The enum values are mandatory, others can be added, they will not be enforced.
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public enum LibraryPropertyTypes
 {

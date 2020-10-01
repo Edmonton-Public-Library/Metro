@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,5 +173,14 @@ public class PAPIRequestBuilder extends ILSRequestBuilder
         // TODO this will be an XML customer response message. Since each ILS 
         // that returns XML customer content will be different.
         return new PAPIXMLCustomerMessage(stdout, true);
+    }
+
+    @Override
+    public Command testCustomerExists(
+            String userId, 
+            String userPin, 
+            Response response) 
+    {
+        return getCustomerCommand(userId, userPin, response);
     }
 }

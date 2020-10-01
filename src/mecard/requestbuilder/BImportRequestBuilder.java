@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ import site.CustomerLoadNormalizer;
 
 /**
  *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class BImportRequestBuilder extends ILSRequestBuilder
 {
@@ -169,7 +169,8 @@ public class BImportRequestBuilder extends ILSRequestBuilder
      * @param commandType the value of commandType
      * @param status the value of status
      * @param response the value of response
-     * @return the boolean
+     * @return true if the requested command completed successfully for some 
+     * definition of success that's dependent on what the command did.
      */
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
@@ -254,5 +255,11 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     public CustomerMessage getCustomerMessage(String stdout)
     {
         throw new UnsupportedOperationException("Not supported in BImport.");
+    }
+
+    @Override
+    public Command testCustomerExists(String userId, String userPin, Response response) 
+    {
+        return getCustomerCommand(userId, userPin, response);
     }
 }
