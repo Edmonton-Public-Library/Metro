@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,17 @@ import mecard.QueryTypes;
 import mecard.customer.Customer;
 
 /**
- *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Converts customer and request from JSON to Request and customer objects.
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class RequestDeserializer implements JsonDeserializer<Request>
 {
     
     @Override
-    public Request deserialize(JsonElement json, Type type, JsonDeserializationContext jdc) throws JsonParseException
+    public Request deserialize(JsonElement json, 
+            Type type, 
+            JsonDeserializationContext jdc) 
+            throws JsonParseException
     {
         Request request = new Request();
         JsonObject jsonObject = json.getAsJsonObject();
@@ -67,9 +70,9 @@ public class RequestDeserializer implements JsonDeserializer<Request>
     /**
      *
      *
-     * @param requestString the value of requestString
+     * @param requestString the request String.
+     * @return Request object from request string.
      */
-    
     public Request getDeserializedRequest(String requestString)
     {
         GsonBuilder gsonBuilder = new GsonBuilder();

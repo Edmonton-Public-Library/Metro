@@ -35,7 +35,7 @@ import site.CustomerGetNormalizer;
  * 
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public class PKLCustomerGetNormalizer extends CustomerGetNormalizer
+public class PRLCustomerGetNormalizer extends CustomerGetNormalizer
 {
     /**
      * This is the default class for a library that does not require custom

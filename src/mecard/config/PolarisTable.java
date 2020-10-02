@@ -109,7 +109,10 @@ public class PolarisTable
         USER_3("User3"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 19, YES, 
         USER_4("User4"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 20, YES, 
         USER_5("User5"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 21, YES, 
-        GENDER("Gender"), //, 1, char, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, 
+        // This column name is changing to 'GenderID' as of Polaris 6.3. The values come from a new table called 'Genders'.
+        // The table has 3 entries currently: 1=N/A, 2='Female', 3='Male'. 2020-01-20.
+        // The type is a regular integer.
+        GENDER("GenderID"), //, 1, int, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, 
         BIRTH_DATE("Birthdate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 23, YES, 
         REGISTRATION_DATE("RegistrationDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 24, YES, 
         FORMER_ID("FormerID"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 25, YES, 
@@ -189,9 +192,11 @@ public class PolarisTable
         ADDRESS_ID("AddressID"), //, 4, int identity, 10, 4, 0, 10, 0, null, null, 4, null, null, 1, NO, 
         POSTAL_CODE_ID("PostalCodeID"), //, 4, int, 10, 4, 0, 10, 0, null, null, 4, null, null, 2, NO, 
         STREET_ONE("StreetOne"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 3, YES, 
-        STREET_TWO("StreetTwo"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES, 
+        STREET_TWO("StreetTwo"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES,
         ZIP_PLUS_FOUR("ZipPlusFour"), //, 12, varchar, 4, 4, null, null, 1, null, null, 12, null, 4, 5, YES, 
-        MUNICIPALITY_NAME("MunicipalityName"); //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 6, YES,
+        MUNICIPALITY_NAME("MunicipalityName"), //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 6, YES,
+        // Added 6.4 and reported by TRAC.
+        STREET_THREE("StreetThree"); //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES,
         
         private String type;
 

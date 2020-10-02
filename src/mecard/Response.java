@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ import mecard.customer.Customer;
  * Response object container for Metro. Contains the response code from the 
  * request, the response message which may be empty and customer information
  * which may be 'null'.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public final class Response
 {
@@ -53,7 +53,20 @@ public final class Response
     }
     
     /**
-     * 
+     * Resets the response message string. Used by Responder objects that 
+     * reuse responses in order to maintain customer data continuity over 
+     * calls to check if exists before updating accounts.
+     * @return true if the message string was empty and false otherwise.
+     */
+    public boolean resetMessage()
+    {
+        boolean wasEmpty = this.responseMessage.isEmpty();
+        this.responseMessage = "";
+        return wasEmpty;
+    }
+    
+    /**
+     * Concatenates the argument string to the end of messages string.
      * @param s sets the response string.
      */
     public void setResponse(String s)

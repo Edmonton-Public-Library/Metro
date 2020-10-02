@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2019  Edmonton Public Library
+*    Copyright (C) 2020  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ import mecard.util.PostalCode;
  * to store any key value pair as strings, the key should agree with the naming 
  * convention used by the RequestBuilder, in this case {@link mecard.requestbuilder.PolarisILSRequestBuilder}.
  * @see {@link PolarisSQLFormattedCustomer.insertValue()}.
- * @author anisbet
+ * @author Andrew Nisbet andrew@dev-ils.com
+ * @since v1.0 2013
  */
 public class PolarisSQLFormattedCustomer implements FormattedCustomer
 {
@@ -63,14 +64,17 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
         // Here is the contents of the properties file.
         Properties props = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
         // Set the version of customer conformance if set in polaris_sql.properties file.
-        String v = props.getProperty("conformance", "default");
-        if (v.endsWith("6.2"))
+        String version = props.getProperty("conformance", "default");
+        switch (version)
         {
-            this.version = PolarisVersion.SIX_DOT_TWO;
-        }
-        else
-        {
-            this.version = PolarisVersion.DEFAULT;
+            case "Polaris 6.2":
+            case "Polaris 6.3":
+            case "Polaris 6.4":
+                this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
+                break;
+            default:
+                this.version = PolarisVersion.DEFAULT;
+                break;
         }
         HashMap<String, String> table = new HashMap<>();
         PolarisSQLFormattedTable formattedTable = new PolarisSQLFormattedTable(PolarisTable.PATRONS, table);
@@ -276,7 +280,7 @@ public class PolarisSQLFormattedCustomer implements FormattedCustomer
                 PolarisTable.Addresses.STREET_ONE.toString(), 
                 customer.get(CustomerFieldTypes.STREET));
         ///////////////// PatronAddresses ///////////////////////////
-        if (this.version == PolarisVersion.SIX_DOT_TWO)
+        if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
             this.insertValue(
                 PolarisTable.PATRON_ADDRESSES, 

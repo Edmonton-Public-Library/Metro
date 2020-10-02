@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Set;
 import mecard.customer.FormattedTable;
 
 /**
@@ -40,7 +42,7 @@ import mecard.customer.FormattedTable;
  * and which come in 1 of 2 flavors: XML and JSON. This class must be able to 
  * make customer update tables which are (much) more restricted in information,
  * and also come in two flavors: XML and JSON.
- * @author anisbet
+ * @author anisbet andrew@dev-ils.com
  */
 public class PAPIFormattedTable implements FormattedTable
 {
@@ -290,10 +292,22 @@ public class PAPIFormattedTable implements FormattedTable
     {
         return this.getData();
     }
+    
+    @Override
+    public Set<String> getKeys() 
+    {
+        HashMap<String, String> cols = new HashMap<String, String>();
+        
+        for (PAPIElementOrder key: this.columns.keySet())
+        {
+            cols.put(key.name(), this.columns.get(key));
+        }
+        return cols.keySet();
+    }
 
     /**
      *
-     * @author Andrew Nisbet <anisbet@epl.ca>
+     * @author Andrew Nisbet anisbet@epl.ca
      */
     private class TableSerializer implements JsonSerializer<PAPIFormattedTable>
     {

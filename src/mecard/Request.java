@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,12 @@
 package mecard;
 
 import mecard.customer.Customer;
-import mecard.config.CustomerFieldTypes;
 
 /**
  * This class represents a Metro request. It includes the query code, authorization
  * token, customer which may be 'null', user id, and PIN which in some cases may be empty
  * depending on the query type.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca or andrew@dev-ils.com
  */
 public final class Request
 {

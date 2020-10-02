@@ -36,9 +36,9 @@ import site.PolarisNormalizer;
  * The local library may require certain modifications to a customer account.
  * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
-public final class PKLCustomerNormalizer extends PolarisNormalizer
+public final class PRLCustomerNormalizer extends PolarisNormalizer
 {    
-    public PKLCustomerNormalizer(boolean debug)
+    public PRLCustomerNormalizer(boolean debug)
     {
         super(debug);
     }
@@ -76,6 +76,35 @@ public final class PKLCustomerNormalizer extends PolarisNormalizer
 //                    PolarisTable.PATRON_REGISTRATION, 
 //                    PolarisTable.PatronRegistration.PHONE_VOICE_1.toString());
 //        }
+// 2019-12-04 PRL would like it to default to n/a or GenderID=1, .
+// Update: 2020-01-20: GenderID        Description (From the 'Genders' table as of Polaris 6.3).
+//                     1                      N/A
+//                     2                      Female
+//                     3                      Male 
+// From the schema:
+// GENDER("GenderID"), //, 1, char, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, See PolarisTable.java.
+        String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
+        switch (sex)
+        {
+            case "M":
+                formattedCustomer.insertValue(
+                    PolarisTable.PATRON_REGISTRATION,
+                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    "3");
+                break;
+            case "F":
+                formattedCustomer.insertValue(
+                    PolarisTable.PATRON_REGISTRATION,
+                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    "2");
+                break;
+            default:
+                formattedCustomer.insertValue(
+                    PolarisTable.PATRON_REGISTRATION,
+                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    "1");
+                break;
+        }
         if (unformattedCustomer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
         {
             String expiry = DateComparer.getFutureDate(365);
@@ -85,7 +114,7 @@ public final class PKLCustomerNormalizer extends PolarisNormalizer
             } 
             catch (ParseException ex)
             {
-                Logger.getLogger(PKLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PRLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
             }
             formattedCustomer.insertValue(
                 PolarisTable.PATRON_REGISTRATION,

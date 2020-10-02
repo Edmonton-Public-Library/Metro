@@ -21,6 +21,7 @@
 package mecard.customer.polaris;
 
 import java.util.HashMap;
+import java.util.Set;
 import mecard.customer.FormattedTable;
 
 /**
@@ -58,6 +59,22 @@ public class PolarisSQLFormattedTable implements FormattedTable
         }
     }
     
+    /** 
+     * Returns all the column names of the formatted table. The motivation for
+     * this feature is to allow SQL commands to take FormattedTable objects as
+     * arguments, rather than use complex builders.
+     * @return Set of String names of all columns in the formatted table.
+     */
+    public Set<String> getKeys()
+    {
+        return this.columns.keySet();
+    }
+    
+    /**
+     * Outputs all the keys and values separated by an '=' character, with
+     * values surrounded by single quotes "'".
+     * @return String of the contents of the hash map.
+     */
     @Override
     public String getData()
     {
@@ -74,6 +91,11 @@ public class PolarisSQLFormattedTable implements FormattedTable
         return data.toString().trim();
     }
 
+    /**
+     * Returns a space separated string of the names in the key set of the 
+     * underlying HashMap.
+     * @return String of spaced delimited keys to stored values.
+     */
     @Override
     public String getHeader()
     {
@@ -88,12 +110,22 @@ public class PolarisSQLFormattedTable implements FormattedTable
         return data.toString();
     }
 
+    /**
+     * 
+     * @return String name of the table.
+     */
     @Override
     public String getName()
     {
         return TABLE_NAME;
     }
 
+    /**
+     * Returns the values stored for a named case-sensitive key.
+     * @param key
+     * @return String value referenced by the key if found, and an empty string
+     * if the key wasn't found.
+     */
     @Override
     public String getValue(String key)
     {
@@ -104,6 +136,14 @@ public class PolarisSQLFormattedTable implements FormattedTable
         return "";
     }
 
+    /**
+     * Stores a value referenced by a case-sensitive key name.
+     * @param key name of the key as a string that cannot be empty or null. Any 
+     * pre-existing values for any named key are overwritten.
+     * @param value String value to store. Any existing value is over-written.
+     * @return true if a column already exists, and false if the column doesn't
+     * exist, or the passed key is empty or null.
+     */
     @Override
     public boolean setValue(String key, String value)
     {
@@ -116,18 +156,36 @@ public class PolarisSQLFormattedTable implements FormattedTable
         return response;
     }
 
+    /**
+     * Renames a key. To do this the original value is first removed from the 
+     * hash map, then a new key is inserted, with the original value as the 
+     * new key's value.
+     * 
+     * If the key doesn't exist in the hash map or if the value stored is empty
+     * or null, the hash map remains unaltered.
+     * @param originalkey string name of the key to be replaced.
+     * @param replacementKey string of the new key name.
+     * @return false if no originalKey could be found,
+     * and true if the original key is renamed.
+     */
     @Override
     public boolean renameKey(String originalkey, String replacementKey)
     {
-        String originalValue = this.columns.remove(originalkey);
-        if (originalValue == null || originalValue.isEmpty())
+        if (this.columns.containsKey(originalkey))
         {
-            return false;
+            String originalValue = this.columns.remove(originalkey);
+            this.columns.put(replacementKey, originalValue);
+            return true;
         }
-        this.columns.put(replacementKey, originalValue);
-        return true;
+        return false;
     }
 
+    /**
+     * Deletes a key value pair from the formatted table.
+     * @param key String named key to delete.
+     * @return true if the key was found and its value deleted, and false 
+     * otherwise.
+     */
     @Override
     public boolean deleteValue(String key)
     {

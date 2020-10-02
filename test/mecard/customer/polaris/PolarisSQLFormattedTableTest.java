@@ -99,6 +99,22 @@ public class PolarisSQLFormattedTableTest
         assertNotNull(pTable.getValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()));
         assertTrue(pTable.getValue("Henry").compareTo("") == 0);
     }
+    
+    @Test
+    public void testGetKeys()
+    {
+        System.out.println("==getKeys==");
+        PolarisSQLFormattedTable pTable = new PolarisSQLFormattedTable(PolarisTable.PATRON_REGISTRATION);
+        pTable.setValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString(), "anisbet@ualberta.ca");
+        System.out.println("GET_VALUE: '" + 
+                pTable.getValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()) + "'");
+        System.out.println("GET_KEYS:");
+        for (String s: pTable.getKeys())
+        {
+            System.out.println("KEY:" + s);
+            assertTrue(s.compareTo("EmailAddress") == 0);
+        }
+    }
 
     /**
      * Test of renameKey method, of class PolarisSQLFormattedTable.

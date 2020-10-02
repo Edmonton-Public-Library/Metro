@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ import site.CustomerLoadNormalizer;
  * Manages any meaningful request that can be made through SIP2 requests. This
  * naturally excludes things like customer update or create.
  *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class SIPRequestBuilder extends ILSRequestBuilder
 {
@@ -73,7 +73,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
         String password = sipProps.getProperty(SipPropertyTypes.PASSWORD.toString(), "");
         String timeout = sipProps.getProperty(SipPropertyTypes.TIMEOUT.toString());
         String institutionId = sipProps.getProperty(SipPropertyTypes.INSTITUTION_ID.toString(), "");
-        String locationCode = sipProps.getProperty(SIPRequestBuilder.LOCATION_CODE_TAG.toString(), ""); // if not found an empty string is forwarded to the builder.
+        String locationCode = sipProps.getProperty(SIPRequestBuilder.LOCATION_CODE_TAG, ""); // if not found an empty string is forwarded to the builder.
         sipServer = new SIPConnector
                 .Builder(host, port)
                 .sipUser(user)

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2020  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package mecard.customer.horizon;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import mecard.config.BImportTableTypes;
 import mecard.customer.FormattedTable;
@@ -172,5 +173,11 @@ public class BImportTable implements FormattedTable
     public boolean deleteValue(String key)
     {
         throw new UnsupportedOperationException("No requirement for this function yet.");
+    }
+
+    @Override
+    public Set<String> getKeys() 
+    {
+        return this.columns.keySet();
     }
 }
