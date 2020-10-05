@@ -157,11 +157,11 @@ public class SIPCommand implements Command
     public CommandStatus execute()
     {
         CommandStatus status = new CommandStatus();
-        status.setResponseType(ResponseTypes.BUSY);
+        status.setResponse(ResponseTypes.BUSY);
         try
         {
             status.setStdout(this.sipConnector.send(this.queryString));
-            status.setEnded(ResponseTypes.OK.ordinal());
+            status.setResponse(ResponseTypes.OK);
             // Check if we found the user or not. Even if this is a status
             // request this won't pass. It may give false negative if any
             // customer information contains 'User not found', but I'd want the
@@ -169,7 +169,7 @@ public class SIPCommand implements Command
             // that street.
             if (status.getStdout().contains(this.userNotFoundMessageString))
             {
-                status.setResponseType(ResponseTypes.USER_NOT_FOUND);
+                status.setResponse(ResponseTypes.USER_NOT_FOUND);
             }
         }
         catch(SIPException e)
