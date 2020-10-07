@@ -1,0 +1,24 @@
+[Unit]
+Description=MeCard (ME Libraries) server
+
+[Service]
+User=its
+Environment=PATH=/usr/bin
+Environment=DEPLOY_ENV=test
+
+# The path to the workspace
+WorkingDirectory=/home/its/test_metro
+
+# Path to executable (bash script).
+TimeoutSec=2
+Type=forking
+PIDFile=/home/its/test_metro/logs/metro.pid
+ExecStart=/home/its/test_metro/service.sh start
+ExecStop=/home/its/test_metro/service.sh stop
+
+SuccessExitStatus=143
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
