@@ -37,7 +37,7 @@ import site.ftmcmurray.FMPLCustomerNormalizer;
 import site.parklands.PRLCustomerNormalizer;
 import site.reddeer.RDPLCustomerNormalizer;
 import site.shortgrass.SLSCustomerNormalizer;
-import site.stalbert.STACustomerNormalizer;
+import site.stalbert.SAPLCustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
 import site.trac.TRACCustomerNormalizer;
 
@@ -92,7 +92,7 @@ public abstract class CustomerLoadNormalizer
         } 
         else if (libCode.equalsIgnoreCase(MemberTypes.STA.name()))
         {
-            normalizer = new STACustomerNormalizer(debug);
+            normalizer = new SAPLCustomerNormalizer(debug);
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.STR.name()))
         {

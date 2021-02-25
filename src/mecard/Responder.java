@@ -1,7 +1,7 @@
 /*
  * Metro allows customers from any affiliate library to join any other 
  * member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ public class Responder
         String userId  = this.request.getUserId();
         String userPin = this.request.getUserPin();
         
-        // So all this stuff will be put to the SIPCommand
+        // So all this stuff will be put to the (usually) SIPCommand.
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_CUSTOMER, debug);
         Command command = requestBuilder.getCustomerCommand(userId, userPin, response);
         CommandStatus status = command.execute();
@@ -449,8 +449,8 @@ public class Responder
      * can handle. Example: some libraries can only accept 4 digit pins. The 
      * rules for making that happen start here. Once completed the response
      * object will contain the changes that were made. In our example an 
-     * explanation of that the over-sized PIN was truncated and what the new value
-     * is can be added.
+     * explanation of why the user's password was converted to a PIN and what 
+     * the new value is can be added.
      *
      * @param customer
      * @param response

@@ -16,10 +16,10 @@ import static org.junit.Assert.*;
  */
 
 
-public class STACustomerGetNormalizerTest
+public class SAPLCustomerGetNormalizerTest
 {
     
-    public STACustomerGetNormalizerTest()
+    public SAPLCustomerGetNormalizerTest()
     {
     }
 

@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2021  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -27,15 +27,15 @@ import mecard.customer.FormattedCustomer;
 import site.HorizonNormalizer;
 
 /**
- * Normalizes the customer's data before loading into the local library's ILS.
+ * Normalizes the customer's data before loading into SAPL's ILS.
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
-public final class STACustomerNormalizer extends HorizonNormalizer
+public final class SAPLCustomerNormalizer extends HorizonNormalizer
 {
     
-    public STACustomerNormalizer(boolean debug)
+    public SAPLCustomerNormalizer(boolean debug)
     {
         super(debug);
     }
@@ -43,6 +43,8 @@ public final class STACustomerNormalizer extends HorizonNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
+        // Test and hash the user's password to a 4-digit number if necessary.
+        super.finalize(unformattedCustomer, formattedCustomer, response);
         // They also set bstat for sex
         if (unformattedCustomer.isEmpty(CustomerFieldTypes.SEX) == false)
         {

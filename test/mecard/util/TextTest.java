@@ -14,6 +14,63 @@ public class TextTest
     public TextTest()
     {
     }
+    
+    @Test
+    public void testGetUpTo()
+    {
+        System.out.println("==getUpTo==");
+        String input = "symphony-api";
+        String output= Text.getUpTo(input, "-");
+        assertTrue(output.compareTo("symphony") == 0);
+        
+        input = "symphony";
+        output= Text.getUpTo(input, "-");
+        assertTrue(output.compareTo("symphony") == 0);
+        
+        input = "-symphony";
+        output= Text.getUpTo(input, "-");
+        assertTrue(output.compareTo("") == 0);
+        
+        input = "s-ymphony-api";
+        output= Text.getUpTo(input, "-");
+        assertTrue(output.compareTo("s") == 0);
+    }
+    
+    /**
+     * Test of getNew4DigitPin method, of class Text.
+     */
+    @Test
+    public void testGetNewPinHash()
+    {
+        System.out.println("===testGetNewPinHash===");
+        String password = "Andrew";
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        assertTrue(Text.getNew4DigitPin(password).compareTo("4029") == 0);
+        password = "0";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("0048") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "-1";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("1444") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "abcdefghijklmnopqrstuvwxyz";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("1277") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "1234";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("9442") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "5";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("0053") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "A";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("0065") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "https://javarevisited.blogspot.com/2013/02/add-leading-zeros-to-integers-Java-String-left-padding-example-program.html#axzz6nQBiJdcT";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("3007") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        password = "0";
+        assertTrue(Text.getNew4DigitPin(password).compareTo("0048") == 0);
+        System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+    }
 
     @Test
     public void testNthLastWord()
@@ -267,34 +324,46 @@ public class TextTest
     {
         System.out.println("===isMaxDigits===");
         String userPin = "1234";
-        assertTrue(Text.isMaximumDigits(userPin, 4));
+        assertTrue(Text.isUpToMaxDigits(userPin, 4));
+        
+        // Test that 3 digits is *okay*
+        userPin = "123";
+        assertTrue(Text.isUpToMaxDigits(userPin, 4));
+        
+        // Same as 2-digit.
+        userPin = "12";
+        assertTrue(Text.isUpToMaxDigits(userPin, 4));
+        
+        // And uggh, yes a single digit pin...
+        userPin = "1";
+        assertTrue(Text.isUpToMaxDigits(userPin, 4));
         
         userPin = "a234";
-        assertFalse(Text.isMaximumDigits(userPin, 4));
+        assertFalse(Text.isUpToMaxDigits(userPin, 4));
         
         userPin = "";
-        assertFalse(Text.isMaximumDigits(userPin, 4));
+        assertFalse(Text.isUpToMaxDigits(userPin, 4));
         
         userPin = "12345";
-        assertFalse(Text.isMaximumDigits(userPin, 4));
+        assertFalse(Text.isUpToMaxDigits(userPin, 4));
                 
         userPin = "X";
-        assertFalse(Text.isMaximumDigits(userPin, 4));
+        assertFalse(Text.isUpToMaxDigits(userPin, 4));
         
         userPin = "12345";
-        assertTrue(Text.isMaximumDigits(userPin, 5));
+        assertTrue(Text.isUpToMaxDigits(userPin, 5));
         
         userPin = "a";
-        assertFalse(Text.isMaximumDigits(userPin, 0)); // Intersting corner case.
+        assertFalse(Text.isUpToMaxDigits(userPin, 0));
         
         userPin = "";
-        assertFalse(Text.isMaximumDigits(userPin, 4)); // 
+        assertFalse(Text.isUpToMaxDigits(userPin, 4)); 
         
         userPin = null;
-        assertFalse(Text.isMaximumDigits(userPin, 4));
+        assertFalse(Text.isUpToMaxDigits(userPin, 4));
         
         userPin = null;
-        assertFalse(Text.isMaximumDigits(userPin, -10));
+        assertFalse(Text.isUpToMaxDigits(userPin, -10));
     }
 
     /**

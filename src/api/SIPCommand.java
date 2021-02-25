@@ -20,11 +20,16 @@
  */
 package api;
 
+import static api.SIPMessage.ILS_TYPE_TAG;
+import java.util.Date;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import java.util.Properties;
+import mecard.config.ILS;
 import mecard.exception.SIPException;
+import mecard.util.Text;
+import static site.HorizonNormalizer.MAXIMUM_PIN_WIDTH;
 
 /**
  * Implementation of SIP2 command.
@@ -36,6 +41,7 @@ public class SIPCommand implements Command
     private final String queryString;
     private final String institutionalID;
     private final String userNotFoundMessageString;
+    private final ILS.IlsType ilsType;
     
     public static class Builder
     {
@@ -44,6 +50,7 @@ public class SIPCommand implements Command
         private final SIPConnector connector;
         private boolean isStatusRequest;
         private String userNotFound;
+        private final ILS.IlsType ilsType;
         
         /**
          * Constructor requires SIP connection to already be available.
@@ -61,6 +68,7 @@ public class SIPCommand implements Command
             // message in the AF field when a customer lookup fails.
             this.userNotFound = sip2Props.getProperty(
                     "user-not-found", "User not found");
+            this.ilsType = new ILS().getILSType();
         }
         
         /**
@@ -124,6 +132,7 @@ public class SIPCommand implements Command
             }
             this.queryString = patronInfoRequest(b.userId, b.pin);
         }
+        this.ilsType = b.ilsType;
     }
     
     /**
@@ -135,6 +144,31 @@ public class SIPCommand implements Command
      */
     protected final String patronInfoRequest(String userId, String userPin)
     {
+        /*
+        * Horizon libraries now store hashed versions of the customers password
+        * not just random 4-digit pins. This allows authentication with a 
+        * customer's full password from their home library. 
+        *
+        * This is now required because MeCard does not just take ME libraries 
+        * word for a request to be a create or update, but rather checks the
+        * ILS to see which is required. So a request to update will check if 
+        * there is an account before updating, but we need to check if the 
+        * account exists and that would require authentication on most SIP2
+        * server configurations.
+        */
+        if (this.ilsType == ILS.IlsType.HORIZON)
+        {
+            if (Text.isUpToMaxDigits(userPin, MAXIMUM_PIN_WIDTH) == false)
+            {
+                // Get the hash of the current password instead of random digits.
+                String newPin = Text.getNew4DigitPin(userPin);
+                userPin = newPin;
+                System.out.println(new Date() 
+                    + " trying with hashed PIN because Customer's PIN was "
+                    + "not 4 digits as required by Horizon. Checking with: '" 
+                    + newPin + "'.");
+            }
+        }
         // sipData should look like: "63                               AO|AA21221012345678|AD64058|AY1AZF374\r"
         StringBuilder request = new StringBuilder();
         if (userId == null || userPin == null)

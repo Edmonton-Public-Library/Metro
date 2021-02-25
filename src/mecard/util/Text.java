@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2017  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * General text handling static methods are found here.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Text helper class that uses static methods to test strings for valid values.
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com.
+ * @since 0.1
  */
 public final class Text 
 {
@@ -146,16 +147,31 @@ public final class Text
         return returnValue.substring(returnValue.length() -4);
     }
     
+    /**
+     * Creates a 4-digit hash of any string suitable for Horizon PIN requirements.
+     * @param String password or phrase.
+     * @return 4 digit pin of a String.
+     */
+    public static String getNew4DigitPin(String password)
+    {
+        // Use Java's hashCode and mod it by 10000 to get a number between
+        // 0-9999. The hashCode produces a signed int so abs().
+        int hashCode = Math.abs(password.hashCode() % 10000);
+        // If the number is less than 1000, pad with leading zeros.
+        return String.format("%04d" , hashCode);
+    }
+    
     /** 
      * Determines if a string is composed exclusively of digits.
      * @param s input string, could be a PIN for example.
-     * @param maxLength the maximum width you will allow s to be.
+     * @param maxLength the maximum width you will allow s to be. This
+     * value _must_ be greater than or equal to 1 or the method returns false.
      * @return true if the arg string is all digits and false otherwise.
      */
-    public static boolean isMaximumDigits(String s, int maxLength)
+    public static boolean isUpToMaxDigits(String s, int maxLength)
     {
-        if (s == null || maxLength < 0) return false;
-        return s.matches("\\d{" + maxLength + "}");
+        if (s == null || maxLength < 1) return false;
+        return s.matches("\\d{1," + maxLength + "}");
     }
     
     /**
@@ -285,5 +301,15 @@ public final class Text
             }
         }
         return sentence;
+    }
+    
+    public static String getUpTo(String s, String cString)
+    {
+        int where = s.indexOf(cString);
+        if (where > -1)
+        {
+            return s.substring(0, where);
+        }
+        return s;
     }
 }

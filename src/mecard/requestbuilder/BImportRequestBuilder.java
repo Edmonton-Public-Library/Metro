@@ -44,10 +44,12 @@ import mecard.customer.horizon.BImportFormattedCustomer;
 import mecard.customer.horizon.BimportUserFile;
 import mecard.customer.UserFile;
 import mecard.exception.ConfigurationException;
+import mecard.util.Text;
 import site.CustomerLoadNormalizer;
+import site.HorizonNormalizer;
 
 /**
- *
+ * Manages building customer registration requests in a Horizon-centric way. 
  * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class BImportRequestBuilder extends ILSRequestBuilder
@@ -115,7 +117,10 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    public Command getCreateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer)
     {
         // In this method on this class we create the data file and optionally
         // a batch file at the same time since all three files must have consistent
@@ -160,7 +165,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
-        // Since we use the same command for updating as creating we can do this:
+        // This is the same as create. See above for explanation.
         return getCreateUserCommand(customer, response, normalizer);
     }
 

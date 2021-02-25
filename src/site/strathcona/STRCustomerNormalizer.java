@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2021  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,8 @@ public final class STRCustomerNormalizer extends HorizonNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
     {
+        // Test and hash the user's password to a 4-digit number if necessary.
+        super.finalize(unformattedCustomer, formattedCustomer, response);
         // STR has some special issues related to bStat.
         //        If the patron is 65 or older and their barcode starts with 23877, the bstat should be fssen
         //        If the patron is under 65 and their barcode starts with 23877, the bstat should be fsadu

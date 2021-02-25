@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,16 @@
 package site.stalbert;
 
 import api.CustomerMessage;
-import api.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
 
 /**
- *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * This class compensates for any SIP2 configuration oddities that SAPL may have.
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
-public class STACustomerGetNormalizer extends CustomerGetNormalizer
+public class SAPLCustomerGetNormalizer extends CustomerGetNormalizer
 {
     /**
      * This is the default class for a library that does not require custom

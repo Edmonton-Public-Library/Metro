@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,13 +39,13 @@ import site.ftmcmurray.FMPLCustomerGetNormalizer;
 import site.parklands.PRLCustomerGetNormalizer;
 import site.reddeer.RDPLCustomerGetNormalizer;
 import site.shortgrass.SLSCustomerGetNormalizer;
-import site.stalbert.STACustomerGetNormalizer;
+import site.stalbert.SAPLCustomerGetNormalizer;
 import site.strathcona.STRCustomerGetNormalizer;
 import site.trac.TRACCustomerGetNormalizer;
 
 /**
  *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class SIPCustomerFormatter implements CustomerFormatter 
 {
@@ -74,7 +74,7 @@ public class SIPCustomerFormatter implements CustomerFormatter
                 this.customMessageInterpreter = new TRACCustomerGetNormalizer();
                 break;
             case "STA":
-                this.customMessageInterpreter = new STACustomerGetNormalizer();
+                this.customMessageInterpreter = new SAPLCustomerGetNormalizer();
                 break;
             case "CPL":
                 this.customMessageInterpreter = new CPLCustomerGetNormalizer();
