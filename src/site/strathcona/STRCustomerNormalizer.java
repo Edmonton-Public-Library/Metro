@@ -34,7 +34,7 @@ import site.HorizonNormalizer;
  * Normalizes the customer's data before loading into the local library's ILS.
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public final class STRCustomerNormalizer extends HorizonNormalizer
 {
@@ -98,5 +98,15 @@ public final class STRCustomerNormalizer extends HorizonNormalizer
         addBStatTable(formattedCustomer, "a");
         // At Jennifer's request add bstat 'nr' for all metro reg customers.
         addBStatTable(formattedCustomer, "nr");
+    }
+
+    @Override
+    public void normalizeOnCreate(Customer customer, Response response) {
+        throw new UnsupportedOperationException("Not required for BImport.");
+    }
+
+    @Override
+    public void normalizeOnUpdate(Customer customer, Response response) {
+        throw new UnsupportedOperationException("Not required for BImport.");
     }
 }

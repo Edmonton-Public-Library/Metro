@@ -162,11 +162,11 @@ public final class Text
     }
     
     /** 
-     * Determines if a string is composed exclusively of digits.
+     * Determines if a string is composed exclusively of maxLength digits.
      * @param s input string, could be a PIN for example.
      * @param maxLength the maximum width you will allow s to be. This
      * value _must_ be greater than or equal to 1 or the method returns false.
-     * @return true if the arg string is all digits and false otherwise.
+     * @return true if s is maxLength digits long, and false otherwise.
      */
     public static boolean isUpToMaxDigits(String s, int maxLength)
     {
@@ -303,13 +303,22 @@ public final class Text
         return sentence;
     }
     
-    public static String getUpTo(String s, String cString)
+    /**
+     * Returns the content of a string one up to the start of string two.
+     * 
+     * If string two does not appear in string one, string one is returned.
+     * @param stringOne
+     * @param stringTwo
+     * @return The sub-string of stringOne upto the start of stringTwo or
+     * stringOne if stringTwo is not found.
+     */
+    public static String getUpTo(String stringOne, String stringTwo)
     {
-        int where = s.indexOf(cString);
+        int where = stringOne.indexOf(stringTwo);
         if (where > -1)
         {
-            return s.substring(0, where);
+            return stringOne.substring(0, where);
         }
-        return s;
+        return stringOne;
     }
 }

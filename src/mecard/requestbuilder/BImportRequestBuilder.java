@@ -44,9 +44,7 @@ import mecard.customer.horizon.BImportFormattedCustomer;
 import mecard.customer.horizon.BimportUserFile;
 import mecard.customer.UserFile;
 import mecard.exception.ConfigurationException;
-import mecard.util.Text;
 import site.CustomerLoadNormalizer;
-import site.HorizonNormalizer;
 
 /**
  * Manages building customer registration requests in a Horizon-centric way. 
@@ -96,7 +94,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
         this.bimportDir = bimpProps.getProperty(BImportPropertyTypes.BIMPORT_DIR.toString());
         // Done because the tag is common to all ILS specific properties files.
-        this.loadDir = bimpProps.getProperty(PropertyReader.LOAD_DIR.toString());
+        this.loadDir = bimpProps.getProperty(PropertyReader.LOAD_DIR);
         this.serverName = bimpProps.getProperty(BImportPropertyTypes.SERVER.toString());
         this.password = bimpProps.getProperty(BImportPropertyTypes.PASSWORD.toString());
         this.userName = bimpProps.getProperty(BImportPropertyTypes.USER.toString());
@@ -132,10 +130,11 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         {
             loadDir += File.separator;
         }
-        dataFile   = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
+        dataFile = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
         UserFile bimportDataFile = new BimportUserFile(dataFile);
         FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
         // Make final changes to the formatted customer before loading as adding bstat.
+        // and make sure the pin is replaced if required.
         normalizer.finalize(customer, formattedCustomer, response);
         bimportDataFile.addUserData(formattedCustomer.getFormattedCustomer());
         File fTest = new File(dataFile);

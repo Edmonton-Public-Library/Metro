@@ -49,7 +49,8 @@ import site.CustomerLoadNormalizer;
 
 /**
  * Manages any meaningful request that can be made through SIP2 requests. This
- * naturally excludes things like customer update or create.
+ * naturally excludes things like customer update or create, since SIP2 does
+ * not support such operations.
  *
  * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
@@ -146,7 +147,10 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 break;
             case GET_CUSTOMER: // here we need to check and set validity based on messaging from SIP response string.
                 Customer c = response.getCustomer();
-                if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("User not found") == 0)
+                // SIP get customer messages typically return "User not found"
+                // or "Patron does not exist", but either way if we find 'not' 
+                // in the sip response, they weren't found.
+                if (c.get(CustomerFieldTypes.RESERVED).contains(" not "))
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.FAIL);
@@ -154,7 +158,9 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                     System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
                     result = false;
                 }
-                else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN for station user") == 0)
+                // Changed from "Invalid PIN for station user", which is a more 
+                // fragile test.
+                else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN") == 0)
                 {
                     c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                     response.setCode(ResponseTypes.UNAUTHORIZED);

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import mecard.Response;
 import mecard.ResponseTypes;
+import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.horizon.BImportTable;
@@ -66,73 +67,21 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
     {  
         /*** Be sure to call super.finalize() in inherited classes. **/
         ResponseTypes rType = ResponseTypes.SUCCESS;
-        String pin = customer.get(CustomerFieldTypes.PIN);
+        // If the PIN hasn't been hashed or used from customer yet, then get the
+        // customer's password hash if necessary and make it their PIN. We don't
+        // use random numbers anymore.
+        String pin = formattedCustomer.getValue(BImportDBFieldTypes.PIN.toString());
         if (Text.isUpToMaxDigits(pin, MAXIMUM_PIN_WIDTH) == false)
         {
+            pin = customer.get(CustomerFieldTypes.PIN);
             // Get the hash of the current password instead of random digits.
             String newPin = Text.getNew4DigitPin(pin);
             response.setResponse(newPin);
-            customer.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println(new Date() 
+            formattedCustomer.setValue(BImportDBFieldTypes.PIN.toString(), newPin);
+            System.out.println(new Date()
                 + " Customer's PIN was not 4 digits as required by Horizon. "
                 + " HN.finalize() set to: '" 
                 + newPin + "'.");
-            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
-        }
-        response.setCode(rType);
-    }
-    
-    /**
-     * For Horizon libraries, if the customer's password is not a 4-digit PIN
-     * a new one is generated for them. The generated PIN is a 4-digit hash of 
-     * their password.
-     * @param customer Customer object.
-     * @param response - Response object to be returned once the 
-     * request is fulfilled.
-     */
-    @Override
-    public void normalizeOnCreate(Customer customer, Response response)
-    {
-        ResponseTypes rType = ResponseTypes.SUCCESS;
-        String pin = customer.get(CustomerFieldTypes.PIN);
-        if (Text.isUpToMaxDigits(pin, MAXIMUM_PIN_WIDTH) == false)
-        {
-            // Get the hash of the current password instead of random digits.
-            String newPin = Text.getNew4DigitPin(pin);
-            response.setResponse(newPin);
-            customer.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println(new Date() 
-                    + " Customer's PIN was not 4 digits as required by Horizon. Set to: '" 
-                    + newPin + "'.");
-            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
-        }
-        response.setCode(rType);
-    }
-    
-    /**
-     * Manages the user's PIN at the time of update. If the customer has a real
-     * PIN of 4-digits, fine. If not the password is hashed and added to the 
-     * account for update. If the customer is using the same password as before
-     * MeCard will create the same hash. If not the new hash will update the 
-     * account, and the customer will be emailed their new PIN.
-     * @param customer
-     * @param response 
-     */
-    @Override
-    public void normalizeOnUpdate(Customer customer, Response response)
-    {
-        ResponseTypes rType = ResponseTypes.SUCCESS;
-        String pin = customer.get(CustomerFieldTypes.PIN);
-        if (Text.isUpToMaxDigits(pin, MAXIMUM_PIN_WIDTH) == false)
-        {
-            // Get the hash of the current password instead of random digits.
-            String newPin = Text.getNew4DigitPin(pin);
-            response.setResponse(newPin);
-            customer.set(CustomerFieldTypes.PIN, newPin);
-            System.out.println(new Date() 
-                    + " Customer's update data included a PIN that was not"
-                    + " 4 digits as required by Horizon. Set to: '" 
-                    + newPin + "'.");
             rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         }
         response.setCode(rType);
@@ -146,7 +95,7 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
     protected void addBStatTable(FormattedCustomer formattedCustomer, String value)
     {
         FormattedTable table = BImportTable.getInstanceOf(
-                BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
+                BImportTableTypes.BORROWER_BSTAT, new HashMap<>());
         table.setValue("bstat", value);
         formattedCustomer.insertTable(table, 99); // insert at the end.
     }

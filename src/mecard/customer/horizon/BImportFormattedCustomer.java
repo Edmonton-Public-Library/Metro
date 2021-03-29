@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013, 2014  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,16 +40,18 @@ import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
+import mecard.util.Text;
+import site.HorizonNormalizer;
 
 /**
  * Instance of a customer formatted for loading.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew@dev-ils.com
  */
 public final class BImportFormattedCustomer implements FormattedCustomer
 {
     private final List<BImportTable> customerAccount;
     
-    public BImportFormattedCustomer(Customer c)
+    public BImportFormattedCustomer(Customer customer)
     {
         this.customerAccount = new ArrayList<>();
         // initial formatting of the customer
@@ -61,47 +63,58 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         //borrower_address: 3000 18A STREET NW;  ;8426;tds59@hotmail.com; tds59; T6T 0M4; 1; 1
         //borrower_barcode: 21221000000000 (new barcode)
         //borrower_bstat: a
-        if (c.isLostCard())
+        if (customer.isLostCard())
         {
-            customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ALTERNATE_ID));
+            customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), customer.get(CustomerFieldTypes.ALTERNATE_ID));
         }
         else
         {
-            customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), c.get(CustomerFieldTypes.ID));
+            customerTable.put(BImportDBFieldTypes.SECOND_ID.toString(), customer.get(CustomerFieldTypes.ID));
         }
-        customerTable.put(BImportDBFieldTypes.NAME.toString(), (c.get(CustomerFieldTypes.LASTNAME) 
-                + ", " + c.get(CustomerFieldTypes.FIRSTNAME)));
+        customerTable.put(BImportDBFieldTypes.NAME.toString(), (customer.get(CustomerFieldTypes.LASTNAME) 
+                + ", " + customer.get(CustomerFieldTypes.FIRSTNAME)));
         try
         {
-            String expiry = DateComparer.ANSIToConfigDate(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+            String expiry = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
             customerTable.put(BImportDBFieldTypes.EXPIRY.toString(), expiry);
         } 
         catch (ParseException ex)
         {
             System.out.println(new Date() + " unable to parse expiry '" 
-                    + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES) + "'");
+                    + customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES) + "'");
         }
         try
         {
             String dobDate = "19000101";
-            if (c.isEmpty(CustomerFieldTypes.DOB) == false)
+            if (customer.isEmpty(CustomerFieldTypes.DOB) == false)
             {
-                dobDate = c.get(CustomerFieldTypes.DOB);
+                dobDate = customer.get(CustomerFieldTypes.DOB);
             }
             String insertDate = DateComparer.ANSIToConfigDate(dobDate);
             customerTable.put(BImportDBFieldTypes.BIRTH_DATE.toString(), insertDate);
         } 
         catch (ParseException ex)
         {
-            System.out.println(new Date() + " unable to parse DOB '" + c.get(CustomerFieldTypes.DOB) + "'");
+            System.out.println(new Date() + " unable to parse DOB '" + customer.get(CustomerFieldTypes.DOB) + "'");
         }
-        // This is checked because on update of a user account you can clear the
-        // pin to protect that field from updating, and if the case where their EPL
-        // pin is 'CATS', illegal on Horizon, loading the customer would reset 
-        // the pin to a random number.
-        if (c.isEmpty(CustomerFieldTypes.PIN) == false)
+        // Add the pin no matter what. It may be a hashed pin of their password
+        // or an actual 4-digit pin, but it always should be overlayed since we
+        // don't change pins to random digits anymore.
+        String pin = customer.get(CustomerFieldTypes.PIN);
+        if (Text.isUpToMaxDigits(pin, HorizonNormalizer.MAXIMUM_PIN_WIDTH))
         {
-            customerTable.put(BImportDBFieldTypes.PIN.toString(), c.get(CustomerFieldTypes.PIN));
+            customerTable.put(BImportDBFieldTypes.PIN.toString(), 
+                customer.get(CustomerFieldTypes.PIN));
+        }
+        else
+        {
+            // Get the hash of the current password instead of random digits.
+            String newPin = Text.getNew4DigitPin(pin);
+            customerTable.put(BImportDBFieldTypes.PIN.toString(), newPin);
+            System.out.println(new Date()
+                + " BimportFormattedCustomer setting pin to: '" 
+                + newPin + "' because old pin was '" + pin + "'.");
+            
         }
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_TABLE, customerTable));
         
@@ -109,37 +122,37 @@ public final class BImportFormattedCustomer implements FormattedCustomer
         customerTable.clear();
         customerTable.put(BImportDBFieldTypes.PHONE_TYPE.toString(), "h-noTC");
         String phone = "780-999-1234";
-        if (c.isEmpty(CustomerFieldTypes.PHONE) == false)
+        if (customer.isEmpty(CustomerFieldTypes.PHONE) == false)
         {
-            phone = Phone.formatPhone(c.get(CustomerFieldTypes.PHONE));
+            phone = Phone.formatPhone(customer.get(CustomerFieldTypes.PHONE));
         }
         else
         {
             Properties bimpProps = PropertyReader.getProperties(ConfigFileTypes.BIMPORT);
-            phone = bimpProps.getProperty(BImportRequestBuilder.PHONE_TAG, "780-999-1234");
+            phone = bimpProps.getProperty(BImportRequestBuilder.PHONE_TAG, phone);
         }
         customerTable.put(BImportDBFieldTypes.PHONE_NUMBER.toString(), phone);
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_PHONE_TABLE, customerTable));
         
         // Address
         customerTable.clear();
-        customerTable.put(BImportDBFieldTypes.ADDRESS_1.toString(), c.get(CustomerFieldTypes.STREET));
+        customerTable.put(BImportDBFieldTypes.ADDRESS_1.toString(), customer.get(CustomerFieldTypes.STREET));
         customerTable.put(BImportDBFieldTypes.ADDRESS_2.toString(), " "); // intentionally blank
         // look up the city name in bimport address.
         City city  = AlbertaCity.getInstanceOf();
-        String cityCode = city.getCityCode(c.get(CustomerFieldTypes.CITY));
+        String cityCode = city.getCityCode(customer.get(CustomerFieldTypes.CITY));
         customerTable.put(BImportDBFieldTypes.CITY.toString(), cityCode);
-        customerTable.put(BImportDBFieldTypes.POSTAL_CODE.toString(), PostalCode.formatPostalCode(c.get(CustomerFieldTypes.POSTALCODE)));
-        String emailName = this.computeEmailName(c.get(CustomerFieldTypes.EMAIL));
+        customerTable.put(BImportDBFieldTypes.POSTAL_CODE.toString(), PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
+        String emailName = this.computeEmailName(customer.get(CustomerFieldTypes.EMAIL));
         customerTable.put(BImportDBFieldTypes.EMAIL_NAME.toString(), emailName);
-        customerTable.put(BImportDBFieldTypes.EMAIL_ADDRESS.toString(), c.get(CustomerFieldTypes.EMAIL));
+        customerTable.put(BImportDBFieldTypes.EMAIL_ADDRESS.toString(), customer.get(CustomerFieldTypes.EMAIL));
         customerTable.put(BImportDBFieldTypes.SEND_PREOVERDUE.toString(), "1");
         customerTable.put(BImportDBFieldTypes.SEND_NOTICE_BY.toString(), "1");
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, customerTable));
         
         // Borrower Barcode
         customerTable.clear();
-        customerTable.put(BImportDBFieldTypes.BARCODE.toString(), c.get(CustomerFieldTypes.ID));
+        customerTable.put(BImportDBFieldTypes.BARCODE.toString(), customer.get(CustomerFieldTypes.ID));
         customerAccount.add(BImportTable.getInstanceOf(BImportTableTypes.BORROWER_BARCODE_TABLE, customerTable));     
     }
     
@@ -147,10 +160,9 @@ public final class BImportFormattedCustomer implements FormattedCustomer
     public List<String> getFormattedCustomer()
     {
         List<String> customerList = new ArrayList<>();
-        for (BImportTable table: this.customerAccount)
-        {
+        this.customerAccount.forEach(table -> {
             customerList.add(table.getData());
-        }
+        });
         // add the modification prefix to the start of the initial line.
         if (customerList.size() > 0)
         {
@@ -164,10 +176,9 @@ public final class BImportFormattedCustomer implements FormattedCustomer
     public List<String> getFormattedHeader()
     {
         List<String> customerList = new ArrayList<>();
-        for (BImportTable table: this.customerAccount)
-        {
+        this.customerAccount.forEach(table -> {
             customerList.add(table.getHeader());
-        }
+        });
         if (customerList.size() > 0)
         {
             String initialEntry = "x- " + customerList.remove(0);

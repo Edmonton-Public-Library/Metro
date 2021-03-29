@@ -364,6 +364,9 @@ public class TextTest
         
         userPin = null;
         assertFalse(Text.isUpToMaxDigits(userPin, -10));
+        
+        userPin = "4038266786";
+        assertFalse(Text.isUpToMaxDigits(userPin, 4));
     }
 
     /**
