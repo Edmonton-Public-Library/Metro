@@ -300,7 +300,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 break;
             default:
                 cMessage = new SIPCustomerMessage(stdout);
-               break;
+                break;
         } 
          return cMessage;
     }

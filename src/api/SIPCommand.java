@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
  */
 package api;
 
-import static api.SIPMessage.ILS_TYPE_TAG;
 import java.util.Date;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
@@ -29,7 +28,7 @@ import java.util.Properties;
 import mecard.config.ILS;
 import mecard.exception.SIPException;
 import mecard.util.Text;
-import static site.HorizonNormalizer.MAXIMUM_PIN_WIDTH;
+import site.HorizonNormalizer;
 
 /**
  * Implementation of SIP2 command.
@@ -41,7 +40,7 @@ public class SIPCommand implements Command
     private final String queryString;
     private final String institutionalID;
     private final String userNotFoundMessageString;
-    private final ILS.IlsType ilsType;
+    private final ILS ils;
     
     public static class Builder
     {
@@ -50,7 +49,7 @@ public class SIPCommand implements Command
         private final SIPConnector connector;
         private boolean isStatusRequest;
         private String userNotFound;
-        private final ILS.IlsType ilsType;
+        private final ILS ilsType;
         
         /**
          * Constructor requires SIP connection to already be available.
@@ -68,7 +67,7 @@ public class SIPCommand implements Command
             // message in the AF field when a customer lookup fails.
             this.userNotFound = sip2Props.getProperty(
                     "user-not-found", "User not found");
-            this.ilsType = new ILS().getILSType();
+            this.ilsType = new ILS();
         }
         
         /**
@@ -132,7 +131,7 @@ public class SIPCommand implements Command
             }
             this.queryString = patronInfoRequest(b.userId, b.pin);
         }
-        this.ilsType = b.ilsType;
+        this.ils = b.ilsType;
     }
     
     /**
@@ -156,9 +155,10 @@ public class SIPCommand implements Command
         * account exists and that would require authentication on most SIP2
         * server configurations.
         */
-        if (this.ilsType == ILS.IlsType.HORIZON)
+        if (this.ils.getILSType() == ILS.IlsType.HORIZON)
         {
-            if (Text.isUpToMaxDigits(userPin, MAXIMUM_PIN_WIDTH) == false)
+            if (Text.isUpToMaxDigits(userPin, 
+                    HorizonNormalizer.MAXIMUM_PIN_WIDTH) == false)
             {
                 // Get the hash of the current password instead of random digits.
                 String newPin = Text.getNew4DigitPin(userPin);

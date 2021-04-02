@@ -27,9 +27,9 @@ import java.util.Properties;
 import java.util.Set;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
+import mecard.config.ILS;
 import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
-import mecard.exception.ConfigurationException;
 import mecard.exception.SIPException;
 
 /**
@@ -44,31 +44,12 @@ import mecard.exception.SIPException;
 public class SIPMessage
 {
 
-    public enum IlsType
-    {
-        SIRSI_DYNIX("SIRSI_DYNIX"),
-        POLARIS("POLARIS");
-        
-        private final String type;
-
-        private IlsType(String s)
-        {
-            this.type = s;
-        }
-
-        @Override
-        public String toString()
-        {
-            return this.type;
-        }
-    }
     protected HashMap<String, String> fields;
     protected final String originalMessage;
     protected final String code;
     protected final String codeBits;
     protected Properties messageProperties;
-    protected final IlsType ilsType;
-    public final static String ILS_TYPE_TAG = "ils-type";  // optional field to adapt to new customerMessage type.
+    protected final ILS ils;
     
     /**
      * Constructor
@@ -78,21 +59,7 @@ public class SIPMessage
     public SIPMessage(String sipMessage)
             throws SIPException
     {
-        Properties sip2Properties = PropertyReader.getProperties(ConfigFileTypes.SIP2);
-        // get the value from the properties file, but if not found assume SIRSI_DYNIX 
-        // which will set the customerMessage type to a standard SIPCustomerMessage().
-        String whichIls = sip2Properties.getProperty(ILS_TYPE_TAG, IlsType.SIRSI_DYNIX.toString());
-        // whichIls can still be empty if a tag was entered but it was empty.
-        if (whichIls.isEmpty()) whichIls = IlsType.SIRSI_DYNIX.toString();
-        try
-        {
-            this.ilsType = IlsType.valueOf(whichIls);
-        }
-        catch (IllegalArgumentException ex)
-        {
-            throw new ConfigurationException(" **Invalid option '" + whichIls + "' in sip2.properties."
-                    + " Either remove the tag for default of SIRSI_DYNIX or enter a valid ILS type.");
-        }
+        this.ils = new ILS();
         // If the message we get is broken, it is most likely that the ILS is down.
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.originalMessage = sipMessage;
@@ -223,10 +190,11 @@ public class SIPMessage
      * @return SIRSI_DYNIX by default if 'ils-type' element is not an entry in 
      * the properties file. Options are SIRSI_DYNIX, POLARIS or no entry. Don't use
      * an empty tag.
+     * @see {@link ILS} for more information.
      */
-    public SIPMessage.IlsType getILSType()
+    public ILS.IlsType getILSType()
     {
-        return this.ilsType;
+        return this.ils.ILS_TYPE;
     }
     
     /**
