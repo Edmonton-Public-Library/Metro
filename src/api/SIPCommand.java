@@ -157,8 +157,7 @@ public class SIPCommand implements Command
         */
         if (this.ils.getILSType() == ILS.IlsType.HORIZON)
         {
-            if (Text.isUpToMaxDigits(userPin, 
-                    HorizonNormalizer.MAXIMUM_PIN_WIDTH) == false)
+            if (!Text.isUpToMaxDigits(userPin, HorizonNormalizer.MAXIMUM_PIN_WIDTH))
             {
                 // Get the hash of the current password instead of random digits.
                 String newPin = Text.getNew4DigitPin(userPin);

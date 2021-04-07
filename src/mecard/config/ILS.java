@@ -38,7 +38,8 @@ public class ILS
         SIRSI_DYNIX("SIRSI_DYNIX"),
         SYMPHONY("SYMPHONY"),
         HORIZON("HORIZON"),
-        POLARIS("POLARIS");
+        POLARIS("POLARIS"),
+        UNKNOWN("UNKNOWN");
         
         private final String type;
 
@@ -72,6 +73,7 @@ public class ILS
         // get the value from the properties file, but if not found assume SIRSI_DYNIX 
         // which will set the customerMessage type to a standard SIPCustomerMessage().
         String whichIls = sip2Properties.getProperty(SIP_ILS_TYPE_TAG);
+        IlsType myType = IlsType.UNKNOWN;;
         try
         {
             // which Ils can still be empty if a tag was entered but it was empty.
@@ -87,16 +89,20 @@ public class ILS
                 whichIls = Text.getUpTo(createProtocolStr, "-").toUpperCase();
             }
         
-            ILS_TYPE = IlsType.valueOf(whichIls);
+            myType = IlsType.valueOf(whichIls.toUpperCase());
         }
         catch (NullPointerException | IllegalArgumentException ex)
         {
-            throw new ConfigurationException(" **Failed to find ILS type '" 
+            System.err.println(" **Failed to find ILS type '" 
                 + "' in environment.properties or sip2.properties. Try adding "
                 + "'<entry key=\"ils-type\">[ILS_NAME]</entry>' to "
                     + "sip2.properties file. For example add 'HORIZON' if "
                     + "your ILS is a Horizon system. Valid values are "
                     + "SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.");
+        }
+        finally
+        {
+            ILS_TYPE = myType;
         }
     }
     
