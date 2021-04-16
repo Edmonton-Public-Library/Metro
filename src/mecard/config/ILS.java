@@ -37,7 +37,7 @@ public class ILS
     {
         SIRSI_DYNIX("SIRSI_DYNIX"),
         SYMPHONY("SYMPHONY"),
-        HORIZON("HORIZON"),
+        BIMPORT("BIMPORT"),
         POLARIS("POLARIS"),
         UNKNOWN("UNKNOWN");
         
@@ -69,36 +69,37 @@ public class ILS
      */
     public ILS()
     {
+        IlsType myType = IlsType.UNKNOWN;
         Properties sip2Properties = PropertyReader.getProperties(ConfigFileTypes.SIP2);
         // get the value from the properties file, but if not found assume SIRSI_DYNIX 
         // which will set the customerMessage type to a standard SIPCustomerMessage().
         String whichIls = sip2Properties.getProperty(SIP_ILS_TYPE_TAG);
-        IlsType myType = IlsType.UNKNOWN;;
         try
         {
-            // which Ils can still be empty if a tag was entered but it was empty.
-            if (whichIls == null || whichIls.isEmpty() 
-                    || 0 == whichIls.compareToIgnoreCase(IlsType.SIRSI_DYNIX.toString()))
-            {
-                // we need to go to the environment and make educated guesses based
-                // on the 'create-protocol' tag in the environment.properties.
-                Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
-                // get the value from the properties file, but if not found assume SIRSI_DYNIX 
-                // which will set the customerMessage type to a standard SIPCustomerMessage().
-                String createProtocolStr = envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
-                whichIls = Text.getUpTo(createProtocolStr, "-").toUpperCase();
-            }
-        
             myType = IlsType.valueOf(whichIls.toUpperCase());
         }
-        catch (NullPointerException | IllegalArgumentException ex)
+        catch (NullPointerException | IllegalArgumentException ex) 
         {
-            System.err.println(" **Failed to find ILS type '" 
-                + "' in environment.properties or sip2.properties. Try adding "
-                + "'<entry key=\"ils-type\">[ILS_NAME]</entry>' to "
-                    + "sip2.properties file. For example add 'HORIZON' if "
-                    + "your ILS is a Horizon system. Valid values are "
-                    + "SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.");
+            // we need to go to the environment and make educated guesses based
+            // on the 'create-protocol' tag in the environment.properties.
+            Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+            // get the value from the properties file, but if not found assume SIRSI_DYNIX 
+            // which will set the customerMessage type to a standard SIPCustomerMessage().
+            String createProtocolStr = envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
+            whichIls = Text.getUpTo(createProtocolStr, "-").toUpperCase();
+            try
+            {
+                myType = IlsType.valueOf(whichIls.toUpperCase());
+            }
+            catch (NullPointerException | IllegalArgumentException innerEx)
+            {
+                System.err.println(" **Failed to find ILS type '" 
+                    + "' in environment.properties or sip2.properties. Try adding "
+                    + "'<entry key=\"ils-type\">[ILS_NAME]</entry>' to "
+                        + "sip2.properties file. For example add 'BIMPORT' if "
+                        + "your ILS is a Horizon system. Valid values are "
+                        + "SYMPHONY, BIMPORT, POLARIS and SIRSI_DYNIX.");
+            }
         }
         finally
         {

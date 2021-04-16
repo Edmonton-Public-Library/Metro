@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author andrew
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class TextTest
 {

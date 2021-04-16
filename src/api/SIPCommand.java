@@ -155,7 +155,7 @@ public class SIPCommand implements Command
         * account exists and that would require authentication on most SIP2
         * server configurations.
         */
-        if (this.ils.getILSType() == ILS.IlsType.HORIZON)
+        if (this.ils.getILSType() == ILS.IlsType.BIMPORT)
         {
             if (!Text.isUpToMaxDigits(userPin, HorizonNormalizer.MAXIMUM_PIN_WIDTH))
             {
