@@ -114,6 +114,7 @@ public class SIPCommand implements Command
         // Will return an empty string if not set.
         this.institutionalID = this.sipConnector.getInstitutionalID();
         this.userNotFoundMessageString = b.userNotFound;
+        this.ils = b.ilsType;
         if (b.isStatusRequest)
         {
             // St. Albert's    "990   2.00AY1AZFCD8";
@@ -131,7 +132,6 @@ public class SIPCommand implements Command
             }
             this.queryString = patronInfoRequest(b.userId, b.pin);
         }
-        this.ils = b.ilsType;
     }
     
     /**
