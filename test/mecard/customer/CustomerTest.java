@@ -50,14 +50,12 @@ public class CustomerTest
     {
         System.out.println("==isEmpty==");
         String name = "Doe, John";
-        Customer instance = new Customer();
-        instance.setName(name);
-        instance.set(CustomerFieldTypes.ISLOSTCARD, "Y");
-        boolean test = instance.isLostCard();
-        assertTrue(test);
-        instance.set(CustomerFieldTypes.ISLOSTCARD, "X");
-        test = instance.isLostCard();
-        assertFalse(test);
+        Customer customer = new Customer();
+        customer.setName(name);
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "Y");
+        assertTrue(customer.isLostCard());
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "X");
+        assertFalse(customer.isLostCard());
     }
 
     /**

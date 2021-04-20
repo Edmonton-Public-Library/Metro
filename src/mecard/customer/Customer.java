@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,11 @@ import mecard.Protocol;
 import java.util.EnumMap;
 
 /**
+ * Convenience class for managing customer data in a standardized way.
  * 
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
-public class Customer //extends ProtocolPayload
+public class Customer
 {
     private final EnumMap<CustomerFieldTypes, String> customerFields;
     
@@ -74,19 +75,21 @@ public class Customer //extends ProtocolPayload
     }
     
     /**
-     * Sets the customer's field (ft) with the specified value. 
-     * @param ft
+     * Sets the customer's field (ft) with the specified value. The new value 
+     * will be appended to any existing value in the customer.
+     * 
+     * @param fieldType
      * @param value 
      */
-    public void set(CustomerFieldTypes ft, String value)
+    public void set(CustomerFieldTypes fieldType, String value)
     {
-        if (ft.equals(CustomerFieldTypes.PREFEREDNAME))
+        if (fieldType.equals(CustomerFieldTypes.PREFEREDNAME))
         {
             this.setName(value);
         }
         else
         {
-            this.customerFields.put(ft, value);
+            this.customerFields.put(fieldType, value);
         }
     }
 

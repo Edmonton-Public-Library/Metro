@@ -47,7 +47,23 @@ public class SAPLCustomerGetNormalizerTest
         c = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESHERMAN, WILLIAM TECUMSEH|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 SAVANNAH STREET LETHBRIDGE, AB T1A 3N7|BEanton@shortgrass.ca|BHUSD|PD19520208|PCSGMEDA|PE20150108    235900|PFADULT|PGMALE|DB$0.00|DM$500.00|AF#Incorrect password|AY1AZAC20");
         System.out.println("EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
         System.out.println("STREET:'" + c.get(CustomerFieldTypes.STREET)+"'");
-        assertTrue(c.get(CustomerFieldTypes.DOB).compareTo("20150108")==0);
+        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20150108")==0);
+        
+        // Test STR's use of PE for dob.
+//        c = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESHERMAN, WILLIAM TECUMSEH|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 SAVANNAH STREET LETHBRIDGE, AB T1A 3N7|BEanton@shortgrass.ca|BHUSD|PD19520208|PCSGMEDA|PE20150108    235900|PFADULT|PGMALE|DB$0.00|DM$500.00|AF#Incorrect password|AY1AZAC20");
+        System.out.println("EXPIRY:'" + c.get(CustomerFieldTypes.DOB)+"'");
+        assertTrue(c.get(CustomerFieldTypes.DOB).compareTo("19520208")==0);
+        
+        
+        c = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|"
+                + "AA25021000719291|AESHERMAN, WILLIAM TECUMSEH|AQSGMED|BZ0100|"
+                + "CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 SAVANNAH STREET LETHBRIDGE, AB T1A 3N7|"
+                + "BEanton@shortgrass.ca|BHUSD|PD19520208|PCSGMEDA|PE20150108    235900|PFADULT|"
+                + "PGMALE|DB$0.00|DM$500.00|"
+                + "AF#Unknown borrower barcode - please refer to the circulation desk."
+                + "|AY1AZAC20");
+        System.out.println("RESERVED:'" + c.get(CustomerFieldTypes.RESERVED)+"'");
+        assertTrue(c.get(CustomerFieldTypes.RESERVED).contains(" not "));
     }
     
 }

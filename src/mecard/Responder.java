@@ -217,7 +217,7 @@ public class Responder
         requestBuilder.tidy();
     }
     
-        /**
+    /**
      * Tests if the customer has an account at the target library system.
      * @param response 
      */

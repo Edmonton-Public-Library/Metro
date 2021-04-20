@@ -97,6 +97,8 @@ public class SAPLCustomerGetNormalizer extends CustomerGetNormalizer
         
         // AF field will contain '#Incorrect password' if the customer enters an invalid pin
         // This gets past from the SIP server if no validation is set.
+        // It can also signal if the customer was not found: 
+        // '#Unknown borrower barcode - please refer to the circulation desk.'
 //        if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN for station user") == 0)
         // which is tested in SIPRequestBuilder.
         // Since all SIP servers seem to report incorrect password differently and SIPRequestBuilder
@@ -113,6 +115,10 @@ public class SAPLCustomerGetNormalizer extends CustomerGetNormalizer
         if (message.getField("AF").startsWith("#Incorrect password"))
         {
             customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
+        }
+        else if (message.getField("AF").startsWith("#Unknown"))
+        {
+            customer.set(CustomerFieldTypes.RESERVED, "User not found");
         }
                 
         // Date of birth in SIP PB not per standard.

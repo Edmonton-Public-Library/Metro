@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,9 @@ import mecard.util.Text;
 import site.CustomerGetNormalizer;
 
 /**
- *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * Normalizes the customer data based on the anomalies of the local getCustomer
+ * methodologies.
+ * @author Andrew Nisbet andrew.nisbet@epl.ca andrew@dev-ils.com
  */
 public class STRCustomerGetNormalizer extends CustomerGetNormalizer
 {
@@ -114,6 +115,10 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
         if (message.getField("AF").startsWith("#Incorrect password"))
         {
             customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
+        }
+        else if (message.getField("AF").startsWith("#Unknown"))
+        {
+            customer.set(CustomerFieldTypes.RESERVED, "User not found");
         }
         // Strathcona has an issue that they emit data in 
         // UPPERCASE for customer names and addresses.
