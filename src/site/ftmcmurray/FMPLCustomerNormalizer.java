@@ -39,11 +39,11 @@ public final class FMPLCustomerNormalizer extends HorizonNormalizer
 
     @Override
     public void normalizeOnCreate(Customer customer, Response response) {
-        throw new UnsupportedOperationException("Not required for BImport.");
+        // Nothing to do.
     }
 
     @Override
     public void normalizeOnUpdate(Customer customer, Response response) {
-        throw new UnsupportedOperationException("Not required for BImport.");
+        // Nothing to do.
     }
 }
