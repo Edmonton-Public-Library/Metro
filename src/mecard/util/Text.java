@@ -149,7 +149,7 @@ public final class Text
     
     /**
      * Creates a 4-digit hash of any string suitable for Horizon PIN requirements.
-     * @param String password or phrase.
+     * @param password or phrase.
      * @return 4 digit pin of a String.
      */
     public static String getNew4DigitPin(String password)

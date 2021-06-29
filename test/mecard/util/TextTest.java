@@ -70,6 +70,9 @@ public class TextTest
         password = "0";
         assertTrue(Text.getNew4DigitPin(password).compareTo("0048") == 0);
         System.out.println("PIN:'" + Text.getNew4DigitPin(password) + "'");
+        // Customer inquiry
+        password = "132007";
+        System.out.println("Customer PIN:'" + Text.getNew4DigitPin(password) + "'");
     }
 
     @Test
