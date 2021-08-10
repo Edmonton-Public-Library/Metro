@@ -66,7 +66,7 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
     public void finalize(Customer customer, FormattedCustomer formattedCustomer, Response response)
     {  
         /*** Be sure to call super.finalize() in inherited classes. **/
-        ResponseTypes rType = ResponseTypes.SUCCESS;
+        ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         // If the PIN hasn't been hashed or used from customer yet, then get the
         // customer's password hash if necessary and make it their PIN. We don't
         // use random numbers anymore.
@@ -76,14 +76,14 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
             pin = customer.get(CustomerFieldTypes.PIN);
             // Get the hash of the current password instead of random digits.
             String newPin = Text.getNew4DigitPin(pin);
-            response.setResponse(newPin);
             formattedCustomer.setValue(BImportDBFieldTypes.PIN.toString(), newPin);
             System.out.println(new Date()
                 + " Customer's PIN was not 4 digits as required by Horizon. "
                 + " HN.finalize() set to: '" 
                 + newPin + "'.");
-            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+            pin = newPin;
         }
+        response.setResponse(pin);
         response.setCode(rType);
     }
     
