@@ -37,7 +37,7 @@ public class ILS
     {
         SIRSI_DYNIX("SIRSI_DYNIX"),
         SYMPHONY("SYMPHONY"),
-        BIMPORT("BIMPORT"),
+        HORIZON("HORIZON"),
         POLARIS("POLARIS"),
         UNKNOWN("UNKNOWN");
         
@@ -95,10 +95,9 @@ public class ILS
             {
                 System.err.println(" **Failed to find ILS type '" 
                     + "' in environment.properties or sip2.properties. Try adding "
-                    + "'<entry key=\"ils-type\">[ILS_NAME]</entry>' to "
-                        + "sip2.properties file. For example add 'BIMPORT' if "
-                        + "your ILS is a Horizon system. Valid values are "
-                        + "SYMPHONY, BIMPORT, POLARIS and SIRSI_DYNIX.");
+                    + "'<entry key=\"ils-type\">[ILS_NAME]</entry>' to the ILS"
+                    + "that you use in the sip2.properties file. Valid values are "
+                    + "SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.");
             }
         }
         finally

@@ -51,7 +51,9 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
     @Override
     public ResponseTypes normalize(Customer customer, StringBuilder responseStringBuilder)
     {
-        ResponseTypes rType = ResponseTypes.SUCCESS;
+        // This will ensure that the customer will always get an email with 
+        // their password that's unique to any Horizon library.
+        ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         return rType;
     }
     
