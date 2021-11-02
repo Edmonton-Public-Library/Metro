@@ -321,4 +321,23 @@ public final class Text
         }
         return stringOne;
     }
+    
+    /**
+     * Determines if two strings are similar, once white space, non-word
+     * characters are removed, and if case is ignored.
+     * @param strOne input string one.
+     * @param strTwo input string two.
+     * @return true if the strings are similar, to within 10% of the string length
+     * and ignoring case, punctuation, and white space.
+     * white space are accounted for, and false otherwise.
+     */
+    public static boolean isLike(String strOne, String strTwo)
+    {
+        String badChars = "[\\W\\s]";
+        if (strOne == null) strOne = "";
+        if (strTwo == null) strTwo = "";
+        String s1 = strOne.replaceAll(badChars, "");
+        String s2 = strTwo.replaceAll(badChars, "");
+        return Math.abs(s1.compareToIgnoreCase(s2)) == 0;
+    }
 }

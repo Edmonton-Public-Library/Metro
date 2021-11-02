@@ -557,4 +557,37 @@ public class TextTest
         content = "*";
         assertTrue(Text.cleanName(content).compareTo("") == 0);
     }
+    
+    @Test
+    public void testIsLike()
+    {
+        System.out.println("====== testIsLike ======");
+        String content = "anisbet@epl.ca";
+        assertTrue(Text.isLike(content, "anisbet@epl.ca"));
+        content = "*ascroft";
+        assertTrue(Text.isLike(content, "ascroft"));
+        content = "Mcintosh*";
+        assertFalse(Text.isLike(content, "macintosh"));
+        content = "Stankievech*";
+        assertTrue(Text.isLike(content, "stan   kievech"));
+        content = "Kubke*";
+        assertTrue(Text.isLike(content, "KuB!@ke"));
+        content = "*tieu";
+        assertTrue(Text.isLike(content, "tieu"));
+        content = "*lawley";
+        assertTrue(Text.isLike(content, "law ley"));
+        content = "Steven Fry*";
+        assertTrue(Text.isLike(content, "steven F  ry"));
+        content = null;
+        assertTrue(Text.isLike(content, ""));
+        content = "";
+        assertTrue(Text.isLike(content, ""));
+        assertFalse(Text.isLike(null, "d-o-g"));
+        assertTrue(Text.isLike("DOG", "d-o-g"));
+        assertFalse(Text.isLike("DOG", "c-at"));
+        assertFalse(Text.isLike("DOG", "D- o -!-*b"));
+        assertTrue(Text.isLike("DOG", "D- o -!-*g"));
+        assertTrue(Text.isLike("DOG", "D- o -!-*g"));
+        assertFalse(Text.isLike("patron  does not exist", "Patron doesn't exist."));
+    }
 }

@@ -200,7 +200,13 @@ public class SIPCommand implements Command
             // customer information contains 'User not found', but I'd want the
             // request to fail just so we could meet a person that lives on 
             // that street.
-            if (status.getStdout().contains(this.userNotFoundMessageString))
+            // TODO: Convert response to SIPMessage and query the AF field would
+            // be more robust and test the 2 lines below.
+            // This will only work if all SIP servers use AF for status message.
+            // which is a _good_ but far from 
+            SIPMessage statusMsg = new SIPMessage(status.getStdout());
+            if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundMessageString))
+//            if (status.getStdout().contains(this.userNotFoundMessageString))
             {
                 status.setResponse(ResponseTypes.USER_NOT_FOUND);
             }
