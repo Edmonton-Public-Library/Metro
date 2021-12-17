@@ -203,7 +203,6 @@ public class SIPCommand implements Command
             // TODO: Convert response to SIPMessage and query the AF field would
             // be more robust and test the 2 lines below.
             // This will only work if all SIP servers use AF for status message.
-            // which is a _good_ but far from 
             SIPMessage statusMsg = new SIPMessage(status.getStdout());
             if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundMessageString))
 //            if (status.getStdout().contains(this.userNotFoundMessageString))
