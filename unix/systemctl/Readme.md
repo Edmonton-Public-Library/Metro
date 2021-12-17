@@ -31,7 +31,6 @@ Dependencies:
 -------------
 commons-cli-1.2.jar
 commons-codec-1.8.jar
-commons-logging-1.1.3.jar
 fluent-hc-4.3.4.jar
 gson-2.2.4.jar
 httpclient-4.3.4.jar
