@@ -41,4 +41,7 @@ sqljdbc4.jar
 
 Known Issues:
 -------------
-None
+* If a customer logs in with the wrong password they can receive the following message.
+`
+Sorry, we are unable to register your account. :You must have an email address to use this service. Please contact your home library for assistance
+`
