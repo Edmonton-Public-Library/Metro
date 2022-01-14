@@ -42,6 +42,7 @@ public enum ResponseTypes
     CONFIG_ERROR,
     UNAUTHORIZED,
     USER_NOT_FOUND,
+    USER_PIN_INVALID,
     UNKNOWN, 
     ERROR; // Command was received but failed to execute either it was malformed, empty (null), or not supported.;
 }

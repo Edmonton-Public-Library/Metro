@@ -146,48 +146,74 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                 result = true;
                 break;
             case GET_CUSTOMER: // here we need to check and set validity based on messaging from SIP response string.
-                Customer c = response.getCustomer();
-                // SIP get customer messages typically return "User not found"
-                // or "Patron does not exist", but either way if we find 'not' 
-                // in the sip response, they weren't found.
-                if (c.get(CustomerFieldTypes.RESERVED).contains(" not "))
+                switch (status.getStatus())
                 {
-                    c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
-                    response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                    System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
-                    result = false;
-                }
-                // Changed from "Invalid PIN for station user", which is a more 
-                // fragile test.
-                else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN") == 0)
-                {
-                    c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
-                    response.setCode(ResponseTypes.UNAUTHORIZED);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                    System.out.println("User pin does not match the one on record.");
-                    result = false;
-                }
-                else
-                {
-                    c.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
-                    response.setCode(ResponseTypes.SUCCESS);
-                    result = true;
+                    case USER_NOT_FOUND:
+                        response.setCode(ResponseTypes.USER_NOT_FOUND);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                        System.out.println(new Date() + "customer account not found.");
+                        result = false;
+                        break;
+                        
+                    case UNAUTHORIZED:
+                        response.setCode(ResponseTypes.USER_PIN_INVALID);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                        System.out.println(new Date() + "customer sent invalid pin.");
+                        result = false;
+                        break;
+                        
+                    default:
+                        Customer c = response.getCustomer();
+                        // SIP get customer messages typically return "User not found"
+                        // or "Patron does not exist", but either way if we find 'not' 
+                        // in the sip response, they weren't found.
+                        if (c.get(CustomerFieldTypes.RESERVED).contains(" not "))
+                        {
+                            c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
+                            response.setCode(ResponseTypes.FAIL);
+                            response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                            System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
+                            result = false;
+                        }
+                        // Changed from "Invalid PIN for station user", which is a more 
+                        // fragile test.
+                        else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN") == 0)
+                        {
+                            c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
+                            response.setCode(ResponseTypes.UNAUTHORIZED);
+                            response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                            System.out.println("User pin does not match the one on record.");
+                            result = false;
+                        }
+                        else
+                        {
+                            c.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
+                            response.setCode(ResponseTypes.SUCCESS);
+                            result = true;
+                        }
                 }
                 break;
             case TEST_CUSTOMER:
-                if (status.getStatus() == ResponseTypes.USER_NOT_FOUND)
+                switch (status.getStatus())
                 {
-                    response.setCode(ResponseTypes.USER_NOT_FOUND);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                    System.out.println(new Date() + "customer account not found.");
-                    result = false;
-                }
-                else 
-                {
-                    response.setCode(status.getStatus());
-                    response.setResponse(status.getStatus().name());
-                    result = true;
+                    case USER_NOT_FOUND:
+                        response.setCode(ResponseTypes.USER_NOT_FOUND);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                        System.out.println(new Date() + "customer account not found.");
+                        result = false;
+                        break;
+                        
+                    case UNAUTHORIZED:
+                        response.setCode(ResponseTypes.USER_PIN_INVALID);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                        System.out.println(new Date() + "customer sent invalid pin.");
+                        result = false;
+                        break;
+                        
+                    default:
+                        response.setCode(status.getStatus());
+                        response.setResponse(status.getStatus().name());
+                        result = true;
                 }
                 break;
             case CREATE_CUSTOMER:

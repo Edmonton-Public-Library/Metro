@@ -2,6 +2,16 @@
 
 Project Notes
 -------------
+## Notes:
+As of version 1.3.XX the MeCard server's sip2.properties file requires the following
+entries.
+```
+...
+<entry key="user-not-found">User not found {text from AF field}</entry>
+<entry key="user-pin-invalid">Invalid PIN {text from AF field}</entry>
+```
+Failing to include them will throw SEVERE: 'user-pin-invalid' unset in sip2.properties message.
+
 As of version 1.0 the MeCard server is meant to be run as a service under Linux using systemctl.
 
 ## Instructions for setting up the mecard as a service

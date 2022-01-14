@@ -26,7 +26,9 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import java.util.Properties;
 import mecard.config.ILS;
+import mecard.config.MessagesTypes;
 import mecard.exception.SIPException;
+import mecard.exception.SIPUserDataException;
 import mecard.util.Text;
 import site.HorizonNormalizer;
 
@@ -40,7 +42,9 @@ public class SIPCommand implements Command
     private final String queryString;
     private final String institutionalID;
     private final String userNotFoundMessageString;
+    private final String userPinInvalidMessageString;
     private final ILS ils;
+    private Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
     
     public static class Builder
     {
@@ -49,6 +53,7 @@ public class SIPCommand implements Command
         private final SIPConnector connector;
         private boolean isStatusRequest;
         private String userNotFound;
+        private String userPinInvalid;
         private final ILS ilsType;
         
         /**
@@ -67,6 +72,8 @@ public class SIPCommand implements Command
             // message in the AF field when a customer lookup fails.
             this.userNotFound = sip2Props.getProperty(
                     "user-not-found", "User not found");
+            this.userPinInvalid = sip2Props.getProperty(
+                    "user-pin-invalid", "User PIN invalid");
             this.ilsType = new ILS();
         }
         
@@ -113,7 +120,8 @@ public class SIPCommand implements Command
         this.sipConnector = b.connector;
         // Will return an empty string if not set.
         this.institutionalID = this.sipConnector.getInstitutionalID();
-        this.userNotFoundMessageString = b.userNotFound;
+        this.userNotFoundMessageString   = b.userNotFound;
+        this.userPinInvalidMessageString = b.userPinInvalid;
         this.ils = b.ilsType;
         if (b.isStatusRequest)
         {
@@ -205,10 +213,26 @@ public class SIPCommand implements Command
             // This will only work if all SIP servers use AF for status message.
             SIPMessage statusMsg = new SIPMessage(status.getStdout());
             if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundMessageString))
-//            if (status.getStdout().contains(this.userNotFoundMessageString))
             {
-                status.setResponse(ResponseTypes.USER_NOT_FOUND);
+                throw new SIPUserDataException(
+                        messageProps.getProperty(
+                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
             }
+            else if (Text.isLike(statusMsg.getField("AF"), this.userPinInvalidMessageString))
+            {
+                status.setResponse(ResponseTypes.USER_PIN_INVALID);
+                throw new SIPUserDataException(
+                        messageProps.getProperty(
+                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
+            }
+        }
+        catch(SIPUserDataException e)
+        {
+            status.setResponseType(ResponseTypes.UNAUTHORIZED);
+            status.setStderr(e.getMessage());
+            System.out.println("User authentication failed. "
+                    + "Either the user id or PIN are incorrect." 
+                    + e.getMessage());
         }
         catch(SIPException e)
         {

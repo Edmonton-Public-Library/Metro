@@ -33,7 +33,9 @@ public enum SipPropertyTypes
     USER("sip-user"), 
     PASSWORD("password"), 
     TIMEOUT("timeout"), 
-    INSTITUTION_ID("institution-id");
+    INSTITUTION_ID("institution-id"),
+    USER_NOT_FOUND("user-not-found"),
+    USER_PIN_INVALID("user-pin-invalid");
     
     private String type;
 
