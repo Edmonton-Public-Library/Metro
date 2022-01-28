@@ -20,7 +20,6 @@
  */
 package json;
 
-import mecard.Request;
 import mecard.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +31,6 @@ import com.google.gson.JsonParseException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
-import mecard.QueryTypes;
 import mecard.ResponseTypes;
 import mecard.customer.Customer;
 

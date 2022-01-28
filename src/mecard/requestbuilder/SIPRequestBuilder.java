@@ -45,6 +45,7 @@ import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.SIPException;
 import mecard.config.PropertyReader;
 import mecard.exception.ConfigurationException;
+import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -155,7 +156,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                         result = false;
                         break;
                         
-                    case UNAUTHORIZED:
+                    case USER_PIN_INVALID:
                         response.setCode(ResponseTypes.USER_PIN_INVALID);
                         response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
                         System.out.println(new Date() + "customer sent invalid pin.");
@@ -163,11 +164,16 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                         break;
                         
                     default:
+                        // Test if another process placed the any information
+                        // in the customer's reserved field
+                        /**
+                         * @TODO check if these tests are actually required.
+                         */
                         Customer c = response.getCustomer();
-                        // SIP get customer messages typically return "User not found"
-                        // or "Patron does not exist", but either way if we find 'not' 
-                        // in the sip response, they weren't found.
-                        if (c.get(CustomerFieldTypes.RESERVED).contains(" not "))
+                        Properties sipProps = PropertyReader.getProperties(ConfigFileTypes.SIP2);
+                        String userNotFound = sipProps.getProperty(SipPropertyTypes.USER_NOT_FOUND.toString());
+                        String userPinInvalid = sipProps.getProperty(SipPropertyTypes.USER_PIN_INVALID.toString());
+                        if (Text.isLike(c.get(CustomerFieldTypes.RESERVED), userNotFound))
                         {
                             c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                             response.setCode(ResponseTypes.FAIL);
@@ -175,9 +181,7 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                             System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
                             result = false;
                         }
-                        // Changed from "Invalid PIN for station user", which is a more 
-                        // fragile test.
-                        else if (c.get(CustomerFieldTypes.RESERVED).compareToIgnoreCase("Invalid PIN") == 0)
+                        else if (Text.isLike(c.get(CustomerFieldTypes.RESERVED), userPinInvalid))
                         {
                             c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
                             response.setCode(ResponseTypes.UNAUTHORIZED);
@@ -203,13 +207,10 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                         result = false;
                         break;
                         
-                    case UNAUTHORIZED:
-                        response.setCode(ResponseTypes.USER_PIN_INVALID);
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                        System.out.println(new Date() + "customer sent invalid pin.");
-                        result = false;
-                        break;
-                        
+                    /**
+                     * No test required for invalid pin because the server is
+                     * testing if an account exists only!
+                     */
                     default:
                         response.setCode(status.getStatus());
                         response.setResponse(status.getStatus().name());

@@ -26,9 +26,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import java.util.Properties;
 import mecard.config.ILS;
-import mecard.config.MessagesTypes;
 import mecard.exception.SIPException;
-import mecard.exception.SIPUserDataException;
 import mecard.util.Text;
 import site.HorizonNormalizer;
 
@@ -44,7 +42,7 @@ public class SIPCommand implements Command
     private final String userNotFoundMessageString;
     private final String userPinInvalidMessageString;
     private final ILS ils;
-    private Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+    private final Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
     
     public static class Builder
     {
@@ -214,25 +212,14 @@ public class SIPCommand implements Command
             SIPMessage statusMsg = new SIPMessage(status.getStdout());
             if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundMessageString))
             {
-                throw new SIPUserDataException(
-                        messageProps.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                System.out.println("==> USER_NOT_FOUND");
+                status.setResponse(ResponseTypes.USER_NOT_FOUND);
             }
             else if (Text.isLike(statusMsg.getField("AF"), this.userPinInvalidMessageString))
             {
+                System.out.println("==> USER_PIN_INVALID");
                 status.setResponse(ResponseTypes.USER_PIN_INVALID);
-                throw new SIPUserDataException(
-                        messageProps.getProperty(
-                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
             }
-        }
-        catch(SIPUserDataException e)
-        {
-            status.setResponseType(ResponseTypes.UNAUTHORIZED);
-            status.setStderr(e.getMessage());
-            System.out.println("User authentication failed. "
-                    + "Either the user id or PIN are incorrect." 
-                    + e.getMessage());
         }
         catch(SIPException e)
         {
