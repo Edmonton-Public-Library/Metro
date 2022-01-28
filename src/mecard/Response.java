@@ -53,13 +53,15 @@ public final class Response
     }
     
     /**
-     * Resets the response message string. Used by Responder objects that 
-     * reuse responses in order to maintain customer data continuity over 
-     * calls to check if exists before updating accounts.
+     * Resets the response, but preserves the customer (if any). 
+     * This allows one response to be updated over multiple
+     * operations such as testing if a customer exists and either creating or
+     * updating them. 
      * @return true if the message string was empty and false otherwise.
      */
-    public boolean resetMessage()
+    public boolean reset()
     {
+        this.code = ResponseTypes.INIT;
         boolean wasEmpty = this.responseMessage.isEmpty();
         this.responseMessage = "";
         return wasEmpty;

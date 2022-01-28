@@ -40,7 +40,9 @@ public class SIPCommand implements Command
     private final String queryString;
     private final String institutionalID;
     private final String userNotFoundMessageString;
+    private final String userPinInvalidMessageString;
     private final ILS ils;
+    private final Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
     
     public static class Builder
     {
@@ -49,6 +51,7 @@ public class SIPCommand implements Command
         private final SIPConnector connector;
         private boolean isStatusRequest;
         private String userNotFound;
+        private String userPinInvalid;
         private final ILS ilsType;
         
         /**
@@ -67,6 +70,8 @@ public class SIPCommand implements Command
             // message in the AF field when a customer lookup fails.
             this.userNotFound = sip2Props.getProperty(
                     "user-not-found", "User not found");
+            this.userPinInvalid = sip2Props.getProperty(
+                    "user-pin-invalid", "User PIN invalid");
             this.ilsType = new ILS();
         }
         
@@ -113,7 +118,8 @@ public class SIPCommand implements Command
         this.sipConnector = b.connector;
         // Will return an empty string if not set.
         this.institutionalID = this.sipConnector.getInstitutionalID();
-        this.userNotFoundMessageString = b.userNotFound;
+        this.userNotFoundMessageString   = b.userNotFound;
+        this.userPinInvalidMessageString = b.userPinInvalid;
         this.ils = b.ilsType;
         if (b.isStatusRequest)
         {
@@ -205,9 +211,14 @@ public class SIPCommand implements Command
             // This will only work if all SIP servers use AF for status message.
             SIPMessage statusMsg = new SIPMessage(status.getStdout());
             if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundMessageString))
-//            if (status.getStdout().contains(this.userNotFoundMessageString))
             {
+                System.out.println("==> USER_NOT_FOUND");
                 status.setResponse(ResponseTypes.USER_NOT_FOUND);
+            }
+            else if (Text.isLike(statusMsg.getField("AF"), this.userPinInvalidMessageString))
+            {
+                System.out.println("==> USER_PIN_INVALID");
+                status.setResponse(ResponseTypes.USER_PIN_INVALID);
             }
         }
         catch(SIPException e)

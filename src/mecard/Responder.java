@@ -311,7 +311,7 @@ public class Responder
                 request.setCode(QueryTypes.CREATE_CUSTOMER);
                 // To stop multiple messages from being sent to the customer which 
                 // would cause confusion clear the response's message string.
-                response.resetMessage();
+                response.reset();
                 System.out.println(new Date() + " customer doesn't exist yet.");
                 // and carry on with creating the customer.
             }
@@ -320,7 +320,7 @@ public class Responder
                 request.setCode(QueryTypes.UPDATE_CUSTOMER);
                 // We just went through the createCustomer process, success or fail
                 // don't proceed to update the customer.
-                response.resetMessage();
+                response.reset();
                 System.out.println(new Date() + "Warn: customer exists, switching to update.");
                 updateCustomer(response, false);
                 return;
@@ -403,7 +403,7 @@ public class Responder
                 System.out.println(new Date() + "Warn: customer doesn't exist "
                         + "switching to create.");
                 request.setCode(QueryTypes.CREATE_CUSTOMER);
-                response.resetMessage();
+                response.reset();
                 createCustomer(response, false);
                 return;
             }
@@ -412,7 +412,7 @@ public class Responder
                 // expected response.
                 System.out.println(new Date() + " customer exists, updating.");
                 request.setCode(QueryTypes.UPDATE_CUSTOMER);
-                response.resetMessage();
+                response.reset();
                 // And carry on with the udpate.
             }
         }
