@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,14 +112,18 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
         // TODO: customize message testing in SIPRequestBuilder to test a standard
         // message or value, and have each emmitter test and set that value based
         // on the message from the SIP server at the host library.
-        if (message.getField("AF").startsWith("#Incorrect password"))
-        {
-            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
-        }
-        else if (message.getField("AF").startsWith("#Unknown"))
-        {
-            customer.set(CustomerFieldTypes.RESERVED, "User not found");
-        }
+        // Updated: Done on January 28, 2022.
+        // Implementation: add the following to the sip2.properties file.
+        //        <entry key="user-not-found">#Unknown</entry>
+        //        <entry key="user-pin-invalid">#Incorrect password</entry>
+//        if (message.getField("AF").startsWith("#Incorrect password"))
+//        {
+//            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
+//        }
+//        else if (message.getField("AF").startsWith("#Unknown"))
+//        {
+//            customer.set(CustomerFieldTypes.RESERVED, "User not found");
+//        }
         // Strathcona has an issue that they emit data in 
         // UPPERCASE for customer names and addresses.
         String upperCaseFieldText = customer.get(CustomerFieldTypes.STREET);

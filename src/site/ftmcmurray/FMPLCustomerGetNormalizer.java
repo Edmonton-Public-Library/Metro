@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,10 +45,21 @@ public class FMPLCustomerGetNormalizer extends CustomerGetNormalizer
     {
         // AF field will contain '#Incorrect password' if the customer enters an invalid pin
         // This gets past from the SIP server if no validation is set.
-        if (message.getField("AF").startsWith("#Incorrect password"))
-        {
-            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
-        }
+        // @TODO: Fix to read expected string from sip2.properties.
+        // Status: Done January 28, 2022.
+        // Implementation: add the following to the sip2.properties file.
+        //        <entry key="user-not-found">#Unknown</entry>
+        //        <entry key="user-pin-invalid">#Incorrect password</entry>
+//        if (message.getField("AF").startsWith("#Incorrect password"))
+//        {
+//            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
+//        }
+//        else if (message.getField("AF").startsWith("#Unknown"))
+//        {
+//            customer.set(CustomerFieldTypes.RESERVED, "User not found");
+//        }
+        // Status: Done. Adding user-pin-invalid entry in the sip2.properties 
+        // 
         // Now we know that Horizon uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
         String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
