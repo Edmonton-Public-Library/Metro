@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,6 +162,8 @@ public class SIPCustomerFormatter implements CustomerFormatter
         CustomerMessage sipMessage = new SIPCustomerMessage(s);
         customer.set(CustomerFieldTypes.ID, sipMessage.getField("AA"));
         customer.set(CustomerFieldTypes.PREFEREDNAME, sipMessage.getField("AE"));
+        // Though we store the information from AF but user-not-found and 
+        // user-pin-invalid checking are handled in the SIPRequestBuilder object.
         customer.set(CustomerFieldTypes.RESERVED, sipMessage.getField("AF"));
         customer.set(CustomerFieldTypes.EMAIL, sipMessage.getField("BE"));
         // Phone object

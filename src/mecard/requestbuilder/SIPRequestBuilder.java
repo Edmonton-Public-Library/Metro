@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.SIPException;
 import mecard.config.PropertyReader;
 import mecard.exception.ConfigurationException;
-import mecard.util.Text;
+//import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -164,37 +164,10 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                         break;
                         
                     default:
-                        // Test if another process placed the any information
-                        // in the customer's reserved field
-                        /**
-                         * @TODO check if these tests are actually required.
-                         */
                         Customer c = response.getCustomer();
-                        Properties sipProps = PropertyReader.getProperties(ConfigFileTypes.SIP2);
-                        String userNotFound = sipProps.getProperty(SipPropertyTypes.USER_NOT_FOUND.toString());
-                        String userPinInvalid = sipProps.getProperty(SipPropertyTypes.USER_PIN_INVALID.toString());
-                        if (Text.isLike(c.get(CustomerFieldTypes.RESERVED), userNotFound))
-                        {
-                            c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
-                            response.setCode(ResponseTypes.FAIL);
-                            response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                            System.out.println(new Date() + "customer account not found '" + c.get(CustomerFieldTypes.ID) + "'");
-                            result = false;
-                        }
-                        else if (Text.isLike(c.get(CustomerFieldTypes.RESERVED), userPinInvalid))
-                        {
-                            c.set(CustomerFieldTypes.ISVALID, Protocol.FALSE);
-                            response.setCode(ResponseTypes.UNAUTHORIZED);
-                            response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                            System.out.println("User pin does not match the one on record.");
-                            result = false;
-                        }
-                        else
-                        {
-                            c.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
-                            response.setCode(ResponseTypes.SUCCESS);
-                            result = true;
-                        }
+                        c.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
+                        response.setCode(ResponseTypes.SUCCESS);
+                        result = true;
                 }
                 break;
             case TEST_CUSTOMER:

@@ -26,10 +26,31 @@
 #
 ########################################################################
 addressees=name@domain.ca
-netstat -an | grep 2004 &> /dev/null
-result=$?
-if [ $result -gt 0 ]; then
-	echo "[`date`] metro is down."
-	echo "Metro server has stopped, restarting." | /usr/bin/mailx -s "Metro Server Outage"  $addressees
-	/home/ilsdev/metro/service.sh start
+METRO_DIR=/home/anisbet/MeCard
+PORT=2004
+STATUS_FILE=$METRO_DIR/logs/status.txt
+SERVICE=$METRO_DIR/unix/systemctl/service.sh
+MAIL=/usr/bin/mailx
+NETSTAT=/bin/netstat
+TIME_NOW=$(date +'%Y-%m-%d %H:%M:%S')
+if [ -x "$NETSTAT" ]; then 
+	$NETSTAT -an | grep "$PORT" > $STATUS_FILE
+else
+	echo "**error, $NETSTAT is not installed correctly!"
+	exit 1
 fi
+if [ ! -s "$STATUS_FILE" ]; then
+	echo "[$TIME_NOW] MeCard service is down."
+	if [ -x "$MAIL" ]; then
+		echo "Reporting that at $TIME_NOW MeCard service was found stopped. Attempting restart." | $MAIL -s "Metro Server Outage [$TIME_NOW]" $addressees
+	fi
+	if [ -x "$SERVICE" ]; then
+		$SERVICE start 
+		# rm $STATUS_FILE
+		echo "[$TIME_NOW] started."
+	else
+		echo "**error, can't execute $SERVICE!"
+		exit 1
+	fi
+fi
+

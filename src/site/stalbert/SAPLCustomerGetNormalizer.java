@@ -112,14 +112,20 @@ public class SAPLCustomerGetNormalizer extends CustomerGetNormalizer
         // TODO: customize message testing in SIPRequestBuilder to test a standard
         // message or value, and have each emmitter test and set that value based
         // on the message from the SIP server at the host library.
-        if (message.getField("AF").startsWith("#Incorrect password"))
-        {
-            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
-        }
-        else if (message.getField("AF").startsWith("#Unknown"))
-        {
-            customer.set(CustomerFieldTypes.RESERVED, "User not found");
-        }
+        // Status: Done. Expected messages for user not found and invalid pin
+        // are now encoded in sip2.properties. See Readme.md for more information.
+        // Updated: January 28, 2022.
+        // Implementation: add the following to the sip2.properties file.
+        //        <entry key="user-not-found">User not found</entry>
+        //        <entry key="user-pin-invalid">Invalid PIN</entry>
+//        if (message.getField("AF").startsWith("#Incorrect password"))
+//        {
+//            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
+//        }
+//        else if (message.getField("AF").startsWith("#Unknown"))
+//        {
+//            customer.set(CustomerFieldTypes.RESERVED, "User not found");
+//        }
                 
         // Date of birth in SIP PB not per standard.
         String birthDate = DateComparer.cleanDateTime(message.getField("PB"));
