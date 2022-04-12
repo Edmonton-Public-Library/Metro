@@ -196,7 +196,7 @@ public final class Address3
             // end of line matching important to avoid 209-1123 street matching.
             // I added the optional 'T' because a library prefixes textable phone numbers 
             // with 'T', yeah I know right?
-            this.phonePattern = Pattern.compile("T?\\(?\\d{3}\\)?[-| ]\\d{3}[-| ]\\d{4}$");
+            this.phonePattern = Pattern.compile("T?(\\+1)?\\(?\\d{3}\\)?[-| ]?\\d{3}[-| ]?\\d{4}$");
         }
         
         /**
@@ -220,6 +220,13 @@ public final class Address3
         @Override
         public String toString()
         {
+            if (this.value.matches("\\d{10}$"))
+            {
+                StringBuilder sb = new StringBuilder(this.value);
+                sb.insert(this.value.length() -4, '-');
+                sb.insert(this.value.length() -7, '-');
+                this.value = sb.toString();
+            }
             // This to get rid of stored 'T', which is annoying as I've said.
             // you have to do it here or it upsets the indexing of other elements
             // like postal code and province.
@@ -363,7 +370,7 @@ public final class Address3
             {
                 this.value = matcher.group().toUpperCase();
                 s.delete(matcher.start(), matcher.end());
-                s = new StringBuilder(s.toString().trim());
+//                s = new StringBuilder(s.toString().trim());
 //                if (s.charAt(s.length() -1) == ' ')
 //                    s.deleteCharAt(s.length() -1);
                 return true;
