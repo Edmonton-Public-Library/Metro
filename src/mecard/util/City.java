@@ -37,7 +37,7 @@ public abstract class City
      * is required and the codes are defined by each library that uses Horizon.
      * @param p
      * @return city code suitable for this instance of Horizon's city_st fields.
-     * @deprecated 
+     * @Deprecated 
      */
     public final static String getCity(String p)
     {
@@ -50,7 +50,7 @@ public abstract class City
      * @param fullCityName
      * @param debug - true to turn on debugging.
      * @return city code suitable for this instance of Horizon's city_st.
-     * @deprecated 
+     * @Deprecated 
      */
     public static final String getCity(String fullCityName, boolean debug)
     {

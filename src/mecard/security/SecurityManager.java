@@ -53,7 +53,7 @@ public final class SecurityManager
     public static final String encrypt(String input)
     {
         // TODO add encryption as time permits.
-        return input.toString();
+        return input;
     }
     
     public static final String unEncrypt(String input) throws MetroSecurityException

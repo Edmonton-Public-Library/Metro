@@ -83,6 +83,13 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     private final Properties messages;
     private SQLConnector connector;    // private so it can be closed by Responder externally.
     private final PolarisVersion version;
+    private final String encrypt;
+    private final String trustServerCertificate;
+    private final String trustStore;
+    private final String integratedSecurity;
+    private final String trustStorePassword;
+    private final String hostNameInCertificate;
+    private final String addressLabelId;
     
     /**
      * Creates the PolarisSQLRequestBuilder object, initializing basic parameters
@@ -104,50 +111,23 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
         this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
         this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.PATRON_CODE_ID.toString());
+        this.encrypt        = properties.getProperty(PolarisSQLPropertyTypes.ENCRYPT.toString(), "true");
+        this.trustServerCertificate = properties.getProperty(PolarisSQLPropertyTypes.TRUST_SERVER_CERTIFICATE.toString(), "true");
+        this.trustStore     = properties.getProperty(PolarisSQLPropertyTypes.TRUST_STORE.toString(),"");
+        this.integratedSecurity   = properties.getProperty(PolarisSQLPropertyTypes.INTEGRATED_SECURTIY.toString(),"");
+        this.trustStorePassword   = properties.getProperty(PolarisSQLPropertyTypes.TRUST_STORE_PASSWORD.toString(),"");
+        this.hostNameInCertificate= properties.getProperty(PolarisSQLPropertyTypes.HOST_NAME_IN_CERTIFICATE.toString(),"");
+        this.addressLabelId = properties.getProperty(PolarisSQLPropertyTypes.ADDRESS_LABEL_ID.toString(), "1");
         // Test for 'Polaris 6.*' in the properties file for version specific issues.
-        String version = properties.getProperty("conformance", "default");
-        switch (version)
+        String propertyStringVersion = properties.getProperty("conformance", "default");
+        switch (propertyStringVersion)
         {
             case "Polaris 6.2":
             case "Polaris 6.3":
             case "Polaris 6.4":
-                this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
-                break;
-            default:
-                this.version = PolarisVersion.DEFAULT;
-                break;
-        }
-    }
-    
-    /**
-     * Constructor for testing purposes.
-     * @param host
-     * @param driver MY_POLARIS_SQL or POLARIS_SQL_SERVER.
-     * @param database
-     * @param user
-     * @param password
-     */
-    public PolarisSQLRequestBuilder(String host, String driver, String database, String user, String password)
-    {
-        Properties properties = PropertyReader.getProperties(ConfigFileTypes.POLARIS_SQL);
-        this.debug          = true;
-        this.messages       = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        this.loadDir        = properties.getProperty(PolarisSQLPropertyTypes.LOAD_DIR.toString());
-        this.host           = host;
-        this.driver         = driver;
-        this.database       = database;
-        this.user           = user;
-        this.databasePassword  = password;
-        this.creatorID      = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
-        this.organizationID = properties.getProperty(PolarisSQLPropertyTypes.ORGANIZATION_ID.toString());
-        this.patronCodeID   = properties.getProperty(PolarisSQLPropertyTypes.CREATOR_ID.toString());
-        // Test for 'Polaris 6.*' in the properties file for version specific issues.
-        String version = properties.getProperty("conformance", "default");
-        switch (version)
-        {
-            case "Polaris 6.2":
-            case "Polaris 6.3":
-            case "Polaris 6.4":
+            case "Polaris 7.0":
+            case "Polaris 7.1":
+            case "Polaris 7.2":
                 this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
                 break;
             default:
@@ -170,6 +150,12 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
             .user(user)
             .password(databasePassword)
+            .encrypt(encrypt)
+            .setTrustServerCertificate(trustServerCertificate)
+            .integratedSecurity(integratedSecurity)
+            .trustStore(trustStore)
+            .trustStorePassword(trustStorePassword)
+            .hostNameInCertificate(hostNameInCertificate)
             .build();
         SQLSelectCommand selectUser = new SQLSelectCommand.Builder(this.connector, this.patronsTable)
             .string(PolarisTable.Patrons.BARCODE.toString())
@@ -208,6 +194,12 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.connector = new SQLConnector.Builder(this.host, this.driver, this.database)
             .user(user)
             .password(databasePassword)
+            .encrypt(encrypt)
+            .setTrustServerCertificate(trustServerCertificate)
+            .integratedSecurity(integratedSecurity)
+            .trustStore(trustStore)
+            .trustStorePassword(trustStorePassword)
+            .hostNameInCertificate(hostNameInCertificate)
             .build();
         
         //        INSERT INTO Polaris.Polaris.Patrons ( PatronCodeID , OrganizationID , CreatorID , ModifierID , Barcode , 
@@ -646,6 +638,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         SQLInsertCommand insertPatronIDAddressID;
         if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
+            
             insertPatronIDAddressID = new SQLInsertCommand.Builder(connector, this.patronAddresses)
                 .integer(PolarisTable.PatronAddresses.PATRON_ID.toString(), polarisPatronID)
                 .integer(PolarisTable.PatronAddresses.ADDRESS_ID.toString(), polarisAddressID)
@@ -654,8 +647,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
                     // polaris_sql.properties contains a conformance string for this.
-                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), this.addressLabelId)
                 .build();
         }
         else
@@ -694,8 +686,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
                 .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
-                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
-                    fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
+                // polaris_sql.properties contains a conformance string for this.
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), this.addressLabelId)
             .build();
         }
         else  // PolarisVersion.DEFAULT aka 5.2, TRAC's system.
@@ -733,8 +725,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .bit(PolarisTable.PatronAddresses.VERIFIED.toString(), "0")
                 .dateTime(PolarisTable.PatronAddresses.VERIFICATION_DATE.toString()) // null
                 .integer(PolarisTable.PatronAddresses.POLARIS_USER_ID.toString())
-                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), 
-                        fCustomer.getValue(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString()))
+                    // polaris_sql.properties contains a conformance string for this.
+                .integer(PolarisTable.PatronAddresses.ADDRESS_LABEL_ID.toString(), this.addressLabelId)
                 .build();
         }
         else
@@ -837,6 +829,12 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         this.connector = new SQLConnector.Builder(host, driver, database)
             .user(user)
             .password(databasePassword)
+            .encrypt(encrypt)
+            .setTrustServerCertificate(trustServerCertificate)
+            .integratedSecurity(integratedSecurity)
+            .trustStore(trustStore)
+            .trustStorePassword(trustStorePassword)
+            .hostNameInCertificate(hostNameInCertificate)
             .build();
         // Add code to first check for LOSTCARD and if found search on ALT_ID field first.
         String oldOrNewBarCode = fCustomer.getValue(PolarisTable.Patrons.BARCODE.toString());

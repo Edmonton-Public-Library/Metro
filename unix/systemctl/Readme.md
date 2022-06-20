@@ -1,6 +1,5 @@
-### Fri Feb 11 2022
 
-Project Notes
+# Project Notes
 -------------
 ## Notes:
 As of version 1.3.XX the MeCard server's sip2.properties file requires the following

@@ -135,6 +135,11 @@ public abstract class ILSRequestBuilder
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'DEBUG' (dummy) ");
             return new DummyRequestBuilder(debug);
         }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.OUTAGE.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'OUTAGE' (outage) ");
+            return new OutageRequestBuilder(debug);
+        }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()))
         {
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_API' ");

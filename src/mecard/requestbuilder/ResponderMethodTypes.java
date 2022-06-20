@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2021  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,8 @@ public enum ResponderMethodTypes
     SYMPHONY_API("symphony-api"), // SQL or API  
     SIP2("sip2"),
     BIMPORT("bimport"), 
-    DEBUG("dummy"), 
+    DEBUG("dummy"),
+    OUTAGE("outage"),
     POLARIS_API("polaris-api"), // restful service. untested.
     POLARIS_SQL("polaris-sql"); 
     

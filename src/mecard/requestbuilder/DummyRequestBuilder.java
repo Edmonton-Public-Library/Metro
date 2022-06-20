@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ import mecard.customer.symphony.FlatCustomerFormatter;
 import mecard.customer.sip.SIPCustomerFormatter;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
+import mecard.customer.polaris.PAPICustomerFormatter;
 import mecard.customer.polaris.PolarisSQLCustomerFormatter;
 import site.CustomerLoadNormalizer;
 
@@ -68,7 +69,7 @@ public class DummyRequestBuilder extends ILSRequestBuilder
         this.stdout = props.getProperty(DebugQueryConfigTypes.STDOUT_MESSAGE.toString());
         this.stderr = props.getProperty(DebugQueryConfigTypes.STDERR_MESSAGE.toString());
         this.format = props.getProperty(DebugQueryConfigTypes.MESSAGE_FORMAT.toString());
-        if (debug) System.out.println(DummyRequestBuilder.class.getName() + " loaded properties.");
+        if (this.debug) System.out.println(DummyRequestBuilder.class.getName() + " loaded properties.");
     }
 
     @Override
@@ -87,7 +88,12 @@ public class DummyRequestBuilder extends ILSRequestBuilder
         {
             return new PolarisSQLCustomerFormatter();
         }
-        ///////////// TODO: fix so it returns something reasonable OR other formatters for consistency.
+        else if (this.format.compareToIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()) == 0)
+        {
+            return new PAPICustomerFormatter();
+        }
+        ///////////// return other formatters below for consistency.
+        
         // BImport doesn't have a formatter; neither does dummy, so if you are asking for one
         // there is a problem with the call you are making.
         throw new DummyException(DummyRequestBuilder.class.getName() 
