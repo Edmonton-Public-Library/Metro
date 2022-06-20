@@ -41,14 +41,26 @@ public class SQLConnector
     private Connection connection = null;
     private final String url;
     private DriverType driverType;
+    private final String encrypt;
+    private final String trustServerCertificate;
+    private final String trustStore;
+    private final String integratedSecurity;
+    private final String trustStorePassword;
+    private final String hostNameInCertificate;
 
     public static class Builder
     {
-        private final String host;
+        private String host;
         private String database;
         private String user;
         private String password;
         private String driver;
+        private String encrypt; // mssql server 2019.
+        private String trustServerCertificate; // mssql server 2019.
+        private String trustStore;
+        private String integratedSecurity;
+        private String trustStorePassword;
+        private String hostNameInCertificate;
 
         /**
          * Creates builder with minimum constructor arguments.
@@ -62,6 +74,12 @@ public class SQLConnector
             this.host     = host;
             this.driver   = driver;
             this.database = databaseName;
+            this.encrypt  = "";
+            this.trustServerCertificate = "";
+            this.trustStore = "";
+            this.integratedSecurity = "";
+            this.trustStorePassword = "";
+            this.hostNameInCertificate = "";
         }
 
         /**
@@ -93,6 +111,92 @@ public class SQLConnector
             }
             return this;
         }
+        
+        /**
+         * Allows the setting of encryption over a secure socket layer
+         * (Windows mssql server).
+         * This is 'true' by default so passing 'false' will turn off this 
+         * feature in the URL string.
+         *
+         * @param encrypt - 'true' or 'false'.
+         * @return Builder
+         */
+        public Builder encrypt(String encrypt)
+        {
+            this.encrypt = encrypt.toLowerCase();
+            return this;
+        }
+        
+        /**
+         * Sets switch if the trust server certificate should be used.
+         * (Windows mssql server).
+         * This is 'true' by default so passing 'false' will turn off this 
+         * feature in the URL string.
+         *
+         * @param useTSC - 'true' or 'false'.
+         * @return Builder
+         */
+        public Builder setTrustServerCertificate(String useTSC)
+        {
+            this.trustServerCertificate = useTSC.toLowerCase();
+            return this;
+        }
+        
+        /**
+         * Allows the setting of trust store name.
+         * (Windows mssql server).
+         *
+         * @param ts - trust store name.
+         * @return Builder
+         */
+        public Builder trustStore(String ts)
+        {
+            this.trustStore = ts;
+            return this;
+        }
+        
+        /**
+         * Allows the setting of integrated security over a secure socket layer
+         * (Windows mssql server).
+         * This is 'true' by default so passing 'false' will turn off this 
+         * feature in the URL string.
+         *
+         * @param integratedSecurity - 'true' or 'false'.
+         * @return Builder
+         */
+        public Builder integratedSecurity(String integratedSecurity)
+        {
+            this.integratedSecurity = integratedSecurity;
+            return this;
+        }
+        
+        /**
+         * Allows the setting of the trust store password
+         * (Windows mssql server).
+         *
+         * @param trustStorePassword - Password for the trust store.
+         * @return Builder
+         */
+        public Builder trustStorePassword(String trustStorePassword)
+        {
+            this.trustStorePassword = trustStorePassword;
+            return this;
+        }
+        
+        /**
+         * Allows the setting of the host name in the certificate.
+         * (Windows mssql server).
+         * This is 'true' by default so passing 'false' will turn off this 
+         * feature in the URL string.
+         *
+         * @param hostNameInCertificate - Name of the host name in the cert.
+         * @return Builder
+         */
+        public Builder hostNameInCertificate(String hostNameInCertificate)
+        {
+            this.hostNameInCertificate = hostNameInCertificate;
+            return this;
+        }
 
         /**
          * Builds the connection.
@@ -119,10 +223,16 @@ public class SQLConnector
      */
     private SQLConnector(Builder builder)
     {
-        host        = builder.host;
-        sqlDatabase = builder.database;
-        sqlUser     = builder.user;
-        sqlPassword = builder.password;
+        this.host        = builder.host;
+        this.sqlDatabase = builder.database;
+        this.sqlUser     = builder.user;
+        this.sqlPassword = builder.password;
+        this.encrypt= builder.encrypt;
+        this.trustServerCertificate = builder.trustServerCertificate;
+        this.trustStore  = builder.trustStore;
+        this.integratedSecurity = builder.integratedSecurity;
+        this.trustStorePassword = builder.trustStorePassword;
+        this.hostNameInCertificate = builder.hostNameInCertificate;
         switch (builder.driver)
         {
             case "MY_SQL":     // mysql-connector-java-5.1.31-bin.jar
@@ -153,12 +263,45 @@ public class SQLConnector
         System.out.println("host: "+host);
         System.out.println("sqlDatabase: "+sqlDatabase);
         System.out.println("sqlUser: "+sqlUser);
-        System.out.print("sqlPassword: ");
+        System.out.println("sqlPassword: ");
         for (String c: sqlPassword.split(""))
         {
             System.out.print("*");
 //            System.out.print(c);
         }
+        switch (builder.driver)
+        {
+            case "MY_SQL":
+                break;
+            case "SQL_SERVER":
+                if (! this.encrypt.isEmpty())
+                {
+                    System.out.println("encrypt: "+encrypt);
+                }
+                if (! this.trustServerCertificate.isEmpty())
+                {
+                    System.out.println("trustServerCertificate: "+trustServerCertificate);
+                }
+                if (! this.integratedSecurity.isEmpty())
+                {
+                    System.out.println("integratedSecurity: "+integratedSecurity);
+                }
+                if (! this.trustStore.isEmpty())
+                {
+                    System.out.println("trustStore: "+trustStore);
+                }
+                if (! this.trustStorePassword.isEmpty())
+                {
+                    System.out.println("trustStorePassword: ***********");
+                }
+                if (! this.hostNameInCertificate.isEmpty())
+                {
+                    System.out.println("hostNameInCertificate: "+hostNameInCertificate);
+                }
+                break;
+            default:
+                break;
+        }                
         System.out.println();
 
         try
@@ -179,14 +322,14 @@ public class SQLConnector
         }
         catch (SQLException ex)
         {
-            System.err.println("=======> SQL Connection failed: " + ex.getMessage());
-            throw new ConfigurationException("sql driver error");
+            System.err.println("=======> SQL Connection failed: '" + ex.getMessage() + "'");
+            throw new ConfigurationException("sql driver error" + ex.getMessage());
         }
         
         if (connection == null)
         {
             System.out.println("JDBC Failed to make connection.");
-            throw new ConfigurationException("sql driver error");
+            throw new ConfigurationException("sql driver error: null connection.");
         }
         
         System.out.println("SQL connection succeeded");       
@@ -215,10 +358,55 @@ public class SQLConnector
         connectionURL.append("databaseName=");
         connectionURL.append(this.sqlDatabase);
         connectionURL.append(";");
-        // Not required for the current driver version.
-//        connectionURL.append("integratedSecurity=true;");
-//        connectionURL.append(this.sqlDatabase);
-//        connectionURL.append(";");
+        // For Windows server 2019 the URL possibly should be set as so:
+        // url = "jdbc:sqlserver://" +serverName + ":1433;DatabaseName=" + dbName + ";encrypt=true;trustServerCertificate=true;
+        // From: https://stackoverflow.com/questions/32766114/sql-server-jdbc-error-on-java-8-the-driver-could-not-establish-a-secure-connect
+        // See here for encryption and connection information:
+        // https://docs.microsoft.com/en-us/sql/connect/jdbc/connecting-with-ssl-encryption?view=sql-server-ver15#configuring-the-connection
+        // Config client for encryption: https://docs.microsoft.com/en-us/sql/connect/jdbc/configuring-the-client-for-ssl-encryption?view=sql-server-ver15
+        // Encryption support: https://docs.microsoft.com/en-us/sql/connect/jdbc/understanding-ssl-support?view=sql-server-ver15
+        // "encrypt=true"
+        if (! this.encrypt.isEmpty())
+        {
+            connectionURL.append("encrypt=");
+            connectionURL.append(this.encrypt);
+            connectionURL.append(";");
+        }
+        // "trustServerCertificate=true;"
+        if (! this.trustServerCertificate.isEmpty())
+        {
+            connectionURL.append("trustServerCertificate=");
+            connectionURL.append(this.trustServerCertificate);
+            connectionURL.append(";");
+        }
+//        "integratedSecurity=true;"
+        if (! this.integratedSecurity.isEmpty())
+        {
+            connectionURL.append("integratedSecurity=");
+            connectionURL.append(this.integratedSecurity);
+            connectionURL.append(";");
+        }
+//        "trustStore=storeName;"
+        if (! this.trustStore.isEmpty())
+        {
+            connectionURL.append("trustStore=");
+            connectionURL.append(this.trustStore);
+            connectionURL.append(";");
+        }
+//        "trustStorePassword=storePassword;"
+        if (! this.trustStorePassword.isEmpty())
+        {
+            connectionURL.append("trustStorePassword=");
+            connectionURL.append(this.trustStorePassword);
+            connectionURL.append(";");
+        }
+//        "hostNameInCertificate=hostName"
+        if (! this.hostNameInCertificate.isEmpty())
+        {
+            connectionURL.append("hostNameInCertificate=");
+            connectionURL.append(this.hostNameInCertificate);
+            connectionURL.append(";");
+        }
         System.out.println(">>>>"+connectionURL.toString()+"<<<<");
         return connectionURL.toString();
     }

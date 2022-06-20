@@ -93,7 +93,7 @@ public final class MetroService implements Daemon
         }
         catch (NumberFormatException ex)
         {
-            String msg = "Could not parse port number defined in configuration file.";
+            String msg = " Could not parse port number defined in configuration file.";
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
             System.out.println(new Date() + msg + ex.getMessage());
         }
@@ -106,8 +106,15 @@ public final class MetroService implements Daemon
             }
             catch (IOException ex)
             {
-                String msg = "unable to start server socket; either accept or start failed.";
+                String msg = " unable to start server socket; either accept or start failed.";
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
+                System.out.println(new Date() + msg);
+            }
+            catch (Exception ex)
+            {
+                String msg = " Error while starting MeCard server: " + 
+                        MetroService.class.getName() + 
+                        ex;
                 System.out.println(new Date() + msg);
             }
         }
@@ -117,7 +124,7 @@ public final class MetroService implements Daemon
         }
         catch (IOException ex)
         {
-            String msg = "failed to close the server socket.";
+            String msg = " failed to close the server socket.";
 //            Logger.getLogger(MetroService.class.getName()).log(Level.SEVERE, msg, ex);
             System.out.println(new Date() + msg);
         }

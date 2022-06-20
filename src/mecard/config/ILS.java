@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ package mecard.config;
 
 import java.util.Properties;
 import mecard.exception.ConfigurationException;
-import mecard.util.Text;
 
 /**
  * Determines what type of ILS is being used based on the types of protocols 
@@ -56,49 +55,31 @@ public class ILS
     }
     
     public final IlsType ILS_TYPE;
-    // optional field in the sip2.properties file.
-    public final static String SIP_ILS_TYPE_TAG = "ils-type";  
+    // field in the environment.properties file.
+    public final static String ILS_TYPE_TAG = "ils-type";  
     
     /**
-     * Determines the type of ILS MeCard connects to by checking the sip2.properties
-     * file for an entry called {@link #SIP_ILS_TYPE_TAG}. If there is not a tag
-     * of that type in the sip2.properties, then it looks in the 
-     * environment.properties file for the 
-     * {@link LibraryPropertyTypes}.CREATE_SERVICE tag. If that fails a
-     * {@link ConfigurationException} exception is thrown.
+     * Determines the type of ILS MeCard connects to by checking the environment.properties
+     * file for an entry called {@link #ILS_TYPE_TAG}. If there is not a tag
+     * of that type in the environment.properties.
+     * If that fails a {@link ConfigurationException} exception is thrown.
      */
     public ILS()
     {
         IlsType myType = IlsType.UNKNOWN;
-        Properties sip2Properties = PropertyReader.getProperties(ConfigFileTypes.SIP2);
-        // get the value from the properties file, but if not found assume SIRSI_DYNIX 
-        // which will set the customerMessage type to a standard SIPCustomerMessage().
-        String whichIls = sip2Properties.getProperty(SIP_ILS_TYPE_TAG);
+        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        String whichIls = envProperties.getProperty(ILS_TYPE_TAG);
         try
         {
             myType = IlsType.valueOf(whichIls.toUpperCase());
         }
         catch (NullPointerException | IllegalArgumentException ex) 
         {
-            // we need to go to the environment and make educated guesses based
-            // on the 'create-protocol' tag in the environment.properties.
-            Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
-            // get the value from the properties file, but if not found assume SIRSI_DYNIX 
-            // which will set the customerMessage type to a standard SIPCustomerMessage().
-            String createProtocolStr = envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
-            whichIls = Text.getUpTo(createProtocolStr, "-").toUpperCase();
-            try
-            {
-                myType = IlsType.valueOf(whichIls.toUpperCase());
-            }
-            catch (NullPointerException | IllegalArgumentException innerEx)
-            {
-                System.err.println(" **Failed to find ILS type '" 
-                    + "' in environment.properties or sip2.properties. Try adding "
-                    + "'<entry key=\"ils-type\">[ILS_NAME]</entry>' to the ILS"
-                    + "that you use in the sip2.properties file. Valid values are "
-                    + "SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.");
-            }
+            System.err.println(" **Failed to find ILS type '" 
+                + "' in the environment.properties. Try adding "
+                + "'<entry key=\"ils-type\">[ILS_TYPE]</entry>' to the "
+                + "environment.properties file.\nValid values are "
+                + "UNKNOWN, SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.");
         }
         finally
         {

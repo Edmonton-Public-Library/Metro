@@ -51,12 +51,18 @@ public enum PolarisSQLPropertyTypes
     // optional, that is, both are an option but one or the other is required, so both must be
     // defined in the polaris_sql.properties file. free-text-label should be 'Home', address-lable-id = 1.
     FREE_TEXT_LABEL("free-text-label"),   // *** Polaris 5.2
-    ADDRESS_LABEL_ID("address-label-id"), // *** Polaris 6.2
+    ADDRESS_LABEL_ID("address-label-id"), // *** Polaris 6.2 and above
     USER_1("user-1"),
     USER_2("user-2"),    // Case insensitive
     USER_3("user-3"),
     USER_4("user-4"),  // literally "(none)" will be added  to this category.
-    USER_5("user-5");
+    USER_5("user-5"),
+    ENCRYPT("encrypt"),  // Windows mssql server 2019.
+    TRUST_SERVER_CERTIFICATE("trust-server-certificate"), 
+    TRUST_STORE("trust-store"), 
+    INTEGRATED_SECURTIY("integrated-security"), 
+    TRUST_STORE_PASSWORD("trust-store-password"), 
+    HOST_NAME_IN_CERTIFICATE("host-name-in-certificate"); // Windows mssql server 2019.
     
     private String type;
 
