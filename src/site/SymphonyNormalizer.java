@@ -28,7 +28,7 @@ import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  * This class can be used for all Symphony related customer processing requirements.
@@ -57,7 +57,7 @@ public abstract class SymphonyNormalizer extends CustomerLoadNormalizer
      * be loaded.
      * @param response where to put any messages for the customer.
      */
-    protected void loadDefaultProfileAttributes(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    protected void loadDefaultProfileAttributes(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
         // Here we have to do all the final preparations to loading a customer
         // Specifically we will be adding default values to the account

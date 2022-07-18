@@ -25,8 +25,8 @@ import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import site.SymphonyNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -56,7 +56,7 @@ public final class SLSCustomerNormalizer extends SymphonyNormalizer
      * @param response the value of response
      */
     @Override
-    public void finalize(Customer rawCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer rawCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
         // This loads all the mandatory values on SymphonyPropertyTypes.
         this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);

@@ -20,7 +20,7 @@
  */
 package mecard.customer;
 
-import mecard.customer.sip.SIPCustomerFormatter;
+import mecard.sip.SIPToMeCardCustomer;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -29,11 +29,11 @@ import static org.junit.Assert.*;
 /**
  * This test class is almost useless, use the specific getNormalizer Test classes for each library
  * for concise results.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  */
 public class SIPCustomerFormatterTest
 {
-    private String customerString;
+    private final String customerString;
     
     public SIPCustomerFormatterTest()
     {
@@ -41,13 +41,13 @@ public class SIPCustomerFormatterTest
     }
 
     /**
-     * Test of getCustomer method, of class SIPCustomerFormatter.
+     * Test of getCustomer method, of class SIPToMeCardCustomer.
      */
     @Test
     public void testGetCustomer_String()
     {
         System.out.println("== getCustomer ==");
-        SIPCustomerFormatter instance = new SIPCustomerFormatter();
+        SIPToMeCardCustomer instance = new SIPToMeCardCustomer();
         String expResult = "[\"21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
                 + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";
         Customer result = instance.getCustomer(this.customerString);
@@ -55,7 +55,7 @@ public class SIPCustomerFormatterTest
     }
 
     /**
-     * Test of getCustomer method, of class SIPCustomerFormatter.
+     * Test of getCustomer method, of class SIPToMeCardCustomer.
      */
     @Test
     public void testGetCustomer_List()
@@ -63,7 +63,7 @@ public class SIPCustomerFormatterTest
         System.out.println("== getCustomer (list) ==");
         List<String> s = new ArrayList<String>();
         s.add(this.customerString);
-        SIPCustomerFormatter instance = new SIPCustomerFormatter();
+        SIPToMeCardCustomer instance = new SIPToMeCardCustomer();
         // SIP doesn't return the PIN and currently does not return phone number.
         String expResult = "21221012345678\",\"X\",\"Billy, Balzac\",\"7 Sir Winston Churchill Square\",\""
                 + "Edmonton\",\"AB\",\"T5J2V4\",\"M\",\"ilsteam@epl.ca\",\"X\",\"20050303\",\"20140321\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"X\",\"Balzac\",\"Billy\"]";

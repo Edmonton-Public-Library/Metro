@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,16 +30,16 @@ import mecard.customer.Customer;
 import mecard.exception.UnsupportedLibraryException;
 import mecard.config.PropertyReader;
 import mecard.config.MemberTypes;
-import mecard.customer.FormattedCustomer;
 import site.calgary.CPLCustomerNormalizer;
 import site.chinook.CARCustomerNormalizer;
-import site.ftmcmurray.FMPLCustomerNormalizer;
+import site.woodbuffalo.WBRLCustomerNormalizer;
 import site.parklands.PRLCustomerNormalizer;
 import site.reddeer.RDPLCustomerNormalizer;
 import site.shortgrass.SLSCustomerNormalizer;
 import site.stalbert.SAPLCustomerNormalizer;
 import site.strathcona.STRCustomerNormalizer;
 import site.trac.TRACCustomerNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -118,9 +118,9 @@ public abstract class CustomerLoadNormalizer
         {
             normalizer = new CPLCustomerNormalizer(debug);
         }
-        else if (libCode.equalsIgnoreCase(MemberTypes.FMPL.name()))
+        else if (libCode.equalsIgnoreCase(MemberTypes.WBRL.name()))
         {
-            normalizer = new FMPLCustomerNormalizer(debug);
+            normalizer = new WBRLCustomerNormalizer(debug);
         }
         else if (libCode.equalsIgnoreCase(MemberTypes.RDPL.name()))
         {
@@ -142,7 +142,7 @@ public abstract class CustomerLoadNormalizer
      * @param response the value of response
      */
     public abstract void finalize(Customer unformattedCustomer, 
-            FormattedCustomer formattedCustomer, 
+            MeCardCustomerToNativeFormat formattedCustomer, 
             Response response);
 
     /**

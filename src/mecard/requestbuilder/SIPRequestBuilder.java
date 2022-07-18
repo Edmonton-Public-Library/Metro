@@ -23,13 +23,13 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.PolarisSIPCustomerMessage;
+import mecard.sip.PolarisSIPCustomerMessage;
 import mecard.Response;
-import api.SIPCommand;
-import api.SIPConnector;
-import api.SIPCustomerMessage;
-import api.SIPMessage;
-import api.SIPStatusMessage;
+import mecard.sip.SIPCommand;
+import mecard.sip.SIPConnector;
+import mecard.sip.SIPCustomerMessage;
+import mecard.sip.SIPMessage;
+import mecard.sip.SIPStatusMessage;
 import java.util.Date;
 import java.util.Properties;
 import mecard.Protocol;
@@ -40,13 +40,13 @@ import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.SipPropertyTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
-import mecard.customer.sip.SIPCustomerFormatter;
+import mecard.sip.SIPToMeCardCustomer;
 import mecard.exception.SIPException;
 import mecard.config.PropertyReader;
 import mecard.exception.ConfigurationException;
 //import mecard.util.Text;
 import site.CustomerLoadNormalizer;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
  * Manages any meaningful request that can be made through SIP2 requests. This
@@ -98,9 +98,9 @@ public class SIPRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public CustomerFormatter getFormatter()
+    public NativeFormatToMeCardCustomer getFormatter()
     {
-        return new SIPCustomerFormatter();
+        return new SIPToMeCardCustomer();
     }
 
     @Override

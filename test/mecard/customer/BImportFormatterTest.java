@@ -1,5 +1,5 @@
 package mecard.customer;
-import mecard.customer.horizon.BImportFormattedCustomer;
+import mecard.horizon.MeCardCustomerToBImport;
 import java.util.ArrayList;
 import java.util.List;
 import json.RequestDeserializer;
@@ -30,7 +30,7 @@ public class BImportFormatterTest
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
         Customer customer = request.getCustomer();
-        BImportFormattedCustomer formatter = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport formatter = new MeCardCustomerToBImport(customer);
         List<String> expResult = new ArrayList<>();
         expResult.add("x- borrower: second_id; name; expiration_date; birth_date; pin\r\n");
         expResult.add("borrower_phone: phone_type; phone_no\r\n");

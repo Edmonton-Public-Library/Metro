@@ -35,16 +35,16 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
-import mecard.customer.symphony.FlatCustomerFormatter;
+import mecard.symphony.FlatToMeCardCustomer;
 import mecard.config.PropertyReader;
-import api.FlatCustomerMessage;
+import mecard.symphony.FlatCustomerMessage;
 import java.io.File;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.DumpUser;
-import mecard.customer.symphony.FlatFormattedCustomer;
-import mecard.customer.FormattedCustomer;
+import mecard.symphony.MeCardCustomerToFlat;
 import site.CustomerLoadNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
  * SymphonyRequestBuilder creates the commands used to perform the MeCard request
@@ -148,16 +148,16 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public CustomerFormatter getFormatter()
+    public NativeFormatToMeCardCustomer getFormatter()
     {
-        return new FlatCustomerFormatter();
+        return new FlatToMeCardCustomer();
     }
 
     @Override
     public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // we have a customer let's convert them to a flat user.
-        FormattedCustomer formattedCustomer = new FlatFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToFlat(customer);
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();
@@ -222,7 +222,7 @@ public class SymphonyRequestBuilder extends ILSRequestBuilder
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // we have a customer let's convert them to a flat user.
-        FormattedCustomer formattedCustomer = new FlatFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToFlat(customer);
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, formattedCustomer, response);
         List<String> flatFileLines = formattedCustomer.getFormattedCustomer();

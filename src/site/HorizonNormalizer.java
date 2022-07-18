@@ -27,11 +27,11 @@ import mecard.ResponseTypes;
 import mecard.config.BImportDBFieldTypes;
 import mecard.config.BImportTableTypes;
 import mecard.config.CustomerFieldTypes;
-import mecard.customer.horizon.BImportTable;
+import mecard.horizon.MeCardDataToBImportData;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
-import mecard.customer.FormattedTable;
 import mecard.util.Text;
+import mecard.customer.MeCardCustomerToNativeFormat;
+import mecard.customer.MeCardDataToNativeData;
 
 /**
  * Horizon common normalization algorithms. This includes things like making
@@ -65,7 +65,7 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
      * @param response 
      */
     @Override
-    public void finalize(Customer customer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer customer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {  
         /*** Be sure to call super.finalize() in inherited classes. **/
         ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
@@ -94,9 +94,9 @@ public abstract class HorizonNormalizer extends CustomerLoadNormalizer
      * @param formattedCustomer
      * @param value 
      */
-    protected void addBStatTable(FormattedCustomer formattedCustomer, String value)
+    protected void addBStatTable(MeCardCustomerToNativeFormat formattedCustomer, String value)
     {
-        FormattedTable table = BImportTable.getInstanceOf(
+        MeCardDataToNativeData table = MeCardDataToBImportData.getInstanceOf(
                 BImportTableTypes.BORROWER_BSTAT, new HashMap<>());
         table.setValue("bstat", value);
         formattedCustomer.insertTable(table, 99); // insert at the end.

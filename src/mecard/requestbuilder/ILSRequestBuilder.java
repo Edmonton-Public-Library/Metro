@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,14 +29,21 @@ import mecard.QueryTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
-import mecard.customer.sip.SIPCustomerFormatter;
+import mecard.sip.SIPToMeCardCustomer;
 import site.CustomerLoadNormalizer;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
- * ILSRequestBuilder outlines the contract that all implementers promise to fulfill.
+ * ILSRequestBuilder outlines the contract of methods the Responder needs to 
+ * register customers. Request builders are bespoke ILS adapters. Each is crafted
+ * to use the lingua-franca of the node library's ILS or web service, as well as negotiating
+ * any library-specific business policies or environment issues. Fulfilling a 
+ * registration request may take several steps all of which the request builder
+ * does, as well as testing the results of each step, before passing the final
+ * command to the responder to execute and test.
+ * 
  * Note: Programmers implementing a new builder will probably not be able to 
  * use all these methods. Symphony for instance, does not have a good facility 
  * to get the ILS status. In that case sub-class the ILSRequestAdaptor, and make 
@@ -143,7 +150,7 @@ public abstract class ILSRequestBuilder
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()))
         {
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'POLARIS_API' ");
-            return new PAPIRequestBuilder(debug);
+            return new PapiRequestBuilder(debug);
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.POLARIS_SQL.toString()))
         {
@@ -163,10 +170,10 @@ public abstract class ILSRequestBuilder
      * interpretation of request results, and non-standard field use. For example;
      * consider that EPL uses the field "PF" to designate patron sex, but Shortgrass
      * uses the field 'PF'. That being the case both libraries can subclass a 
-     * {@link SIPCustomerFormatter} for additional customized SIP2 result interpretation.
-     * @return CustomerFormatter.
+     * {@link SIPToMeCardCustomer} for additional customized SIP2 result interpretation.
+     * @return NativeFormatToMeCardCustomer.
      */
-    public abstract CustomerFormatter getFormatter();
+    public abstract NativeFormatToMeCardCustomer getFormatter();
 
     /**
      * Implementers promise to return a APICommand that, when run, will return the

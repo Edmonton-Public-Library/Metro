@@ -31,14 +31,14 @@ import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.DebugQueryConfigTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
-import mecard.customer.symphony.FlatCustomerFormatter;
-import mecard.customer.sip.SIPCustomerFormatter;
+import mecard.symphony.FlatToMeCardCustomer;
+import mecard.sip.SIPToMeCardCustomer;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
-import mecard.customer.polaris.PAPICustomerFormatter;
-import mecard.customer.polaris.PolarisSQLCustomerFormatter;
+import mecard.polaris.PapiToMeCardCustomer;
+import mecard.polaris.PolarisSQLToMeCardCustomer;
 import site.CustomerLoadNormalizer;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
  *
@@ -73,24 +73,24 @@ public class DummyRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public CustomerFormatter getFormatter()
+    public NativeFormatToMeCardCustomer getFormatter()
     {
         if (this.format.compareToIgnoreCase(ResponderMethodTypes.SIP2.toString()) == 0)
         {
-            return new SIPCustomerFormatter();
+            return new SIPToMeCardCustomer();
         }
         else if (this.format.compareToIgnoreCase(ResponderMethodTypes.SYMPHONY_API.toString()) == 0)
         {
-            return new FlatCustomerFormatter();
+            return new FlatToMeCardCustomer();
         }
         // You __can__ get a customer from the polaris SQL request but it's just a stub now. Use SIP2.
         else if (this.format.compareToIgnoreCase(ResponderMethodTypes.POLARIS_SQL.toString()) == 0)
         {
-            return new PolarisSQLCustomerFormatter();
+            return new PolarisSQLToMeCardCustomer();
         }
         else if (this.format.compareToIgnoreCase(ResponderMethodTypes.POLARIS_API.toString()) == 0)
         {
-            return new PAPICustomerFormatter();
+            return new PapiToMeCardCustomer();
         }
         ///////////// return other formatters below for consistency.
         

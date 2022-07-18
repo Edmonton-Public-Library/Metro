@@ -1,7 +1,7 @@
 /*
  * Metro allows customers from any affiliate library to join any other 
  * member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
 import mecard.exception.ConfigurationException;
 import mecard.exception.MalformedCommandException;
 import mecard.exception.MetroSecurityException;
@@ -42,12 +41,22 @@ import mecard.customer.DumpUser;
 import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
- * Responder object handles requests and responses to and from the ILS. The 
- * responder is the adapter that requests commands from request builders and 
- * then executes them.
- * @author Andrew Nisbet andrew.nisbet@epl.ca or andrew@dev-ils.com
+ * Responder object handles requests and responses to and from the ILS in a 
+ * vendor-neutral way. It does this by using bespoke adapters defined in the
+ * environment.properties file. Those adapters are known as request builders and
+ * the library may use different services for different requests. For example
+ * a library may use SIP to get customer information, a web service to register
+ * the customer, but a system monitoring application to get the status of the ILS.
+ * 
+ * The Responder is oblivious to the complexity of each service which allows it
+ * to focus on executing standard commands and getting standardized responses 
+ * during the registration process without knowing anything about the underlying 
+ * services.
+ *  
+ * @author Andrew Nisbet andrew at dev-ils.com
  */
 public class Responder
 {
@@ -173,7 +182,7 @@ public class Responder
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_CUSTOMER, debug);
         Command command = requestBuilder.getCustomerCommand(userId, userPin, response);
         CommandStatus status = command.execute();
-        CustomerFormatter customerFormatter = requestBuilder.getFormatter();
+        NativeFormatToMeCardCustomer customerFormatter = requestBuilder.getFormatter();
         // Use the formatter to convert the returned SIP2 info into a ME customer object.
         Customer customer = customerFormatter.getCustomer(status.getStdout());
         response.setCustomer(customer);

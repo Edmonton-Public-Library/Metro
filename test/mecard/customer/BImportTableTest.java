@@ -1,6 +1,25 @@
-
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2022  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.customer;
-import mecard.customer.horizon.BImportTable;
+import mecard.horizon.MeCardDataToBImportData;
 import java.util.HashMap;
 import mecard.config.BImportTableTypes;
 import org.junit.Test;
@@ -8,7 +27,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author andrew
+ * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
 public class BImportTableTest
 {
@@ -37,13 +56,13 @@ public class BImportTableTest
     }
 
     /**
-     * Test of getHeaderLine method, of class BImportTable.
+     * Test of getHeaderLine method, of class MeCardDataToBImportData.
      */
     @Test
     public void testGetHeaderLine()
     {
         System.out.println("==getHeaderLine==");
-        BImportTable instance = BImportTable.getInstanceOf(BImportTableTypes.BORROWER_TABLE, this.testMap);
+        MeCardDataToBImportData instance = MeCardDataToBImportData.getInstanceOf(BImportTableTypes.BORROWER_TABLE, this.testMap);
         String result = instance.getHeader();
         System.out.print("HEADER:"+result);
         result = instance.getData();
@@ -68,7 +87,7 @@ public class BImportTableTest
         this.testMap.put("expiration_date", "20180101");
         this.testMap.put("birth_date", "19700101");
         
-        BImportTable instance1 = BImportTable.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, testMap);
+        MeCardDataToBImportData instance1 = MeCardDataToBImportData.getInstanceOf(BImportTableTypes.BORROWER_ADDRESS_TABLE, testMap);
         result = instance1.getHeader();
         System.out.print("HEADER:"+result);
         result = instance1.getData();
@@ -81,7 +100,7 @@ public class BImportTableTest
     }
 
     /**
-     * Test of getInstanceOf method, of class BImportTable.
+     * Test of getInstanceOf method, of class MeCardDataToBImportData.
      */
     @Test
     public void testGetInstanceOf()
@@ -89,8 +108,8 @@ public class BImportTableTest
         System.out.println("getInstanceOf");
         BImportTableTypes type = null;
         HashMap<String, String> dataFields = null;
-        BImportTable expResult = null;
-        BImportTable result = BImportTable.getInstanceOf(type, dataFields);
+        MeCardDataToBImportData expResult = null;
+        MeCardDataToBImportData result = MeCardDataToBImportData.getInstanceOf(type, dataFields);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

@@ -23,8 +23,8 @@ package site.stalbert;
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import site.HorizonNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  * Normalizes the customer's data before loading into SAPL's ILS.
@@ -41,7 +41,7 @@ public final class SAPLCustomerNormalizer extends HorizonNormalizer
     }
 
     @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
         // Test and hash the user's password to a 4-digit number if necessary.
         super.finalize(unformattedCustomer, formattedCustomer, response);

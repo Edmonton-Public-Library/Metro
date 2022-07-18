@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2019  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,20 +45,20 @@ import mecard.config.MessagesTypes;
 import mecard.config.PolarisTable;
 import mecard.config.PolarisVersion;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
 import mecard.customer.DumpUser;
-import mecard.customer.FormattedCustomer;
 import mecard.customer.UserLostFile;
-import mecard.customer.polaris.PolarisSQLCustomerFormatter;
-import mecard.customer.polaris.PolarisSQLFormattedCustomer;
+import mecard.polaris.PolarisSQLToMeCardCustomer;
+import mecard.polaris.MeCardCustomerToPolarisSQL;
 import mecard.exception.ConfigurationException;
 import mecard.util.DateComparer;
 import mecard.util.Text;
 import site.CustomerLoadNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
  * Manages messaging and work flow for requests to a Polaris ILS via POLARIS_SQL statements.
- * @author Andrew Nisbet <andrew.nisbet@epl.ca>
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  * @since 0.8.14_00
  */
 public class PolarisSQLRequestBuilder extends ILSRequestBuilder
@@ -137,9 +137,9 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     }
     
     @Override
-    public CustomerFormatter getFormatter()
+    public NativeFormatToMeCardCustomer getFormatter()
     {
-        return new PolarisSQLCustomerFormatter();
+        return new PolarisSQLToMeCardCustomer();
     }
 
     @Override
@@ -177,12 +177,12 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
         //   Make an entry in the 'polaris_sql.properties' file, adding an entry 
         //   in mecard.config.PolarisSQLPropertyTypes for the correct spelling. Next change 
         //   the method builder argument to read from the formatted customer instead
-        //   of the hard coded value. Add requisit changes to the PolarisSQLFormattedCustomer
+        //   of the hard coded value. Add requisit changes to the MeCardCustomerToPolarisSQL
         //   AND / OR add the values through the normalization finalize() method process.
         //
         ////////////////////////////////////////////////////////////////////////
         // we have a customer let's convert them to a PolarisSQLFormatted user.
-        FormattedCustomer fCustomer = new PolarisSQLFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat fCustomer = new MeCardCustomerToPolarisSQL(customer);
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, fCustomer, response);
         List<String> userSQLFileLines = fCustomer.getFormattedCustomer();
@@ -817,7 +817,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
     {
         // we have a customer let's convert them to a PolarisSQLFormatted user.
-        FormattedCustomer fCustomer = new PolarisSQLFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat fCustomer = new MeCardCustomerToPolarisSQL(customer);
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, fCustomer, response);
         List<String> userSQLFileLines = fCustomer.getFormattedCustomer();

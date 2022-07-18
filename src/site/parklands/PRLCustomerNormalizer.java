@@ -24,19 +24,20 @@ import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mecard.Response;
+import mecard.ResponseTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PolarisTable;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import mecard.util.DateComparer;
-import site.PolarisNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
+import site.CustomerLoadNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
  * The local library may require certain modifications to a customer account.
  * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
-public final class PRLCustomerNormalizer extends PolarisNormalizer
+public final class PRLCustomerNormalizer extends CustomerLoadNormalizer
 {    
     public PRLCustomerNormalizer(boolean debug)
     {
@@ -44,7 +45,7 @@ public final class PRLCustomerNormalizer extends PolarisNormalizer
     }
     
     @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
                 // add User1 - User5 and any other fields.
         formattedCustomer.insertValue(
@@ -122,4 +123,18 @@ public final class PRLCustomerNormalizer extends PolarisNormalizer
                 expiry);
         }
     }
+
+    @Override
+    public ResponseTypes normalize(Customer c, StringBuilder r)
+    {
+        return ResponseTypes.SUCCESS; // no special rules for Parkland Regional.
+    }
+
+    @Override
+    public void normalizeOnCreate(Customer customer, Response response)
+    {    }
+
+    @Override
+    public void normalizeOnUpdate(Customer customer, Response response)
+    {    }
 }

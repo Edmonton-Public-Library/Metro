@@ -26,9 +26,9 @@ import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import mecard.util.DateComparer;
 import site.HorizonNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -66,7 +66,7 @@ public final class STRCustomerNormalizer extends HorizonNormalizer
     }
     
     @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
         // Test and hash the user's password to a 4-digit number if necessary.
         super.finalize(unformattedCustomer, formattedCustomer, response);

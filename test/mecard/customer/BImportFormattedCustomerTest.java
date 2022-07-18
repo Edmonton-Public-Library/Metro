@@ -1,6 +1,26 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2022  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.customer;
-import mecard.customer.horizon.BImportFormattedCustomer;
-import mecard.customer.horizon.BImportTable;
+import mecard.horizon.MeCardCustomerToBImport;
+import mecard.horizon.MeCardDataToBImportData;
 import java.util.HashMap;
 import java.util.List;
 import json.RequestDeserializer;
@@ -11,7 +31,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  */
 public class BImportFormattedCustomerTest
 {
@@ -26,13 +46,13 @@ public class BImportFormattedCustomerTest
     }
 
     /**
-     * Test of getFormattedCustomer method, of class BImportFormattedCustomer.
+     * Test of getFormattedCustomer method, of class MeCardCustomerToBImport.
      */
     @Test
     public void testGetFormattedCustomer()
     {
         System.out.println("==getFormattedCustomer==");
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
         List<String> result = instance.getFormattedHeader();
         for (String s: result)
         {
@@ -47,13 +67,13 @@ public class BImportFormattedCustomerTest
     }
 
     /**
-     * Test of setValue method, of class BImportFormattedCustomer.
+     * Test of setValue method, of class MeCardCustomerToBImport.
      */
     @Test
     public void testSetValue()
     {
         System.out.println("==setValue==");
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
         String key = "birth_date";
         String value = "19630822";
         boolean result = instance.setValue(key, value);
@@ -81,8 +101,8 @@ public class BImportFormattedCustomerTest
     public void testInsertTable()
     {
         System.out.println("==insertTable==");
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
-        BImportTable table = BImportTable.getInstanceOf(
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
+        MeCardDataToBImportData table = MeCardDataToBImportData.getInstanceOf(
                 BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
         table.setValue("bstat", "unknown");
         instance.insertTable(table, 3);
@@ -98,8 +118,8 @@ public class BImportFormattedCustomerTest
         }
         System.out.println();
         
-        instance = new BImportFormattedCustomer(customer);
-        table = BImportTable.getInstanceOf(
+        instance = new MeCardCustomerToBImport(customer);
+        table = MeCardDataToBImportData.getInstanceOf(
                 BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
         instance.insertTable(table, -1);
         resultList = instance.getFormattedCustomer();
@@ -109,8 +129,8 @@ public class BImportFormattedCustomerTest
         }
         System.out.println();
         
-        instance = new BImportFormattedCustomer(customer);
-        table = BImportTable.getInstanceOf(
+        instance = new MeCardCustomerToBImport(customer);
+        table = MeCardDataToBImportData.getInstanceOf(
                 BImportTableTypes.BORROWER_BSTAT, new HashMap<String, String>());
         instance.insertTable(table, 100);
         resultList = instance.getFormattedCustomer();
@@ -122,13 +142,13 @@ public class BImportFormattedCustomerTest
     }
 
     /**
-     * Test of containsKey method, of class BImportFormattedCustomer.
+     * Test of containsKey method, of class MeCardCustomerToBImport.
      */
     @Test
     public void testContainsKey()
     {
         System.out.println("==containsKey==");
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
         String key = "birth_date";
         boolean result = instance.containsKey(key);
         assertTrue(result);
@@ -138,13 +158,13 @@ public class BImportFormattedCustomerTest
     }
 
     /**
-     * Test of getValue method, of class BImportFormattedCustomer.
+     * Test of getValue method, of class MeCardCustomerToBImport.
      */
     @Test
     public void testGetValue()
     {
         System.out.println("==getValue==");
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
         String key = "birth_date";
         String result = instance.getValue(key);
         assertTrue(result.compareTo("1975-08-22") == 0);
@@ -154,14 +174,14 @@ public class BImportFormattedCustomerTest
     }
 
     /**
-     * Test of computeEmailName method, of class BImportFormattedCustomer.
+     * Test of computeEmailName method, of class MeCardCustomerToBImport.
      */
     @Test
     public void testComputeEmailName()
     {
         System.out.println("==computeEmailName==");
         String email = "anisbet@epl.ca";
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
         String expResult = "anisbet";
         String result = instance.computeEmailName(email);
         assertTrue(expResult.compareTo(result) == 0);
@@ -174,7 +194,7 @@ public class BImportFormattedCustomerTest
     public void testInsertKeyValuePair()
     {
         System.out.println("==InsertKeyValuePair==");
-        FormattedCustomer formatter = new BImportFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToBImport(customer);
         assertTrue(formatter.insertValue(BImportTableTypes.BORROWER_TABLE.toString(), "cell_phone", "780-999-1212"));
         assertFalse(formatter.insertValue("NON_EXISTANT_TABLE", "SOCCER_STAR", "Beckem"));
         List<String> result = formatter.getFormattedCustomer();
@@ -190,13 +210,13 @@ public class BImportFormattedCustomerTest
     }
 
     /**
-     * Test of getFormattedHeader method, of class BImportFormattedCustomer.
+     * Test of getFormattedHeader method, of class MeCardCustomerToBImport.
      */
     @Test
     public void testGetFormattedHeader()
     {
         System.out.println("==getFormattedHeader==");
-        BImportFormattedCustomer instance = new BImportFormattedCustomer(customer);
+        MeCardCustomerToBImport instance = new MeCardCustomerToBImport(customer);
         List<String> result = instance.getFormattedHeader();
         for (String s: result)
         {
@@ -220,7 +240,7 @@ public class BImportFormattedCustomerTest
 //        String tableName = "";
 //        String key = "";
 //        String value = "";
-//        BImportFormattedCustomer instance = null;
+//        MeCardCustomerToBImport instance = null;
 //        boolean expResult = false;
 //        boolean result = instance.insertValue(tableName, key, value);
 //        assertEquals(expResult, result);

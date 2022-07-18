@@ -1,6 +1,27 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2022  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.customer;
-import mecard.customer.symphony.FlatFormattedCustomer;
-import mecard.customer.symphony.FlatFormattedTable;
+
+import mecard.symphony.MeCardCustomerToFlat;
+import mecard.symphony.MeCardDataToFlatData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +34,11 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author andrew
+ * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
 public class FlatFormattedCustomerTest
 {
-    private Customer customer;
+    private final Customer customer;
     public FlatFormattedCustomerTest()
     {
         String custReq =
@@ -28,13 +49,13 @@ public class FlatFormattedCustomerTest
     }
 
     /**
-     * Test of getFormattedCustomer method, of class FlatFormattedCustomer.
+     * Test of getFormattedCustomer method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testGetFormattedCustomer()
     {
         System.out.println("==getFormattedCustomer==");
-        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
         List<String> expResult = new ArrayList<>();
         expResult.add("*** DOCUMENT BOUNDARY ***\n");
         expResult.add(".USER_ID.   |a21221012345678\n");
@@ -71,13 +92,13 @@ public class FlatFormattedCustomerTest
     }
 
     /**
-     * Test of setValue method, of class FlatFormattedCustomer.
+     * Test of setValue method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testSetValue()
     {
         System.out.println("==setValue==");
-        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
         formatter.setValue(FlatUserFieldTypes.USER_FIRST_NAME.name(), "Robot");
         String result = formatter.getValue(FlatUserFieldTypes.USER_FIRST_NAME.name());
         System.out.println("USER_FIRST_NAME:"+result);
@@ -85,26 +106,26 @@ public class FlatFormattedCustomerTest
     }
 
     /**
-     * Test of containsKey method, of class FlatFormattedCustomer.
+     * Test of containsKey method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testContainsKey()
     {
         System.out.println("==containsKey==");
-        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
         assertTrue(formatter.containsKey(FlatUserFieldTypes.USER_FIRST_NAME.name()));
         assertFalse(formatter.containsKey("INVALID_FIELD"));
     }
 
     /**
-     * Test of insertTable method, of class FlatFormattedCustomer.
+     * Test of insertTable method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testInsertTable()
     {
         System.out.println("==insertTable==");
-        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
-        FormattedTable table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, new HashMap<String, String>());
+        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
+        MeCardDataToNativeData table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, new HashMap<String, String>());
         formatter.insertTable(table, 1);
         List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
@@ -112,8 +133,8 @@ public class FlatFormattedCustomerTest
             System.out.print("NEW_TABLE:\n"+s);
         }
         
-        formatter = new FlatFormattedCustomer(customer);
-        table = FlatFormattedTable.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, new HashMap<String, String>());
+        formatter = new MeCardCustomerToFlat(customer);
+        table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, new HashMap<String, String>());
         formatter.insertTable(table, 99);
         result = formatter.getFormattedCustomer();
         for (String s: result)
@@ -123,13 +144,13 @@ public class FlatFormattedCustomerTest
     }
     
     /**
-     * Test of InsertKeyValuePair method, of class FlatFormattedCustomer.
+     * Test of InsertKeyValuePair method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testInsertKeyValuePair()
     {
         System.out.println("==InsertKeyValuePair==");
-        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
         assertTrue(formatter.containsKey(FlatUserFieldTypes.USER_FIRST_NAME.name()));
         assertTrue(formatter.insertValue(FlatUserExtendedFieldTypes.USER.name(), "HOCKEY_STAR", "Gretzky"));
         assertFalse(formatter.insertValue("NON_EXISTANT_TABLE", "SOCCER_STAR", "Beckem"));
@@ -141,13 +162,13 @@ public class FlatFormattedCustomerTest
     }
 
     /**
-     * Test of getFormattedHeader method, of class FlatFormattedCustomer.
+     * Test of getFormattedHeader method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testGetFormattedHeader()
     {
         System.out.println("getFormattedHeader");
-        FlatFormattedCustomer instance = null;
+        MeCardCustomerToFlat instance = null;
         List<String> expResult = null;
         List<String> result = instance.getFormattedHeader();
         assertEquals(expResult, result);
@@ -156,14 +177,14 @@ public class FlatFormattedCustomerTest
     }
 
     /**
-     * Test of getValue method, of class FlatFormattedCustomer.
+     * Test of getValue method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testGetValue()
     {
         System.out.println("getValue");
         String key = "";
-        FlatFormattedCustomer instance = null;
+        MeCardCustomerToFlat instance = null;
         String expResult = "";
         String result = instance.getValue(key);
         assertEquals(expResult, result);
@@ -172,7 +193,7 @@ public class FlatFormattedCustomerTest
     }
 
     /**
-     * Test of insertValue method, of class FlatFormattedCustomer.
+     * Test of insertValue method, of class MeCardCustomerToFlat.
      */
     @Test
     public void testInsertValue()
@@ -181,7 +202,7 @@ public class FlatFormattedCustomerTest
         String tableName = "";
         String key = "";
         String value = "";
-        FlatFormattedCustomer instance = null;
+        MeCardCustomerToFlat instance = null;
         boolean expResult = false;
         boolean result = instance.insertValue(tableName, key, value);
         assertEquals(expResult, result);

@@ -1,4 +1,23 @@
-
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2022  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 package mecard.customer;
 
 import java.io.BufferedReader;
@@ -10,14 +29,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mecard.config.CustomerFieldTypes;
-import mecard.customer.sip.SIPCustomerFormatter;
-import mecard.customer.symphony.FlatFormattedCustomer;
+import mecard.sip.SIPToMeCardCustomer;
+import mecard.symphony.MeCardCustomerToFlat;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
- * @author anisbet
+ * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
 public class DumpUserTest
 {
@@ -39,7 +58,7 @@ public class DumpUserTest
         new File(customer.get(CustomerFieldTypes.ID) + ".txt").delete();
         assertFalse(new File(customer.get(CustomerFieldTypes.ID) + ".txt").exists());
         // Test if customer data written.
-        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
+        SIPToMeCardCustomer formatter = new SIPToMeCardCustomer();
 //        customer = formatter.getCustomer("64              00020160714    122100000000000000000000000000AOalap|AA21000005874453|AELANCE DOGGIE|AQalap|BZ0249|CA0010|CB0200|BLY|BHCAD|CC25.|BD31 Cedar Crescent, Lacombe, AB, T4L 1V1|BElancedoggie@gmail.com|BF403-358-3019|DJLANCE DOGGIE|PCra|PA20170607    235900|PS20170607    235900|ZYra|AY0AZB2B0");
         customer = formatter.getCustomer("64              00120141002    135321000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEstephaniethero@shaw.ca|BF780-962-2003|BC19751002    235959|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY2AZ9694");
 //        assertTrue(customer.get(CustomerFieldTypes.DOB).compareTo("19751002") == 0);
@@ -55,9 +74,9 @@ public class DumpUserTest
         new File(customer.get(CustomerFieldTypes.ID) + ".flat").delete();
         assertFalse(new File(customer.get(CustomerFieldTypes.ID) + ".flat").exists());
         
-        // Test the FlatFormattedCustomer data test.
-//        FormattedCustomer formatter = new FlatFormattedCustomer(customer);
-        FormattedCustomer ffc = new FlatFormattedCustomer(customer);
+        // Test the MeCardCustomerToFlat data test.
+//        MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
+        MeCardCustomerToNativeFormat ffc = new MeCardCustomerToFlat(customer);
         new DumpUser.Builder(customer, ".", DumpUser.FileType.flat)
                 .set(ffc)
                 .build();

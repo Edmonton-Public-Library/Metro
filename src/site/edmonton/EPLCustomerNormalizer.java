@@ -25,8 +25,8 @@ import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserExtendedFieldTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import site.SymphonyNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -56,7 +56,7 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
      * @param response the value of response
      */
     @Override
-    public void finalize(Customer unformattedCustomer, FormattedCustomer formattedCustomer, Response response)
+    public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
         // We use USER_CATEGORY2 for customer sex so if the sending library
         // has included this information we can set the field.

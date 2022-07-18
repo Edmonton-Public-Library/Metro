@@ -20,7 +20,6 @@
  */
 package mecard.requestbuilder;
 
-import mecard.customer.FormattedCustomer;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
@@ -36,15 +35,16 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
 import mecard.exception.BImportException;
 import mecard.exception.UnsupportedCommandException;
 import mecard.config.PropertyReader;
-import mecard.customer.horizon.BImportFormattedCustomer;
-import mecard.customer.horizon.BimportUserFile;
+import mecard.horizon.MeCardCustomerToBImport;
+import mecard.horizon.BimportUserFile;
 import mecard.customer.UserFile;
 import mecard.exception.ConfigurationException;
 import site.CustomerLoadNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
  * Manages building customer registration requests in a Horizon-centric way. 
@@ -108,7 +108,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public CustomerFormatter getFormatter()
+    public NativeFormatToMeCardCustomer getFormatter()
     {
         throw new UnsupportedCommandException(BImportRequestBuilder.class.getName()
                 + " BImport does not require a customer formatter.");
@@ -132,7 +132,7 @@ public class BImportRequestBuilder extends ILSRequestBuilder
         }
         dataFile = loadDir + FILE_NAME_PREFIX + transactionId + DATA_FILE;
         UserFile bimportDataFile = new BimportUserFile(dataFile);
-        FormattedCustomer formattedCustomer = new BImportFormattedCustomer(customer);
+        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToBImport(customer);
         // Make final changes to the formatted customer before loading as adding bstat.
         // and make sure the pin is replaced if required.
         normalizer.finalize(customer, formattedCustomer, response);

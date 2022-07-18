@@ -32,8 +32,8 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
-import mecard.customer.CustomerFormatter;
 import site.CustomerLoadNormalizer;
+import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
  * Outage request is used if one of the MeCard services is unavailable because
@@ -52,7 +52,7 @@ public class OutageRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public CustomerFormatter getFormatter() {
+    public NativeFormatToMeCardCustomer getFormatter() {
         throw new UnsupportedOperationException("Not supported during outage.");
     }
 
