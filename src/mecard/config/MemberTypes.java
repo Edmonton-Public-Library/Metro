@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ package mecard.config;
 
 /**
  * Member types are the current members of Metro Federation.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  */
 public enum MemberTypes
 {
@@ -34,6 +34,6 @@ public enum MemberTypes
     CAR, // Chinook Arch Regional Library System
     TRAC, // Trac including Yellowhead, Peace, and Northern Lights and Marigold, don't forget Marigold.
     CPL, // Calgary Public Library.
-    FMPL, // Fort McMurray Public Library
+    WBRL, // Wood Buffalo Regional Library.
     RDPL; // Red Deer Public Library
 }
