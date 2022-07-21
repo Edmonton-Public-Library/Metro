@@ -27,7 +27,7 @@ import java.util.List;
  * out by {@link FormattedCustomer} objects.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
-public interface CustomerFormatter
+public interface NativeFormatToMeCardCustomer
 {
     /**
      * Converts a string from ILS or SIP into a Customer object.

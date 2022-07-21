@@ -120,10 +120,10 @@ public class DumpUser
         
         /**
          * Sets the dump file's contents to the data in customer.
-         * @param c data as a {@link FormattedCustomer } object.
+         * @param c data as a {@link MeCardCustomerToNativeFormat } object.
          * @return builder object.
          */
-        public Builder set(FormattedCustomer c)
+        public Builder set(MeCardCustomerToNativeFormat c)
         {
             if (c != null) this.set(c.getFormattedCustomer());
             return this;

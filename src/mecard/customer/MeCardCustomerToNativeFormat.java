@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2019  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,14 @@ import java.util.List;
 
 /**
  * Implementers normalize and format customer data into a format consumable
- * by the resource that is loading or updating the information (like SQL). 
+ * by the resource that is loading or updating the information (like SQL, or PAPI). 
  * This class is responsible for acquiring the correct formatter, formatting 
  * the customer and managing the customer's record entries during the creation 
  * of a new record on the ILS.
- * @author Andrew Nisbet <andrew.nisbet@epl.ca>
+ * 
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public interface FormattedCustomer
+public interface MeCardCustomerToNativeFormat
 {
     /**
      * 
@@ -85,7 +86,7 @@ public interface FormattedCustomer
      * @param formattedTable the value of formattedTable
      * @param index the value of index
      */
-    public void insertTable(FormattedTable formattedTable, int index);
+    public void insertTable(MeCardDataToNativeData formattedTable, int index);
     
     /**
      * Renames a field in a table. This can be useful when an ILS has customized

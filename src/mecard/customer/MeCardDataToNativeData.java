@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,13 @@ package mecard.customer;
 import java.util.Set;
 
 /**
- * Interface for tables of formatted customer data. Used to format raw customer
- * data into FLAT files or SQL statements.
- * @author anisbet andrew@dev-ils.com
+ * Storage container that provides a standard interface to use when converting
+ * MeCard customer data into a format that can be used by the target ILS, or 
+ * web service.
+ * 
+ * @author Andrew Nisbet andrew at dev-ils.com
  */
-public interface FormattedTable
+public interface MeCardDataToNativeData
 {
 
     /**
