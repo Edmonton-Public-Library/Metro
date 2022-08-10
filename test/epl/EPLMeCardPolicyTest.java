@@ -21,7 +21,7 @@
 package epl;
 
 import api.CustomerMessage;
-import api.SIPCustomerMessage;
+import mecard.sip.SIPCustomerMessage;
 import mecard.Request;
 import json.RequestDeserializer;
 import mecard.customer.Customer;

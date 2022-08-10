@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2020  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public class CommandStatus
     protected StringBuffer stdout;
     protected StringBuffer stderr;
     
-    CommandStatus()
+    public CommandStatus()
     { 
         this.stdout = new StringBuffer();
         this.stderr = new StringBuffer();
@@ -45,7 +45,7 @@ public class CommandStatus
      * Sets the status of the command to BUSY, to indicate that the process
      * started.
      */
-    void setStarted()
+    public void setStarted()
     {   
         this.status = ResponseTypes.BUSY;
     }
@@ -56,7 +56,7 @@ public class CommandStatus
      * 
      * @param line or lines of text from standard out.
      */
-    void setStdout(String line)
+    public void setStdout(String line)
     {
         this.stdout.append(line);
         this.stdout.append("\n");
@@ -68,7 +68,7 @@ public class CommandStatus
      * 
      * @param line or lines of text from standard out.
      */
-    void setStderr(String line)
+    public void setStderr(String line)
     {
         this.stderr.append(line);
         this.stderr.append("\n");
@@ -79,7 +79,7 @@ public class CommandStatus
      * newline character to each output stream when done.
      * @param value exit value of the process as an integer.
      */
-    void setEnded(int value)
+    public void setEnded(int value)
     {
         this.stdout.append(value);
         this.stdout.append("\n");
@@ -90,25 +90,25 @@ public class CommandStatus
 
     /**
      * Allows the caller to set an error for the command status in the form of
-     * a Java throw-able object for logging and diagnosis issues.
+     * a Java throw-able object for logging and diagnosing issues.
      * @param e the error that was thrown during command execution.
      */
-    void setError(Throwable e)
+    public void setError(Throwable e)
     {
         this.stderr.append(e.getMessage());
         this.status = ResponseTypes.ERROR;
     }
     
     /** 
-     * Allows specific {@link ResponseTypes} to be recorded. {@link #setEnded(int) }
-     * performs a similar task but the response code is always set to {@link ResponseTypes#COMMAND_COMPLETED}
-     * This method will actually set the the status to a value that can be used
-     * later for computing the success of one command before continuing onto another.
+     * Allows specific {@link ResponseTypes} to be recorded.{@link #setEnded(int)}
+ performs a similar task but the response code is always set to {@link ResponseTypes#COMMAND_COMPLETED}
+ This method will actually set the the status to a value that can be used
+ later for computing the success of one command before continuing onto another.
      * 
-     * @param t the response type of the command that executed.
+     * @param value the response type of the command that executed.
      * @see #setEnded(int) 
      */
-    void setResponseType(ResponseTypes value)
+    public void setResponseType(ResponseTypes value)
     {
         this.stdout.append(value.ordinal());
         this.stdout.append("\n");
@@ -122,7 +122,7 @@ public class CommandStatus
      * @param type the command's exit status translated into a form the 
      * MeCard server can understand.
      */
-    void setResponse(ResponseTypes type)
+    public void setResponse(ResponseTypes type)
     {
         this.status = type;
     }

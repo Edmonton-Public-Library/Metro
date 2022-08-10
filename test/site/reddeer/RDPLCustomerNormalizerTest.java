@@ -2,9 +2,9 @@ package site.reddeer;
 
 import mecard.Response;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  *
@@ -27,7 +27,7 @@ public class RDPLCustomerNormalizerTest
     {
         System.out.println("finalize");
         Customer rawCustomer = null;
-        FormattedCustomer formattedCustomer = null;
+        MeCardCustomerToNativeFormat formattedCustomer = null;
         Response response = null;
         RDPLCustomerNormalizer instance = null;
         instance.finalize(rawCustomer, formattedCustomer, response);

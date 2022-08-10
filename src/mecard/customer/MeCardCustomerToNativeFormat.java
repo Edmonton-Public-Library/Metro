@@ -49,6 +49,9 @@ public interface MeCardCustomerToNativeFormat
     
     /**
      * Sets a value denoted by key to the value passed in the parameter.
+     * This assumes that either the customer data is in a single table by default
+     * or that the implementer has implemented a search of all tables if required.
+     * 
      * @param key
      * @param value
      * @return true if the value was present and updated and false if the value

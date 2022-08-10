@@ -3,12 +3,12 @@ package site.trac;
 import mecard.Response;
 import mecard.config.PolarisTable;
 import mecard.customer.Customer;
-import mecard.customer.FormattedCustomer;
-import mecard.customer.polaris.PolarisSQLFormattedCustomer;
-import mecard.customer.sip.SIPCustomerFormatter;
+import mecard.polaris.MeCardCustomerToPolarisSQL;
+import mecard.sip.SIPToMeCardCustomer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import site.shortgrass.SLSCustomerNormalizer;
+import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
  *
@@ -28,10 +28,10 @@ public class TRACCustomerNormalizerTest
     public void testFinalize()
     {
         System.out.println("==finalize==");
-        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
+        SIPToMeCardCustomer formatter = new SIPToMeCardCustomer();
         
         Customer unformattedCustomer = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESherman, William Tecumseh|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 Savannah Street T1A 3N7|BEanton@shortgrass.ca|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZAC20");
-        FormattedCustomer formattedCustomer = new PolarisSQLFormattedCustomer(unformattedCustomer);
+        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToPolarisSQL(unformattedCustomer);
         Response response = new Response();
         SLSCustomerNormalizer instance = new SLSCustomerNormalizer(true);
         instance.finalize(unformattedCustomer, formattedCustomer, response);

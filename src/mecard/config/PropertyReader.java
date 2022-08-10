@@ -42,7 +42,7 @@ import mecard.util.PlaceNameWGet;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "1.04.00_c"; // server version
+    public final static String VERSION           = "2.00.00"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -242,7 +242,7 @@ public class PropertyReader
             case PAPI:
                 polarisAPI = readPropertyFile(PropertyReader.POLARIS_PAPI_FILE);
                 // now check that all mandetory values are here.
-                for (PAPIPropertyTypes pType : PAPIPropertyTypes.values())
+                for (PapiPropertyTypes pType : PapiPropertyTypes.values())
                 {
                     if (polarisAPI.get(pType.toString()) == null)
                     {

@@ -10,7 +10,7 @@ Environment=DEPLOY_ENV=prod
 WorkingDirectory=/home/its/metro
 
 # Path to executable (bash script).
-TimeoutSec=2
+TimeoutSec=10
 Type=forking
 PIDFile=/home/its/metro/logs/metro.pid
 ExecStart=/home/its/metro/service.sh start

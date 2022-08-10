@@ -59,8 +59,8 @@ public class PolarisSIPCustomerMessage extends SIPCustomerMessage
     @Override
     public String getDateField(String fieldName)
     {
-        String possibleDate = DateComparer.cleanDateTime(getField(fieldName));
-        if (DateComparer.isDate(possibleDate))
+        String possibleDate = DateComparer.cleanAnsiDateTime(getField(fieldName));
+        if (DateComparer.isAnsiDate(possibleDate))
         {
             return possibleDate;
         }

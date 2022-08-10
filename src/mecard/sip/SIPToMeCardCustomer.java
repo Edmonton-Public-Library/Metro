@@ -83,7 +83,7 @@ public class SIPToMeCardCustomer implements NativeFormatToMeCardCustomer
             case "PKL":
                 this.customMessageInterpreter = new PRLCustomerGetNormalizer();
                 break;
-            case "FMPL":
+            case "WBRL":
                 this.customMessageInterpreter = new WBRLCustomerGetNormalizer();
                 break;
             case "RDPL":

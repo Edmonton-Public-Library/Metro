@@ -1,8 +1,8 @@
 
 package site.calgary;
 
-import api.SIPCustomerMessage;
-import api.SIPMessage;
+import mecard.sip.SIPCustomerMessage;
+import mecard.sip.SIPMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.Address3;
 import mecard.util.DateComparer;
@@ -94,26 +94,26 @@ public class CPLCustomerGetNormalizerTest
         System.out.println(CustomerFieldTypes.PHONE + ":" + phone.getUnformattedPhone());
         // Privilege date dates: horizon uses PE and puts profile in PA.
         // The test is slightly less expensive 
-        String cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PA"));
-        if (DateComparer.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PA"));
+        if (DateComparer.isAnsiDate(cleanDate))
         {
             System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
         }
         // PE can also be privilege expires, so if PA fails try this field.
         else
         {
-            cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PE"));
+            cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PE"));
             System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
         }
         // DOB same thing
-        cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PB"));
-        if (DateComparer.isDate(cleanDate))
+        cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PB"));
+        if (DateComparer.isAnsiDate(cleanDate))
         {
-            System.out.println(CustomerFieldTypes.DOB + ":" + DateComparer.cleanDateTime(sipMessage.getField("PB"))); // Strathcona.
+            System.out.println(CustomerFieldTypes.DOB + ":" + DateComparer.cleanAnsiDateTime(sipMessage.getField("PB"))); // Strathcona.
         }
         else
         {
-            cleanDate = DateComparer.cleanDateTime(sipMessage.getField("PD"));
+            cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PD"));
             System.out.println(CustomerFieldTypes.DOB + ":" + cleanDate);
         }
         System.out.println(CustomerFieldTypes.SEX + ":" + sipMessage.getField("PF"));

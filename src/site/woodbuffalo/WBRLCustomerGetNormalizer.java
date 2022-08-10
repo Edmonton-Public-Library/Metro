@@ -21,10 +21,14 @@
 package site.woodbuffalo;
 
 import api.CustomerMessage;
+import java.text.ParseException;
+import mecard.Protocol;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
+import mecard.polaris.PapiElementOrder;
 import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
+import mecard.Policies;
 
 /**
  *
@@ -32,11 +36,17 @@ import site.CustomerGetNormalizer;
  */
 public class WBRLCustomerGetNormalizer extends CustomerGetNormalizer
 {
-    // TODO: Polaris requires a Space when entering
-    //    postal codes. T9H5C5 != T9H 5C5.
-    //    Date fields need to be converted from SQL timestamp to MeCard (ANSI) dates.
     /**
-     * This is the default class for a library that does not require custom
+     * This class prepares the customer data to be sent to the ME Libraries
+     * web site. 
+     * 
+     * In the case of SIP2, there is customer meta data from the ILS such as 
+     * profile, customer status and such. PAPI, and web service calls generally
+     * don't return that kind of information so if the environment.properties
+     * specify 'polaris-api' for getCustomer requests, the standing and age 
+     * restrictions of a customer must be considered here and added to the 
+     * customer before it is sent back to the ME Libraries web site. 
+     * 
      * interpretation of {@link CustomerMessage}s.
      * @param customer
      * @param message 
@@ -46,29 +56,59 @@ public class WBRLCustomerGetNormalizer extends CustomerGetNormalizer
             Customer customer, 
             CustomerMessage message)
     {
-        // AF field will contain '#Incorrect password' if the customer enters an invalid pin
-        // This gets past from the SIP server if no validation is set.
-        // @TODO: Fix to read expected string from sip2.properties.
-        // Status: Done January 28, 2022.
-        // Implementation: add the following to the sip2.properties file.
-        //        <entry key="user-not-found">#Unknown</entry>
-        //        <entry key="user-pin-invalid">#Incorrect password</entry>
-//        if (message.getField("AF").startsWith("#Incorrect password"))
-//        {
-//            customer.set(CustomerFieldTypes.RESERVED, "Invalid PIN for station user");
-//        }
-//        else if (message.getField("AF").startsWith("#Unknown"))
-//        {
-//            customer.set(CustomerFieldTypes.RESERVED, "User not found");
-//        }
-        // Status: Done. Adding user-pin-invalid entry in the sip2.properties 
-        // 
-        // Now we know that Horizon uses 'PE' for expiry but 'PA' is the industrial 
-        // norm, so let's fix that here.
-        String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
-        if (DateComparer.isDate(cleanDate))
+        // Now we know that PAPI returns time stamps, let's convert them to 
+        // ME Card (ANSI) time.
+        String polarisExpiry = message.getDateField(PapiElementOrder.EXPIRATION_DATE.toString());
+        String ansiExpiry = DateComparer.getANSIDate(polarisExpiry);
+        customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, DateComparer.computeExpiryDate(ansiExpiry));
+        
+        String polarisBirthday = message.getDateField(PapiElementOrder.BIRTHDATE.toString());
+        String ansiBirthday = DateComparer.getANSIDate(polarisBirthday);
+        customer.set(CustomerFieldTypes.DOB, ansiBirthday);
+        if (DateComparer.isAnsiDate(ansiBirthday))
         {
-            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
+            // Test if the customer is minimum age.
+            try
+            {
+                if (DateComparer.getYearsOld(ansiBirthday) >= Policies.minimumAge())
+                {
+                    customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
+                }
+            }
+            catch (ParseException ex)
+            {
+                // _Shouldn't_ get here but never say never.
+                System.out.println("*error, funny thing; the customer's"
+                    + " age couldn't be calculated from: "
+                    + ansiBirthday);
+                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+            }
         }
+        else // No birthday, no registration.
+        {
+            customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+        }
+        
+        String gender = message.getField(PapiElementOrder.GENDER.toString());
+        switch (gender)
+        {
+            case "M":
+                customer.set(CustomerFieldTypes.SEX, "M");
+                break;
+            case "F":
+                customer.set(CustomerFieldTypes.SEX, "F");
+                break;
+            default: // anything else is just not specified.
+                customer.set(CustomerFieldTypes.SEX, "X");
+                break;
+        }
+        
+        // Some of these may appear in note fields, but until we talk to WBRL
+        // and see some data, we'll err on the side of allowing membership. 
+        customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.TRUE);
+        customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.TRUE);
+        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
+        customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
+        customer.set(CustomerFieldTypes.ISVALID, Protocol.TRUE);
     }
 }

@@ -23,10 +23,15 @@ package mecard.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mecard.Protocol;
+import mecard.Policies;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
@@ -181,6 +186,45 @@ public class DateComparer
     }
     
     /**
+     * Takes a given date and returns the RFC1123 date format (AKA Polaris date)
+     * ddd, dd MMM yyyy HH:mm:ss GMT
+     * Example:
+     * Wed, 17 Oct 2012 22:23:32 GMT
+     * @param date
+     * @return LocalDate object.
+     */
+    public static LocalDate getRFC1123Date(String date)
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
+        LocalDate localDate = LocalDate.parse(date, formatter);
+        return localDate;
+    }
+    
+    /**
+     * Converts a timestamp to an ANSI date.
+     * @param timeStampString in 'yyyy-MM-dd'T'HH:mm:ss' format.
+     * @return ANSI format date 'yyyyMMdd', or empty string if there was an error
+     * parsing the supplied date.
+     */
+    public static String getANSIDate(String timeStampString)
+    {
+        if (timeStampString == null || timeStampString.isEmpty())
+        {
+                return "";
+        }
+        try
+        {
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = sdf.parse(timeStampString);
+            return new SimpleDateFormat("yyyyMMdd").format(date);
+        } catch (ParseException ex)
+        {
+            Logger.getLogger(DateComparer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+    
+    /**
      * Computes if the long file modification time passed as argument two is older than
      * argument 1 modification time in minutes.
      * @param minutes time span of acceptable file age.
@@ -192,11 +236,7 @@ public class DateComparer
     {
         long difference = new Date().getTime() - fileModTime;
 
-        if (difference < minutes * MILLISECONDS_PER_MINUTE) 
-        {
-            return true;
-        }
-        return false;
+        return difference < minutes * MILLISECONDS_PER_MINUTE;
     }
 
     /**
@@ -223,14 +263,14 @@ public class DateComparer
      * @return cleaned string if date valid and parse-able as date and Protocol#DEFAULT_FIELD_VALUE
      * otherwise.
      */
-    public static String cleanDateTime(String possibleDate)
+    public static String cleanAnsiDateTime(String possibleDate)
     {
         if (possibleDate == null)
         {
             return Protocol.DEFAULT_FIELD_VALUE;
         }
         String[] split = possibleDate.split("\\s{1,}");
-        if (split.length == 0 || isDate(split[0]) == false)
+        if (split.length == 0 || isAnsiDate(split[0]) == false)
         {
             return Protocol.DEFAULT_FIELD_VALUE;
         }
@@ -243,12 +283,46 @@ public class DateComparer
      * @param possibleDate string value. To bass must be 8 single digits like '20130822'.
      * @return true if the string is likely to be an ANSI date and false otherwise.
      */
-    public static boolean isDate(String possibleDate)
+    public static boolean isAnsiDate(String possibleDate)
     {
-        if (possibleDate == null)
+        if (possibleDate == null || possibleDate.isEmpty())
         {
             return false;
         }
-        return possibleDate.matches("^[1-2][0,9]\\d{2}[0-1][0-9][0-3][0-9]$");
+        return possibleDate.matches("^[1-2][0-9]\\d{2}[0-1][0-9][0-3][0-9]$");
+    }
+    
+    /**
+     * Convenience method that takes the customer's expiry date in ANSI format
+     * and determines if it is beyond the maximum expiry days set forth in the 
+     * {@link Policies} class.
+     * 
+     * @param ansiCustomerDate date of customer expiry in ANSI (YYYMMDD) format.
+     * @return the computed customer expiry date or the ME Libraries policy
+     * maximum days or the home library's preferred expiry or which ever is smaller.
+     */
+    public static String computeExpiryDate(String ansiCustomerDate)
+    {
+        if (DateComparer.isAnsiDate(ansiCustomerDate))
+        {
+            // see if this date is more than the max expiry days.
+            try
+            {
+                if (DateComparer.getDaysUntilExpiry(ansiCustomerDate) > Policies.maximumExpiryDays())
+                {
+                    return DateComparer.getFutureDate(Policies.maximumExpiryDays());
+                }
+                // else it is less, return the home library's preferred expiry.
+                return ansiCustomerDate;
+            }
+            catch (ParseException ex)
+            {
+                // Sometimes Symphony will return 'NEVER' which won't parse 
+                // so just send back the max days.
+                return DateComparer.getFutureDate(Policies.maximumExpiryDays());
+            }
+        }
+        
+        return DateComparer.getFutureDate(Policies.maximumExpiryDays());
     }
 }

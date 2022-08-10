@@ -166,7 +166,7 @@ public class SIPMessageTest
     }
 
     /**
-     * Test of cleanDateTime method, of class SIPMessage.
+     * Test of cleanAnsiDateTime method, of class SIPMessage.
      */
     @Test
     public void testCleanDateTime()
@@ -174,23 +174,23 @@ public class SIPMessageTest
         System.out.println("===cleanDateTime===");
         String possibleDate = "20131231    235900STAFF";
         String expResult = "20131231";
-        String result = DateComparer.cleanDateTime(possibleDate);
+        String result = DateComparer.cleanAnsiDateTime(possibleDate);
         assertTrue(expResult.compareTo(result) == 0);
         
         
         SIPCustomerMessage instance = new SIPCustomerMessage("64              00020130903    143600000000000002000000000010AOsps|AA21974011602274|AENUTTYCOMBE, SHARON|AQsps|BZ0200|CA0020|CB0150|BLY|CQY|BD66 Great Oaks, Sherwood Park, Ab, T8A 0V8|BEredtarot@telus.net|BF780-416-5518|DHSHARON|DJNUTTYCOMBE|PASTAFF|PB19680920|PCs|PE20140903    235900STAFF|PS20140903    235900STAFF|ZYs|AY1AZA949");
         possibleDate = instance.getField("PA");
         System.out.println("PA:"+possibleDate);
-        assertFalse(DateComparer.isDate(possibleDate));
+        assertFalse(DateComparer.isAnsiDate(possibleDate));
         possibleDate = instance.getField("PE");
         System.out.println("PE:'"+possibleDate+"'");
-        assertFalse(DateComparer.isDate(possibleDate));
-        System.out.println("CLEAN:'"+DateComparer.cleanDateTime(possibleDate)+"'");
-        result = DateComparer.cleanDateTime(possibleDate);
+        assertFalse(DateComparer.isAnsiDate(possibleDate));
+        System.out.println("CLEAN:'"+DateComparer.cleanAnsiDateTime(possibleDate)+"'");
+        result = DateComparer.cleanAnsiDateTime(possibleDate);
         expResult = "20140903";
         assertTrue(expResult.compareTo(result) == 0);
         
-        SIPCustomerFormatter formatter = new SIPCustomerFormatter();
+        SIPToMeCardCustomer formatter = new SIPToMeCardCustomer();
         ////////////////////////// NOTE ////////////////////////////////
         // The normalizer is part of this process and that is controlled in 
         // the environment.properties.
@@ -198,14 +198,14 @@ public class SIPMessageTest
         System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
         assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20151003") == 0);
         
-//        formatter = new SIPCustomerFormatter();
+//        formatter = new SIPToMeCardCustomer();
 //        c = formatter.getCustomer("64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB");
 //        System.out.println("C_EXPIRY:'" + c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES)+"'");
 //        assertTrue(c.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).compareTo("20140903") == 0);
         
         String cm = "64              00020140430    084800000000000014000000000001AOalap|AA21000006500560|AEFLYNN, GRACE|AQade|BZ0249|CA0010|CB0200|BLY|BHCAD|CC10.|BDRR#2, Delburne, AB, T0M 0V0|BEflynnstrings@gmail.com|BF403-749-3480|DHGRACE|DJFLYNN|PCra|PE20150430    235900|PS20150430    235900|ZYra|AY1AZB5FB";
         instance = new SIPCustomerMessage(cm);
-        String cleanDate = DateComparer.cleanDateTime(instance.getField("PE"));
+        String cleanDate = DateComparer.cleanAnsiDateTime(instance.getField("PE"));
         System.out.println("...CLEAN_DATE: '" + cleanDate + "'");
         assertTrue(cleanDate.equalsIgnoreCase("20150430"));
         // TODO: Test this string
@@ -243,15 +243,15 @@ public class SIPMessageTest
     }
 
     /**
-     * Test of isDate method, of class SIPMessage.
+     * Test of isAnsiDate method, of class SIPMessage.
      */
     @Test
     public void testIsDate()
     {
         System.out.println("===isDate===");
-        assertTrue(DateComparer.isDate("20010101"));
-        assertFalse(DateComparer.isDate("20150430    235900"));
-        assertTrue(DateComparer.isDate("20150430"));
+        assertTrue(DateComparer.isAnsiDate("20010101"));
+        assertFalse(DateComparer.isAnsiDate("20150430    235900"));
+        assertTrue(DateComparer.isAnsiDate("20150430"));
     }
 
     @Test

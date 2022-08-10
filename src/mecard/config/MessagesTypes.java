@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ package mecard.config;
 
 /**
  * These are custom messages libraries can tailor as return messages to customers.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  */
 public enum MessagesTypes
 {
@@ -33,6 +33,7 @@ public enum MessagesTypes
     ACCOUNT_NOT_UPDATED("account-not-updated"),
     USERID_PIN_MISMATCH("userid-pin-mismatch"),
     UNAVAILABLE_SERVICE("unavailable-service"),
+    TOO_MANY_TRIES("too-many-tries"),       // Too many attempts at authentication (PAPI mostly, but could be ME too).
     FAIL_METRO_POLICY("fail-metro-policy"), // Is not valid, or goodstanding, or underage...
     FAIL_LOCAL_POLICY("fail-local-policy"), // Could load user because customer failed local policy tests.
     FAIL_MIN_AGE_TEST("fail-min-age"),

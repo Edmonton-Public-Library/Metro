@@ -128,16 +128,16 @@ public class SAPLCustomerGetNormalizer extends CustomerGetNormalizer
 //        }
                 
         // Date of birth in SIP PB not per standard.
-        String birthDate = DateComparer.cleanDateTime(message.getField("PB"));
-        if (DateComparer.isDate(birthDate))
+        String birthDate = DateComparer.cleanAnsiDateTime(message.getField("PB"));
+        if (DateComparer.isAnsiDate(birthDate))
         {
             customer.set(CustomerFieldTypes.DOB, birthDate); // St. Albert.
         }
         
         // Now we know that STA uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
-        String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
-        if (DateComparer.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanAnsiDateTime(message.getField("PE"));
+        if (DateComparer.isAnsiDate(cleanDate))
         {
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }

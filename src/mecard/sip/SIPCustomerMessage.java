@@ -77,8 +77,8 @@ public class SIPCustomerMessage
             return possibleDate;
         }
         // Else 
-        possibleDate = DateComparer.cleanDateTime(getField(fieldName));
-        if (DateComparer.isDate(possibleDate))
+        possibleDate = DateComparer.cleanAnsiDateTime(getField(fieldName));
+        if (DateComparer.isAnsiDate(possibleDate))
         {
             return possibleDate;
         }

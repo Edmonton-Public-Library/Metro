@@ -43,6 +43,7 @@ public enum ResponseTypes
     UNAUTHORIZED,
     USER_NOT_FOUND,
     USER_PIN_INVALID,
+    TOO_MANY_TRIES,
     UNKNOWN, 
-    ERROR; // Command was received but failed to execute either it was malformed, empty (null), or not supported.;
+    ERROR; // Command was received but failed to execute either it was malformed, empty (null), or not supported.
 }

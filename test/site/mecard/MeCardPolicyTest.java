@@ -21,7 +21,7 @@
 package site.mecard;
 
 import api.CustomerMessage;
-import api.SIPCustomerMessage;
+import mecard.sip.SIPCustomerMessage;
 import site.MeCardPolicy;
 import mecard.Request;
 import json.RequestDeserializer;

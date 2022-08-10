@@ -143,15 +143,15 @@ public class STRCustomerGetNormalizer extends CustomerGetNormalizer
         customer.set(CustomerFieldTypes.PREFEREDNAME, upperCaseFieldText);
         
         // Date of birth in SIP PB not per standard.
-        String DOBDate = DateComparer.cleanDateTime(message.getField("PB"));
-        if (DateComparer.isDate(DOBDate))
+        String DOBDate = DateComparer.cleanAnsiDateTime(message.getField("PB"));
+        if (DateComparer.isAnsiDate(DOBDate))
         {
             customer.set(CustomerFieldTypes.DOB, DOBDate); // Strathcona.
         }
         // Now we know that STR uses 'PE' for expiry but 'PA' is the industrial 
         // norm, so let's fix that here.
-        String cleanDate = DateComparer.cleanDateTime(message.getField("PE"));
-        if (DateComparer.isDate(cleanDate))
+        String cleanDate = DateComparer.cleanAnsiDateTime(message.getField("PE"));
+        if (DateComparer.isAnsiDate(cleanDate))
         {
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, cleanDate);
         }
