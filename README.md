@@ -1,5 +1,5 @@
 =============================
-Metro Federation of Libraries
+# Metro Federation of Libraries
 =============================
 
 The Metro Federation of Libraries members are Edmonton Public Library (EPL), 
@@ -11,7 +11,7 @@ Me Card project was created to reduce barriers in accessing the library
 collections and diverse programs of the Metro Federation libraries.
 
 ----------------------------
-What is the Me Card service?
+# What is the Me Card service?
 ----------------------------
 
 The Me Card is a web-based service that allows customers with a library 
@@ -32,17 +32,62 @@ stored then passes the response on again as another request to the guest library
 The guest then creates a new user record in their ILS. 
 
 ----------
-What's new
+# What's new
 ----------
+## Version 2.00.XX
+* MeCard servers now support Polaris web services (PAPI) version 7.x. 
+* If using PAPI uses the date format (set in the **environment properties**) to `“yyyy-MM-dd'T'HH:mm:ss”`.
+* Make sure to add a **papi.properties** file with the correct configuration. 
+```xml
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>
+		Polaris API settings.
+	</comment>
+	<entry key="load-dir">c:\metro\logs\Customers</entry>
+	<entry key="domain">/PAPIService/REST/public</entry>
+	<entry key="http-version">2.0</entry>
+	<entry key="api-key">abb4cc0c-a7a9-4e10-ae52-f8ab3715d2cb</entry>
+	<entry key="api-user-id">WBRLANDREWNISBETPDN</entry>
+	<entry key="patron-branch-id">3</entry>
+	<entry key="login-branch-id">1</entry>
+	<entry key="login-user-id">1</entry>
+	<entry key="login-workstation-id">1</entry>
+	<entry key="delivery-option-id">2</entry>
+	<entry key="ereceipt-option-id">2</entry>
+	<entry key="host">https://dewey.polarislibrary.com</entry>
+	<entry key="version">v1</entry>
+	<entry key="language-id">1033</entry>
+	<entry key="app-id">100</entry>
+	<entry key="org-id">1</entry>
+	<entry key="connection-timeout">10</entry>
+	<entry key="debug">false</entry>
+</properties>
+```
+* The **message.properties** file needs to have the following fields.
+```xml
+<entry key="too-many-tries">Attempt to use the service too often, please try again later.</entry>
+```
+* Windows Server (2019) is now supported. See Windows intatllation notes.
 
+
+
+
+## Version 1.00.XX
 * The environment.properties file now requires the following tag.
      <entry key="ils-type">[ILS_TYPE]</entry>
   Where ILS_TYPE can be one of the following UNKNOWN, SYMPHONY, HORIZON, POLARIS or SIRSI_DYNIX.
 
 * The sip2.properties file now requires a new entry as follows.
+     <entry key="user-not-found">[Text from 'AF' field of the sip2 response]</entry>
+  The exact message will depend on your vendor, and can change between versions of the same 
+  sip2 server implementation. Use the Perl script `sip2emu.pl` and an *invalid user ID* and
+  look for the text in the 'AF' fields for the value for this entry.
+
+* The sip2.properties file now requires a new entry as follows.
      <entry key="user-pin-invalid">[Text from 'AF' field of the sip2 response]</entry>
   The exact message will depend on your vendor, and can change between versions of the same 
-  sip2 server implementation. Use the Perl script sip2emu.pl and a valid user ID but invalid
+  sip2 server implementation. Use the Perl script `sip2emu.pl` and a valid user ID but an *invalid*
   PIN, and look for the text in the 'AF' fields for the value for this entry.
 
 * You can now specify any of *-protocols in the environment.properties file
@@ -71,16 +116,22 @@ The following steps were used at TRAC to install a new MeCard server under Windo
 1) Have a local user account available on the Windows machine with admin privileges.
 2) Download the (Open)JDK 11 (or JRE) from https://jdk.java.net/java-se-ri/11. You may also download from Oracle, but you may incur licence fees.
 3) Unpack the zip file in the c:\metro\java directory.
-4) Add a %JAVA_HOME%=c:\metro\java to the system environment variables and set it to c:\Metro\java.
-5) Add %JAVA_HOME%\bin to the %PATH% system environment variable.
-6) Test by opening a command prompt and typing java - -version.
+4) Add a `%JAVA_HOME%=c:\metro\java` to the system environment variables and set it to `c:\Metro\java`.
+5) Add `%JAVA_HOME%\bin` to the `%PATH%` system environment variable.
+6) Test by opening a command prompt and typing `c:\java -version`.
 7) The MeCard server runs as a daemon (in Unix). The equivalent in Windows is a service which uses Apache’s Procrun server which you can download here:  https://commons.apache.org/proper/commons-daemon/index.html. Information can be found here: https://commons.apache.org/proper/commons-daemon/procrun.html. The current version is commons-daemon-1.3.1-bin-windows.zip. Each version will contain a commons-daemon-x.x.x.jar which must be added to the build in the (NetBeans) IDE to match the version of the prunmgr.exe and prunsrv.exe.
-8) Download and unpack the latest mecard_Windows.zip file which will include the MeCard.jar, lib files, and 64-bit prunsrv.exe (AKA procrun) and prunmgr.exe files.
-9) Update your config files, and move them to c:\Metro directory (until I can figure out how to pass a switch and string as parameters).
-10)From a powershell ISE window opened in admin mode, with Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser.
-11) Run from PowerShell (ISE): c:\metro\windows\prunsrv.exe //IS//Metro "--Description=MeCard --Jvm=auto --Startup=auto --StartMode=Java --Classpath='c:\metro\dist\MeCard.jar' --StartClass=mecard.MetroService --StartMethod=start --StopMode=Java --StopClass=mecard.MetroService --StopMethod=stop --LogPath='c:\metro\logs' --LogLevel=Info --LogPrefix=metro --StdOutput='c:\metro\logs\Metro-stdout.txt' --StdError='c:\metro\logs\Metro-stderr.txt'"
+8) Download and unpack the latest mecard_Windows.zip file which will include the `MeCard.jar`, lib files, and 64-bit `prunsrv.exe` (AKA procrun) and `prunmgr.exe` files.
+9) Update your config files, and move them to `c:\Metro directory` (until I can figure out how to pass a switch and string as parameters).
+10) From a powershell ISE window opened in admin mode, with `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`.
+11) Run [this command](#powerShell_installation_command) from an Admin PowerShell (ISE).
+12)  If required, tweak the parameters using the **prunmgr.exe** with: `c:\Metro\windows\prunmgr.exe //ES//Metro`.
 
-That should install the service, but it may not run from the get-go, so to tweak the parameters use the prunmgr with: c:\Metro\windows\prunmgr.exe //ES//Metro
+# PowerShell Installation Command
+PowerShell Command to Install the Metro (AKA MeCard) Service.
+```powershell
+c:\metro\windows\prunsrv.exe //IS//Metro "--Description=MeCard --Jvm=auto --Startup=auto --StartMode=Java --Classpath='c:\metro\dist\MeCard.jar' --StartClass=mecard.MetroService --StartMethod=start --StopMode=Java --StopClass=mecard.MetroService --StopMethod=stop --LogPath='c:\metro\logs' --LogLevel=Info --LogPrefix=metro --StdOutput='c:\metro\logs\Metro-stdout.txt' --StdError='c:\metro\logs\Metro-stderr.txt'"
+```
+
 
 # System Event Logs
 There are four places to look for information on issues you may be having. 
@@ -96,50 +147,54 @@ To check the settings and trouble shoot, run:
 and set the configuration manually from the prunmgr.exe.
 
 # Unix Installation
-## New Installation
-Andrew to prepare new tarball for installation by editing the MeCard server version 
-number in the Makefile in the MeCard/ directory on the development VM, then running
-make dist_unix 
+Andrew to prepare new tarball for installation by editing the MeCard server version number in the `Makefile` in the `MeCard/` directory on the development VM, then running
+`ox:~/MeCard/make dist_unix`
 
 ## Ubuntu dependencies
-* Install jsvc with apt-get.
+* Install `jsvc` with `apt-get`.
 * Install OpenJDK.
-* Install make with apt-get.
+* Install make with `apt-get`.
 * Red Hat dependencies
-* A bare Red Hat VM will need to have jsvc installed. Here is a list of tool dependencies.
-* Gnu GCC (sudo yum install gcc).
-* Make (sudo yum install make). 
+* A bare Red Hat VM will need to have `jsvc` installed. Here is a list of tool dependencies.
+* Gnu `GCC` (`sudo yum install gcc`).
+* `Make` (`sudo yum install make`). 
 * Java JDK (not JRE).
-* Download jsvc src gzipped tarball (at time of writing commons-daemon-1.2.4-src.tar.gz) from here.
-* Install notes are here. To build the jsvc executable, you need to cd into the commons-daemon-1.2.4-src/src/Native/Unix/ directory and follow notes in the INSTALL.txt file.
-* The next step requires $JAVA_HOME to be known, or better yet set. You can set it with export JAVA_HOME=$(readlink -ze /usr/bin/javac | xargs -0 dirname -z | xargs -0 dirname)
-* Run ./configure The jsvc executable will be created if all goes well.
-* Run sudo ln -s /home/user/path/to/jsvc /usr/bin/jsvc
-* Test with jsvc –help or other jsvc command.
+* Download `jsvc` src gzipped tarball (at time of writing `commons-daemon-1.2.4-src.tar.gz`) from here.
+* Install notes are here. To build the jsvc executable, you need to `cd` into the `commons-daemon-1.2.4-src/src/Native/Unix/` directory and follow notes in the `INSTALL.txt` file.
+* The next step requires `$JAVA_HOME` to be known, or better yet set. You can set it with 
+```bash
+export JAVA_HOME=$(readlink -ze /usr/bin/javac | xargs -0 dirname -z | xargs -0 dirname)
+```
+* Run `./configure` The `jsvc` executable will be created if all goes well.
+* Run sudo ln -s `/home/user/path/to/jsvc` `/usr/bin/jsvc`
+* Test with 
+```bash
+jsvc –help #or other jsvc command.
+```
 
 ## Generals installation steps
 
-* Create a directory for the MeCard service; something like /home/user/metro which will be referred to as $METRO_HOME for the rest of these instructions.
-* Download the Metro_x.xx.xx.tar ball to the VM.
-* Un-tar the Metro_x.xx.xx.tar ball in the $METRO_HOME directory.
-* Edit the *.properties files appropriate to your site, and either copy them to $METRO_HOME directory or if you like a cleaner install, create and  move them to a $METRO_HOME/config directory. The files in template_config can be your backup.
-* Edit the service.sh script to suit your environment, noting where the *.properties files can be found.
-* Edit the mecard.service file to suit your environment and follow System Service Installation notes to install and test it.
+* Create a directory for the MeCard service; something like /home/user/metro which will be referred to as `$METRO_HOME` for the rest of these instructions.
+* Download the `Metro_x.xx.xx.tar` ball to the VM.
+* Un-tar the `Metro_x.xx.xx.tar` ball in the `$METRO_HOME` directory.
+* Edit the *.properties files appropriate to your site, and either copy them to `$METRO_HOME` directory or if you like a cleaner install, create and  move them to a `$METRO_HOME/config` directory. The files in template_config can be your backup.
+* Edit the `service.sh` script to suit your environment, noting where the `*.properties` files can be found.
+* Edit the `mecard.service` file to suit your environment and follow System Service Installation notes to install and test it.
 * Ensure the metro user can use password-less access to the ILS. See Setting up SSH for more information.
 
 ## Updating the MeCard service (Linux)
 
 The metro server MeCard.jar can now be run as a service on Linux as follows.
 
-* Backup your existing ${METRO}/dist/MeCard.jar, and download the latest jar for your version of Java. There is one for Java 8.x and Java 11.x. Rename the MeCard_vN.jar to MeCard.jar.
-* Edit the mecard.service and Makefile.prod file to suit your environment and save the changes over the old Makefile.
-* Make sure service.sh is in the directory you specified as 'WorkingDirectory' in the mecard.service.
-* Make sure  service.sh is executable. You can test by running it on the command line.  /path/to/service.sh start and then check for the MeCard as a running process.
+* Backup your existing `${METRO}/dist/MeCard.jar`, and download the latest jar for your version of Java. There is one for Java 8.x and **Java 11.x**. Rename the `MeCard_vN.jar` to `MeCard.jar`.
+* Edit the `mecard.service` and `Makefile`.prod file to suit your environment and save the changes over the old `Makefile`.
+* Make sure `service.sh` is in the directory you specified as 'WorkingDirectory' in the `mecard.service`.
+* Make sure  `service.sh` is executable. You can test by running it on the command line.  /path/to/`service.sh` start and then check for the MeCard as a running process.
 * Check for, and stop the metro (MeCard) service using make check and make stop. You may need to kill the process if it is running as root. Using systemctl will prevent this from happening in the future.
 * System Service Installation
-* Sudo Copy the mecard.service file to /etc/systemd/system
+* Sudo Copy the `mecard.service` file to `/etc/systemd/system`
 * If you have an entry in your crontab to restart the service, comment it out.
-* Start the service. In Ubuntu use sudo, on RedHat sudo su to a root shell.
+* Start the service. In Ubuntu use `sudo`, on RedHat `sudo su` to a root shell.
 ```bash
 systemctl daemon-reload
 systemctl enable mecard.service
@@ -156,22 +211,28 @@ systemctl daemon-reload
 systemctl start mecard.service
 ```
  
-When the new service is tested and running, remove the commented out crontab entry from the above step.
+When the new service is tested and running, remove the commented out `crontab` entry from the above step.
 
-You can still use the Makefile included as well as it now contains the handy shortcuts, but requires admin privileges. It contains another rule; status which shows the output of systemd startup and shutdown messages.
+You can still use the `Makefile` included as well as it now contains the handy shortcuts, but requires admin privileges. It contains another rule; status which shows the output of systemd startup and shutdown messages.
 
 For example, if you need to shutdown the server use the following command.
+```bash
 sudo systemctl stop mecard # or make stop. Both require root
+```
 
 ## Systemd debugging
-wrong path to script 
-script not executable
-no shebang (first line)
-wrong path in shebang or Windows line ending.
-internal files in your script might be missing access permissions.
-SELinux may be preventing execution of the ExecStart parameter; check /var/log/audit/audit.log for messages of the form: type=AVC msg=audit([...]): avc:  denied  { execute } or in the output of ausearch -ts recent -m avc -i.
+* wrong path to script
+* script not executable
+* no shebang (first line)
+* Shell script saved with Windows line endings `\r\n` which looks like `^M` in a text editor like vi(m).
+* wrong path in shebang or Windows line ending.
+* internal files in your script might be missing access permissions.
+* SELinux may be preventing execution of the `ExecStart` parameter; check `/var/log/audit/audit.log` for messages of the form: 
+```bash
+type=AVC msg=audit([...]): avc:  denied  { execute } or in the output of ausearch -ts recent -m avc -i
+```
 You have the wrong WorkingDirectory parameter
-On RedHat and CENTOS the setroubleshoot explains in plain English why a script or application was blocked from executing. You can also check the /var/log/audit/audit.log file. Install with yum install setroubleshoot setools
+On RedHat and CENTOS the setroubleshoot explains in plain English why a script or application was blocked from executing. You can also check the `/var/log/audit/audit.log` file. Install with yum install setroubleshoot setools
 ```bash
 sealert -a /var/log/audit/audit.log
 #Example: grep httpd /var/log/audit/audit.log | audit2allow -M mypol
@@ -180,16 +241,22 @@ sealert -a /var/log/audit/audit.log
 See: https://www.serverlab.ca/tutorials/linux/administration-linux/troubleshooting-selinux-centos-red-hat/ for more information on this topic. Feb. 17, 2022.
  
 This page also has good information: https://serverfault.com/questions/1032597/selinux-is-preventing-from-execute-access-on-the-file-centos Feb. 17, 2022.
-The SELinux restricts binaries that can be used in ExecStart to paths that has system_u:object_r:bin_t:s0 attribute set. Typically those are /usr/bin /usr/sbin /usr/libexec /usr/local/bin directories.
-You need to move the script into one of this directories or change selinux policy to allow systemd to use binaries in the desired location as:
+The SELinux restricts binaries that can be used in `ExecStart` to paths that has `system_u:object_r:bin_t:s0` attribute set. Typically those are `/usr/bin` `/usr/sbin` `/usr/libexec` `/usr/local/bin` directories.
+You need to move the script into one of this directories or change selinux policy to allow `systemd` to use binaries in the desired location as:
+```bash
 chcon -R -t bin_t /opt/tomcat/bin/
+```
 
 A restorecon will 'unfix' the above better to update the policy e.g.
+```bash
 semanage fcontext -a -t bin_t "/opt/tomcat/bin(/.*)?" restorecon -r -v /opt/tomcat/bin
+```
 UPDATE
-If java binary is not located in the standard location (custom JVM distribution), then you need to set bin_t label to it as well. For example, it your JVM installed in /opt/java, then:
+If java binary is not located in the standard location (custom JVM distribution), then you need to set bin_t label to it as well. For example, it your JVM installed in `/opt/java`, then:
+```bash
 semanage fcontext -a -t bin_t "/opt/java/bin(/.*)?" restorecon -r -v /opt/java/bin
-NOTICE: systemd ignores JAVA_HOME environment variable if it's not set in unit file.
+```
+NOTICE: systemd ignores `JAVA_HOME` environment variable if it's not set in unit file.
  
 You will have to set permissions for logs and Customers and any 
 
@@ -263,7 +330,7 @@ From now on you can log into the ILS as sirsi from mecard as metro without passw
 metro@mecard:~$ ssh sirsi@ils
 ```
 
-*Note*: Depending on your version of SSH you might also have to do the following changes:
+**Note**: Depending on your version of SSH you might also have to do the following changes:
 Put the public key in .ssh/authorized_keys2 Change the permissions of .ssh to 700 Change the permissions of .ssh/authorized_keys2 to 640
 SSH Environment
 The user shells are restricted by default. To let the ssh shell know where the ILS API tools can be found, set up a /home/sirsi/.ssh/environment file with the following.
@@ -280,57 +347,51 @@ sudo systemctl restart firewalld
 ```
 
 # Known Issues
+* Google has flagged the `setup.exe` as malware. The development team has asked for a review of the application, but until that time the exe may have to be sent by other means. February 9, 2022.
 ## Windows
-Google has flagged the `setup.exe` as malware. The development team has asked for a review of the application, but until that time the exe may have to be sent by other means. February 9, 2022.
-Ubuntu
-When using Java 11 you may have an issue with jsvc complaining that it can’t find the JVM environment because jsvc can’t find a jvm in /usr/bin/default-java. The solution from StackOverflow: 
-I experienced the issue with jsvc version 1.0.6, which is the one you get if you run apt install jsvc on Ubuntu. To check the version installed run:
-apt list --installed
-To fix this issue or use a JVM in an arbitrary location in the file system, replace the -home=<jvm_dir> switch with -XXaltjvm=<jvm_dir> in the service.sh that is referenced in mecard.service as detailed below. Versions of jsvc after 1.2.0 may not need this fix anymore, but at the time of writing this I have not tested it. [December 17, 2020].
+* The `-c c:\path\to\configs` switch doesn't seem to work as expected. I have experimented with several different ways of passing the parameters in prunmgr, but none have panned out. To fix just copy your config properties file into the c:\Metro directory. The MeCard server looks there for properties files by default.
+## Ubuntu
+* When using Java 11 you may have an issue with jsvc complaining that it can’t find the JVM environment because jsvc can’t find a jvm in `/usr/bin/default-java`. The solution from StackOverflow.   
 
-July 29, 2021 - On systems that are using Open-JDK already changes to service.sh is not  not necessary if you are migrating to Ubuntu 18.04, but will be required when moving to 20.04. To test, do the following.
+_I experienced the issue with jsvc version 1.0.6, which is the one you get if you run apt install jsvc on Ubuntu. To check the version installed run:_
+```bash
+apt list --installed
+```
+_To fix this issue or use a JVM in an arbitrary location in the file system, replace the `-home=<jvm_dir>` switch with `-XXaltjvm=<jvm_dir>` in the `service.sh` that is referenced in `mecard.service` as detailed below. Versions of `jsvc` after 1.2.0 may not need this fix anymore, but at the time of writing this I have not tested it. (December 17, 2020)_.
+
+* **Update** July 29, 2021 - On systems that are using Open-JDK already, changes to `service.sh` is not  not necessary if you are migrating to Ubuntu 18.04, but will be required when moving to 20.04. To test, do the following.
 ```bash
 /usr/lib/jvm/default-java/bin/java --version
 ```
-If you get the following you don’t need to adjust service.sh.
+If you get the following you don’t need to adjust `service.sh`.
 ```
 openjdk 11.0.11 2021-04-20
 OpenJDK Runtime Environment (build 11.0.11+9-Ubuntu-0ubuntu2.18.04)
 OpenJDK 64-Bit Server VM (build 11.0.11+9-Ubuntu-0ubuntu2.18.04, mixed mode, sharing)
 ```
- If you get something like the following: 
+If you get something like the following: 
 `-bash: /usr/lib/jvm/default-java/bin/java: No such file or directory`
-Proceed with the following
-
-Changes to the file system are as follows:
+proceed with the following.
 ```bash
 sudo mkdir /usr/lib/jvm/java-11-openjdk-amd64/lib/amd64
 sudo ln -s /usr/lib/jvm/java-11-openjdk-amd64/lib/server /usr/lib/jvm/java-11-openjdk-amd64/lib/amd64/
-# The changes in the service.sh file are as follows:
-# In service.sh, change the executable as follows:
+# The changes in the `service.sh` file are as follows:
+# In `service.sh`, change the executable as follows:
 JAVA_HOME=/usr/lib/jvm/default-java becomes JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/lib/amd64
 $EXEC -home=$JAVA_HOME -XXaltjvm=$JAVA_HOME -cp $CLASS_PATH -user $USER -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
 ```
 
 # Repository Information
-This product is under version control using Git.
-You can find updated scripts and configs mentioned in the above instructions in the Google Drive shared subdirectory systemctl.
+Source code can be found on [Git](https://github.com/Edmonton-Public-Library/Metro).
+You can find updated scripts and configs mentioned in the above instructions in the [Google Drive](https://drive.google.com/drive/folders/0B0kDNQ8_cx7MNElyNzVzRnkzSk0?resourcekey=0-jKgsxeNaxvSonIGtHuTI3A) shared subdirectory under upates/Systemctl folder.
+
 ## Dependencies
 * commons-cli-1.2.jar
 * commons-codec-1.8.jar
-* commons-logging-1.1.3.jar
-* fluent-hc-4.3.4.jar
+* commons-daemon-1.3.1.jar
 * gson-2.2.4.jar
-* httpclient-4.3.4.jar
-* httpcore-4.3.2.jar
-* junit-4.10.jar
+* mssql-jdbc-10.2.1.jre11.jar
 * mysql-connector-java-5.1.31-bin.jar
-* Sqljdbc4.jar
-
-
-
-# Issues
-* The '-c c:\path\to\configs' switch doesn't seem to work as expected. I have experimented with several different ways of passing the parameters in prunmgr, but none have panned out. To fix just copy your config properties file into the c:\Metro directory. The MeCard server looks there for properties files by default.
 
 # Notes
 ## Protocol
