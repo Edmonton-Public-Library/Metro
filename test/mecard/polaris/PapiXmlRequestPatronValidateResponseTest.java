@@ -20,6 +20,7 @@
  */
 package mecard.polaris;
 
+import mecard.exception.PapiException;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -119,20 +120,24 @@ public class PapiXmlRequestPatronValidateResponseTest
         boolean expResult = false;
         boolean result = instance.failed();
         assertEquals(expResult, result);
-        instance = new PapiXmlRequestPatronValidateResponse(xmlEmpty);
-        expResult = true;
-        result = instance.failed();
-        assertEquals(expResult, result);
-        instance = new PapiXmlRequestPatronValidateResponse(xmlNull);
-        expResult = true;
-        result = instance.failed();
-        assertEquals(expResult, result);
+        try
+        {
+            instance = new PapiXmlRequestPatronValidateResponse(xmlEmpty);
+        }
+        catch (Exception pe)
+        {
+            assertTrue(pe instanceof PapiException);
+        }
+        try
+        {
+            instance = new PapiXmlRequestPatronValidateResponse(xmlNull);
+        }
+        catch (Exception pe)
+        {
+            assertTrue(pe instanceof PapiException);
+        }
         instance = new PapiXmlRequestPatronValidateResponse(xmlGood);
         expResult = false;
-        result = instance.failed();
-        assertEquals(expResult, result);
-        instance = new PapiXmlRequestPatronValidateResponse(xmlNull);
-        expResult = true;
         result = instance.failed();
         assertEquals(expResult, result);
     }

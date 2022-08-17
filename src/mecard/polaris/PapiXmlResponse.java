@@ -24,6 +24,8 @@ import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import org.xml.sax.SAXException;
+import java.lang.NullPointerException;
+import mecard.exception.PapiException;
 
 /**
  * Base class for parsing XML responses from PAPI. While some web service calls
@@ -51,6 +53,7 @@ public class PapiXmlResponse
      */
     public PapiXmlResponse(String xml)
     {
+        this.failedResponse = false;
         try 
         {
             /*
@@ -96,6 +99,7 @@ public class PapiXmlResponse
             {
                 this.failedResponse = true;
                 this.papiErrorCode  = "-1";
+                this.errorMessage   = ex.getMessage();
                 System.out.println(PapiXmlResponse.class.getName()
                         + ex.getMessage());
             }
@@ -103,6 +107,7 @@ public class PapiXmlResponse
             {
                 this.failedResponse = true;
                 this.papiErrorCode  = "-1";
+                this.errorMessage   = ex.getMessage();
                 System.out.println(PapiXmlResponse.class.getName()
                         + ex.getMessage());
             }
@@ -110,18 +115,28 @@ public class PapiXmlResponse
             {
                 this.failedResponse = true;
                 this.papiErrorCode  = "-1";
+                this.errorMessage   = ex.getMessage();
                 System.out.println(PapiXmlResponse.class.getName()
                         + ex.getMessage());
                 // This can happen if the xml is a request rather than response.
-                System.out.println("*warn, xml result is null. Was this a request instead of response?");
+                System.out.println("*warn, didn't find the expected XML element. Was this a request instead of response?");
             }
         } 
         catch (ParserConfigurationException ex) 
         {
             this.failedResponse = true;
             this.papiErrorCode  = "-1";
+            this.errorMessage   = ex.getMessage();
             System.out.println(PapiXmlResponse.class.getName()
                     + ex.getMessage());
+        }
+        finally
+        {
+            if (this.failedResponse == true)
+            {
+                this.papiErrorCode  = "-1";
+                throw new PapiException(" PAPIResult: '" + this.errorMessage + "'");
+            }
         }
     }
     
@@ -141,7 +156,7 @@ public class PapiXmlResponse
         {
             System.out.println("api.PapiXmlMessage.errorCode()\n"
                     + "Expected a signed integer.\n" 
-                    + e.getLocalizedMessage());
+                    + e.getMessage());
             return -1;
         }
     }

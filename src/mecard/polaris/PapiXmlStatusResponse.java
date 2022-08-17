@@ -20,6 +20,8 @@
  */
 package mecard.polaris;
 
+import mecard.exception.PapiException;
+
 /**
  * Parses the https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/api
  * web service call, and provides accessors to valuable information about the version

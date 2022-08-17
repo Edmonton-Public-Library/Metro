@@ -45,6 +45,7 @@ import mecard.polaris.PapiToMeCardCustomer;
 import mecard.polaris.PapiXmlStatusResponse;
 import site.CustomerLoadNormalizer;
 import mecard.customer.NativeFormatToMeCardCustomer;
+import mecard.exception.PapiException;
 import mecard.polaris.MeCardCustomerToPapi;
 import mecard.polaris.MeCardDataToPapiData.QueryType;
 import mecard.polaris.PapiXmlPatronAuthenticateResponse;
@@ -264,14 +265,18 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        String nullResponseMessage = "*error, timeout because of too many tries?";
+        String nullResponseMessage = " timeout because of too many tries?";
         switch (commandType)
         {
             case GET_STATUS:
-                PapiXmlStatusResponse papiStatus = new PapiXmlStatusResponse(status.getStdout());
-                if (papiStatus.failed())
+                PapiXmlStatusResponse papiStatus;
+                try
                 {
-                    System.out.println("*error, no response received from get status because of timeout.");
+                    papiStatus = new PapiXmlStatusResponse(status.getStdout());
+                }
+                catch (PapiException pe)
+                {
+                    System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.UNAVAILABLE);
                     response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                     return false;
@@ -297,10 +302,14 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 // but see ILSRequestBuilder for how to implement in future.
                 // DummyCommand puts a '1' in stdout.
                 // Authentication failures return status error authentication error, and an empty xml document.
-                PapiXmlRequestPatronValidateResponse papiTestCustomer = new PapiXmlRequestPatronValidateResponse(status.getStdout());
-                if (papiTestCustomer.failed())
+                PapiXmlRequestPatronValidateResponse papiTestCustomer;
+                try
                 {
-                    System.out.println(nullResponseMessage);
+                    papiTestCustomer = new PapiXmlRequestPatronValidateResponse(status.getStdout());
+                }
+                catch (PapiException pe)
+                {
+                    System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.TOO_MANY_TRIES);
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
@@ -318,10 +327,14 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 return false;
                 
             case GET_CUSTOMER:
-                PapiXmlPatronBasicDataResponse papiGetCustomer = new PapiXmlPatronBasicDataResponse(status.getStdout());
-                if (papiGetCustomer.failed())
+                PapiXmlPatronBasicDataResponse papiGetCustomer;
+                try
                 {
-                    System.out.println(nullResponseMessage);
+                    papiGetCustomer = new PapiXmlPatronBasicDataResponse(status.getStdout());
+                }
+                catch (PapiException pe)
+                {
+                    System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.TOO_MANY_TRIES);
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
@@ -350,10 +363,14 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 
             case UPDATE_CUSTOMER:
                 // DummyCommand puts a '1' in stdout.
-                PapiXmlResponse papiUpdateCustomer = new PapiXmlResponse(status.getStdout());
-                if (papiUpdateCustomer.failed())
+                PapiXmlResponse papiUpdateCustomer;
+                try
                 {
-                    System.out.println(nullResponseMessage);
+                    papiUpdateCustomer = new PapiXmlResponse(status.getStdout());
+                }
+                catch (PapiException pe)
+                {
+                    System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.TOO_MANY_TRIES);
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
@@ -383,10 +400,14 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 return false;
 
             case CREATE_CUSTOMER:
-                PapiXmlResponse papiCreateCustomer = new PapiXmlResponse(status.getStdout());
-                if (papiCreateCustomer.failed())
+                PapiXmlResponse papiCreateCustomer;
+                try
                 {
-                    System.out.println("*error on create web service timed out.");
+                    papiCreateCustomer = new PapiXmlResponse(status.getStdout());
+                }
+                catch (PapiException pe)
+                {
+                    System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.TOO_MANY_TRIES);
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;

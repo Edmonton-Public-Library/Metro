@@ -3,29 +3,24 @@
 # distribution to each participating library.
 ########################################################################
 
-VERSION=2.00.00
+VERSION=2.00
 ARCHIVE=Metro_${VERSION}
 CONFIGS=config_templates/*.properties
-WIN_SETUP=windows/Output/setup.exe
 UNIX_DIR=unix/*
+DIST_FILES=dist/MeCard.jar dist/README.TXT dist/lib/*.jar
+WIN_REAMES=windows/README.txt dist/README.TXT README.md
+UNIX_READMES=dist/README.TXT README.md
 
-update: clean update_unix 
-install: clean dist_windows dist_unix
-
-update_unix:
-	tar cvf ${ARCHIVE}.tar dist/*
-	
-dist_windows:
-	# zip -r ${ARCHIVE}.zip ${CONFIGS} ${WIN_SETUP}
-	zip ${ARCHIVE}.zip dist/MeCard.jar dist/lib/*.jar windows/prunmgr.exe windows/prunsrv.exe windows/README.txt dist/README.TXT README.md
+update_windows:
+	-rm ${ARCHIVE}_update.zip
+	zip ${ARCHIVE}_update.zip ${DIST_FILES} windows/prunmgr.exe windows/prunsrv.exe ${WIN_REAMES}
 bare_windows:
-	zip ${ARCHIVE}_jar_only.zip dist/MeCard.jar dist/README.TXT windows/README.txt
+	-rm ${ARCHIVE}_jar_only.zip
+	zip ${ARCHIVE}_jar_only.zip dist/MeCard.jar ${WIN_REAMES}
 install_windows:
-	zip mecard_Windows.zip dist/MeCard.jar ${CONFIGS} dist/lib/*.jar windows/prunmgr.exe windows/prunsrv.exe windows/README.txt dist/README.TXT README.md
+	-rm ${ARCHIVE}_install.zip
+	zip -r ${ARCHIVE}_install.zip ${DIST_FILES} ${CONFIGS} windows/prunmgr.exe windows/prunsrv.exe ${WIN_REAMES}
 
 dist_unix:
-	tar cvf ${ARCHIVE}.tar ${CONFIGS} dist/* ${UNIX_DIR} logs/Customers
-
-clean:
-	-rm ${ARCHIVE}.tar 
-	-rm ${ARCHIVE}.zip
+	-rm ${ARCHIVE}.tar
+	tar cvf ${ARCHIVE}.tar ${CONFIGS} ${DIST_FILES} ${UNIX_DIR} logs/Customers ${UNIX_READMES}
