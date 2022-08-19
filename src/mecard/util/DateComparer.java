@@ -24,7 +24,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -179,10 +182,28 @@ public class DateComparer
      */
     public static String getRFC1123Date()
     {
+        return DateComparer.getRFC1123Date(0);
+    }
+    
+    /**
+     * Computes the RFC1123 (Polaris date) minus a given number of hours.
+     * This is provided to compensate for hashes that are computed from different
+     * timezones to the destination's timezone.
+     * For example:
+     * Wed, 17 Oct 2022 21:23:32 GMT and a setting of (+)2.0, will return
+     * Wed, 17 Oct 2022 19:23:32 GMT 
+     * 
+     * @param timezoneDeltaHours EDT is +2 from MDT. PDT is -1 from MDT.
+     * @return date string of time now, minus the timezone delta.
+     */
+    public static String getRFC1123Date(int timezoneDeltaHours)
+    {
         Date today = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.RFC1123_DATE_FORMAT, LOCALE_US);
+        int hours = 3600 * 1000;
+        Date updatedToday = new Date(today.getTime() + timezoneDeltaHours * hours);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateComparer.RFC1123_DATE_FORMAT);
         dateFormat.setTimeZone(GMT_ZONE);
-        return dateFormat.format(today);
+        return dateFormat.format(updatedToday);
     }
     
     /**

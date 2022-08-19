@@ -24,7 +24,6 @@ import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import org.xml.sax.SAXException;
-import java.lang.NullPointerException;
 import mecard.exception.PapiException;
 
 /**
@@ -135,7 +134,10 @@ public class PapiXmlResponse
             if (this.failedResponse == true)
             {
                 this.papiErrorCode  = "-1";
-                throw new PapiException(" PAPIResult: '" + this.errorMessage + "'");
+                throw new PapiException(" PAPIResult: " +this.papiErrorCode + " =>'" + this.errorMessage + "'\n"
+                        + "  A 'null' result usually means a timeout to the web\n"
+                        + "  service. Either the service is busy, down, or the\n"
+                        + "  user has tried to authenticate too many times.");
             }
         }
     }
@@ -190,34 +192,30 @@ public class PapiXmlResponse
                 return "";
             case -1:
                 return this.errorMessage;
-            case  -2:
+            case -2:
                 return "Multiple errors. See returned rowset for list of errors.";
-            case  -3:
-                return "PARTIAL FAILURE - Multiple errors (but some items succeeded). See case returned rowset for list of errors.";
-            case  -4:
+            case -3:
+                return "PARTIAL FAILURE - Multiple errors (but some items succeeded). See returned rowset for list of errors.";
+            case -4:
                 return "FAILURE - ERMS error";
-            case  -5:
+            case -5:
                 return "Failure. Database error occurred";
-            case  -6:
+            case -6:
                 return "Failure. Invalid parameter";
-            case  -9:
+            case -9:
                 return "SQL timeout";
-            case -10:  // * - Update failure, switch to create.
+            case -10:
                 return "Failure. ID does not exist";
             case -11:
                 return "Validation_Errors";
-            case -222:
-                return "Invalid postal code length";
-            case -223:
-                return "Invalid postal code format";
             case -201:
                 return "Failed to insert entry in addresses table";
             case -221:
                 return "Failed to insert entry in PostalCodes table";
             case -501:
-                return "Change not permitted: " + this.errorMessage;
+                return "Patron personal information change is not allowed: " + this.errorMessage;
             case -3000:
-                return "Invalid PatronID specified, or Patron does not exist";
+                return "Patron does not exist";
             case -3001:
                 return "Failed to insert entry in Patrons table";
             case -3400:
@@ -227,20 +225,20 @@ public class PapiXmlResponse
             case -3501:
                 return "Patron branch is not defined";
             case -3502:
-                return "Invalid patron branch, check defaults in papi properties file.";
+                return "Patron branch is not a valid branch";
             case -3503:
                 return "Last name is not defined";
             case -3504:
                 return "First name is not defined";
-            case -3505:  // *
-                return "Duplicate barcode. Possibly the customer was created anyway?";
+            case -3505:
+                return "Barcode is already used for another patron";
             case -3506:
                 return "Transaction branch is not defined";
             case -3507:
                 return "Transaction user is not defined";
             case -3508:
                 return "Transaction workstation is not defined";
-            case -3509:  // * This should throw a password/pin mismatch error.
+            case -3509:
                 return "Passwords do not match";
             case -3510:
                 return "Postal code problems - mismatch city, state, county";
@@ -258,7 +256,7 @@ public class PapiXmlResponse
                 return "Postal code problems - mismatch city";
             case -3517:
                 return "Postal code problems - postal code not found";
-            case -3518: 
+            case -3518:
                 return "Invalid Email address";
             case -3519:
                 return "Invalid DeliveryMethod Value (No Address for Patron)";
@@ -289,7 +287,7 @@ public class PapiXmlResponse
             case -3533:
                 return "Invalid password format";
             case -3534:
-                return "Invalid Password lengh";
+                return "Invalid Password length";
             case -3535:
                 return "Patron password change is not allowed";
             case -3536:
@@ -332,7 +330,81 @@ public class PapiXmlResponse
                 return "Invalid Email Address for EReceipt";
             case -3621:
                 return "Patron Is Secure";
-            case -8001:  // * - Unauthorized authentication failure. Invalid user name password?
+            case -4000:
+                return "Invalid application ID supplied";
+            case -4001:
+                return "Invalid patron ID supplied";
+            case -4002:
+                return "Invalid workstation ID supplied";
+            case -4003:
+                return "Invalid request ID supplied";
+            case -4004:
+                return "Invalid requesting org ID supplied";
+            case -4005:
+                return "Invalid patron barcode";
+            case -4006:
+                return "Invalid bibliographic record ID supplied";
+            case -4007:
+                return "Invalid pickup org ID supplied";
+            case -4016:
+                return "Cannot change pickup branch for request in statusID";
+            case -4100:
+                return "Invalid request GUID supplied";
+            case -4101:
+                return "Invalid txn group qualifier supplied";
+            case -4102:
+                return "Invalid txn qualifier supplied";
+            case -4103:
+                return "Invalid answer supplied";
+            case -4104:
+                return "Invalid state supplied";
+            case -4201:
+                return "Invalid request ID supplied";
+            case -4202:
+                return "Invalid current org ID supplied";
+            case -4203:
+                return "Cancel prevented for hold requests with status of Held";
+            case -4204:
+                return "Cancel prevented for hold request with status of Unclaimed";
+            case -4205:
+                return "Cancel prevented for hold request with a status of Canceled";
+            case -4206:
+                return "Cancel prevented for hold request with a status of Expired";
+            case -4207:
+                return "Cancel prevented for hold request with a status of Out to Patron";
+            case -4208:
+                return "Cancel prevented for hold request with a status of Shipped";
+            case -4300:
+                return "No requests available to cancel";
+            case -4400:
+                return "Invalid Application date supplied";
+            case -4401:
+                return "Application date must be greater than or equal to today's date";
+            case -4402:
+                return "Application date must be earlier than 2 years from today";
+            case -4403:
+                return "Invalid pickup branch assigned to hold request";
+            case -4404:
+                return "Error occurred loading SA 'days to expire'";
+            case -4405:
+                return "Request must have a status of Active, Inactive or Pending";
+            case -4406:
+                return "No requests available to suspend";
+            case -4407:
+                return "Request status invalid for this process";
+            case -4408:
+                return "Invalid request status change requested";
+            case -4409:
+                return "Invalid hold user not supplied reason";
+            case -4410:
+                return "This is the only item available for hold";
+            case -4411:
+                return "No other items at other branches are available to fill this hold";
+            case -5000:
+                return "Invalid OrganizationID specified";
+            case -8000:
+                return "Invalid PolarisUserID specified";
+            case -8001:
                 return "Polaris user is not permitted";
             case -8002:
                 return "StaffUser_NotSupplied";
@@ -340,6 +412,12 @@ public class PapiXmlResponse
                 return "StaffUser_NotFound";
             case -8004:
                 return "StaffUser_Account_Disabled";
+            case -9000:
+                return "Invalid WorkstationID specified";
+            case -11000:
+                return "Supplied recordSetID is not of type patron";
+            case -11001:
+                return "RecordSetID does not exist";
             default:
                 return "Unknown error: '" + this.papiErrorCode + "'";
         }

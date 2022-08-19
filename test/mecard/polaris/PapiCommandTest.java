@@ -39,18 +39,20 @@ public class PapiCommandTest
 {
     private final Properties papiProperties;
     private final String baseUri;
+    private final boolean authenticationMethodsTest;
     public PapiCommandTest()
     {
         this.papiProperties = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         StringBuilder uriSB    = new StringBuilder();
         uriSB.append(papiProperties.getProperty(PapiPropertyTypes.HOST.toString()))
-            .append(papiProperties.getProperty(PapiPropertyTypes.AUTHENTICATE_DOMAIN.toString()))
+            .append(papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.VERSION.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString()))
             .append("/");
         this.baseUri = uriSB.toString();
+        this.authenticationMethodsTest = false;
     }
 
     /**
@@ -61,18 +63,17 @@ public class PapiCommandTest
     {
         System.out.println("==execute==");
         PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
-                .uri(this.baseUri + "api")
-                .build();
+            .uri(this.baseUri + "api")
+            .build();
         
         CommandStatus result = command.execute();
         System.out.println("TEST_OUTPUT: '" + result.getStdout() + "'");
         assertNotNull(result);
         assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
         
-        // Since we haven't authenticated, this should fail with an unauthorized message.
         command = new PapiCommand.Builder(papiProperties, "GET")
-                .uri(this.baseUri + "patron/21221012345678")
-                .build();
+            .uri(this.baseUri + "patron/21221011111111")
+            .build();
         result = command.execute();
         System.out.println("TEST_OUTPUT: '" + result.getStdout() + "'");
         assertNotNull(result);
@@ -84,21 +85,24 @@ public class PapiCommandTest
     {
         // Be careful the PAPI web service is set to reject more than 
         // three authentications for the same customer in the space of 5 minutes.
-        System.out.println("== Authenticate ==");
-        // TODO use the new PapiXmlPatronAuthenticateMessage class.
-        String xml = "<PatronAuthenticationData xmlns:i=\"http://www.w3.org/2001/XMLSchemainstance\">"
-            + "<Barcode>21221012345678</Barcode>"
-            + "<Password>64058</Password>"
-            + "</PatronAuthenticationData>";
+        if (this.authenticationMethodsTest)
+        {
+            System.out.println("== Authenticate ==");
+            // TODO use the new PapiXmlPatronAuthenticateMessage class.
+            String xml = "<PatronAuthenticationData xmlns:i=\"http://www.w3.org/2001/XMLSchemainstance\">"
+                + "<Barcode>21221012345678</Barcode>"
+                + "<Password>64058</Password>"
+                + "</PatronAuthenticationData>";
 
-        PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.baseUri + "authenticator/patron")
-            .bodyXML(xml)
-            .build();
-        CommandStatus result = command.execute();
-        System.out.println("Authentication OUTPUT: '" + result.getStdout() + "'");
-        assertNotNull(result);
-        assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
+            PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
+                .uri(this.baseUri + "authenticator/patron")
+                .bodyXML(xml)
+                .build();
+            CommandStatus result = command.execute();
+            System.out.println("Authentication OUTPUT: '" + result.getStdout() + "'");
+            assertNotNull(result);
+            assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
+        }
     }
 
     /**

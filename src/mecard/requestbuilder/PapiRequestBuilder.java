@@ -67,7 +67,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     private final Properties papiProperties;
     private final String baseUri;
     // The version of web services MeCard currently supports.
-    private static final String WEB_SERVICE_VERSION = "7.0";
+    private final String WEB_SERVICE_VERSION;
     private final boolean debug;
     
     PapiRequestBuilder(boolean debug)
@@ -77,13 +77,18 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         this.papiProperties    = PropertyReader.getProperties(ConfigFileTypes.PAPI);
         StringBuilder uriSB    = new StringBuilder();
         uriSB.append(papiProperties.getProperty(PapiPropertyTypes.HOST.toString()))
-            .append(papiProperties.getProperty(PapiPropertyTypes.AUTHENTICATE_DOMAIN.toString()))
+            .append(papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.VERSION.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString()))
             .append("/");
         this.baseUri = uriSB.toString();
+        // Get the papi version because iii removes functions from API over minor
+        // versions of their web service. For example 7.0 allows query of the api version
+        // 7.1 does not! Default to 7.0, it has more functionality than 7.1.
+        this.WEB_SERVICE_VERSION = papiProperties.getProperty(
+                PapiPropertyTypes.PAPI_VERSION.toString());
         this.debug   = debug;
     }
     

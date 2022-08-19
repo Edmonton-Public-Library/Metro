@@ -29,14 +29,25 @@ public enum PapiPropertyTypes
 {
     // local directory where the customers will be stored before loading.
     LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
+    // These are URI components that need to be set in advance.
+    PAPI_VERSION("papi-version"), // Required because iii removes functions in minor versions.
+    // Difference of timezone from web services server timezone.
+    // If the request-hash's time is not within a few minutes of the webservices 
+    // server time, the request will fail with a 'Unreachable code' error '-1'.
+    ME_SERVER_TIME_ZONE_DIFFERENCE("timezone-difference"),
+    HOST("host"), // host for PAPI service.
+    REST_PATH("rest-path"),
+    VERSION("version"), 
+    LANGUAGE_ID("language-id"),
+    APP_ID("app-id"), 
+    ORG_ID("org-id"),
     // The domain of the web services ie, 'PAPIService/REST/public'.
-    AUTHENTICATE_DOMAIN("domain"),
-    HTTP_VERSION("http-version"), // "1.1" or "2.0".
-    API_KEY("api-key"),
+    INTERNAL_DOMAIN("internal-domain"),
     // PAPI Access key id used for authoriziation supplied by Polaris and used
     // in the HTTP header 'Authorization: PWS [api-user-id]:[signature]
     API_USER_ID("api-user-id"),
-    CONNECTION_TIMEOUT("connection-timeout"),                 
+    API_KEY("api-key"),
+    HTTP_VERSION("http-version"), // "1.1" or "2.0".         
     // these are default values applied to a patron on creation
     LOGON_BRANCH_ID("login-branch-id"),
     LOGON_USER_ID("login-user-id"),
@@ -44,12 +55,7 @@ public enum PapiPropertyTypes
     DELIVERY_OPTION_ID("delivery-option-id"),
     ERECEIPT_OPTION_ID("ereceipt-option-id"),
     PATRON_BRANCH_ID("patron-branch-id"),
-    // These are URI components that need to be set in advance.
-    HOST("host"), // host for PAPI service.
-    VERSION("version"), 
-    LANGUAGE_ID("language-id"), 
-    APP_ID("app-id"), 
-    ORG_ID("org-id"),
+    CONNECTION_TIMEOUT("connection-timeout"),
     DEBUG("debug");
     
     private String type;

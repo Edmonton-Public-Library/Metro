@@ -65,6 +65,7 @@ public class PapiCommand implements Command
     private static String apiUserId;
     private static String apiKey;
     private static String accessToken = "";
+    private static int timezoneDelta;
     
     public static class Builder
     {
@@ -77,6 +78,7 @@ public class PapiCommand implements Command
         private String apiUserId;
         private HttpClient.Version httpVersion;
         private int connectionTimeout;
+        private int timezoneDelta;
 
         /**
          * Builds a PAPI Command using the resources specified in the papi.properties
@@ -133,6 +135,25 @@ public class PapiCommand implements Command
                     throw new UnsupportedOperationException(
                     "**error, " + httpMethod + " not supported.");
             }
+            // The difference between the time where the command is being run
+            // and on the web services server may have to be compensated for.
+            String timezoneDifference = this.webServiceProperties.getProperty(
+                PapiPropertyTypes.ME_SERVER_TIME_ZONE_DIFFERENCE.toString(), "0");
+            try
+            {
+                this.timezoneDelta = Integer.parseInt(timezoneDifference);
+            }
+            catch (NumberFormatException e)
+            {
+                System.out.println("*warn: invalid timezone difference setting\n"
+                    + "The 'timezone-difference' must be a in of\n"
+                    + "the difference between the timezone where the PapiCommand is\n"
+                    + "run with respect to the timezone of the PAPI web services.\n"
+                    + "For example, if the web server is in MDT, but the\n"
+                    + "MeCard server is in EDT, the value should be set to 2.\n"
+                    + "Defaulting to 0.0.");
+                this.timezoneDelta = 0;
+            }
         }
         
         /**
@@ -182,6 +203,7 @@ public class PapiCommand implements Command
         PapiCommand.xmlBodyText= builder.bodyText;
         PapiCommand.apiKey     = builder.apiKey;
         PapiCommand.apiUserId  = builder.apiUserId;
+        PapiCommand.timezoneDelta= builder.timezoneDelta;
         // Create the httpClient.
         PapiCommand.httpClient = HttpClient.newBuilder()
             .version(builder.httpVersion)
@@ -364,7 +386,7 @@ public class PapiCommand implements Command
         // PolarisDate: ddd, dd MMM yyyy HH:mm:ss GMT
         // PolarisDate: Wed, 17 Oct 2012 22:23:32 GMT
         // Date must be within +/- 30 minutes of current time or request will fail
-        return DateComparer.getRFC1123Date();
+        return DateComparer.getRFC1123Date(PapiCommand.timezoneDelta);
     }
     
     @Override

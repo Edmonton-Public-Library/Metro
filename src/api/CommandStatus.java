@@ -142,7 +142,7 @@ public class CommandStatus
      */
     public String getStdout() 
     {
-        return this.stdout.toString();
+        return this.stdout.toString().stripTrailing();
     }
 
     /**
@@ -151,6 +151,6 @@ public class CommandStatus
      */
     public String getStderr() 
     {
-        return this.stderr.toString();
+        return this.stderr.toString().stripTrailing();
     }
 }

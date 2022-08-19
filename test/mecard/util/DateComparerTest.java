@@ -90,7 +90,7 @@ public class DateComparerTest
     {
         System.out.println("==getYearsOld==");
         String date = "19630822"; // "08/22/1963"
-        int expResult = 58;
+        int expResult = 59;
         int result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
@@ -284,10 +284,12 @@ public class DateComparerTest
         // *** Warning this value is set in the environment properties file.
         //
         String ANSIDate = "20211231";
-        String expResult = "12-31-2021";
+//        String expResult = "12-31-2021";
+        String expResult = "2021-12-31T00:00:00";
         String result;
         try
         {
+            System.out.println("ANSIToConfigDate: " + DateComparer.ANSIToConfigDate(ANSIDate));
             result = DateComparer.ANSIToConfigDate(ANSIDate);
         }
         catch (ParseException ex)
@@ -317,8 +319,8 @@ public class DateComparerTest
     public void testGetRFC1123Date_0args()
     {
         System.out.println("getRFC1123Date");
-//        String expResult = "";
-//        String result = DateComparer.getRFC1123Date();
+
+        System.out.println("###### LOOK HERE::: Time now +0 is >>>" + DateComparer.getRFC1123Date());
 //        assertEquals(expResult, result);
         // Not sure what a meaningful test would be.
         assertTrue(true);
@@ -335,6 +337,25 @@ public class DateComparerTest
         LocalDate result = DateComparer.getRFC1123Date(DateComparer.getRFC1123Date());
         System.out.println(">>>" + result.toString());
         assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of getRFC1123Date method, of class DateComparer.
+     */
+    @Test
+    public void testGetRFC1123Date_Long()
+    {
+        System.out.println("getRFC1123Date long param");
+        String result = DateComparer.getRFC1123Date(2);
+        System.out.println("###### LOOK HERE::: Time now +2 is >>>" + result);
+        result = DateComparer.getRFC1123Date(1);
+        System.out.println("###### LOOK HERE::: Time now +1 is >>>" + result);
+        result = DateComparer.getRFC1123Date(0);
+        System.out.println("###### LOOK HERE::: Time now  0 is >>>" + result);
+        result = DateComparer.getRFC1123Date(-1);
+        System.out.println("###### LOOK HERE::: Time now -1 is >>>" + result);
+        result = DateComparer.getRFC1123Date(-2);
+        System.out.println("###### LOOK HERE::: Time now -2 is >>>" + result);
     }
 
     /**
