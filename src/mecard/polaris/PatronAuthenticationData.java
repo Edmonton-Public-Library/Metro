@@ -62,10 +62,10 @@ public class PatronAuthenticationData
      */
     public static String getAuthentication(String userId, String password)
     {
-//        "<PatronAuthenticationData xmlns:i=\"http://www.w3.org/2001/XMLSchemainstance\">"
-//            + "<Barcode>" + userId + "</Barcode>"
-//            + "<Password>" + userPin + "</Password>"
-//            + "</PatronAuthenticationData>";
+//      <PatronAuthenticationData xmlns:i="http://www.w3.org/2001/XMLSchemainstance">
+//         <Barcode>userId</Barcode>
+//         <Password>userPin</Password>
+//      </PatronAuthenticationData>
         StringWriter xmlString = new StringWriter();
         try 
         {

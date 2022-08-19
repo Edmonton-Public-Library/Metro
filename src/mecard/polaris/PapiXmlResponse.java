@@ -136,8 +136,8 @@ public class PapiXmlResponse
                 this.papiErrorCode  = "-1";
                 throw new PapiException(" PAPIResult: " +this.papiErrorCode + " =>'" + this.errorMessage + "'\n"
                         + "  A 'null' result usually means a timeout to the web\n"
-                        + "  service. Either the service is busy, down, or the\n"
-                        + "  user has tried to authenticate too many times.");
+                        + "  service. Either the service is busy, down, or there\n"
+                        + "  was an authentication issue: ");
             }
         }
     }
@@ -217,7 +217,8 @@ public class PapiXmlResponse
             case -3000:
                 return "Patron does not exist";
             case -3001:
-                return "Failed to insert entry in Patrons table";
+//                return "Failed to insert entry in Patrons table";      // This is from the manual
+                return "Unable to authenticate the patron credentials."; // This is what gets returned.
             case -3400:
                 return "Failed to insert entry in Patronaddresses table";
             case -3500:
