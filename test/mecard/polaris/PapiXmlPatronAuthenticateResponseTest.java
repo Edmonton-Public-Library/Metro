@@ -30,11 +30,11 @@ import org.junit.Test;
  *
  * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
-public class PapiXmlPatronAuthenticateMessageTest {
+public class PapiXmlPatronAuthenticateResponseTest {
 
     private final String xml;
     
-    public PapiXmlPatronAuthenticateMessageTest() 
+    public PapiXmlPatronAuthenticateResponseTest() 
     {
         // Use a canned example for testing the basic class because the signature
         // changes with timestamp.

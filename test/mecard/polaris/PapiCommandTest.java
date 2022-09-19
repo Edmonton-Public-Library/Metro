@@ -46,6 +46,7 @@ public class PapiCommandTest
         StringBuilder uriSB    = new StringBuilder();
         uriSB.append(papiProperties.getProperty(PapiPropertyTypes.HOST.toString()))
             .append(papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString()))
+            .append("/").append("public")
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.VERSION.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString()))
@@ -106,10 +107,10 @@ public class PapiCommandTest
     }
 
     /**
-     * Test of accessToken method, of class PapiCommand.
+     * Test of patronAccessToken method, of class PapiCommand.
      */
     @Test
-    public void testAccessToken()
+    public void testPatronAccessToken()
     {
         System.out.println("patronPassword");
         // This is a simple setter method but leave the stub so update tests

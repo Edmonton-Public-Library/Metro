@@ -20,10 +20,10 @@
  */
 package mecard.requestbuilder;
 
+import mecard.polaris.PapiXmlStaffAuthenticateResponse;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.DummyCommand;
 import api.HttpCommandStatus;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +45,7 @@ import mecard.polaris.PapiToMeCardCustomer;
 import mecard.polaris.PapiXmlStatusResponse;
 import site.CustomerLoadNormalizer;
 import mecard.customer.NativeFormatToMeCardCustomer;
+import mecard.exception.ConfigurationException;
 import mecard.exception.PapiException;
 import mecard.polaris.MeCardCustomerToPapi;
 import mecard.polaris.MeCardDataToPapiData.QueryType;
@@ -53,6 +54,8 @@ import mecard.polaris.PapiXmlPatronBasicDataResponse;
 import mecard.polaris.PapiXmlRequestPatronValidateResponse;
 import mecard.polaris.PapiXmlResponse;
 import mecard.polaris.PatronAuthenticationData;
+import mecard.polaris.StaffAuthenticationData;
+import mecard.polaris.TokenCache;
 
 /**
  * This class supports customer registration commands using the Polaris API 
@@ -65,113 +68,306 @@ public class PapiRequestBuilder extends ILSRequestBuilder
 {
     private final Properties messageProperties;
     private final Properties papiProperties;
-    private final String baseUri;
+//    private final String baseUri;
     // The version of web services MeCard currently supports.
     private final String WEB_SERVICE_VERSION;
     private final boolean debug;
+    private final boolean runAsStaff;
+    private final String internalDomain;
+    private final String staffPassword;
+    private final String staffAccessId;
+    private final String host;
+    private final String restPath;
+    private final String apiVersion;
+    private final String languageId;
+    private final String appId;
+    private final String orgId;
     
     PapiRequestBuilder(boolean debug)
     {
         // read all the properties from the Polaris table
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.papiProperties    = PropertyReader.getProperties(ConfigFileTypes.PAPI);
-        StringBuilder uriSB    = new StringBuilder();
-        uriSB.append(papiProperties.getProperty(PapiPropertyTypes.HOST.toString()))
-            .append(papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString()))
-            .append("/").append(papiProperties.getProperty(PapiPropertyTypes.VERSION.toString()))
-            .append("/").append(papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString()))
-            .append("/").append(papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString()))
-            .append("/").append(papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString()))
-            .append("/");
-        this.baseUri = uriSB.toString();
+        this.loadDir           = papiProperties.getProperty(PapiPropertyTypes.LOAD_DIR.toString());
+        this.host              = papiProperties.getProperty(PapiPropertyTypes.HOST.toString());
+        this.restPath          = papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString());
+        this.apiVersion        = papiProperties.getProperty(PapiPropertyTypes.VERSION.toString());
+        this.languageId        = papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString());
+        this.appId             = papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString());
+        this.orgId             = papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString());
         // Get the papi version because iii removes functions from API over minor
         // versions of their web service. For example 7.0 allows query of the api version
         // 7.1 does not! Default to 7.0, it has more functionality than 7.1.
         this.WEB_SERVICE_VERSION = papiProperties.getProperty(
                 PapiPropertyTypes.PAPI_VERSION.toString());
-        this.debug   = debug;
+        this.debug = Boolean.parseBoolean(papiProperties.getProperty(PapiPropertyTypes.DEBUG.toString(),"false"));
+        // All these are needed to run the service as staff.
+        this.internalDomain = papiProperties.getProperty(PapiPropertyTypes.INTERNAL_DOMAIN.toString());
+        this.staffPassword  = papiProperties.getProperty(PapiPropertyTypes.STAFF_PASSWORD.toString());
+        this.staffAccessId  = papiProperties.getProperty(PapiPropertyTypes.STAFF_ID.toString());
+        if (this.internalDomain.isEmpty())
+        {
+            this.runAsStaff = false;
+        }
+        else if (this.staffAccessId.isEmpty())
+        {
+            this.runAsStaff = false;
+        }
+        else if (this.staffPassword.isEmpty())
+        {
+            this.runAsStaff = false;
+        }
+        else
+        {
+            this.runAsStaff = true;
+        }
+    }
+    
+    private String getProtectedBaseUri()
+    {
+        StringBuilder uriSB = new StringBuilder();
+        uriSB.append(this.host)
+            .append(this.restPath)
+            .append("/").append("protected")
+            .append("/").append(this.apiVersion)
+            .append("/").append(this.languageId)
+            .append("/").append(this.appId)
+            .append("/").append(this.orgId)
+            .append("/");
+        return uriSB.toString();
+    }
+    
+    private String getPublicBaseUri()
+    {
+        StringBuilder uriSB = new StringBuilder();
+        uriSB.append(this.host)
+            .append(this.restPath)
+            .append("/").append("public")
+            .append("/").append(this.apiVersion)
+            .append("/").append(this.languageId)
+            .append("/").append(this.appId)
+            .append("/").append(this.orgId)
+            .append("/");
+        return uriSB.toString();
+    }
+    
+    /**
+     * Gets the patron's access token if available. If the token is not available
+     * because it expired or has never been made, a new one will be 
+     * generated and returned.
+     * 
+     * @param domain - Internal domain name. Example: 'SB-DEWEY'
+     * @param accessId - The user name of the staff account.
+     * @param password - The password for the staff account.
+     * @return The current valid access token for staff.
+     */
+    private String getStaffAccessToken(String domain, String accessId, String password)
+    {
+        TokenCache tokenCache = new TokenCache(accessId, this.loadDir);
+        // If the token has expired or there is no token, the returned string
+        // will be empty.
+        if (tokenCache.getValidToken().isEmpty())
+        {
+            String authentication = StaffAuthenticationData.getAuthentication(domain, accessId, password);
+            if (this.debug)
+            {
+                System.out.println("AUTHENTICATE XML body: " + authentication);
+            }
+            PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
+                .uri(this.getProtectedBaseUri() + "authenticator/staff")
+                .debug(this.debug)
+                .bodyXML(authentication)
+                .build();
+            // HttpCommandStatus has methods for testing if there was HTTP errors
+            HttpCommandStatus status = (HttpCommandStatus) command.execute();
+            // Can't use isSuccessful() because authentication is not a
+            // query type, so test here.
+            if (status.okay())
+            {
+                // Check response for any errors.
+                PapiXmlStaffAuthenticateResponse authResponse = new PapiXmlStaffAuthenticateResponse(status.getStdout());
+                if (authResponse.authenticated())
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + "staff authenticated.");
+                    }
+                    tokenCache.writeToCache(authResponse.getTokenExpirationAsString(), authResponse.getAccessSecret());
+                }
+                else
+                {
+                    // Fail fast (during testing) so IT knows that there is a 
+                    // problem with staff credentials.
+                    throw new ConfigurationException("**error authenticating staff: \n" 
+                        + authResponse.errorMessage());
+                }
+            }
+            else
+            {
+                // Fail fast (during testing) so IT knows that there is a 
+                // problem with staff credentials.
+                throw new ConfigurationException("**error authenticating staff: \n" 
+                    + status.getHttpStatusCode() + " : " + status.toString());
+            }
+        }
+        return tokenCache.getValidToken();
+    }
+    
+    /**
+     * Gets the patron's access token if available. If the token is not available
+     * a new one will be generated and returned.
+     * 
+     * @param patronId - The user bar code of the patron.
+     * @param password - The password for the patron account.
+     * @return The current valid access token for patron.
+     */
+    private String getPatronAccessToken(String patronId, String password, Response response)
+    {
+        TokenCache tokenCache = new TokenCache(patronId, this.loadDir);
+        // If the token has expired or there is no token, the returned string
+        // will be empty.
+        if (tokenCache.getValidToken().isEmpty())
+        {
+            String authentication = PatronAuthenticationData.getAuthentication(patronId, password);
+            if (this.debug)
+            {
+                System.out.println("AUTHENTICATE XML body: " + authentication);
+            }
+            PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
+                .uri(this.getPublicBaseUri() + "authenticator/patron")
+                .bodyXML(authentication)
+                .debug(this.debug)
+                .build();
+            // HttpCommandStatus
+            HttpCommandStatus status = (HttpCommandStatus) command.execute();
+            // Can't use isSuccessful() because authentication is not a
+            // query type.
+            if (status.okay())
+            {
+                // Check response for any errors.
+                PapiXmlPatronAuthenticateResponse authResponse = new PapiXmlPatronAuthenticateResponse(status.getStdout());
+                if (authResponse.authenticated())
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + "customer " + patronId + " authenticated.");
+                    }
+                    tokenCache.writeToCache(authResponse.getTokenExpirationAsString(), authResponse.getAccessSecret());
+                    response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse("");
+                }
+                else
+                {
+                    response.setCode(ResponseTypes.USER_PIN_INVALID);
+                    response.setResponse(authResponse.errorMessage());
+                }
+            }
+            else // The web service send back an HTTP error, translate and return to customer.
+            {
+                System.out.println("**error web service: "
+                    + status.getHttpStatusCode() + " : " + status.toString());
+                response.setCode(status.getStatus());
+                switch (status.getStatus())
+                {
+                    case UNAUTHORIZED:
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                        break;
+                    case CONFIG_ERROR:
+                    case BUSY:
+                    case UNAVAILABLE:
+                    case UNKNOWN:
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                        break;
+                    default:
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                        break;
+                }
+            }
+        }
+        // Which will be empty or have a valid token in it.
+        return tokenCache.getValidToken();
     }
     
     
     @Override
-    public final Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    public final Command getCreateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer)
     {
-
+        String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword); 
         MeCardCustomerToNativeFormat papiCustomer = new MeCardCustomerToPapi(customer, QueryType.CREATE);
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, papiCustomer, response);
         // Output the customer's data as a receipt in case they come back with questions.
         List<String> customerReceipt = papiCustomer.getFormattedCustomer();
-        System.out.println("CREATE: " + papiCustomer.toString());
+        if (this.debug)
+        {
+            System.out.println("CREATE XML body: " + papiCustomer.toString());
+        }
         new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
-                .set(customerReceipt)
-                .build();
+            .set(customerReceipt)
+            .build();
         return new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.baseUri + "patron")
+            .uri(this.getPublicBaseUri() + "patron")
+            .debug(this.debug)
             .bodyXML(papiCustomer.toString())
+            .staffPassword(staffSecret)
             .build();
     }
     
     @Override
-    public final Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer)
+    public final Command getUpdateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer)
     {
         //
         // Note Patron Update Data request: PUT /public/1/patron/{PatronBarcode}
         //  https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/patron/21221012345678
         // with the patrons XML data as body.
         // NOTE: only email, address fields, expiration, phone_voice1,2,3 and password 
-        // can be updated.
+        // can be updated. Testing of staff account permission-related changes TBD.
         //
         // The MeCardDataToPapiData object will filter for fields that are update-able.
         //
         // There is a userName update, but it refers to a login name 
         // for the user, not the user's name, and which is beyond the scope of this project. 
         //
-        String userId = customer.get(CustomerFieldTypes.ID);
-        String password = customer.get(CustomerFieldTypes.PIN);
-        String authentication = PatronAuthenticationData.getAuthentication(userId, password);
-        PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.baseUri + "authenticator/patron")
-            .bodyXML(authentication)
-            .build();
-        // HttpCommandStatus
-        HttpCommandStatus status = (HttpCommandStatus) command.execute();
-        // Can't use isSuccessful() because authentication is not a
-        // query type.
-        if (status.okay())
+        String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword);
+        String userId      = customer.get(CustomerFieldTypes.ID);
+        String patronToken = "";
+        if (! this.runAsStaff)
         {
-            // Check response for any errors.
-            PapiXmlPatronAuthenticateResponse authResponse = new PapiXmlPatronAuthenticateResponse(status.getStdout());
-            if (authResponse.authenticated())
-            {
-                if (this.debug)
-                {
-                    System.out.println(new Date() + "customer " + userId + " authenticated.");
-                }
-                // Time to update the customer, so normalize the data.
-                // we have a customer let's convert them to a PolarisSQLFormatted user.
-                MeCardCustomerToNativeFormat papiCustomer = new MeCardCustomerToPapi(customer,QueryType.UPDATE);
-                // apply library centric normalization to the customer account.
-                normalizer.finalize(customer, papiCustomer, response);
-                // Output the customer's data as a receipt in case they come back with questions.
-                List<String> customerReceipt = papiCustomer.getFormattedCustomer();
-                new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
-                        .set(customerReceipt)
-                        .build();
-                command = new PapiCommand.Builder(papiProperties, "PUT")
-                    .uri(this.baseUri + "patron/" + userId)
-                    .bodyXML(papiCustomer.toString())
-                    .build();
-                command.accessToken(authResponse.getAccessSecret());
-                return command;
-            }
-            else
-            {
-                System.out.println("**error web service: " + authResponse.errorMessage());
-            }
+            String password = customer.get(CustomerFieldTypes.PIN);
+            patronToken = this.getPatronAccessToken(userId, password, response);
         }
-        // else
-        return getFailedAuthenticationCommand(status, response);
+        
+        // Time to update the customer, so normalize the data.
+        // we have a customer let's convert them to a PolarisSQLFormatted user.
+        MeCardCustomerToNativeFormat papiCustomer = new MeCardCustomerToPapi(customer,QueryType.UPDATE);
+        // apply library centric normalization to the customer account.
+        normalizer.finalize(customer, papiCustomer, response);
+        // Output the customer's data as a receipt in case they come back with questions.
+        List<String> customerReceipt = papiCustomer.getFormattedCustomer();
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
+                .set(customerReceipt)
+                .build();
+        if (this.debug)
+        {
+            System.out.println("UPDATE XML body: " + papiCustomer.toString());
+        }
+        PapiCommand command = new PapiCommand.Builder(papiProperties, "PUT")
+            .uri(this.getPublicBaseUri() + "patron/" + userId)
+            .debug(this.debug)
+            .bodyXML(papiCustomer.toString())
+            .staffPassword(staffSecret)
+            .build();
+        command.patronAccessToken(patronToken);
+        return command;
     }
     
     @Override
@@ -179,8 +375,11 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     {
         // which will return the version of the API and a 200 status if available.
         // "https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/api"
+        String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword);
         PapiCommand command = new PapiCommand.Builder(this.papiProperties, "GET")
-            .uri(baseUri + "api")
+            .uri(this.getPublicBaseUri() + "api")
+            .debug(this.debug)
+            .staffPassword(staffSecret)
             .build();
         return command;
     }
@@ -188,77 +387,42 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     @Override
     public final Command getCustomerCommand(String userId, String userPin, Response response)
     {
-        // Get the customer's user ID and PIN/Password as an XML document body.
-        String authentication = PatronAuthenticationData.getAuthentication(userId, userPin);
-        PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.baseUri + "authenticator/patron")
-            .bodyXML(authentication)
-            .build();
-        // HttpCommandStatus
-        HttpCommandStatus status = (HttpCommandStatus) command.execute();
-        // Can't use isSuccessful() because authentication is not a
-        // query type.
-        if (status.okay())
+        // If the staff requirements are not fulfilled MeCard will try and continue
+        // using just patron authentication techniques.
+        String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword);
+        String patronAccessToken = "";
+        if (! this.runAsStaff)
         {
-            // Check response for any errors.
-            PapiXmlPatronAuthenticateResponse authResponse = new PapiXmlPatronAuthenticateResponse(status.getStdout());
-            if (authResponse.authenticated())
-            {
-                if (this.debug)
-                {
-                    System.out.println(new Date() + "customer " + userId + " authenticated.");
-                }
-                command = new PapiCommand.Builder(papiProperties, "GET")
-                    .uri(this.baseUri + "patron/" + userId + "/basicdata?addresses=true")
-                    .build();
-                command.accessToken(authResponse.getAccessSecret());
-                return command;
-            }
-            else
-            {
-                System.out.println("**error web service: " + authResponse.errorMessage());
-            }
+            patronAccessToken = this.getPatronAccessToken(userId, userPin, response);
         }
-        // else
-        return getFailedAuthenticationCommand(status, response);
+        PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
+            .uri(this.getPublicBaseUri() + "patron/" + userId + "/basicdata?addresses=true&notes=true")
+            .debug(this.debug)
+            .staffPassword(staffSecret) // which can be blank.
+            .patronAccessToken(patronAccessToken) // which not get filled if staff password is non-empty.
+            .build();
+        return command;
     }
     
-    /**
-     * Logs failed command and returns a dummy command with the correct MessageType.
-     * 
-     * This gets returned by any command that requires authentication, and that
-     * authentication failed.
-     * 
-     * @param status - HttpCommandStatus object in this case.
-     * @param response - response object for reference if needed by other processes.
-     * @return DummyCommand object.
-     */
-    private Command getFailedAuthenticationCommand(CommandStatus status, Response response)
+    @Override
+    public Command testCustomerExists(
+            String userId, 
+            String userPin, 
+            Response response)
     {
-        System.out.println(new Date() + "**error during user authentication: " + status.toString());
-        // Test the result of the authentication request which is an HttpStatus object.
-        String errorMessageForCustomer;
-        switch(status.getStatus())
+        String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword);
+        String patronToken = "";
+        if (! this.runAsStaff)
         {
-            case UNAUTHORIZED:
-                errorMessageForCustomer = messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString());
-                break;
-            case CONFIG_ERROR:
-            case BUSY:
-            case UNAVAILABLE:
-            case UNKNOWN:
-                errorMessageForCustomer = messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString());
-                break;
-            default:
-                errorMessageForCustomer = messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString());
-                break;
+            patronToken = this.getPatronAccessToken(userId, userPin, response);
         }
-        response = new Response(status.getStatus());
-        response.setResponse(errorMessageForCustomer);
-        return new DummyCommand.Builder()
-            .setStatus(1)
-            .setStderr(errorMessageForCustomer)
+        PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
+            .uri(this.getPublicBaseUri() + "patron/" + userId)
+            .debug(this.debug)
+            .staffPassword(staffSecret)
             .build();
+        command.patronAccessToken(patronToken);
+        return command;
     }
     
     @Override
@@ -326,7 +490,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                     return true;
                 }
                 response.setCode(ResponseTypes.FAIL);
-                response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                response.setResponse(messageProperties.getProperty(
+                        MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 System.out.println("**failed to find customer with message: " 
                             + papiTestCustomer.errorMessage());
                 return false;
@@ -335,13 +500,15 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 PapiXmlPatronBasicDataResponse papiGetCustomer;
                 try
                 {
-                    papiGetCustomer = new PapiXmlPatronBasicDataResponse(status.getStdout());
+                    papiGetCustomer = new PapiXmlPatronBasicDataResponse(
+                            status.getStdout());
                 }
                 catch (PapiException pe)
                 {
                     System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.TOO_MANY_TRIES);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
+                    response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
                 }
                 if (papiGetCustomer.succeeded())
@@ -355,11 +522,13 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 {
                     case UNAUTHORIZED:
                     case USER_PIN_INVALID:
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
                         break;
                     case USER_NOT_FOUND:
                     default:
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                         break;
                 }
                 System.out.println("**error getting customer: " 
@@ -377,7 +546,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 {
                     System.out.println("*error, " + pe.getMessage() + nullResponseMessage);
                     response.setCode(ResponseTypes.TOO_MANY_TRIES);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
+                    response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
                 }
                 if (papiUpdateCustomer.succeeded())
@@ -391,13 +561,16 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 {
                     case UNAUTHORIZED:
                     case USER_PIN_INVALID:
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
                         break;
                     case USER_NOT_FOUND:
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                         break;
                     default:
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
+                        response.setResponse(messageProperties.getProperty(
+                                MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
                         break;
                 }
                 System.out.println("**error update: " 
@@ -458,44 +631,4 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         return new PapiXmlCustomerResponse(stdout, true);
     }
 
-    @Override
-    public Command testCustomerExists(
-            String userId, 
-            String userPin, 
-            Response response)
-    {
-        // Get the customer's user ID and PIN/Password as an XML document body.
-        String authentication = PatronAuthenticationData.getAuthentication(userId, userPin);
-        PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.baseUri + "authenticator/patron")
-            .bodyXML(authentication)
-            .build();
-        // HttpCommandStatus
-        HttpCommandStatus status = (HttpCommandStatus) command.execute();
-        // Can't use isSuccessful() because authentication is not a
-        // query type.
-        if (status.okay())
-        {
-            // Check response for any errors.
-            PapiXmlPatronAuthenticateResponse authResponse = new PapiXmlPatronAuthenticateResponse(status.getStdout());
-            if (authResponse.authenticated())
-            {
-                if (this.debug)
-                {
-                    System.out.println(new Date() + "customer " + userId + " authenticated.");
-                }
-                command = new PapiCommand.Builder(papiProperties, "GET")
-                    .uri(this.baseUri + "patron/" + userId)
-                    .build();
-                command.accessToken(authResponse.getAccessSecret());
-                return command;
-            }
-            else
-            {
-                System.out.println("**error web service: " + authResponse.errorMessage());
-            }
-        }
-        // else
-        return getFailedAuthenticationCommand(status, response);
-    }
 }

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ public class DumpUser
     
     /**
      *
-     * @return the boolean
+     * @return true if the content was written to file and false otherwise.
      */
     private void writeContent()
     {
@@ -194,6 +194,7 @@ public class DumpUser
     
     /**
      * Returns a string of the path of the DumpUser file.
+     * @return string of the file's path.
      */
     public String getPath()
     {

@@ -37,7 +37,7 @@ public enum PapiPropertyTypes
     ME_SERVER_TIME_ZONE_DIFFERENCE("timezone-difference"),
     HOST("host"), // host for PAPI service.
     REST_PATH("rest-path"),
-    VERSION("version"), 
+    VERSION("version"),         // API version
     LANGUAGE_ID("language-id"),
     APP_ID("app-id"), 
     ORG_ID("org-id"),
@@ -47,6 +47,8 @@ public enum PapiPropertyTypes
     // in the HTTP header 'Authorization: PWS [api-user-id]:[signature]
     API_USER_ID("api-user-id"),
     API_KEY("api-key"),
+    STAFF_ID("staff-access-id"),
+    STAFF_PASSWORD("staff-password"),
     HTTP_VERSION("http-version"), // "1.1" or "2.0".         
     // these are default values applied to a patron on creation
     LOGON_BRANCH_ID("login-branch-id"),

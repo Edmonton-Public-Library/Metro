@@ -43,6 +43,8 @@ public class PapiRequestBuilderTest
     private final boolean runCustomerExistsTest;
     private final String xmlPatronRegistrationCreateResponse;
     private final boolean runStatusTest;
+    private final String nonExistingCustomerId;
+    private final String nonExistingCustomerPin;
     
     public PapiRequestBuilderTest()
     {
@@ -153,11 +155,12 @@ public class PapiRequestBuilderTest
                 "</PatronBasicDataGetResult>";
         RequestDeserializer deserializer = new RequestDeserializer();
         String meLibraryRequestCreateCustomer =
-//                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12222 144 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
-                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346001\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012346001\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Black, Carter\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"90210\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804961212\\\",\\\"DOB\\\":\\\"19630822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Carter\\\",\\\"LASTNAME\\\":\\\"Black\\\"}\"}";
-//                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Awsome, Richard\\\",\\\"STREET\\\":\\\"11111 111 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H1\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19690822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Richard\\\",\\\"LASTNAME\\\":\\\"Awesome\\\"}\"}";
+//                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12222 144 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+//                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346003\",\"pin\":\"7711\",\"customer\":\"{\\\"ID\\\":\\\"21221012346003\\\",\\\"PIN\\\":\\\"7711\\\",\\\"PREFEREDNAME\\\":\\\"Grey, Carter\\\",\\\"STREET\\\":\\\"11111 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsadmins@epl.ca\\\",\\\"PHONE\\\":\\\"7805551212\\\",\\\"DOB\\\":\\\"19630822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Carter\\\",\\\"LASTNAME\\\":\\\"Blue\\\"}\"}";
+//        "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346004\",\"pin\":\"7711\",\"customer\":\"{\\\"ID\\\":\\\"21221012346004\\\",\\\"PIN\\\":\\\"7711\\\",\\\"PREFEREDNAME\\\":\\\"Blue, Darter\\\",\\\"STREET\\\":\\\"22222 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"anisbet@epl.ca\\\",\\\"PHONE\\\":\\\"7805551212\\\",\\\"DOB\\\":\\\"19630822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Darter\\\",\\\"LASTNAME\\\":\\\"Blue\\\"}\"}";
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"7711\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"7711\\\",\\\"PREFEREDNAME\\\":\\\"Awsome, Richard\\\",\\\"STREET\\\":\\\"11111 111 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H1\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19690822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Richard\\\",\\\"LASTNAME\\\":\\\"Awesome\\\"}\"}";
         String meLibraryRequestUpdateCustomer =
-                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346001\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012346001\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12222 144 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346002\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012346002\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12222 144 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0G4\\\",\\\"SEX\\\":\\\"F\\\",\\\"EMAIL\\\":\\\"anisbet@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
 //                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346000\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012346000\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"William, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H2\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804961212\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"William\\\"}\"}";
 //                "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345999\",\"pin\":\"64056\",\"customer\":\"{\\\"ID\\\":\\\"21221012345999\\\",\\\"PIN\\\":\\\"64056\\\",\\\"PREFEREDNAME\\\":\\\"Awsome, Richard\\\",\\\"STREET\\\":\\\"11111 111 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"T6G0H1\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19690822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20150602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Richard\\\",\\\"LASTNAME\\\":\\\"Awesome\\\"}\"}";
         Request createRequest = deserializer.getDeserializedRequest(meLibraryRequestCreateCustomer);
@@ -166,23 +169,31 @@ public class PapiRequestBuilderTest
         updateCustomer = updateRequest.getCustomer();
         // Get status should return a response with a course-grained version number.
         // See PapiXmlStatusMessage and associated tests for more information.
-        expectedVersion        = 7.2;
-        // Account exists on Dewey.
+        expectedVersion        = 7.0;
+        // Account exists on Dewey have a pin of 64058 those on WBRL have 7711.
 //        existingCustomerId     = "21221012346001";
 //        existingCustomerPin    = "64058";
+//        existingCustomerId     = "21221012346002";
+//        existingCustomerPin    = "64058";
+//        existingCustomerId     = "21221012346004";
+//        existingCustomerPin    = "7711";
+        nonExistingCustomerId  = "21221012346007";
+        nonExistingCustomerPin = "12345";
 //        existingCustomerId     = "21221012346000";
-//        existingCustomerPin    = "64056";
-        existingCustomerId     = "25555000907877";
+//        existingCustomerPin    = "7711";
+//        existingCustomerId     = "25555000907877";
+//        existingCustomerPin    = "7711";
+        existingCustomerId     = "21221012345999"; // Patron ID 33005 at WBRL
         existingCustomerPin    = "7711";
         // Turn one (or more) to true to run these tests.
         // Be warned that they all require authentication which will cause 
         // a temporary lockout if more than three authentication attempts are
         // made with a five minute period.
-        runStatusTest          = false;
-        runGetCustomerTest     = false;
+        runStatusTest          = true;
+        runGetCustomerTest     = true;
         runCreateCustomerTest  = false;
         runUpdateCustomerTest  = false;
-        runCustomerExistsTest  = true;
+        runCustomerExistsTest  = false;
     }
 
     /**
@@ -226,7 +237,7 @@ public class PapiRequestBuilderTest
             CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
             ILSRequestBuilder requestBuilder = new PapiRequestBuilder(true);
             Command updateCustomerExistsCommand = requestBuilder.getUpdateUserCommand(
-                        updateCustomer, response, normalizer);
+                updateCustomer, response, normalizer);
             CommandStatus status = updateCustomerExistsCommand.execute();
             System.out.println(" update customer STDOUT:'"+status.getStdout()+"'");
             System.out.println(" update customer STDERR::'"+status.getStderr()+"'");
@@ -261,7 +272,7 @@ public class PapiRequestBuilderTest
             // See PapiXmlStatusMessageTest for more information and examples.
             PapiXmlStatusResponse papiStatusResponse = new PapiXmlStatusResponse(status.getStdout());
             double result = papiStatusResponse.getCourseGrainedVersion();
-            assertEquals(expectedVersion, result, 0);
+//            assertEquals(expectedVersion, result, 0);
             assertTrue(result >= expectedVersion);
             requestBuilder.tidy();
         }
@@ -289,6 +300,17 @@ public class PapiRequestBuilderTest
             System.out.println(" get customer STDOUT:"+status.getStdout());
             System.out.println(" get customer STDERR:"+status.getStderr());
             assertTrue(requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response));
+            // Non existing which we can do with staff auth, but not patron because it bogs down
+            // authentication.
+//Response nextResponse = new Response();
+//            requestBuilder = new PapiRequestBuilder(true);
+//            Command customerNotExistsCommand = requestBuilder.getCustomerCommand(
+//                    nonExistingCustomerId, nonExistingCustomerPin, nextResponse);
+//            CommandStatus notStatus = customerNotExistsCommand.execute();
+//            System.out.println(" get customer STDOUT:"+notStatus.getStdout());
+//            System.out.println(" get customer STDERR:"+notStatus.getStderr());
+//            boolean fuckoff = requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, notStatus, nextResponse);
+//            assertFalse(fuckoff);
             requestBuilder.tidy();
         }
         else
@@ -380,14 +402,15 @@ public class PapiRequestBuilderTest
             System.out.println(" test customer STDERR:"+status.getStderr());
             assertTrue(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
             // now test if the customer could not be found.
+            // Uncomment this test but it is a bit confusing to read.
 //            requestBuilder = new PapiRequestBuilder(true);
 //            Command customerDoesntExistCommand = requestBuilder.testCustomerExists(
-//                    existingCustomerId, "12345", response);
+//                    nonExistingCustomerId, "12345", response);
 //            status = customerDoesntExistCommand.execute();
 //            System.out.println(" test customer STDOUT:"+status.getStdout());
 //            System.out.println(" test customer STDERR:"+status.getStderr());
 //            assertFalse(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
-//            requestBuilder.tidy();
+            requestBuilder.tidy();
         }
         else
         {

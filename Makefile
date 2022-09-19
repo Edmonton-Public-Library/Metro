@@ -24,3 +24,9 @@ install_windows:
 dist_unix:
 	-rm ${ARCHIVE}.tar
 	tar cvf ${ARCHIVE}.tar ${CONFIGS} ${DIST_FILES} ${UNIX_DIR} logs/Customers ${UNIX_READMES}
+
+sandbox:
+	cp papi.properties.sandbox papi.properties
+
+wbrl:
+	cp papi.properties.wbrl papi.properties

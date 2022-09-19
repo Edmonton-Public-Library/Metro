@@ -64,8 +64,12 @@ public class PapiCommand implements Command
     private static String xmlBodyText;
     private static String apiUserId;
     private static String apiKey;
-    private static String accessToken = "";
+//    private static String accessToken = "";
     private static int timezoneDelta;
+    private static boolean useStaffMode;
+//    private static String authorizationHeaderField;
+    private static String staffPassword;
+    private static String patronAccessToken;
     
     public static class Builder
     {
@@ -79,6 +83,10 @@ public class PapiCommand implements Command
         private HttpClient.Version httpVersion;
         private int connectionTimeout;
         private int timezoneDelta;
+        private boolean useStaffMode;
+        private String staffPassword;
+        private boolean runAsStaff;
+        private String patronAccessToken;
 
         /**
          * Builds a PAPI Command using the resources specified in the papi.properties
@@ -154,6 +162,9 @@ public class PapiCommand implements Command
                     + "Defaulting to 0.0.");
                 this.timezoneDelta = 0;
             }
+            this.useStaffMode = false;
+            this.staffPassword = "";
+            this.patronAccessToken = "";
         }
         
         /**
@@ -181,6 +192,50 @@ public class PapiCommand implements Command
         }
         
         /**
+         * Turns debugging on or off.
+         * @param isDebug
+         * @return Builder object.
+         */
+        public Builder debug(boolean isDebug)
+        {
+            this.debug = isDebug;
+            return this;
+        }
+        
+        /**
+         * Pass in the patron's access token if the service is running in 
+         * non-staff mode.
+         * @param token
+         * @return Builder object.
+         */
+        public Builder patronAccessToken(String token)
+        {
+            if (! token.isEmpty() && ! this.useStaffMode)
+            {
+                this.patronAccessToken = token;
+            }
+            return this;
+        }
+        
+        /**
+         * Pass in the staff password which cannot be blank or empty, or 
+         * staff authentication is not used.
+         * 
+         * @param password non-blank or empty string.
+         * @return Builder object.
+         */
+        public Builder staffPassword(String password)
+        {
+            if (! password.isEmpty())
+            {
+                this.staffPassword = password;
+                this.useStaffMode  = true;
+                this.patronAccessToken = "";
+            }
+            return this;
+        }
+        
+        /**
          * Builds the command and returns a reference to it.
          *
          * @return Web Service Command reference.
@@ -204,6 +259,9 @@ public class PapiCommand implements Command
         PapiCommand.apiKey     = builder.apiKey;
         PapiCommand.apiUserId  = builder.apiUserId;
         PapiCommand.timezoneDelta= builder.timezoneDelta;
+        PapiCommand.staffPassword= builder.staffPassword;
+        PapiCommand.patronAccessToken = builder.patronAccessToken;
+        PapiCommand.useStaffMode = builder.useStaffMode;
         // Create the httpClient.
         PapiCommand.httpClient = HttpClient.newBuilder()
             .version(builder.httpVersion)
@@ -218,9 +276,34 @@ public class PapiCommand implements Command
      * 
      * @param accessToken 
      */
-    public void accessToken(String accessToken)
+    public void patronAccessToken(String accessToken)
     {
-        PapiCommand.accessToken = accessToken;
+        // Password can't be empty and is user authentication mode, not staff 
+        // authentication mode.
+        if (! accessToken.isEmpty() && ! PapiCommand.useStaffMode)
+        {
+            PapiCommand.patronAccessToken = accessToken;
+        }
+    }
+    
+    /**
+     * Use the staff's access secret for authentication.
+     * 
+     * Can be used on public and protected methods.
+     * 
+     * @param accessSecret which cannot be empty or blank.
+     * If an empty password is passed, the patron password
+     * is used for authentication (if one was passed).
+     */
+    public void staffAccessSecret(String accessSecret)
+    {
+        if (! accessSecret.isEmpty())
+        {
+            PapiCommand.staffPassword = accessSecret;
+            PapiCommand.useStaffMode = true;
+            // Clear the patronAccessToken if set.
+            PapiCommand.patronAccessToken = "";
+        }
     }
 
     @Override
@@ -234,33 +317,77 @@ public class PapiCommand implements Command
             switch(PapiCommand.httpMethod)
             {
                 case GET:
-                    request = HttpRequest.newBuilder()
-                    .GET()
-                    .uri(PapiCommand.uri)
-                    .setHeader("accept", "application/xml")
-                    .setHeader("Authorization", computeAuthorizationToken())
-                    .setHeader("PolarisDate", getPolarisDate())
-                    .build();
+                    if (PapiCommand.useStaffMode)
+                    {
+                        request = HttpRequest.newBuilder()
+                        .GET()
+                        .uri(PapiCommand.uri)
+                        .setHeader("accept", "application/xml")
+                        .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
+                        .setHeader("Authorization", computeAuthorizationToken())
+                        .setHeader("PolarisDate", getPolarisDate())
+                        .build();
+                    }
+                    else
+                    {
+                        request = HttpRequest.newBuilder()
+                        .GET()
+                        .uri(PapiCommand.uri)
+                        .setHeader("accept", "application/xml")
+                        .setHeader("Authorization", computeAuthorizationToken())
+                        .setHeader("PolarisDate", getPolarisDate())
+                        .build();
+                    }
                     break;
                 case POST:
-                    request = HttpRequest.newBuilder()
-                    .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-                    .uri(PapiCommand.uri)
-                    .setHeader("accept", "application/xml")
-                    .setHeader("Content-Type", "application/xml")
-                    .setHeader("Authorization", computeAuthorizationToken())
-                    .setHeader("PolarisDate", getPolarisDate())
-                    .build();
+                    if (PapiCommand.useStaffMode)
+                    {
+                        request = HttpRequest.newBuilder()
+                        .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                        .uri(PapiCommand.uri)
+                        .setHeader("accept", "application/xml")
+                        .setHeader("Content-Type", "application/xml")
+                        .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
+                        .setHeader("Authorization", computeAuthorizationToken())
+                        .setHeader("PolarisDate", getPolarisDate())
+                        .build();
+                    }
+                    else
+                    {
+                        request = HttpRequest.newBuilder()
+                        .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                        .uri(PapiCommand.uri)
+                        .setHeader("accept", "application/xml")
+                        .setHeader("Content-Type", "application/xml")
+                        .setHeader("Authorization", computeAuthorizationToken())
+                        .setHeader("PolarisDate", getPolarisDate())
+                        .build();
+                    }
                     break;
                 case PUT:
-                    request = HttpRequest.newBuilder()
-                    .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-                    .uri(PapiCommand.uri)
-                    .setHeader("accept", "application/xml")
-                    .setHeader("Content-Type", "application/xml")
-                    .setHeader("Authorization", computeAuthorizationToken())
-                    .setHeader("PolarisDate", getPolarisDate())
-                    .build();
+                    if (PapiCommand.useStaffMode)
+                    {
+                        request = HttpRequest.newBuilder()
+                        .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                        .uri(PapiCommand.uri)
+                        .setHeader("accept", "application/xml")
+                        .setHeader("Content-Type", "application/xml")
+                        .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
+                        .setHeader("Authorization", computeAuthorizationToken())
+                        .setHeader("PolarisDate", getPolarisDate())
+                        .build();
+                    }
+                    else
+                    {
+                        request = HttpRequest.newBuilder()
+                        .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                        .uri(PapiCommand.uri)
+                        .setHeader("accept", "application/xml")
+                        .setHeader("Content-Type", "application/xml")
+                        .setHeader("Authorization", computeAuthorizationToken())
+                        .setHeader("PolarisDate", getPolarisDate())
+                        .build();
+                    }
                     break;
                 default:
                     break;
@@ -295,7 +422,7 @@ public class PapiCommand implements Command
     
     /**
      * Computes the authorization header based on whether the caller has 
-     * specified that the user name and accessToken are required.
+     * specified that the user name and patronAccessToken are required.
      * 
      * @return String of the computed authorization token required for the call.
      */
@@ -304,12 +431,12 @@ public class PapiCommand implements Command
         StringBuffer authorizationToken = new StringBuffer();
         // "PWS WBRLSOMEUSERID:[signiture]"
         authorizationToken.append("PWS ")
-                .append(PapiCommand.apiUserId)
-                .append(":")
-                .append(getPAPIHash());
+            .append(PapiCommand.apiUserId)
+            .append(":")
+            .append(getPAPIHash());
         if (PapiCommand.debug)
         {
-            System.out.println("DEBUG: authorization header\n'Authorization: " + authorizationToken + "'");
+            System.out.println("DEBUG: Auth token\n" + authorizationToken + "'");
         }
         return authorizationToken.toString();
     }
@@ -321,8 +448,8 @@ public class PapiCommand implements Command
      * <li>httpMethod GET, POST, or PUT</li>
      * <li>uri</li>
      * <li>httpDate @see #getPolarisDate()</li>
-     * <li>accessToken which may be empty, in the case where you are performing 
-     * the operation as a staff member, but not null.</li>
+     * <li>patronAccessToken which may be empty, in the case where you are 
+     * performing the operation as a staff member, but not null.</li>
      * </ol>
      * @return hash of API key, HTTP Method, URI, Polaris Date, and optional 
      * Patron password.
@@ -338,13 +465,13 @@ public class PapiCommand implements Command
         // Guide (Polaris 4.1 Doc rev. 8) apply. 
         StringBuffer data = new StringBuffer();
         data.append(PapiCommand.httpMethod.name())
-                .append(PapiCommand.uri.toASCIIString())
-                .append(getPolarisDate())
-                // The accessToken can be empty if not a protected REST method.
-                .append(PapiCommand.accessToken);
+            .append(PapiCommand.uri.toASCIIString())
+            .append(getPolarisDate())
+            // The patronAccessToken can be empty if staff are using public REST methods.
+            .append(PapiCommand.patronAccessToken);
         if (PapiCommand.debug)
         {
-            System.out.println("DEBUG: authorization token '" + data + "'");
+            System.out.println("DEBUG: method,URI,PDate,token(can be empty):\n'" + data + "'");
         }
         // Now compute the hash from the ordered data above.
         String result = "";
@@ -378,6 +505,7 @@ public class PapiCommand implements Command
      */
     private String getPolarisDate()
     {
+        // TODO: Isolate this function from DateComparer.
         // Use HTTP Date format (RFC1123)
         // ddd, dd MMM yyyy HH:mm:ss GMT
         // Example:

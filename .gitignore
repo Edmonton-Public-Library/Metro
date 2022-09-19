@@ -32,3 +32,4 @@ config_EPL.tgz
 TESTconfiguration/*.sip
 Andrew.note.md
 lib/*
+*.cache

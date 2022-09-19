@@ -4,8 +4,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either httpVersion 2 of the License, or
- * (at your option) any later httpVersion.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,51 +24,59 @@ import java.time.LocalDate;
 import mecard.util.DateComparer;
 
 /**
- * Encapsulates important information about the patron authentication response.
- * @author Andrew Nisbet andrew@dev-ils.com
+ * Handles authentication results from Staff authentication requests.
+ * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public final class PapiXmlPatronAuthenticateResponse extends PapiXmlResponse
+public class PapiXmlStaffAuthenticateResponse 
+        extends PapiXmlResponse
 {
 
     private String token;
     private String secret;
     private int userId;
     private String authExpiry;
-    
-    public PapiXmlPatronAuthenticateResponse(String xml)
+    public PapiXmlStaffAuthenticateResponse(String xml)
     {
         super(xml);
         /*
-            Successful response
-            -------------------
-            "PAPIErrorCode": 0,
-            "ErrorMessage": null,
-            "AccessToken": "$2a$10$MD1PFF/65owmn0uMMnV6lesArBATfiXOmNSn7kQwU7YoqoqEVBU3W",
-            "AccessSecret": "$2a$10$MD1PFF/65owmn0uMMnV6lesArBATfiXOmNSn7kQwU7YoqoqEVBU3W",
-            "PatronID": 2022,
-            "AuthExpDate": null
-            
-            Failed Response
-            ---------------
-            "PAPIErrorCode": -1,
-            "ErrorMessage": "PatronAuthenticationData object is null.",
-            "AccessToken": null,
-            "AccessSecret": null,
-            "PatronID": 0,
-            "AuthExpDate": null // which in XML looks like: <AuthExpDate i:nil="true" />
+        Successful response
+        -------------------
+        <AuthenticationResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+            <PAPIErrorCode>0</PAPIErrorCode>
+            <ErrorMessage i:nil="true" />
+            <AccessToken>JzZ33Wcpl61ka6znZlkmrfG6ITf6lHW7</AccessToken>
+            <AccessSecret>xKOtQZAaPAs7alEy</AccessSecret>
+            <PolarisUserID>18</PolarisUserID>
+            <BranchID>3</BranchID>
+            <AuthExpDate>2022-08-20T22:16:02.45</AuthExpDate>
+        </AuthenticationResult>
+
+
+        Failed Response
+        ---------------
+        <AuthenticationResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+            <PAPIErrorCode>-8001</PAPIErrorCode>
+            <ErrorMessage i:nil="true" />
+            <AccessToken i:nil="true" />
+            <AccessSecret i:nil="true" />
+            <PolarisUserID>0</PolarisUserID>
+            <BranchID>0</BranchID>
+            <AuthExpDate i:nil="true" />
+        </AuthenticationResult>
         */
         if (this.failed()) return;
         try 
         {
             this.token      = root.getElementsByTagName("AccessToken").item(0).getTextContent();
             this.secret     = root.getElementsByTagName("AccessSecret").item(0).getTextContent();
-            this.userId     = Integer.parseInt(root.getElementsByTagName("PatronID").item(0).getTextContent());
+            this.userId     = Integer.parseInt(root.getElementsByTagName("PolarisUserID").item(0).getTextContent());
             // When the token and secret expire.
             this.authExpiry = root.getElementsByTagName("AuthExpDate").item(0).getTextContent();
         }
         catch (NumberFormatException e)
         {
-            System.out.println("**error parsing PatronID, expected an integer.");
+            System.out.println("**error parsing Staff ID, expected an integer.");
+            this.userId = 0;
         }
     }
     

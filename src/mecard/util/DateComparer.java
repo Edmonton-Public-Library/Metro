@@ -25,9 +25,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -345,5 +344,50 @@ public class DateComparer
         }
         
         return DateComparer.getFutureDate(Policies.maximumExpiryDays());
+    }
+    
+    /**
+     * Takes two dates (in standard system format) and compares them.If date1 
+     * is less than date2 the value is less than zero, if date1 is 
+     * greater than date2 a positive integer is returned, and if the two dates 
+     * are equal or the strings could not be parsed 0 is returned.
+     * 
+     * @param date1 first date as system type.
+     * @param date2 second date as system type.
+     * @return integer value greater, less than, or equal to 0.
+     */
+    public static int cmpDates(String date1, String date2)
+    {
+        return DateComparer.cmpDates(date1, date2, false);
+    }
+    
+    /**
+     * Takes two dates (in standard system format) and compares them.If date1 
+     * is less than date2 the value is less than zero, if date1 is 
+     * greater than date2 a positive integer is returned, and if the two dates 
+     * are equal or the strings could not be parsed 0 is returned.
+     * 
+     * @param date1 first date as system type.
+     * @param date2 second date as system type.
+     * @param debug true will print the dates that failed to parse and nothing otherwise.
+     * @return integer value greater, less than, or equal to 0.
+     */
+    public static int cmpDates(String date1, String date2, boolean debug)
+    {
+        try
+        {
+            LocalDateTime dateTime1 = LocalDateTime.parse(date1);
+            LocalDateTime dateTime2 = LocalDateTime.parse(date2);
+            return dateTime1.compareTo(dateTime2);
+        } 
+        catch (DateTimeParseException ex)
+        {
+            if (debug)
+            {
+                System.out.println("**error, one or both dates could not be parsed.\n'"
+                    + date1 + "', and d2: '" + date2 + "'");
+            }
+            return 0;
+        }
     }
 }

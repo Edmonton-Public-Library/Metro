@@ -59,7 +59,7 @@ public class PapiXmlRequestPatronValidateResponse extends PapiXmlResponse
         }
         this.expirationDate     = root.getElementsByTagName("ExpirationDate").item(0).getTextContent();
         this.barcode            = root.getElementsByTagName("Barcode").item(0).getTextContent();
-        this.validPatron = Boolean.valueOf(root.getElementsByTagName("ValidPatron").item(0).getTextContent());
+        this.validPatron        = Boolean.valueOf(root.getElementsByTagName("ValidPatron").item(0).getTextContent());
     }
     
     /**

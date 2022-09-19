@@ -153,6 +153,7 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         // Shouldn't be empty it is a required field, but guard for it just in case.
         if (! postalCode.isEmpty())
         {
+            
             customerTable.setValue(PapiElementOrder.POSTAL_CODE.name(), 
                 PostalCode.formatPostalCode(postalCode));
             // Use the line below if testing. The test server is expecting US postal codes.

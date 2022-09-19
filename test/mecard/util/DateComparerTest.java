@@ -420,6 +420,33 @@ public class DateComparerTest
         possibleDate = "20210101";
         assertTrue(DateComparer.isAnsiDate(possibleDate));
     }
+    
+    /**
+     * Test of isAnsiDate method, of class DateComparer.
+     */
+    @Test
+    public void TestCmpDates()
+    {
+        System.out.println("cmpDates");
+        String d1 = "2021-12-31T00:00:00";
+        String d2 = "2021-12-31T00:00:00";
+        assertTrue(DateComparer.cmpDates(d1, d2, true) == 0);
+        d1 = "2022-12-31T00:00:00";
+        d2 = "2021-12-31T00:00:00";
+        assertTrue(DateComparer.cmpDates(d1, d2, true) > 0);
+        d1 = "2021-12-31T00:00:00";
+        d2 = "2022-12-31T00:00:00";
+        assertTrue(DateComparer.cmpDates(d1, d2, true) < 0);
+        d1 = "";
+        d2 = "2022-12-31T00:00:00";
+        assertTrue(DateComparer.cmpDates(d1, d2, true) == 0);
+        d2 = "";
+        d1 = "2022-12-31T00:00:00";
+        assertTrue(DateComparer.cmpDates(d1, d2, true) == 0);
+        d1 = "";
+        d2 = "";
+        assertTrue(DateComparer.cmpDates(d1, d2, true) == 0);
+    }
 
     /**
      * Test of computeExpiryDate method, of class DateComparer.

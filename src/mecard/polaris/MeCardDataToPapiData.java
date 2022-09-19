@@ -70,7 +70,6 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
     private final QueryType queryType;
     private final EnumMap<PapiElementOrder, String> columns;
     public static PapiElementOrder TABLE_NAME;
-    public final static String DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     
     /**
      * Specifies the formatting {@link PAPIFormattedTable.ContentType} and defaults
@@ -249,7 +248,7 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
      * and an email message is sent to a staff member. An error message (Address change request not
      * permitted, -501) is sent if the Patron can request address change option is not set.
      * You can remove an email address by sending a blank EmailAddress or Alt email address in the request
-     * body; for example: \<EmailAddress\>\<\\EmailAddress\> would remove whatever was in the record.
+     * body; for example: \<EmailAddress\>\<\/EmailAddress\> would remove whatever was in the record.
      * Note: Incoming phone number formats are validated against customer-defined rules in
      * Polaris System Administration.
      * 

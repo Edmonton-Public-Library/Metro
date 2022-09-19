@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ import java.util.List;
  */
 public class UserFile 
 {
-    private final String filePath;
-    private final List<String> data;
+    protected final String filePath;
+    protected final List<String> data;
     
     /**
      * Creates a Flat user file ready for writing user data.
@@ -61,7 +61,7 @@ public class UserFile
 
     /**
      *
-     * @return the boolean
+     * @return true if the content was written to file and false otherwise.
      */
     public boolean writeContent()
     {

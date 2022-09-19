@@ -28,14 +28,17 @@ import org.junit.Test;
  *
  * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
-public class PapiXmlMessageTest {
+public class PapiXmlResponseTest {
 
     private final String apiVersionXml;
+    private final String failedXml;
     
-    public PapiXmlMessageTest() 
+    public PapiXmlResponseTest() 
     {
+        this.failedXml = "<PatronBasicDataGetResult xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\"><PAPIErrorCode>-3000</PAPIErrorCode><ErrorMessage>Error retrieving patron ID. </ErrorMessage><PatronBasicData i:nil=\"true\" /></PatronBasicDataGetResult>";
         this.apiVersionXml = "<ApiResult xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\"><PAPIErrorCode>0</PAPIErrorCode><ErrorMessage></ErrorMessage><Version>7.0.9502.0</Version><Major>7</Major><Minor>0</Minor><Build>9502</Build><Revision>0</Revision></ApiResult>";
     }
+    
 
     /**
      * Test of toString method, of class PapiXmlMessages.
@@ -46,6 +49,12 @@ public class PapiXmlMessageTest {
         PapiXmlResponse instance = new PapiXmlResponse(this.apiVersionXml);
         String expResult = "0";
         String result = instance.toString();
+        assertEquals(expResult, result);
+        
+        instance = new PapiXmlResponse(this.failedXml);
+        int iResult = -3000;
+        int iError = instance.errorCode();
+        System.out.println(">>>" + instance.toString());
         assertEquals(expResult, result);
     }
     

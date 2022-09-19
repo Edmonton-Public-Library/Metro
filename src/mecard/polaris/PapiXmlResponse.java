@@ -212,6 +212,10 @@ public class PapiXmlResponse
                 return "Failed to insert entry in addresses table";
             case -221:
                 return "Failed to insert entry in PostalCodes table";
+            case -222:
+                return "Invalid postal code length";
+            case -223:
+                return "Invalid postal code format"; // if you get this turn off postal code formatting in MeCardCustomerToPapi.java.
             case -501:
                 return "Patron personal information change is not allowed: " + this.errorMessage;
             case -3000:
