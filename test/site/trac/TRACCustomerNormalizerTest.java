@@ -3,7 +3,7 @@ package site.trac;
 import mecard.Response;
 import mecard.config.PolarisTable;
 import mecard.customer.Customer;
-import mecard.polaris.MeCardCustomerToPolarisSQL;
+import mecard.polaris.sql.MeCardCustomerToPolarisSQL;
 import mecard.sip.SIPToMeCardCustomer;
 import org.junit.Test;
 import static org.junit.Assert.*;

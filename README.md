@@ -62,6 +62,7 @@ The guest then creates a new user record in their ILS.
 	<entry key="org-id">1</entry>
 	<entry key="connection-timeout">10</entry>
 	<entry key="debug">false</entry>
+	<entry key="server-type">production</entry> <!-- default: 'sandbox' -->
 </properties>
 ```
 * The **message.properties** file needs to have the following fields.

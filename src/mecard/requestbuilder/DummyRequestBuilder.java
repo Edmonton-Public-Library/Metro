@@ -35,8 +35,8 @@ import mecard.symphony.FlatToMeCardCustomer;
 import mecard.sip.SIPToMeCardCustomer;
 import mecard.exception.DummyException;
 import mecard.config.PropertyReader;
-import mecard.polaris.PapiToMeCardCustomer;
-import mecard.polaris.PolarisSQLToMeCardCustomer;
+import mecard.polaris.papi.PapiToMeCardCustomer;
+import mecard.polaris.sql.PolarisSQLToMeCardCustomer;
 import site.CustomerLoadNormalizer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 

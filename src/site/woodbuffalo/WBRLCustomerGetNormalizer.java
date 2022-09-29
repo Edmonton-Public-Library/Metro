@@ -25,7 +25,7 @@ import java.text.ParseException;
 import mecard.Protocol;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
-import mecard.polaris.PapiElementOrder;
+import mecard.polaris.papi.PapiElementOrder;
 import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
 import mecard.Policies;

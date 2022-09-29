@@ -3,9 +3,9 @@ package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
-import api.SQLConnector;
-import api.SQLDescribeCommand;
-import api.SQLSelectCommand;
+import mecard.polaris.sql.SQLConnector;
+import mecard.polaris.sql.SQLDescribeCommand;
+import mecard.polaris.sql.SQLSelectCommand;
 import java.util.Properties;
 import json.RequestDeserializer;
 import mecard.Request;

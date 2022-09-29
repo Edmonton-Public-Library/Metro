@@ -20,17 +20,10 @@
 */
 package site.woodbuffalo;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.text.ParseException;
 import mecard.Response;
 import mecard.ResponseTypes;
-import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
-import mecard.polaris.PapiElementOrder;
-import mecard.util.DateComparer;
-import mecard.util.PostalCode;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -109,24 +102,11 @@ public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
         // All PAPI sites use the same date formatting, gender formatting etc.
         // so all this code is being moved up to the MeCardCustomerToPapi class.
         //
-        // 2020-02-11 WBRL gender mapping below. ME libraries only passes 'M',
-        // 'F', or 'X' - which needs to be translated to 'N', not applicable.
-        // This is done in MeCardCustomerToPapi class for all PAPI sites.
-        // The reason is the API documentation dictates that all PAPI web services
-        // Handle gender information the same way.
-//        String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
-//        switch (sex)
-//        {
-//            case "M":
-//                formattedCustomer.setValue(PapiElementOrder.GENDER.toString(), "M");
-//                break;
-//            case "F":
-//                formattedCustomer.setValue(PapiElementOrder.GENDER.toString(), "F");
-//                break;
-//            default:
-//                formattedCustomer.setValue(PapiElementOrder.GENDER.toString(), "N");
-//                break;
-//        }
+        // 2020-02-11 WBRL does not support gender. There is code to handle 
+        // gender in a Polaris-like manner, but only if the value is NOT empty.
+        // so here any gender value is ignored and a default field value is stored.
+        // 
+                
 //        // Privilege expiry logic. Use the customer's expiry and if one isn't 
 //        // set set it to expire in a year.
 //        String expiry = unformattedCustomer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);

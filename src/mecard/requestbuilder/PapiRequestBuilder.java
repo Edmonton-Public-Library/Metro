@@ -20,15 +20,15 @@
  */
 package mecard.requestbuilder;
 
-import mecard.polaris.PapiXmlStaffAuthenticateResponse;
+import mecard.polaris.papi.PapiXmlStaffAuthenticateResponse;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
 import api.HttpCommandStatus;
 import java.util.Date;
 import java.util.List;
-import mecard.polaris.PapiCommand;
-import mecard.polaris.PapiXmlCustomerResponse;
+import mecard.polaris.papi.PapiCommand;
+import mecard.polaris.papi.PapiXmlCustomerResponse;
 import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.Response;
@@ -41,21 +41,21 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.DumpUser;
 import mecard.customer.MeCardCustomerToNativeFormat;
-import mecard.polaris.PapiToMeCardCustomer;
-import mecard.polaris.PapiXmlStatusResponse;
+import mecard.polaris.papi.PapiToMeCardCustomer;
+import mecard.polaris.papi.PapiXmlStatusResponse;
 import site.CustomerLoadNormalizer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import mecard.exception.ConfigurationException;
 import mecard.exception.PapiException;
-import mecard.polaris.MeCardCustomerToPapi;
-import mecard.polaris.MeCardDataToPapiData.QueryType;
-import mecard.polaris.PapiXmlPatronAuthenticateResponse;
-import mecard.polaris.PapiXmlPatronBasicDataResponse;
-import mecard.polaris.PapiXmlRequestPatronValidateResponse;
-import mecard.polaris.PapiXmlResponse;
-import mecard.polaris.PatronAuthenticationData;
-import mecard.polaris.StaffAuthenticationData;
-import mecard.polaris.TokenCache;
+import mecard.polaris.papi.MeCardCustomerToPapi;
+import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
+import mecard.polaris.papi.PapiXmlPatronAuthenticateResponse;
+import mecard.polaris.papi.PapiXmlPatronBasicDataResponse;
+import mecard.polaris.papi.PapiXmlRequestPatronValidateResponse;
+import mecard.polaris.papi.PapiXmlResponse;
+import mecard.polaris.papi.PatronAuthenticationData;
+import mecard.polaris.papi.StaffAuthenticationData;
+import mecard.polaris.papi.TokenCache;
 
 /**
  * This class supports customer registration commands using the Polaris API 

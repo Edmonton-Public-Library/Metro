@@ -58,7 +58,8 @@ public enum PapiPropertyTypes
     ERECEIPT_OPTION_ID("ereceipt-option-id"),
     PATRON_BRANCH_ID("patron-branch-id"),
     CONNECTION_TIMEOUT("connection-timeout"),
-    DEBUG("debug");
+    DEBUG("debug"),
+    SERVER_TYPE("server-type");
     
     private String type;
 
