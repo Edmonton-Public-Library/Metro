@@ -238,7 +238,10 @@ public class Responder
         // So all this stuff will be put to the SIPCommand
         ILSRequestBuilder requestService = ILSRequestBuilder.getInstanceOf(
                 QueryTypes.TEST_CUSTOMER, debug);
-        Command command = requestService.getCustomerCommand(userId, userPin, response);
+        // It now matters that there is a difference between getting the customer
+        // which is fine for SIP but not for Polaris API, so we are no longer 
+        // using the getCustomerCommand() as a default.
+        Command command = requestService.testCustomerExists(userId, userPin, response);
         CommandStatus status = command.execute();
         // fill in the response with status info and test.
         requestService.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response);

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ public enum LibraryPropertyTypes
 {
     STATUS_SERVICE("status-protocol"),
     GET_SERVICE("get-protocol"),
+    EXISTS_SERVICE("exists-protocol"),
     UPDATE_SERVICE("update-protocol"),
     CREATE_SERVICE("create-protocol"),
     API_KEY("api-key"),

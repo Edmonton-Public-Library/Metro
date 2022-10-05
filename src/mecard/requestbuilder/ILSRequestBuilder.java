@@ -76,10 +76,17 @@ public abstract class ILSRequestBuilder
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
                 break;
-            case TEST_CUSTOMER: // use the same service as you would for getCustomer.
-                                // but if you want to use a different service you will
-                                // have to create an entry for it in the environment 
-                                // properties file.
+            case TEST_CUSTOMER:
+                // Entry for environment.properties.
+                // <entry key="exists-protocol">polaris-api</entry>
+                // If the environment.properties file doesn't contain an
+                // entry then the default of the LibraryPropertyTypes.GET_SERVICE
+                // will be used.
+                serviceType = PropertyReader.
+                    getProperties(ConfigFileTypes.ENVIRONMENT).
+                    getProperty(LibraryPropertyTypes.EXISTS_SERVICE.toString(),
+                        LibraryPropertyTypes.GET_SERVICE.toString());
+                break;
             case GET_CUSTOMER:
                 serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).

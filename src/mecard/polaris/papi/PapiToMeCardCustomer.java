@@ -206,8 +206,6 @@ public class PapiToMeCardCustomer implements NativeFormatToMeCardCustomer
             expiry = DateComparer.getANSIDate(expiry);
         }
         customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
-        customer.set(CustomerFieldTypes.PREFEREDNAME, 
-                customerData.getField(PapiElementOrder.USE_LEGAL_NAME_ON_NOTICES.toString()));
         return customer;
     }
 

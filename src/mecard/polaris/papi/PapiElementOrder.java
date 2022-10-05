@@ -64,7 +64,7 @@ public enum PapiElementOrder
     USER_4("User4"),
     USER_5("User5"),
     GENDER("Gender"),
-    BIRTHDATE("Birthdate"),
+    BIRTHDATE("BirthDate"),
     PHONE_VOICE_1("PhoneVoice1"),
     PHONE_VOICE_2("PhoneVoice2"),
     PHONE_VOICE_3("PhoneVoice3"),

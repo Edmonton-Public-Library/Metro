@@ -29,9 +29,9 @@ package mecard.polaris.papi;
 public class PapiXmlRequestPatronValidateResponse extends PapiXmlResponse
 {
 
-    private final boolean validPatron;
-    private final String barcode;
-    private final String expirationDate;
+    private boolean validPatron;
+    private String barcode;
+    private String expirationDate;
 
     public PapiXmlRequestPatronValidateResponse(String xml)
     {
@@ -50,16 +50,19 @@ public class PapiXmlRequestPatronValidateResponse extends PapiXmlResponse
         //  <ExpirationDate>2022-07-30T19:38:30</ExpirationDate>
         //  <OverridePasswordUsed>false</OverridePasswordUsed>
         //</PatronValidateResult>
-        if (this.failed())
+        try
+        {
+            this.expirationDate     = root.getElementsByTagName("ExpirationDate").item(0).getTextContent();
+            this.barcode            = root.getElementsByTagName("Barcode").item(0).getTextContent();
+            this.validPatron        = Boolean.valueOf(root.getElementsByTagName("ValidPatron").item(0).getTextContent());
+        }
+        // This can happen if the response is not a valid customer and there is not 'Barcode' or 'ValidPatron'.
+        catch (NullPointerException ex)
         {
             this.expirationDate = "0000-00-00T00:00:00.000z";
             this.barcode        = "-1";
             this.validPatron    = false;
-            return;
         }
-        this.expirationDate     = root.getElementsByTagName("ExpirationDate").item(0).getTextContent();
-        this.barcode            = root.getElementsByTagName("Barcode").item(0).getTextContent();
-        this.validPatron        = Boolean.valueOf(root.getElementsByTagName("ValidPatron").item(0).getTextContent());
     }
     
     /**

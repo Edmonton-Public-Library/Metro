@@ -37,6 +37,10 @@ The guest then creates a new user record in their ILS.
 ## Version 2.00.XX
 * MeCard servers now support Polaris web services (PAPI) version 7.x. 
 * If using PAPI uses the date format (set in the **environment properties**) to `“yyyy-MM-dd'T'HH:mm:ss”`.
+* The **environment properties** file should now have an entry to test if a customer exists. While this is called a protocol, the ME Libraries front end never sends this as a request. Instead it is used internally by the Responder object.
+```xml
+<entry key="exists-protocol">polaris-api</entry> <!-- or symphony-api or what have you -->
+```
 * Make sure to add a **papi.properties** file with the correct configuration. 
 ```xml
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">

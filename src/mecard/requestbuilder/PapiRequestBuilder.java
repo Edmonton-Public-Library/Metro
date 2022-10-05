@@ -489,7 +489,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                     if (debug) System.out.println("Get customer succeeded.");
                     return true;
                 }
-                response.setCode(ResponseTypes.FAIL);
+                response.setCode(ResponseTypes.USER_NOT_FOUND);
                 response.setResponse(messageProperties.getProperty(
                         MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 System.out.println("**failed to find customer with message: " 
@@ -628,7 +628,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        return new PapiXmlCustomerResponse(stdout, true);
+        return new PapiXmlCustomerResponse(stdout, this.debug);
     }
 
 }

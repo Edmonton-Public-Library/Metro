@@ -52,7 +52,6 @@ public class PapiXmlResponse
      */
     public PapiXmlResponse(String xml)
     {
-        this.failedResponse = false;
         try 
         {
             /*
@@ -152,7 +151,7 @@ public class PapiXmlResponse
     {
         try 
         {
-            return Integer.parseInt(papiErrorCode);
+            return Integer.parseInt(this.papiErrorCode);
         }
         catch (NumberFormatException e)
         {
@@ -182,14 +181,12 @@ public class PapiXmlResponse
      */
     public String errorMessage()
     {
-        if (this.errorCode() > 0)
+        if (this.errorCode() >= 0)
         {
             return "";
         }
         switch (this.errorCode())
         {
-            case 0:
-                return "";
             case -1:
                 return this.errorMessage;
             case -2:
