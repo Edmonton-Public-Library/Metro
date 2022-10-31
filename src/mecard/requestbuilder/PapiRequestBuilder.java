@@ -387,18 +387,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     @Override
     public final Command getCustomerCommand(String userId, String userPin, Response response)
     {
-        // If the staff requirements are not fulfilled MeCard will try and continue
-        // using just patron authentication techniques.
-        String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword);
-        String patronAccessToken = "";
-        if (! this.runAsStaff)
-        {
-            patronAccessToken = this.getPatronAccessToken(userId, userPin, response);
-        }
+        // The request must be completed by patron access or else no matter what
+        // password is used, the customer's data will be returned.
+        String patronAccessToken = this.getPatronAccessToken(userId, userPin, response);
         PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
             .uri(this.getPublicBaseUri() + "patron/" + userId + "/basicdata?addresses=true&notes=true")
             .debug(this.debug)
-            .staffPassword(staffSecret) // which can be blank.
             .patronAccessToken(patronAccessToken) // which not get filled if staff password is non-empty.
             .build();
         return command;
