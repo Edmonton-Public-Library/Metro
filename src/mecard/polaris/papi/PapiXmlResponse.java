@@ -23,6 +23,10 @@ package mecard.polaris.papi;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import java.io.*;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
+import mecard.config.MessagesTypes;
+import mecard.config.PropertyReader;
 import org.xml.sax.SAXException;
 import mecard.exception.PapiException;
 
@@ -43,6 +47,7 @@ public class PapiXmlResponse
     protected String papiErrorCode;
     protected String errorMessage;
     protected boolean failedResponse;
+    protected static Properties messageProperties;
     
     /**
      * Parses string of XML and provides accessors for status and any 
@@ -52,6 +57,7 @@ public class PapiXmlResponse
      */
     public PapiXmlResponse(String xml)
     {
+        messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         try 
         {
             /*
@@ -133,10 +139,15 @@ public class PapiXmlResponse
             if (this.failedResponse == true)
             {
                 this.papiErrorCode  = "-1";
-                throw new PapiException(" PAPIResult: " +this.papiErrorCode + " =>'" + this.errorMessage + "'\n"
-                        + "  A 'null' result usually means a timeout to the web\n"
-                        + "  service. Either the service is busy, down, or there\n"
-                        + "  was an authentication issue: ");
+                System.out.println("PapiResult: got a null response which may mean\n"
+                        + "an authentication error, web service timeout.");
+                // Get the authentication error message from the messages.properties file.
+                String defaultMessage = "Authentication failure. The user's ID "
+                        + "or password are incorrect\nbut this type of error also "
+                        + "happens if the service is too busy or down.";
+                throw new PapiException(messageProperties.getProperty(
+                        MessagesTypes.USERID_PIN_MISMATCH.toString(), 
+                        defaultMessage));
             }
         }
     }
