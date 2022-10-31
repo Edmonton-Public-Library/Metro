@@ -304,15 +304,15 @@ public class PapiRequestBuilderTest
             assertTrue(requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response));
             // Non existing which we can do with staff auth, but not patron because it bogs down
             // authentication.
-//Response nextResponse = new Response();
-//            requestBuilder = new PapiRequestBuilder(true);
-//            Command customerNotExistsCommand = requestBuilder.getCustomerCommand(
-//                    nonExistingCustomerId, nonExistingCustomerPin, nextResponse);
-//            CommandStatus notStatus = customerNotExistsCommand.execute();
-//            System.out.println(" get customer STDOUT:"+notStatus.getStdout());
-//            System.out.println(" get customer STDERR:"+notStatus.getStderr());
-//            boolean fuckoff = requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, notStatus, nextResponse);
-//            assertFalse(fuckoff);
+            Response nextResponse = new Response();
+            requestBuilder = new PapiRequestBuilder(true);
+            Command customerNotExistsCommand = requestBuilder.getCustomerCommand(
+                    nonExistingCustomerId, nonExistingCustomerPin, nextResponse);
+            CommandStatus notStatus = customerNotExistsCommand.execute();
+            System.out.println(" get customer STDOUT:"+notStatus.getStdout());
+            System.out.println(" get customer STDERR:"+notStatus.getStderr());
+            boolean itWorked = requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, notStatus, nextResponse);
+            assertFalse(itWorked);
             requestBuilder.tidy();
         }
         else
