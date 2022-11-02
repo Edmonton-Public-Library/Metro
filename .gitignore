@@ -33,3 +33,14 @@ TESTconfiguration/*.sip
 Andrew.note.md
 lib/*
 *.cache
+papi.properties*
+*.txt
+PRLconfiguration/*
+*.tgz
+*.gz
+*.xml
+*.orig
+sqljdbc_10.2/*
+pswatcher
+test/mecard/MetroClient.class_old
+unix/loaduser_SG.sh
