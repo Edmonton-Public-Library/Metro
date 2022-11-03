@@ -57,6 +57,7 @@ public enum PapiPropertyTypes
     DELIVERY_OPTION_ID("delivery-option-id"),
     ERECEIPT_OPTION_ID("ereceipt-option-id"),
     PATRON_BRANCH_ID("patron-branch-id"),
+    PATRON_CODE_ID("patron-code-id"),      // This is equivelant to SD's 'profile'
     CONNECTION_TIMEOUT("connection-timeout"),
     DEBUG("debug"),
     SERVER_TYPE("server-type");

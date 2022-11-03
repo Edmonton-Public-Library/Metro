@@ -184,6 +184,9 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         // branch for ME card customers is a non-holdable branch.
         customerTable.setValue(PapiElementOrder.REQUEST_PICKUP_BRANCH_ID.name(), 
                 props.getProperty(PapiPropertyTypes.PATRON_BRANCH_ID.toString()));
+        // The patron code AKA patron code ID or just patron ID is similar to SD's profile.
+        customerTable.setValue(PapiElementOrder.PATRON_CODE.name(),
+                props.getProperty(PapiPropertyTypes.PATRON_CODE_ID.toString()));
     }
     
     
