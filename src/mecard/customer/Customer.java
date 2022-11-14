@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2022  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,11 +151,13 @@ public class Customer
      */
     public boolean isEmpty(CustomerFieldTypes customerFieldTypes)
     {
-        if (this.get(customerFieldTypes) == null)
+        if (this.get(customerFieldTypes) == null || 
+                this.get(customerFieldTypes).isBlank())
         {
             return true;
         }
-        return (this.get(customerFieldTypes).compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0);
+        return (this.get(customerFieldTypes).compareTo(
+                Protocol.DEFAULT_FIELD_VALUE) == 0);
     }
     
     /**

@@ -58,16 +58,8 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
-        // We use USER_CATEGORY2 for customer sex so if the sending library
-        // has included this information we can set the field.
-        if (unformattedCustomer.isEmpty(CustomerFieldTypes.SEX) == false)
-        {
-            formattedCustomer.insertValue(
-                    FlatUserExtendedFieldTypes.USER.name(), 
-                    FlatUserFieldTypes.USER_CATEGORY2.toString(), 
-                    unformattedCustomer.get(CustomerFieldTypes.SEX));
-        }
         // No matter what ME customer give implied consent to contact via email when they join.
+        // Which at EPL, is USER_CATEGORY5.
         formattedCustomer.insertValue(
                     FlatUserExtendedFieldTypes.USER.name(), 
                     FlatUserFieldTypes.USER_CATEGORY5.toString(), 
