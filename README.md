@@ -73,7 +73,7 @@ The guest then creates a new user record in their ILS.
 ```xml
 <entry key="too-many-tries">Attempt to use the service too often, please try again later.</entry>
 ```
-* Windows Server (2019) is now supported. See Windows intatllation notes.
+* Windows Server (2019) is now supported. See Windows instalation notes.
 
 
 
