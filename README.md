@@ -80,17 +80,23 @@ The guest then creates a new user record in their ILS.
 
 ## Version 1.00.XX
 * The environment.properties file now requires the following tag.
-     <entry key="ils-type">[ILS_TYPE]</entry>
-  Where ILS_TYPE can be one of the following UNKNOWN, SYMPHONY, HORIZON, POLARIS or SIRSI_DYNIX.
+  ```xml
+  <entry key="ils-type">[ILS_TYPE]</entry>
+  ```
+  Where ILS_TYPE can be one of the following `UNKNOWN`, `SYMPHONY`, `HORIZON`, `POLARIS` or `SIRSI_DYNIX`.
 
 * The sip2.properties file now requires a new entry as follows.
-     <entry key="user-not-found">[Text from 'AF' field of the sip2 response]</entry>
+  ```xml
+  <entry key="user-not-found">[Text from 'AF' field of the sip2 response]</entry>
+  ```
   The exact message will depend on your vendor, and can change between versions of the same 
   sip2 server implementation. Use the Perl script `sip2emu.pl` and an *invalid user ID* and
   look for the text in the 'AF' fields for the value for this entry.
 
 * The sip2.properties file now requires a new entry as follows.
-     <entry key="user-pin-invalid">[Text from 'AF' field of the sip2 response]</entry>
+```xml
+<entry key="user-pin-invalid">[Text from 'AF' field of the sip2 response]</entry>
+```
   The exact message will depend on your vendor, and can change between versions of the same 
   sip2 server implementation. Use the Perl script `sip2emu.pl` and a valid user ID but an *invalid*
   PIN, and look for the text in the 'AF' fields for the value for this entry.
@@ -98,18 +104,22 @@ The guest then creates a new user record in their ILS.
 * You can now specify any of *-protocols in the environment.properties file
   to be 'outage'. For example, you can change the get-protocol from 'sip2' 
   to 'outage', as shown below, if you know your sip2 service is going to be unavailable.
-     <entry key="get-protocol">outage</entry>
+  ```xml
+  <entry key="get-protocol">outage</entry>
+  ```
 
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).
 
 * Support for mssql server 2019 is supported.
   Additional entries are possible in the polaris_sql.properties file.
+```xml
     <entry key="encrypt">true|false</entry>
-    <entry key="trust-server-certificate>true|false</entry>
-    <entry key="integrated-security>true|false</entry>
-    <entry key="trust-store>value</entry>
-    <entry key="trust-store-password>value</entry>
-    <entry key="host-name-in-certificate>value</entry>
+    <entry key="trust-server-certificate">true|false</entry>
+    <entry key="integrated-security">true|false</entry>
+    <entry key="trust-store">value</entry>
+    <entry key="trust-store-password">value</entry>
+    <entry key="host-name-in-certificate">value</entry>
+```
 
 # Windows Installation
 Installing Procrun (prunsrv.exe and prunmgr.exe)
@@ -133,14 +143,15 @@ The following steps were used at TRAC to install a new MeCard server under Windo
 
 # PowerShell Installation Command
 PowerShell Command to Install the Metro (AKA MeCard) Service.
-```powershell
+
+```PowerShell
 c:\metro\windows\prunsrv.exe //IS//Metro "--Description=MeCard --Jvm=auto --Startup=auto --StartMode=Java --Classpath='c:\metro\dist\MeCard.jar' --StartClass=mecard.MetroService --StartMethod=start --StopMode=Java --StopClass=mecard.MetroService --StopMethod=stop --LogPath='c:\metro\logs' --LogLevel=Info --LogPrefix=metro --StdOutput='c:\metro\logs\Metro-stdout.txt' --StdError='c:\metro\logs\Metro-stderr.txt'"
 ```
 
 
 # System Event Logs
 There are four places to look for information on issues you may be having. 
-```PowerShell
+```
 System event logs
 c:\Metro\logs\metro-stdout.txt
 c:\Metro\logs\metro-stderr.txt

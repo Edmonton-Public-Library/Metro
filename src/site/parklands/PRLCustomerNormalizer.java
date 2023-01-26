@@ -20,15 +20,9 @@
 */
 package site.parklands;
 
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.Response;
 import mecard.ResponseTypes;
-import mecard.config.CustomerFieldTypes;
-import mecard.config.PolarisTable;
 import mecard.customer.Customer;
-import mecard.util.DateComparer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import site.CustomerLoadNormalizer;
 
@@ -48,26 +42,26 @@ public final class PRLCustomerNormalizer extends CustomerLoadNormalizer
     public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
                 // add User1 - User5 and any other fields.
-        formattedCustomer.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.USER_1.toString(), 
-                "Not in the List");
-        formattedCustomer.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.USER_2.toString(), 
-                null);
-        formattedCustomer.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.USER_3.toString(), 
-                null);
-        formattedCustomer.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.USER_4.toString(), 
-                "(none)");
-        formattedCustomer.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.USER_5.toString(), 
-                "(none)");
+//        formattedCustomer.insertValue(
+//                PolarisTable.PATRON_REGISTRATION,
+//                PolarisTable.PatronRegistration.USER_1.toString(), 
+//                "Not in the List");
+//        formattedCustomer.insertValue(
+//                PolarisTable.PATRON_REGISTRATION,
+//                PolarisTable.PatronRegistration.USER_2.toString(), 
+//                null);
+//        formattedCustomer.insertValue(
+//                PolarisTable.PATRON_REGISTRATION,
+//                PolarisTable.PatronRegistration.USER_3.toString(), 
+//                null);
+//        formattedCustomer.insertValue(
+//                PolarisTable.PATRON_REGISTRATION,
+//                PolarisTable.PatronRegistration.USER_4.toString(), 
+//                "(none)");
+//        formattedCustomer.insertValue(
+//                PolarisTable.PATRON_REGISTRATION,
+//                PolarisTable.PatronRegistration.USER_5.toString(), 
+//                "(none)");
 // Default phone numbers '000-000-0000' could be problematic let's get rid of them here
 //        Phone phone = new Phone(customer.get(CustomerFieldTypes.PHONE));
 //        if (phone.isUnset())
@@ -84,44 +78,44 @@ public final class PRLCustomerNormalizer extends CustomerLoadNormalizer
 //                     3                      Male 
 // From the schema:
 // GENDER("GenderID"), //, 1, char, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, See PolarisTable.java.
-        String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
-        switch (sex)
-        {
-            case "M":
-                formattedCustomer.insertValue(
-                    PolarisTable.PATRON_REGISTRATION,
-                    PolarisTable.PatronRegistration.GENDER.toString(), 
-                    "3");
-                break;
-            case "F":
-                formattedCustomer.insertValue(
-                    PolarisTable.PATRON_REGISTRATION,
-                    PolarisTable.PatronRegistration.GENDER.toString(), 
-                    "2");
-                break;
-            default:
-                formattedCustomer.insertValue(
-                    PolarisTable.PATRON_REGISTRATION,
-                    PolarisTable.PatronRegistration.GENDER.toString(), 
-                    "1");
-                break;
-        }
-        if (unformattedCustomer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
-        {
-            String expiry = DateComparer.getFutureDate(365);
-            try
-            {
-                expiry = DateComparer.ANSIToConfigDate(expiry);
-            } 
-            catch (ParseException ex)
-            {
-                Logger.getLogger(PRLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            formattedCustomer.insertValue(
-                PolarisTable.PATRON_REGISTRATION,
-                PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(),
-                expiry);
-        }
+//        String sex = unformattedCustomer.get(CustomerFieldTypes.SEX);
+//        switch (sex)
+//        {
+//            case "M":
+//                formattedCustomer.insertValue(
+//                    PolarisTable.PATRON_REGISTRATION,
+//                    PolarisTable.PatronRegistration.GENDER.toString(), 
+//                    "3");
+//                break;
+//            case "F":
+//                formattedCustomer.insertValue(
+//                    PolarisTable.PATRON_REGISTRATION,
+//                    PolarisTable.PatronRegistration.GENDER.toString(), 
+//                    "2");
+//                break;
+//            default:
+//                formattedCustomer.insertValue(
+//                    PolarisTable.PATRON_REGISTRATION,
+//                    PolarisTable.PatronRegistration.GENDER.toString(), 
+//                    "1");
+//                break;
+//        }
+//        if (unformattedCustomer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
+//        {
+//            String expiry = DateComparer.getFutureDate(365);
+//            try
+//            {
+//                expiry = DateComparer.ANSIToConfigDate(expiry);
+//            } 
+//            catch (ParseException ex)
+//            {
+//                Logger.getLogger(PRLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            formattedCustomer.insertValue(
+//                PolarisTable.PATRON_REGISTRATION,
+//                PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(),
+//                expiry);
+//        }
     }
 
     @Override
