@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public class UserLostFile extends UserFile
     public UserLostFile(Customer customer, String loadDirectory)
     {
         super(loadDirectory + customer.get(CustomerFieldTypes.ID) + ".lost");
-        System.out.println("Creating lost file: " + loadDirectory + " :: "
+        System.out.println("Creating lost file: " + loadDirectory
                 + customer.get(CustomerFieldTypes.ID) + ".lost");
         this.customer = customer;
     }
@@ -57,13 +57,13 @@ public class UserLostFile extends UserFile
      */
     public void recordUserDataMessage(String message)
     {
-        List<String> data = new ArrayList<>();
-        data.add(message);
-        data.add("ALTERNATE IDS:");
-        data.add(this.customer.get(CustomerFieldTypes.ALTERNATE_ID));
-        data.add("\n=== START user data ===\n");
-        data.add(this.customer.toString());
-        data.add("\n=== END user data ===\n");
-        this.addUserData(data);
+        List<String> myData = new ArrayList<>();
+        myData.add(message);
+        myData.add("ALTERNATE IDS:");
+        myData.add(this.customer.get(CustomerFieldTypes.ALTERNATE_ID));
+        myData.add("=== START user data ===");
+        myData.add(this.customer.toString());
+        myData.add("=== END user data ===");
+        this.addUserData(myData);
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,6 @@ public class PlaceNameWGet
                {
 //                  System.out.println(input);
                    fileContents.add(input);
-                   fileContents.add("\n");
                }
                br.close();
                UserFile configFile = new UserFile(PropertyReader.getRegionFileName());

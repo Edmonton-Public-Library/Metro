@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,20 +55,20 @@ public class BimportUserFileTest
     {
         System.out.println("==create BimportUserFile==");
         List<String> registerData = new ArrayList<>();
-        registerData.add("M- borrower: 05-17-1980; 07-15-2014; Balzac, Billy Ann S; 9704; 21221012345678\n");
-        registerData.add("borrower_phone: 780-993-9987; h-noTC\n");
-        registerData.add("borrower_address: 1002-9999 115 St Nw;  ; ed; bb@hotmail.com; bb; T5K 0E4; 1; 1\n");
-        registerData.add("borrower_barcode: 21221012345678\n");
-        registerData.add("borrower_bstat: m\n");
-        registerData.add("borrower_bstat: metro\n");
+        registerData.add("M- borrower: 05-17-1980; 07-15-2014; Balzac, Billy Ann S; 9704; 21221012345678");
+        registerData.add("borrower_phone: 780-993-9987; h-noTC");
+        registerData.add("borrower_address: 1002-9999 115 St Nw;  ; ed; bb@hotmail.com; bb; T5K 0E4; 1; 1");
+        registerData.add("borrower_barcode: 21221012345678");
+        registerData.add("borrower_bstat: m");
+        registerData.add("borrower_bstat: metro");
         
         List<String> updateData = new ArrayList<>();
-        updateData.add("M- borrower: 05-17-1980; 07-15-2014; Balzac, Billy Ann S; ; 21221012345678\n");
-        updateData.add("borrower_phone: 780-993-9987; h-noTC\n");
-        updateData.add("borrower_address: 1002-9999 115 St Nw;  ; ed; bb@hotmail.com; bb; T5K 0E4; 1; 1\n");
-        updateData.add("borrower_barcode: 21221012345678\n");
-        updateData.add("borrower_bstat: m\n");
-        updateData.add("borrower_bstat: metro\n");
+        updateData.add("M- borrower: 05-17-1980; 07-15-2014; Balzac, Billy Ann S; ; 21221012345678");
+        updateData.add("borrower_phone: 780-993-9987; h-noTC");
+        updateData.add("borrower_address: 1002-9999 115 St Nw;  ; ed; bb@hotmail.com; bb; T5K 0E4; 1; 1");
+        updateData.add("borrower_barcode: 21221012345678");
+        updateData.add("borrower_bstat: m");
+        updateData.add("borrower_bstat: metro");
         // If this failes delete the file.
         if (new File(this.testFileName).exists())
         {
@@ -90,12 +90,12 @@ public class BimportUserFileTest
         assertTrue(backup.exists());
         assertFalse(this.showDifferences(testFileName + ".orig", testFileName));
         List<String> repeatUpdateData = new ArrayList<>();
-        repeatUpdateData.add("M- borrower: 05-17-1980; 07-15-2014; Balzac, Billy Ann S; ; 21221011111111\n");
-        repeatUpdateData.add("borrower_phone: 780-993-9987; h-noTC\n");
-        repeatUpdateData.add("borrower_address: 1002-9999 115 St Nw;  ; ed; bb@hotmail.com; bb; T5K 0E4; 1; 1\n");
-        repeatUpdateData.add("borrower_barcode: 21221012345678\n");
-        repeatUpdateData.add("borrower_bstat: m\n");
-        repeatUpdateData.add("borrower_bstat: metro\n");
+        repeatUpdateData.add("M- borrower: 05-17-1980; 07-15-2014; Balzac, Billy Ann S; ; 21221011111111");
+        repeatUpdateData.add("borrower_phone: 780-993-9987; h-noTC");
+        repeatUpdateData.add("borrower_address: 1002-9999 115 St Nw;  ; ed; bb@hotmail.com; bb; T5K 0E4; 1; 1");
+        repeatUpdateData.add("borrower_barcode: 21221012345678");
+        repeatUpdateData.add("borrower_bstat: m");
+        repeatUpdateData.add("borrower_bstat: metro");
         UserFile repeatUpdateUserFile = new BimportUserFile(this.testFileName);
         repeatUpdateUserFile.addUserData(repeatUpdateData);
         // The difference is that the original has a pin

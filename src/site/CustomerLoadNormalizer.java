@@ -102,7 +102,7 @@ public abstract class CustomerLoadNormalizer
         {
             normalizer = new TRACCustomerNormalizer(debug);
         }
-        else if (libCode.equalsIgnoreCase(MemberTypes.PKL.name()))
+        else if (libCode.equalsIgnoreCase(MemberTypes.PRL.name()))
         {
             normalizer = new PRLCustomerNormalizer(debug);
         }

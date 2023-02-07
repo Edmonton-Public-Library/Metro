@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,38 +20,39 @@
  */
 package mecard.customer;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class creates a file out of user data, while all exceptions issues messages
  * they don't stop the service.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew (at) dev-ils.com
  */
 public class UserFile 
 {
-    protected final String filePath;
+    protected Path filePath;
     protected final List<String> data;
     
     /**
-     * Creates a Flat user file ready for writing user data.
+     * Creates a user file as a type of log.
      * @param path 
      */
     public UserFile(String path)
     {
-        this.filePath = path;
-        this.data     = new ArrayList<>(); 
+        this.filePath = Paths.get(path);
+        System.out.println("UserFile: " + this.filePath.toString());
+        this.data = new ArrayList<>(); 
     }
     
     /**
-     * Adds all the flat user data from the argument, then writes and closes 
-     * the file. The flat user data must be correctly formatted. This class does
-     * no error checking of data.
-     * @param data flat user data.
+     * Adds all the user data from the argument, then writes and closes 
+     * the file. This class does no error checking of data.
+     * @param data List of user data strings.
      */
     public void addUserData(List<String> data)
     {
@@ -65,23 +66,15 @@ public class UserFile
      */
     public boolean writeContent()
     {
-        File dataFile = createFile(this.filePath);
-        BufferedWriter bWriter;
         try
         {
-            // write the builder contents to the file with the correct switches.
-            bWriter = new BufferedWriter(new FileWriter(dataFile));
-            for (String content: this.data)
-            {
-                bWriter.write(content);
-            }
-            bWriter.close();
-        }
-        catch (IOException ex)
+            Files.write(this.filePath, this.data);
+        } catch (IOException ex)
         {
-            String msg = "unable to create \n'" + dataFile.getPath() 
-                    + "' file.";
-            System.out.println("IOException:" + msg);
+            String msg = "*error unable to write to file " + this.filePath.toString() 
+                    + "\n" + UserFile.class.getName() + " => " + ex;
+            System.out.println(msg);
+            System.err.println(msg);
             return false;
         }
         return true;

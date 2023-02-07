@@ -162,34 +162,4 @@ public class BImportResultParserTest
         String result = instance.getUserId(resultString);
         assertEquals(expResult, result);
     }
-
-    /**
-     * Test of getFailedCustomers method, of class BImportResultParser.
-     */
-    @Test
-    public void testGetFailedCustomers()
-    {
-        System.out.println("getFailedCustomers");
-        BImportResultParser instance = null;
-        int expResult = 0;
-        int result = instance.getFailedCustomers();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getFailedCustomerKeys method, of class BImportResultParser.
-     */
-    @Test
-    public void testGetFailedCustomerKeys()
-    {
-        System.out.println("getFailedCustomerKeys");
-        BImportResultParser instance = null;
-        List<String> expResult = null;
-        List<String> result = instance.getFailedCustomerKeys();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 }

@@ -178,8 +178,10 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 .debug(this.debug)
                 .bodyXML(authentication)
                 .build();
+            System.out.println(new Date() + "DEBUG 'POST' auth to URL: " + this.getProtectedBaseUri() + "authenticator/staff");
             // HttpCommandStatus has methods for testing if there was HTTP errors
             HttpCommandStatus status = (HttpCommandStatus) command.execute();
+            System.out.println(new Date() + "staff authentication response: " + status.toString());
             // Can't use isSuccessful() because authentication is not a
             // query type, so test here.
             if (status.okay())
@@ -198,6 +200,10 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 {
                     // Fail fast (during testing) so IT knows that there is a 
                     // problem with staff credentials.
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + "staff failed to authenticate with message: '" + authResponse.errorMessage() + "'");
+                    }
                     throw new ConfigurationException("**error authenticating staff: \n" 
                         + authResponse.errorMessage());
                 }

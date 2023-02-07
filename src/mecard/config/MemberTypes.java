@@ -29,7 +29,7 @@ public enum MemberTypes
     EPL, // Edmonton Public Library
     STA, // St. Alberta Public Library
     STR, // Strathcona County Library / Fort Saskatchewan Public Library
-    PKL, // Parklands Regional Library
+    PRL, // Parklands Regional Library
     SLS, // Shortgrass Library System
     CAR, // Chinook Arch Regional Library System
     TRAC, // Trac including Yellowhead, Peace, and Northern Lights and Marigold, don't forget Marigold.

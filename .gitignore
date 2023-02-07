@@ -44,3 +44,5 @@ sqljdbc_10.2/*
 pswatcher
 test/mecard/MetroClient.class_old
 unix/loaduser_SG.sh
+*.fail
+*.lost

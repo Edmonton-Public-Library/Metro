@@ -1,6 +1,5 @@
-=============================
+
 # Metro Federation of Libraries
-=============================
 
 The Metro Federation of Libraries members are Edmonton Public Library (EPL), 
 Ft. Saskatchewan Public Library (FSPL), St. Albert Public Library (SAPL), 
@@ -10,7 +9,7 @@ and programs for our customers across the Metro Edmonton region. The
 Me Card project was created to reduce barriers in accessing the library 
 collections and diverse programs of the Metro Federation libraries.
 
-----------------------------
+
 # What is the Me Card service?
 ----------------------------
 
@@ -43,6 +42,7 @@ The guest then creates a new user record in their ILS.
 ```
 * Make sure to add a **papi.properties** file with the correct configuration. 
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>

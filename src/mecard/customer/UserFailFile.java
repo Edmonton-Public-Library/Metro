@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,10 +54,10 @@ public class UserFailFile extends UserFile
      */
     public void setStatus(CommandStatus status)
     {
-        List<String> data = new ArrayList<>();
-        data.add(status.getStdout());
-        data.add(status.getStderr());
-        this.addUserData(data);
+        List<String> myData = new ArrayList<>();
+        myData.add(status.getStdout());
+        myData.add(status.getStderr());
+        this.addUserData(myData);
     }
 
     /**
@@ -67,8 +67,8 @@ public class UserFailFile extends UserFile
      */
     public void addUserData(Customer customer)
     {
-        List<String> data = new ArrayList<>();
-        data.add(customer.toString());
-        this.addUserData(data);
+        List<String> myData = new ArrayList<>();
+        myData.add(customer.toString());
+        this.addUserData(myData);
     }
 }

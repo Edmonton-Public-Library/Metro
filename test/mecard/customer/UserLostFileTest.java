@@ -49,18 +49,21 @@ public class UserLostFileTest
     {
         System.out.println("==setStatus==");
         String name = "Doe, John";
-        Customer instance = new Customer();
-        instance.setName(name);
-        instance.set(CustomerFieldTypes.ISLOSTCARD, "Y");
-        boolean test = instance.isLostCard();
-        assertTrue(instance.isLostCard());
-        instance.set(CustomerFieldTypes.ALTERNATE_ID, "22222012345678");
-        instance.set(CustomerFieldTypes.ID, "22222012222222");
-        UserLostFile userFile = new UserLostFile(instance, new SymphonyRequestBuilder(true).getCustomerLoadDirectory());
+        Customer customer = new Customer();
+        customer.setName(name);
+        customer.set(CustomerFieldTypes.ISLOSTCARD, "Y");
+        boolean test = customer.isLostCard();
+        assertTrue(customer.isLostCard());
+        customer.set(CustomerFieldTypes.ALTERNATE_ID, "22222012345678");
+        customer.set(CustomerFieldTypes.ID, "22222012222222");
+        String loadDir = new SymphonyRequestBuilder(true).getCustomerLoadDirectory();
+        System.err.println("loadDir set to " + loadDir);
+        System.err.println(customer);
+        UserLostFile userFile = new UserLostFile(customer, loadDir);
         userFile.recordUserDataMessage("LOST CARD detected. This message is read from message.properties normally.");
         File f = new File("22222012222222.lost");
         assertTrue(f.exists());
-        f.delete();
+//        f.delete();
     }
     
 }

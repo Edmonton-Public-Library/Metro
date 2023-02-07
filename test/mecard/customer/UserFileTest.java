@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,32 +48,32 @@ public class UserFileTest
     {
         System.out.println("==create UserFile==");
         List<String> data = new ArrayList<>();
-        data.add("*** DOCUMENT BOUNDARY ***\n");
-//        data.add("FORM=LDUSER\n");
-        data.add(".USER_ID.   |a21221012345678\n");
-        data.add(".USER_FIRST_NAME.   |aBalzac\n");
-        data.add(".USER_LAST_NAME.   |aBilly\n");
-        data.add(".USER_PREFERRED_NAME.   |aBilly, Balzac\n");
-        data.add(".USER_LIBRARY.   |aEPLMNA\n");
-        data.add(".USER_PROFILE.   |aEPL-ADULT\n");
-        data.add(".USER_PREF_LANG.   |aENGLISH\n");
-        data.add(".USER_PIN.   |a64058\n");
-        data.add(".USER_STATUS.   |aOK\n");
-        data.add(".USER_ROUTING_FLAG.   |aY\n");
-        data.add(".USER_CHG_HIST_RULE.   |aALLCHARGES\n");
-        data.add(".USER_PRIV_GRANTED.   |a20130731\n");
-        data.add(".USER_PRIV_EXPIRES.   |a20140602\n");
-        data.add(".USER_BIRTH_DATE.   |a19750822\n");
-        data.add(".USER_CATEGORY2.   |aF\n");
-        data.add(".USER_ACCESS.   |aPUBLIC\n");
-        data.add(".USER_ENVIRONMENT.   |aPUBLIC\n");
-        data.add(".USER_ADDR1_BEGIN.\n");
-        data.add(".STREET.   |a12345 123 St.\n");
-        data.add(".CITY/STATE.   |aEdmonton, ALBERTA\n");
-        data.add(".POSTALCODE.   |aH0H 0H0\n");
-        data.add(".PHONE.   |a780-496-4058\n");
-        data.add(".EMAIL.   |ailsteam@epl.ca\n");
-        data.add(".USER_ADDR1_END.\n");
+        data.add("*** DOCUMENT BOUNDARY ***");
+//        data.add("FORM=LDUSER");
+        data.add(".USER_ID.   |a21221012345678");
+        data.add(".USER_FIRST_NAME.   |aBalzac");
+        data.add(".USER_LAST_NAME.   |aBilly");
+        data.add(".USER_PREFERRED_NAME.   |aBilly, Balzac");
+        data.add(".USER_LIBRARY.   |aEPLMNA");
+        data.add(".USER_PROFILE.   |aEPL-ADULT");
+        data.add(".USER_PREF_LANG.   |aENGLISH");
+        data.add(".USER_PIN.   |a64058");
+        data.add(".USER_STATUS.   |aOK");
+        data.add(".USER_ROUTING_FLAG.   |aY");
+        data.add(".USER_CHG_HIST_RULE.   |aALLCHARGES");
+        data.add(".USER_PRIV_GRANTED.   |a20130731");
+        data.add(".USER_PRIV_EXPIRES.   |a20140602");
+        data.add(".USER_BIRTH_DATE.   |a19750822");
+        data.add(".USER_CATEGORY2.   |aF");
+        data.add(".USER_ACCESS.   |aPUBLIC");
+        data.add(".USER_ENVIRONMENT.   |aPUBLIC");
+        data.add(".USER_ADDR1_BEGIN.");
+        data.add(".STREET.   |a12345 123 St.");
+        data.add(".CITY/STATE.   |aEdmonton, ALBERTA");
+        data.add(".POSTALCODE.   |aH0H 0H0");
+        data.add(".PHONE.   |a780-496-4058");
+        data.add(".EMAIL.   |ailsteam@epl.ca");
+        data.add(".USER_ADDR1_END.");
         // If this failes delete the file.
         if (new File(testFileName).exists() == false)
         {

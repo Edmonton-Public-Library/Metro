@@ -20,7 +20,6 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.TokenCache;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class TokenCacheTest
     public void testCache()
     {
         System.out.println("cache");
-        TokenCache instance = new TokenCache(userId, "./");
+        TokenCache instance = new TokenCache(userId, "");
         boolean expResult = true;
         boolean result = instance.writeToCache("2021-08-20T22:16:02.45", this.testToken);
         assertEquals(expResult, result);
@@ -61,7 +60,7 @@ public class TokenCacheTest
     public void testGetValidToken()
     {
         System.out.println("getToken");
-        TokenCache instance = new TokenCache(userId, "./");
+        TokenCache instance = new TokenCache(userId, "");
         String expResult = this.testToken;
         String result = instance.getValidToken();
         System.out.println("RESULT:" + result);
@@ -83,7 +82,7 @@ public class TokenCacheTest
     public void testWriteToCache()
     {
         System.out.println("writeToCache");
-        TokenCache instance = new TokenCache(userId, "./");
+        TokenCache instance = new TokenCache(userId, "");
         boolean expResult = true;
         boolean result = instance.writeToCache("2021-08-20T22:16:02.45", this.testToken);
         assertEquals(expResult, result);
@@ -96,7 +95,7 @@ public class TokenCacheTest
     public void testGetDate()
     {
         System.out.println("getDate");
-        TokenCache instance = new TokenCache(userId, "./");
+        TokenCache instance = new TokenCache(userId, "");
         String result = instance.getDate();
         System.out.println("Cache Date: " + result);
     }

@@ -42,9 +42,7 @@ public class TokenCache extends UserFile
      */
     public TokenCache(String userId, String loadDirectory)
     {
-        super(loadDirectory + "/." + userId + ".cache");
-        System.out.println("Creating cache file: " + loadDirectory + " :: "
-                + userId + ".cache");
+        super(loadDirectory + "." + userId + ".cache");
     }
     
     /**
@@ -58,8 +56,8 @@ public class TokenCache extends UserFile
         // Clear the underlying array or we just keep building up cache in file.
         this.data.clear();
         List<String> tokenData = new ArrayList<>();
-        tokenData.add(expiry + "\n");
-        tokenData.add(token + "\n");
+        tokenData.add(expiry);
+        tokenData.add(token);
         this.addUserData(tokenData);
         return this.writeContent();
     }
@@ -73,7 +71,7 @@ public class TokenCache extends UserFile
         try
         {
             StringBuilder token = new StringBuilder();
-            Scanner in = new Scanner(new FileReader(filePath));
+            Scanner in = new Scanner(new FileReader(this.filePath.toFile()));
             token.append(in.nextLine());
             return token.toString();
         } 
@@ -95,7 +93,7 @@ public class TokenCache extends UserFile
     {
         try
         {
-            Scanner in = new Scanner(new FileReader(filePath));
+            Scanner in = new Scanner(new FileReader(this.filePath.toFile()));
             String expiry = in.nextLine();
             // Subtle the patron response has a tag for 'AuthExpDate' but is
             // usually (always) empty. The comparison will return 0 if one or
@@ -113,7 +111,7 @@ public class TokenCache extends UserFile
         } 
         catch (FileNotFoundException ex)
         {
-            System.out.println("file not found: " + filePath);
+            System.out.println("file not found: " + this.filePath);
             return "";
         }
     }

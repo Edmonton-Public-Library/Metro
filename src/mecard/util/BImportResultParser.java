@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import mecard.requestbuilder.BImportRequestBuilder;
 /**
  * This class interprets results from the bimport process, received from 
  * STDOUT (Windows) and parses the error message into a meaningful signal.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet andrew(at)dev-ils.com
  */
 public class BImportResultParser implements ResultParser
 {
@@ -38,7 +38,7 @@ public class BImportResultParser implements ResultParser
     private int failedCustomers;
     private final Pattern resultPattern;
     private final Pattern cardPattern;
-    private List<String> loadFailedCustomers;
+    private final List<String> loadFailedCustomers;
     
     public BImportResultParser(String results, String reportDirPath)
     {
