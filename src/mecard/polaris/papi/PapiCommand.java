@@ -401,7 +401,7 @@ public class PapiCommand implements Command
             if (PapiCommand.debug)
             {
                 System.out.println("HEADERS RETURNED:");
-                headers.map().forEach((k,v) -> System.out.println(k + ":" + v));
+                headers.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
                 System.out.println("   CODE RETURNED: '" + status.getStatus()+ "'.");
                 System.out.println("CONTOUT RETURNED: '" + status.getStdout()+ "'.");
                 System.out.println("CONTERR RETURNED: '" + status.getStderr()+ "'.");
@@ -436,7 +436,7 @@ public class PapiCommand implements Command
             .append(getPAPIHash());
         if (PapiCommand.debug)
         {
-            System.out.println("DEBUG: Auth token\n" + authorizationToken + "'");
+            System.out.println("DEBUG: Auth token => [" + authorizationToken + "]");
         }
         return authorizationToken.toString();
     }
@@ -471,7 +471,18 @@ public class PapiCommand implements Command
             .append(PapiCommand.patronAccessToken);
         if (PapiCommand.debug)
         {
-            System.out.println("DEBUG: method,URI,PDate,token(can be empty):\n'" + data + "'");
+            StringBuilder displayData = new StringBuilder();
+            displayData.append(">>[")
+                .append(PapiCommand.httpMethod.name())
+                .append("], [")
+                .append(PapiCommand.uri.toASCIIString())
+                .append("], [")
+                .append(getPolarisDate())
+                .append("], [")
+                // The patronAccessToken can be empty if staff are using public REST methods.
+                .append(PapiCommand.patronAccessToken)
+                .append("]<<");
+            System.out.println("DEBUG: (data used to compute hash)\n>>[method], [URI], [PDate], [token](can be empty)<<\n" + displayData + "");
         }
         // Now compute the hash from the ordered data above.
         String result = "";

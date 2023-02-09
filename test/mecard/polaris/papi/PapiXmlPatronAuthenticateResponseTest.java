@@ -20,7 +20,6 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.PapiXmlPatronAuthenticateResponse;
 import static org.junit.Assert.*;
 
 import java.time.LocalDate;
@@ -45,7 +44,7 @@ public class PapiXmlPatronAuthenticateResponseTest {
                 + "<AccessToken>$2a$10$MD1PFF/65owmn0uMMnV6lesArBATfiXOmNSn7kQwU7YoqoqEVBU3W</AccessToken>"
                 + "<AccessSecret>$2a$10$MD1PFF/65owmn0uMMnV6lesArBATfiXOmNSn7kQwU7YoqoqEVBU3W</AccessSecret>"
                 + "<PatronID>2022</PatronID>"
-                + "<AuthExpDate></AuthExpDate>"  // the web service on the sandbox returns an empty string.
+                + "<AuthExpDate i:nil=\"true\" />"  // the web service on the sandbox returns an empty string.
                 + "</PatronAuthenticationResult>";
         // Here is a real response:
         //<PatronAuthenticationResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">

@@ -56,6 +56,15 @@ public class TokenCache extends UserFile
         // Clear the underlying array or we just keep building up cache in file.
         this.data.clear();
         List<String> tokenData = new ArrayList<>();
+        if (expiry.isBlank())
+        {
+            // The patrons always get an authenticating response without a 
+            // 'AuthExpDate' but that means it never expires. I want the customer
+            // to have to reauthenticate for each request so I set the expiry
+            // myself to now. This doesn't affect staff expiries which are always
+            // included in authentication responses
+            expiry = DateComparer.getNowSQLTimeStamp();
+        }
         tokenData.add(expiry);
         tokenData.add(token);
         this.addUserData(tokenData);

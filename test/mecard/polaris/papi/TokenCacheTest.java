@@ -86,6 +86,10 @@ public class TokenCacheTest
         boolean expResult = true;
         boolean result = instance.writeToCache("2021-08-20T22:16:02.45", this.testToken);
         assertEquals(expResult, result);
+        
+        instance = new TokenCache("21221012346099", "");
+        result = instance.writeToCache("", this.testToken);
+        assertEquals(true, result);
     }
 
     /**

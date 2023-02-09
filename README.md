@@ -40,7 +40,7 @@ The guest then creates a new user record in their ILS.
 ```xml
 <entry key="exists-protocol">polaris-api</entry> <!-- or symphony-api or what have you -->
 ```
-* Make sure to add a **papi.properties** file with the correct configuration. 
+* Make sure to add a **papi.properties** file with the correct configuration. Of
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -73,7 +73,7 @@ The guest then creates a new user record in their ILS.
 ```xml
 <entry key="too-many-tries">Attempt to use the service too often, please try again later.</entry>
 ```
-* The **polaris_sql.properties** file now must contain additional entries for key stores.
+* If you are using **polaris_sql.properties**, this file now must contain additional entries for key stores.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -102,7 +102,7 @@ The guest then creates a new user record in their ILS.
     <entry key="user-3">null</entry>
     <entry key="user-4">(none)</entry>
     <entry key="user-5">(none)</entry>
-    <!-- These are new -->
+    <!-- These are new for MSSQL server 2019 -->
     <entry key="encrypt">true</entry>
     <entry key="trust-server-certificate">true</entry>
     <entry key="integrated-security"></entry>
@@ -150,7 +150,7 @@ The guest then creates a new user record in their ILS.
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).
 
 * Support for mssql server 2019 is supported.
-  Additional entries are possible in the polaris_sql.properties file.
+  These additional entries are required in the **polaris_sql.properties** file.
 ```xml
     <entry key="encrypt">true|false</entry>
     <entry key="trust-server-certificate">true|false</entry>
@@ -167,6 +167,7 @@ The prunsrv.exe is from commons-daemon-1.1.0-bin-windows.zip /amd64 (REF: http:/
 ## Installation Steps
 The following steps were used at TRAC to install a new MeCard server under Windows server 2019.
 
+0) Review any **properties** file changes. Recent addtions include changes to **environment**, **sip2**, **polaris_sql**, **papi**. 
 1) Have a local user account available on the Windows machine with admin privileges.
 2) Download the (Open)JDK 11 (or JRE) from https://jdk.java.net/java-se-ri/11. You may also download from Oracle, but you may incur licence fees.
 3) Unpack the zip file in the c:\metro\java directory.

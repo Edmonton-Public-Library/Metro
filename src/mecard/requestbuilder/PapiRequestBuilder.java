@@ -264,6 +264,10 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 }
                 else
                 {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + "customer " + patronId + " FAILED to authenticate.");
+                    }
                     response.setCode(ResponseTypes.USER_PIN_INVALID);
                     response.setResponse(authResponse.errorMessage());
                 }
@@ -394,7 +398,9 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     public final Command getCustomerCommand(String userId, String userPin, Response response)
     {
         // The request must be completed by patron access or else no matter what
-        // password is used, the customer's data will be returned.
+        // password is used, the customer's data will be returned to the ME Libraries
+        // web site for the customer to confirm they consent for their information
+        // to be passed on to the guest library.
         String patronAccessToken = this.getPatronAccessToken(userId, userPin, response);
         PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
             .uri(this.getPublicBaseUri() + "patron/" + userId + "/basicdata?addresses=true&notes=true")
