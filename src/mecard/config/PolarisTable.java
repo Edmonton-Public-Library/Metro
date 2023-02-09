@@ -112,7 +112,8 @@ public class PolarisTable
         // This column name is changing to 'GenderID' as of Polaris 6.3. The values come from a new table called 'Genders'.
         // The table has 3 entries currently: 1=N/A, 2='Female', 3='Male'. 2020-01-20.
         // The type is a regular integer.
-        GENDER("GenderID"), //, 1, int, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, 
+        // Update Feb 07, 2023: // (FK, int, null) remove from use for PRL
+        GENDER_ID("GenderID"), //, 1, int, 1, 1, null, null, 1, null, null, 1, null, 1, 22, YES, 
         BIRTH_DATE("Birthdate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 23, YES, 
         REGISTRATION_DATE("RegistrationDate"), //, 11, datetime, 23, 16, 3, null, 1, null, null, 9, 3, null, 24, YES, 
         FORMER_ID("FormerID"), //, 12, varchar, 20, 20, null, null, 1, null, null, 12, null, 20, 25, YES, 
@@ -171,7 +172,15 @@ public class PolarisTable
         PASSWORD_HASH("PasswordHash"),               // These are not actually used directly. They get populated by a procedure call on Polaris.
         OBFUSCATED_PASSWORD("ObfuscatedPassword"),   // Example: callableStatement = con.prepareCall("{call Polaris.Circ_SetPatronPassword(?)}"); 
         NAME_TITLE_ID("NameTitleID"),                // [int] NULL, this is new to Polaris 6.2
-	RBDIGITAL_PATRON_ID("RBdigitalPatronID");    // [int] NULL, this is new to Polaris 6.2
+	RBDIGITAL_PATRON_ID("RBdigitalPatronID"),    // [int] NULL, this is new to Polaris 6.2
+        // Brand new.
+        LEGAL_NAME_FIRST("LegalNameFirst"),     // nvarchar(32), null
+        LEGAL_NAME_LAST("LegalNameLast"),     // nvarchar(32), null
+        LEGAL_NAME_MIDDLE("LegalNameMiddle"),     // nvarchar(32), null
+        LEGAL_FULL_NAME("LegalFullName"),     // nvarchar(32), null
+        // TODO: New to Polaris 7.1. we need to add this as it is not null. 
+        // Check need to add a new update datatype.
+        USE_LEGAL_NAME_ON_NOTICES("UseLegalNameOnNotices"); //(bit, not null)
         
         private final String type;
 
@@ -198,7 +207,7 @@ public class PolarisTable
         // Added 6.4 and reported by TRAC.
         STREET_THREE("StreetThree"); //, 12, varchar, 64, 64, null, null, 1, null, null, 12, null, 64, 4, YES,
         
-        private String type;
+        private final String type;
 
         private Addresses(String s)
         {
@@ -221,7 +230,7 @@ public class PolarisTable
         COUNTRY_ID("CountryID"), //, 4, int, 10, 4, 0, 10, 1, null, null, 4, null, null, 5, YES, 
         COUNTY("County"); //, 12, varchar, 32, 32, null, null, 1, null, null, 12, null, 32, 6, YES,
         
-        private String type;
+        private final String type;
 
         private PostalCodes(String s)
         {

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,8 @@ public class TokenCache extends UserFile
     }
     
     /**
-     * Writes the token to file.
-     * @param expiry Timestamp of token expiry
+     * Writes the tokenDate to file.
+     * @param expiry Timestamp of tokenDate expiry
      * @param token string to be stored.
      * @return true if data successfully written and false otherwise.
      */
@@ -63,17 +63,17 @@ public class TokenCache extends UserFile
     }
     
     /**
-     * Gets the date of expiry of the token.
+     * Gets the date of expiry of the tokenDate.
      * @return Date in "2023-08-20T22:16:02.45" format.
      */
     public String getDate()
     {
         try
         {
-            StringBuilder token = new StringBuilder();
+            StringBuilder tokenDate = new StringBuilder();
             Scanner in = new Scanner(new FileReader(this.filePath.toFile()));
-            token.append(in.nextLine());
-            return token.toString();
+            tokenDate.append(in.nextLine());
+            return tokenDate.toString();
         } 
         catch (FileNotFoundException ex)
         {
@@ -83,11 +83,11 @@ public class TokenCache extends UserFile
     }
     
     /**
-     * Returns the token from writeToCache denoted by path or an empty string 
-     * if there was no token or the token has expired.
+     * Returns the tokenDate from writeToCache denoted by path or an empty string 
+ if there was no tokenDate or the tokenDate has expired.
      * 
-     * @return token from the writeToCache file, which can be the patron access
-     * token or the staff AccessSecret.
+     * @return tokenDate from the writeToCache file, which can be the patron access
+ tokenDate or the staff AccessSecret.
      */
     public String getValidToken()
     {

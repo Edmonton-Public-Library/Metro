@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ public class SIPToMeCardCustomer implements NativeFormatToMeCardCustomer
             case "CPL":
                 this.customMessageInterpreter = new CPLCustomerGetNormalizer();
                 break;
-            case "PKL":
+            case "PRL":
                 this.customMessageInterpreter = new PRLCustomerGetNormalizer();
                 break;
             case "WBRL":

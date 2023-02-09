@@ -69,7 +69,9 @@ public class UserFile
         try
         {
             Files.write(this.filePath, this.data);
-        } catch (IOException ex)
+            return true;
+        } 
+        catch (IOException ex)
         {
             String msg = "*error unable to write to file " + this.filePath.toString() 
                     + "\n" + UserFile.class.getName() + " => " + ex;
@@ -77,7 +79,6 @@ public class UserFile
             System.err.println(msg);
             return false;
         }
-        return true;
     }
     
     /**

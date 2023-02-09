@@ -2,8 +2,6 @@
 package mecard.polaris.sql;
 
 import api.CommandStatus;
-import mecard.polaris.sql.SQLDescribeCommand;
-import mecard.polaris.sql.SQLConnector;
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PolarisSQLPropertyTypes;

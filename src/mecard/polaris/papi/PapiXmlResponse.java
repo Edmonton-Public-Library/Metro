@@ -343,6 +343,8 @@ public class PapiXmlResponse
                 return "Invalid Email Address for EReceipt";
             case -3621:
                 return "Patron Is Secure";
+            case -3622:
+                return "Invalid Request Pickup Branch ID";
             case -4000:
                 return "Invalid application ID supplied";
             case -4001:

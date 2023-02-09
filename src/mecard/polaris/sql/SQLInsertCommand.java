@@ -601,6 +601,19 @@ public class SQLInsertCommand implements Command
         return pStatement;
     }
     
+    /** 
+     * Used to add an extra value without having to go through the entire 
+     * builder just to conditionally add another column.
+     * @param name Name of the value which is the column name in the table.
+     * @param type The SQL data type like int or bit.
+     * @param value What ever that value is supposed to be set to.
+     */
+    public void oopsForgot(String name, SQLData.Type type, String value)
+    {
+        SQLUpdateData i = new SQLUpdateData(name, type, value);
+        this.columnList.add(i);
+    }
+    
     @Override
     public CommandStatus execute()
     {

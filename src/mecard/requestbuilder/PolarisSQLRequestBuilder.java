@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.NativeFormatToMeCardCustomer;
+import mecard.polaris.sql.SQLData;
 
 /**
  * Manages messaging and work flow for requests to a Polaris ILS via POLARIS_SQL statements.
@@ -127,6 +128,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
             case "Polaris 6.4":
             case "Polaris 7.0":
             case "Polaris 7.1":
+                this.version = PolarisVersion.SEVEN_DOT_ONE;
+                break;
             case "Polaris 7.2":
                 this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
                 break;
@@ -346,8 +349,8 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                         fCustomer.getValue(PolarisTable.PatronRegistration.USER_4.toString())) // The none is actually (none) including the brackets. It actually links to a list of options.
                 .string(PolarisTable.PatronRegistration.USER_5.toString(), 
                         fCustomer.getValue(PolarisTable.PatronRegistration.USER_5.toString())) // Set these during customer normalization.
-                .integer(PolarisTable.PatronRegistration.GENDER.toString(),   // set integer of GenderID field new to 6.3.
-                        fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
+                .integer(PolarisTable.PatronRegistration.GENDER_ID.toString(),   // set integer of GenderID field new to 6.3.
+                        fCustomer.getValue(PolarisTable.PatronRegistration.GENDER_ID.toString()))
                 .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), dob) 
                 .dateTimeNow(PolarisTable.PatronRegistration.REGISTRATION_DATE.toString())
                 .string(PolarisTable.PatronRegistration.FORMER_ID.toString(), null)   // Note for update on lost card.
@@ -390,7 +393,15 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                 .bit(PolarisTable.PatronRegistration.EXCLUDE_FROM_INACTIVE_PATRON.toString(), "1")
                 .bit(PolarisTable.PatronRegistration.DO_NOT_SHOW_E_RECEIPT_PROMPT.toString(), "1")
                 .build();
-
+        
+        if (this.version == PolarisVersion.SEVEN_DOT_ONE)
+        {
+            // Feb 07, 2023 add bit field for use legal name on notices = '0' for version 7.1
+            // TODO: USE_LEGAL_NAME_ON_NOTICES("UseLegalNameOnNotices") bit value set to '0' by default.
+            createPatronRegistrationCommand.oopsForgot(
+                    PolarisTable.PatronRegistration.USE_LEGAL_NAME_ON_NOTICES.toString(), 
+                    SQLData.Type.BIT, "0");
+        }
 
         status = createPatronRegistrationCommand.execute();
         if (status.getStatus() != ResponseTypes.COMMAND_COMPLETED)
@@ -943,15 +954,15 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
                     fCustomer.getValue(PolarisTable.PatronRegistration.EMAIL_ADDRESS.toString()))
 //            .string(PolarisTable.PatronRegistration.PASSWORD.toString(), 
 //                    fCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()))
-            // TODO: Add code to update hash and obfiscated code.
             .dateTime(PolarisTable.PatronRegistration.UPDATE_DATE.toString(), 
                     today)
             .dateTime(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString(), 
                     expiry)
             .dateTime(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString(), 
                     expiry)
-            .integer(PolarisTable.PatronRegistration.GENDER.toString(), 
-                    fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
+            // As of Feb 07, 2023 the gender will not be added to new records.
+            // .integer(PolarisTable.PatronRegistration.GENDER.toString(), 
+            //         fCustomer.getValue(PolarisTable.PatronRegistration.GENDER.toString()))
              // Missing from original update command.
             .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), 
                     fCustomer.getValue(PolarisTable.PatronRegistration.BIRTH_DATE.toString()))
@@ -1135,7 +1146,7 @@ public class PolarisSQLRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response)
     {
-        // TODO let's parse the returning POLARIS_SQL message for results.
+        // let's parse the returning POLARIS_SQL message for results.
         ResponseTypes responseType = status.getStatus();
         switch(responseType)
         {

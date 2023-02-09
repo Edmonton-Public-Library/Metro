@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2020  Edmonton Public Library
+*    Copyright (C) 2023  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -97,19 +97,19 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
             case "M":
                 formattedCustomer.insertValue(
                     PolarisTable.PATRON_REGISTRATION,
-                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    PolarisTable.PatronRegistration.GENDER_ID.toString(), 
                     "3");
                 break;
             case "F":
                 formattedCustomer.insertValue(
                     PolarisTable.PATRON_REGISTRATION,
-                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    PolarisTable.PatronRegistration.GENDER_ID.toString(), 
                     "2");
                 break;
             default:
                 formattedCustomer.insertValue(
                     PolarisTable.PATRON_REGISTRATION,
-                    PolarisTable.PatronRegistration.GENDER.toString(), 
+                    PolarisTable.PatronRegistration.GENDER_ID.toString(), 
                     "1");
                 break;
         }

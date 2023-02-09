@@ -1,8 +1,6 @@
 
 package mecard.polaris.sql;
 
-import mecard.polaris.sql.SQLConnector;
-import mecard.polaris.sql.SQLInsertCommand;
 import java.util.Properties;
 import json.RequestDeserializer;
 import mecard.Request;
@@ -14,7 +12,6 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.requestbuilder.PolarisSQLRequestBuilder;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -86,7 +83,7 @@ public class SQLInsertCommandTest
             .string(PolarisTable.PatronRegistration.USER_3.toString(), "USER_3")
             .string(PolarisTable.PatronRegistration.USER_4.toString(), "USER_4") // The none is actually (none) including the brackets. It actually links to a list of options.
             .string(PolarisTable.PatronRegistration.USER_5.toString(), "USER_5") // Set these during customer normalization.
-            .setChar(PolarisTable.PatronRegistration.GENDER.toString(),   // single char.
+            .setChar(PolarisTable.PatronRegistration.GENDER_ID.toString(),   // single char.
                     customer.get(CustomerFieldTypes.SEX))
             .dateTime(PolarisTable.PatronRegistration.BIRTH_DATE.toString(), "1963-09-14 13:01:23") 
             .dateTimeNow("DateToday")

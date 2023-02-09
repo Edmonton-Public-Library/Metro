@@ -41,6 +41,7 @@ public final class PRLCustomerNormalizer extends CustomerLoadNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
+        // TODO: If we go back to polaris_sql uncomment these lines of code.
                 // add User1 - User5 and any other fields.
 //        formattedCustomer.insertValue(
 //                PolarisTable.PATRON_REGISTRATION,

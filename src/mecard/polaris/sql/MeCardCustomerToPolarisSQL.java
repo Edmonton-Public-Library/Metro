@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2022  Edmonton Public Library
+*    Copyright (C) 2023  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ import mecard.customer.MeCardDataToNativeData;
 public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
 {
     private final List<MeCardDataToNativeData> customerAccount;
-    private final PolarisVersion version; // 5.2 at time of writing.
+    private final PolarisVersion version; // 7.1 as of Feb 07, 2023.
     
     /** 
      * Formats the customer object into an SQL statement ready to be executed.
@@ -69,6 +69,7 @@ public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
             case "Polaris 6.2":
             case "Polaris 6.3":
             case "Polaris 6.4":
+            case "Polaris 7.1":
                 this.version = PolarisVersion.SIX_DOT_TWO_ONWARD;
                 break;
             default:
@@ -171,7 +172,9 @@ public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
         String lastUpdated = ""; // used for account updates. Should be set to TODAY.
         try
         {
+            System.out.println("DEBUG: customer DOB == " + customer.get(CustomerFieldTypes.DOB));
             dob = DateComparer.ANSIToConfigDate(customer.get(CustomerFieldTypes.DOB));
+            System.out.println("DEBUG: converted dob == " + dob);
         }
         catch (ParseException e)
         {
@@ -218,10 +221,11 @@ public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
             lastUpdated);
         
         // Gender
-        this.insertValue(
-                PolarisTable.PATRON_REGISTRATION, 
-                PolarisTable.PatronRegistration.GENDER.toString(), 
-                customer.get(CustomerFieldTypes.SEX));
+        // Feb 07, 2023 - removing from all sites.
+//        this.insertValue(
+//                PolarisTable.PATRON_REGISTRATION, 
+//                PolarisTable.PatronRegistration.GENDER_ID.toString(), 
+//                customer.get(CustomerFieldTypes.SEX));
         // delivery option.
         this.insertValue(
                 PolarisTable.PATRON_REGISTRATION, 
@@ -279,6 +283,8 @@ public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
                 PolarisTable.Addresses.STREET_ONE.toString(), 
                 customer.get(CustomerFieldTypes.STREET));
         ///////////////// PatronAddresses ///////////////////////////
+        // 6.2 onward uses address_label ID not free text label.
+        // Changes from 7.1 don't affect this table.
         if (this.version == PolarisVersion.SIX_DOT_TWO_ONWARD)
         {
             this.insertValue(
@@ -289,7 +295,7 @@ public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
                 // a different value. Instead of 'Home' we will use '1' (one).
                 props.getProperty(PolarisSQLPropertyTypes.ADDRESS_LABEL_ID.toString())); 
         }
-        else  // PolarisVersion.DEFAULT...a-la 5.6 TRAC's version.
+        else  // PolarisVersion.DEFAULT...a-la 5.6 TRAC's version includes 'Free text label'.
         {
             this.insertValue(
                 PolarisTable.PATRON_ADDRESSES, 

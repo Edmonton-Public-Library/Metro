@@ -28,5 +28,6 @@ package mecard.config;
 public enum PolarisVersion
 {
     DEFAULT,     // Literally 'default' which is equivilent to Polaris 5.6.
-    SIX_DOT_TWO_ONWARD; // Polaris 6.2 and up.
+    SIX_DOT_TWO_ONWARD, // Polaris 6.2 and up.
+    SEVEN_DOT_ONE; // Polaris 7.0 and 7.1 and up.
 }

@@ -61,9 +61,10 @@ public class DateComparer
     // requires this format in its constructor.
     // http://technet.microsoft.com/en-us/library/ms378878(v=sql.110).aspx
     // http://dev.mysql.com/doc/connector-j/en/connector-j-reference-type-conversions.html
-//    public final static String SQL_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    // We can set it in environment properties.
-    public final static String SQL_TIMESTAMP_FORMAT = CUSTOMER_DATE_FORMAT;
+    public final static String SQL_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    // We can set it in environment properties, but don't because that date is for
+    // loading and timestamps for ILS, but this needs to be actual yyyy-MM-dd'T'HH:mm:ss"
+//    public final static String SQL_TIMESTAMP_FORMAT = CUSTOMER_DATE_FORMAT;
     
     /**
      * GMT time zone - all HTTP dates are on GMT
@@ -228,7 +229,7 @@ public class DateComparer
      */
     public static String getANSIDate(String timeStampString)
     {
-        if (timeStampString == null || timeStampString.isEmpty())
+        if (timeStampString == null || timeStampString.isEmpty() || timeStampString.equals(Protocol.DEFAULT_FIELD_VALUE))
         {
                 return "";
         }

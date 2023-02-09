@@ -285,7 +285,9 @@ public class DateComparerTest
         //
         String ANSIDate = "20211231";
 //        String expResult = "12-31-2021";
-        String expResult = "2021-12-31T00:00:00";
+        // Depends on what the system time format is set to in the environment.properties.
+//        String expResult = "2021-12-31T00:00:00";
+        String expResult = "2021-12-31";
         String result;
         try
         {

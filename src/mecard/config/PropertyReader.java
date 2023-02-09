@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022 Edmonton Public Library
+ *    Copyright (C) 2023 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ import mecard.util.PlaceNameWGet;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "2.01.08_test"; // server version
+    public final static String VERSION           = "2.01.09_test"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 

@@ -73,6 +73,45 @@ The guest then creates a new user record in their ILS.
 ```xml
 <entry key="too-many-tries">Attempt to use the service too often, please try again later.</entry>
 ```
+* The **polaris_sql.properties** file now must contain additional entries for key stores.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>
+		SQL connection settings. MY_SQL or SQL_SERVER.
+	</comment>
+    <entry key="load-dir">./</entry>
+    <entry key="connector-type">SQL_SERVER</entry>
+    <entry key="conformance">Polaris 7.1</entry>
+    <entry key="host">10.108.1.71</entry>
+    <entry key="database">Polaris</entry>
+    <entry key="username">mesip</entry>
+    <entry key="password">S0m3P@ssW0rD</entry>
+    <entry key="patron-code-id">7</entry>
+    <entry key="organization-id">73</entry>
+    <entry key="creator-id">294</entry>
+    <entry key="language-id">1</entry>
+    <entry key="delivery-option-id">2</entry>
+    <entry key="email-format-id">2</entry>
+    <entry key="country-id">2</entry>
+    <entry key="free-text-label">Home</entry> <!-- ignored in 7.1 and above -->
+    <entry key="address-label-id">3</entry>
+    <entry key="user-1">Not in the List</entry>
+    <entry key="user-2">NULL</entry>    
+    <entry key="user-3">null</entry>
+    <entry key="user-4">(none)</entry>
+    <entry key="user-5">(none)</entry>
+    <!-- These are new -->
+    <entry key="encrypt">true</entry>
+    <entry key="trust-server-certificate">true</entry>
+    <entry key="integrated-security"></entry>
+    <entry key="trust-store"></entry>
+    <entry key="trust-store-password"></entry>
+    <entry key="host-name-in-certificate"></entry>
+</properties>
+```
+
 * Windows Server (2019) is now supported. See Windows instalation notes.
 
 
