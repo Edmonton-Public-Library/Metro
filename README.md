@@ -51,7 +51,7 @@ The guest then creates a new user record in their ILS.
 	<entry key="load-dir">c:\metro\logs\Customers</entry>
 	<entry key="domain">/PAPIService/REST/public</entry>
 	<entry key="http-version">2.0</entry>
-	<entry key="api-key">abb4cc0c-a7a9-4e10-ae52-f8ab3715d2cb</entry>
+	<entry key="api-key">xxxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx</entry>
 	<entry key="api-user-id">WBRLANDREWNISBETPDN</entry>
 	<entry key="patron-branch-id">3</entry>
 	<entry key="login-branch-id">1</entry>
