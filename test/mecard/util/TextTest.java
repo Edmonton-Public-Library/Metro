@@ -590,4 +590,32 @@ public class TextTest
         assertTrue(Text.isLike("DOG", "D- o -!-*g"));
         assertFalse(Text.isLike("patron  does not exist", "Patron doesn't exist."));
     }
+    
+    @Test
+    public void testIsUnset()
+    {
+        System.out.println("====== testIsUnset ======");
+        String content = "anisbet@epl.ca";
+        assertFalse(Text.isUnset(content));
+        content = "";
+        assertTrue(Text.isUnset(content));
+        content = "X";
+        assertTrue(Text.isUnset(content));
+        content = null;
+        assertTrue(Text.isUnset(content));
+    }
+    
+    @Test
+    public void testIsSet()
+    {
+        System.out.println("====== testSet ======");
+        String content = "anisbet@epl.ca";
+        assertTrue(Text.isSet(content));
+        content = "";
+        assertFalse(Text.isSet(content));
+        content = "X";
+        assertFalse(Text.isSet(content));
+        content = null;
+        assertFalse(Text.isSet(content));
+    }
 }

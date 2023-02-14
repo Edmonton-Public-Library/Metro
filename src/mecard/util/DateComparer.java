@@ -229,7 +229,7 @@ public class DateComparer
      */
     public static String getANSIDate(String timeStampString)
     {
-        if (timeStampString == null || timeStampString.isEmpty() || timeStampString.equals(Protocol.DEFAULT_FIELD_VALUE))
+        if (Text.isUnset(timeStampString))
         {
                 return "";
         }
@@ -306,7 +306,7 @@ public class DateComparer
      */
     public static boolean isAnsiDate(String possibleDate)
     {
-        if (possibleDate == null || possibleDate.isEmpty())
+        if (Text.isUnset(possibleDate))
         {
             return false;
         }

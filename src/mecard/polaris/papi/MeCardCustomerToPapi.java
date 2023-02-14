@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ import mecard.customer.MeCardDataToNativeData;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import mecard.util.DateComparer;
 import mecard.util.PostalCode;
+import mecard.util.Text;
 
 /**
  * The class is used just before the customer is loaded so a library can add
@@ -106,7 +107,7 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         // set set it to expire in a year.
         String expiry = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
         String addressCheckDate = DateComparer.getFutureDate(Policies.maximumAddressCheckDays());
-        if (expiry.isEmpty())
+        if (Text.isUnset(expiry))
         {
             expiry = DateComparer.getFutureDate(Policies.maximumExpiryDays());
             try
@@ -135,7 +136,7 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         customerTable.setValue(PapiElementOrder.ADDRESS_CHECK_DATE.name(), addressCheckDate);
         // Do the same for Birthday, but birthday can be blank
         String birthday = customer.get(CustomerFieldTypes.DOB);
-        if (! birthday.isEmpty())
+        if (Text.isSet(birthday))
         {
             try
             {
@@ -152,7 +153,7 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         //    postal codes. T9H5C5 != T9H 5C5.
         String postalCode = customer.get(CustomerFieldTypes.POSTALCODE);
         // Shouldn't be empty it is a required field, but guard for it just in case.
-        if (! postalCode.isEmpty())
+        if (Text.isSet(postalCode))
         {
             switch (serverType)
             {

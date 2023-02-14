@@ -23,6 +23,7 @@ package mecard.util;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import mecard.Protocol;
 
 /**
  * Text helper class that uses static methods to test strings for valid values.
@@ -339,5 +340,35 @@ public final class Text
         String s1 = strOne.replaceAll(badChars, "");
         String s2 = strTwo.replaceAll(badChars, "");
         return Math.abs(s1.compareToIgnoreCase(s2)) == 0;
+    }
+    
+    /**
+     * Determines if the string argument is empty or is a default value as
+     * defined in Protocol.DEFAULT_FIELD_VALUE. 
+     * @param str to be tested.
+     * @return If the string represents an unset value, that is it is empty
+     * or the default value of "X", return true and false otherwise.
+     */
+    public static boolean isUnset(String str)
+    {
+        if (str == null 
+                || str.isBlank() 
+                || str.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Determines if the string argument is not empty null or set to the system
+     * default defined in Protocol.DEFAULT_FIELD_VALUE. 
+     * @param str to be tested.
+     * @return If the string represents a value, that is it is not null not empty
+     * and not the default value of "X", return true and false otherwise.
+     */
+    public static boolean isSet(String str)
+    {
+        return ! Text.isUnset(str);
     }
 }
