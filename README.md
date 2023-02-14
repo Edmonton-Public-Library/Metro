@@ -48,25 +48,31 @@ The guest then creates a new user record in their ILS.
 	<comment>
 		Polaris API settings.
 	</comment>
-	<entry key="load-dir">c:\metro\logs\Customers</entry>
-	<entry key="domain">/PAPIService/REST/public</entry>
-	<entry key="http-version">2.0</entry>
-	<entry key="api-key">xxxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx</entry>
-	<entry key="api-user-id">WBRLANDREWNISBETPDN</entry>
-	<entry key="patron-branch-id">3</entry>
-	<entry key="login-branch-id">1</entry>
-	<entry key="login-user-id">1</entry>
-	<entry key="login-workstation-id">1</entry>
-	<entry key="delivery-option-id">2</entry>
-	<entry key="ereceipt-option-id">2</entry>
-	<entry key="host">https://dewey.polarislibrary.com</entry>
-	<entry key="version">v1</entry>
-	<entry key="language-id">1033</entry>
-	<entry key="app-id">100</entry>
-	<entry key="org-id">1</entry>
-	<entry key="connection-timeout">10</entry>
-	<entry key="debug">false</entry>
-	<entry key="server-type">production</entry> <!-- default: 'sandbox' -->
+	<entry key="load-dir">c:\metro</entry>
+	<entry key="timezone-difference">0</entry>           
+    <entry key="host">https://search.prl.ab.ca</entry>
+    <entry key="rest-path">/PAPIservice/REST</entry>     
+    <entry key="internal-domain">PRL</entry>
+    <entry key="staff-access-id">MeLibrary</entry>
+    <entry key="staff-password">xxxxxxxxxxxx</entry>
+    <entry key="papi-version">7.1</entry>                
+    <entry key="http-version">2.0</entry>
+    <entry key="api-user-id">MeLibrary</entry>
+    <entry key="api-key">xxxxxxxxxxx-xxxxxxxxxx-xxxx-xxxxxxx</entry>
+    <entry key="version">v1</entry>
+    <entry key="language-id">1033</entry>
+    <entry key="app-id">100</entry>
+    <entry key="org-id">1</entry>
+    <entry key="patron-branch-id">3</entry>
+    <entry key="login-branch-id">73</entry>    
+    <entry key="login-user-id">385</entry>
+    <entry key="login-workstation-id">1</entry>    
+    <entry key="delivery-option-id">2</entry>  
+    <entry key="ereceipt-option-id">2</entry>  
+    <entry key="patron-code-id">7</entry>      
+    <entry key="connection-timeout">10</entry>
+    <entry key="debug">true</entry>
+    <entry key="server-type">production</entry> <!-- default: 'sandbox' -->
 </properties>
 ```
 * The **message.properties** file needs to have the following fields.
@@ -169,17 +175,51 @@ The following steps were used at TRAC to install a new MeCard server under Windo
 
 0) Review any **properties** file changes. Recent addtions include changes to **environment**, **sip2**, **polaris_sql**, **papi**. 
 1) Have a local user account available on the Windows machine with admin privileges.
-2) Download the (Open)JDK 11 (or JRE) from https://jdk.java.net/java-se-ri/11. You may also download from Oracle, but you may incur licence fees.
-3) Unpack the zip file in the c:\metro\java directory.
+2) Download the (Open)JDK 11 (or JRE) from [https://jdk.java.net/java-se-ri/11](https://jdk.java.net/java-se-ri/11). You may also download from Oracle, but you may incur licence fees.
+3) Unpack the zip file in the `c:\metro\java` directory.
 4) Add a `%JAVA_HOME%=c:\metro\java` to the system environment variables and set it to `c:\Metro\java`.
 5) Add `%JAVA_HOME%\bin` to the `%PATH%` system environment variable.
-6) Test by opening a command prompt and typing `c:\java -version`.
-7) The MeCard server runs as a daemon (in Unix). The equivalent in Windows is a service which uses Apache’s Procrun server which you can download here:  https://commons.apache.org/proper/commons-daemon/index.html. Information can be found here: https://commons.apache.org/proper/commons-daemon/procrun.html. The current version is commons-daemon-1.3.1-bin-windows.zip. Each version will contain a commons-daemon-x.x.x.jar which must be added to the build in the (NetBeans) IDE to match the version of the prunmgr.exe and prunsrv.exe.
+6) Test by opening a fresh command prompt and typing `java -version`.
+7) The MeCard server runs as a daemon (in Unix). The equivalent in Windows is a service which uses Apache’s Procrun server which you can download here:  [https://commons.apache.org/proper/commons-daemon/index.html](https://commons.apache.org/proper/commons-daemon/index.html). Information can be found here: [https://commons.apache.org/proper/commons-daemon/procrun.html](https://commons.apache.org/proper/commons-daemon/procrun.html). The current version is commons-daemon-1.3.1-bin-windows.zip. Each version will contain a commons-daemon-x.x.x.jar which must be added to the build in the (NetBeans) IDE to match the version of the prunmgr.exe and prunsrv.exe.
 8) Download and unpack the latest mecard_Windows.zip file which will include the `MeCard.jar`, lib files, and 64-bit `prunsrv.exe` (AKA procrun) and `prunmgr.exe` files.
 9) Update your config files, and move them to `c:\Metro directory` (until I can figure out how to pass a switch and string as parameters).
 10) From a powershell ISE window opened in admin mode, with `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`.
 11) Run [this command](#powerShell_installation_command) from an Admin PowerShell (ISE).
-12)  If required, tweak the parameters using the **prunmgr.exe** with: `c:\Metro\windows\prunmgr.exe //ES//Metro`.
+12)  If required, tweak the parameters using the **prunmgr.exe** with: `c:\Metro\windows\prunmgr.exe //ES//Metro`. [See section below](#tweaking-settings-with-prunmgrexe).
+
+# Tweaking Settings with `prunmgr.exe`
+Run `c:\metro\windows\prnmgr.exe //ES//Metro`
+## General Tab
+* Display name: **Metro**
+* Description: **MeCard Metro Service**
+* Path to executable: **c:\metro\windows\prunsrv.exe //RS//Metro**
+* Startup type: **Automatic**
+## Log On Tab
+* Log on as: [x] This account: **Local Service** or **NTADMIN/service** or browse and find the desired account. 
+* Password: **xxxxxxxxx** or whatever it is.
+* Confirm password: **xxxxxxxxx** or whatever it is.  
+Depending on the account you will need to grant that account full control for log files in `c:\metro\logs`.
+## Logging Tab
+* Level: **info**
+* Log path: **c:\metro\logs**
+* Log prefix: **commons-daemon**
+* Pid file: **c:\metro\logs\pid.txt**
+* Redirect Stdout: **c:\metro\logs\stdout.txt**
+* Redirect Stderr: **c:\metro\logs\stderr.txt**  
+Check that the intial attempt to install the service didn't create any logs in `c:\windows\logFiles\Apache` directory.
+## Java Tab
+* [x] Use default (if installed as the default and if not uncheck and set the path to the `%JAVA_HOME%/bin/server/jvm.dll`)
+* Java Classpath: **c:\metro\dist\MeCard.jar**
+## Startup
+* Class: **mecard.MetroService**
+* Working Path: **c:\metro**
+* Method: **start** (this may be disabled, if so select `jvm` in the **Mode** drop-down, enter **start** in the Method text box, and then return **Mode** to **Java**)
+## Shutdown
+* Class: **mecard.MetroService**
+* Working Path: **c:\metro**
+* Method: **stop** (this may be disabled, if so select `jvm` in the **Mode** drop-down, enter **stop** in the Method text box, and then return **Mode** to **Java**)
+
+Click apply and Okay, then start `Metro` service in Windows Services.
 
 # PowerShell Installation Command
 PowerShell Command to Install the Metro (AKA MeCard) Service.
