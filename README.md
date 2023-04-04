@@ -124,15 +124,16 @@ The guest then creates a new user record in their ILS.
 
 
 ## Version 1.00.XX
-* The environment.properties file now requires the following tag.
+* The **environment.properties** file now requires the following tag.
   ```xml
   <entry key="ils-type">[ILS_TYPE]</entry>
   ```
   Where ILS_TYPE can be one of the following `UNKNOWN`, `SYMPHONY`, `HORIZON`, `POLARIS` or `SIRSI_DYNIX`.
 
-* The sip2.properties file now requires a new entry as follows.
+* The **sip2.properties** file now requires a new entry as follows.
   ```xml
   <entry key="user-not-found">[Text from 'AF' field of the sip2 response]</entry>
+  <!-- typically 'User not found' -->
   ```
   The exact message will depend on your vendor, and can change between versions of the same 
   sip2 server implementation. Use the Perl script `sip2emu.pl` and an *invalid user ID* and
@@ -141,6 +142,7 @@ The guest then creates a new user record in their ILS.
 * The sip2.properties file now requires a new entry as follows.
 ```xml
 <entry key="user-pin-invalid">[Text from 'AF' field of the sip2 response]</entry>
+<!-- typically 'Invalid user pin' -->
 ```
   The exact message will depend on your vendor, and can change between versions of the same 
   sip2 server implementation. Use the Perl script `sip2emu.pl` and a valid user ID but an *invalid*
@@ -150,7 +152,7 @@ The guest then creates a new user record in their ILS.
   to be 'outage'. For example, you can change the get-protocol from 'sip2' 
   to 'outage', as shown below, if you know your sip2 service is going to be unavailable.
   ```xml
-  <entry key="get-protocol">outage</entry>
+  <entry key="get-protocol">outage|sip2|symphony-api</entry>
   ```
 
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).
@@ -247,6 +249,10 @@ Andrew to prepare new tarball for installation by editing the MeCard server vers
 `ox:~/MeCard/make dist_unix`
 
 ## Ubuntu dependencies
+**Note**:
+---------
+If the system has Java 11 running, but has `MeCard.jar` version is 1.x.xx, you may be able to run the server without updating the libs, which will save you updating `jsvc` as well. For Symphony, the minimum libs are `commons-daemon-x.xx.xx.jar`, `gson-2.2.4.jar`, and `commons-cli-1.2.jar`.
+
 * Install `jsvc` with `apt-get`.
 * Install OpenJDK.
 * Install make with `apt-get`.
