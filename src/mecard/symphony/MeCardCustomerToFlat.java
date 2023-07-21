@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
@@ -35,7 +35,7 @@ import mecard.customer.MeCardDataToNativeData;
 
 /**
  * This class converts a ME customer object into a flat file.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class MeCardCustomerToFlat implements MeCardCustomerToNativeFormat
 {
@@ -49,7 +49,11 @@ public class MeCardCustomerToFlat implements MeCardCustomerToNativeFormat
         customerTable.put(FlatUserFieldTypes.USER_PIN.toString(), customer.get(CustomerFieldTypes.PIN));
         customerTable.put(FlatUserFieldTypes.USER_FIRST_NAME.toString(), customer.get(CustomerFieldTypes.FIRSTNAME));
         customerTable.put(FlatUserFieldTypes.USER_LAST_NAME.toString(), customer.get(CustomerFieldTypes.LASTNAME));
-        customerTable.put(FlatUserFieldTypes.USER_PREFERRED_NAME.toString(), customer.get(CustomerFieldTypes.PREFEREDNAME));
+        if (customer.isEmpty(CustomerFieldTypes.PREFEREDNAME) == false)
+        {
+            customerTable.put(FlatUserFieldTypes.USER_PREFERRED_NAME.toString(), 
+                    customer.get(CustomerFieldTypes.PREFEREDNAME));
+        } 
         customerTable.put(FlatUserFieldTypes.USER_PRIV_EXPIRES.toString(), customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
         // set todays date as the date privilege granted.
         customerTable.put(FlatUserFieldTypes.USER_PRIV_GRANTED.toString(), DateComparer.ANSIToday());
@@ -57,11 +61,7 @@ public class MeCardCustomerToFlat implements MeCardCustomerToNativeFormat
         {
             customerTable.put(FlatUserFieldTypes.USER_BIRTH_DATE.name(), customer.get(CustomerFieldTypes.DOB));
         }
-//        if (customer.isEmpty(CustomerFieldTypes.SEX) == false)
-//        {
-//            customerTable.put(FlatUserFieldTypes.USER_CATEGORY2.toString(), customer.get(CustomerFieldTypes.SEX));
-//        }
-        this.customerAccount.add(MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerTable));
+        this.customerAccount.add(MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerTable));
         // Address Table
         customerTable = new HashMap<>();
         customerTable.put(FlatUserFieldTypes.STREET.toString(), customer.get(CustomerFieldTypes.STREET));
@@ -76,7 +76,7 @@ public class MeCardCustomerToFlat implements MeCardCustomerToNativeFormat
         customerTable.put(FlatUserFieldTypes.POSTALCODE.toString(),
                 PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
         customerTable.put(FlatUserFieldTypes.EMAIL.toString(), customer.get(CustomerFieldTypes.EMAIL));
-        this.customerAccount.add(MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerTable));
+        this.customerAccount.add(MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR1, customerTable));
     }
     
     @Override
@@ -96,7 +96,7 @@ public class MeCardCustomerToFlat implements MeCardCustomerToNativeFormat
         List<String> customerList = new ArrayList<>();
         for (MeCardDataToNativeData table: this.customerAccount)
         {
-            if (table.getName().compareTo(FlatUserExtendedFieldTypes.USER.name()) == 0)
+            if (table.getName().compareTo(FlatUserTableTypes.USER.name()) == 0)
             {
                 customerList.add(table.getHeader());
             }

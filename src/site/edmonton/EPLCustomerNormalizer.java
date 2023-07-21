@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2023  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 package site.edmonton;
 
 import mecard.Response;
-import mecard.config.CustomerFieldTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
 import site.SymphonyNormalizer;
@@ -60,8 +59,7 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
     {
         // No matter what ME customer give implied consent to contact via email when they join.
         // Which at EPL, is USER_CATEGORY5.
-        formattedCustomer.insertValue(
-                    FlatUserExtendedFieldTypes.USER.name(), 
+        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                     FlatUserFieldTypes.USER_CATEGORY5.toString(), 
                     "ECONSENT");
         this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);

@@ -24,7 +24,7 @@ import java.util.Properties;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
@@ -69,7 +69,7 @@ public abstract class SymphonyNormalizer extends CustomerLoadNormalizer
             // of the flat file, we don't need to create new FlatFormattedTable objects.
             String key = defaultType.toString();
             String value = defaultProps.get(key).toString();
-            formattedCustomer.insertValue(FlatUserExtendedFieldTypes.USER.name(), key, value);
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), key, value);
         }
     }
     

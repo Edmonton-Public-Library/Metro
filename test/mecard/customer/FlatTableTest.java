@@ -22,7 +22,7 @@ package mecard.customer;
 
 import mecard.symphony.MeCardDataToFlatData;
 import java.util.HashMap;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -85,7 +85,7 @@ public class FlatTableTest
     public void testGetInstanceOf()
     {
         System.out.println("==getInstanceOBImportTable==");
-        FlatUserExtendedFieldTypes type = FlatUserExtendedFieldTypes.USER;
+        FlatUserTableTypes type = FlatUserTableTypes.USER;
         HashMap<String, String> dataFields = new HashMap<>();
         MeCardDataToFlatData result = MeCardDataToFlatData.getInstanceOf(type, dataFields);
         System.out.println("TABLE:" + result.getData());
@@ -117,7 +117,7 @@ public class FlatTableTest
         customerData.put("USER_CATEGORY2", "M");
         customerData.put("USER_ACCESS", "PUBLIC");
         customerData.put("USER_ENVIRONMENT", "PUBLIC");
-        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
         System.out.println("FLAT:" + flatTable.getData());
     }
 
@@ -129,7 +129,7 @@ public class FlatTableTest
     {
         System.out.println("==getHeader==");
         HashMap<String, String> customerData = new HashMap<>();
-        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
         System.out.print("HEADER:\n" + flatTable.getHeader());
     }
 
@@ -141,16 +141,16 @@ public class FlatTableTest
     {
         System.out.println("==getName==");
         HashMap<String, String> customerData = new HashMap<>();
-        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
         System.out.println("NAME:" + flatTable.getName());
         
-        flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
+        flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR1, customerData);
         System.out.println("NAME:" + flatTable.getName());
         
-        flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, customerData);
+        flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR2, customerData);
         System.out.println("NAME:" + flatTable.getName());
         
-        flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
+        flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_XINFO, customerData);
         System.out.println("NAME:" + flatTable.getName());
     }
 
@@ -163,7 +163,7 @@ public class FlatTableTest
         System.out.println("==getValue==");
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put("USER_ID", "21221012345678");
-        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + flatTable.getData());
         String value = flatTable.getValue(FlatUserFieldTypes.USER_ID.name());
         System.out.println("VALUE:" + value);
@@ -181,7 +181,7 @@ public class FlatTableTest
         String storedValue= "Edmonton, AB";
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put(FlatUserFieldTypes.CITY_SLASH_STATE.toString(), storedValue);
-        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData flatTable = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + flatTable.getData());
         String value = flatTable.getValue(FlatUserFieldTypes.CITY_SLASH_STATE.toString());
         System.out.println("VALUE:" + value);
@@ -220,7 +220,7 @@ public class FlatTableTest
         System.out.println("==setValue==");
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put("USER_ID", "21221012345678");
-        MeCardDataToFlatData table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + flatTable.getData());
         String value = table.getValue(FlatUserFieldTypes.USER_ID.name());
         System.out.println("VALUE:" + value);
@@ -244,16 +244,16 @@ public class FlatTableTest
     {
         System.out.println("==finalizeTable==");
         HashMap<String, String> customerData = new HashMap<>();
-        MeCardDataToFlatData table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
         
-        table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
+        table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR1, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
         
-        table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, customerData);
+        table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR1, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
         
-        table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_XINFO, customerData);
+        table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_XINFO, customerData);
         System.out.print(">\n"+table.finalizeTable(new StringBuilder()));
     }
 
@@ -266,7 +266,7 @@ public class FlatTableTest
         System.out.println("==***deleteValue***==");
         HashMap<String, String> customerData = new HashMap<>();
         customerData.put("USER_ID", "21221012345678");
-        MeCardDataToFlatData table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER, customerData);
+        MeCardDataToFlatData table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER, customerData);
 //        System.out.println("VALUE:\n" + table.getData());
         String value = table.getValue(FlatUserFieldTypes.USER_ID.name());
         System.out.println("before VALUE:" + value);

@@ -22,7 +22,7 @@ package site.calgary;
 
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
 import site.SymphonyNormalizer;
@@ -61,13 +61,11 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
         // This loads all the mandatory values on SymphonyPropertyTypes.
         this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
         // Currently Calgary uses PHONE1 to store the customer's phone number: 
-        formattedCustomer.renameField(
-                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+        formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
                 FlatUserFieldTypes.PHONE.toString(),
                 FlatUserFieldTypes.PHONE_1.toString());
         // And yet another variation of "CITY/PROV" not "CITY/STATE".
-        formattedCustomer.renameField(
-                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+        formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
                 FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
                 FlatUserFieldTypes.CITY_SLASH_PROV.toString());
         
@@ -75,16 +73,14 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
         // unformattedCustomer for sex and set it like you set USER_CATEGORY2
         if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
         {
-            formattedCustomer.insertValue(
-                FlatUserExtendedFieldTypes.USER.name(), 
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                 FlatUserFieldTypes.USER_CATEGORY3.toString(), 
                 "FEMALE"
             );
         }
         else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
         {
-            formattedCustomer.insertValue(
-                FlatUserExtendedFieldTypes.USER.name(), 
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                 FlatUserFieldTypes.USER_CATEGORY3.toString(), 
                 "MALE"
             );
@@ -93,23 +89,20 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
         // or no USER_CATEGORY3 at all.
 
         
-        formattedCustomer.insertValue(
-            FlatUserExtendedFieldTypes.USER.name(),
+        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(),
             FlatUserFieldTypes.USER_CATEGORY1.toString(),
             "CPLAWB" // TODO test for default load.
         );
         
         // This doesn't load by default, but I don't have time to find out why,
         // this will force the issue.
-        formattedCustomer.insertValue(
-            FlatUserExtendedFieldTypes.USER.name(),
+        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(),
             FlatUserFieldTypes.USER_CATEGORY4.toString(),
             "ALL"
         );
         
         // Suppress preferred user name.
-        formattedCustomer.removeField(
-            FlatUserExtendedFieldTypes.USER.name(),
+        formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
             FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
         );
     }

@@ -22,7 +22,7 @@ package mecard.symphony;
 
 import java.util.HashMap;
 import java.util.Set;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.customer.MeCardDataToNativeData;
 
 /**
@@ -33,7 +33,7 @@ public class MeCardDataToFlatData implements MeCardDataToNativeData
 {
     private final String name;
     private final HashMap<String, String> columns;
-    public static MeCardDataToFlatData getInstanceOf(FlatUserExtendedFieldTypes type, HashMap<String, String> dataFields)
+    public static MeCardDataToFlatData getInstanceOf(FlatUserTableTypes type, HashMap<String, String> dataFields)
     {
         return new MeCardDataToFlatData(type.name(), dataFields);
     }

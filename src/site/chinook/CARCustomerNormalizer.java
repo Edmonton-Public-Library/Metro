@@ -22,7 +22,7 @@ package site.chinook;
 
 import mecard.Response;
 import mecard.config.CustomerFieldTypes;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
 import site.SymphonyNormalizer;
@@ -65,8 +65,7 @@ public final class CARCustomerNormalizer extends SymphonyNormalizer
         // Juveniles. If that is the case you need only get the customers age from the 
         // Minimum age flag or compute on DOB then set the formattedCustomer 
         // field as: 
-        formattedCustomer.insertValue(
-            FlatUserExtendedFieldTypes.USER.name(), 
+        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
             FlatUserFieldTypes.USER_CATEGORY2.toString(), 
             "ADULT"
         );
@@ -74,24 +73,21 @@ public final class CARCustomerNormalizer extends SymphonyNormalizer
         // unformattedCustomer for sex and set it like you set USER_CATEGORY2
         if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
         {
-            formattedCustomer.insertValue(
-                FlatUserExtendedFieldTypes.USER.name(), 
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                 FlatUserFieldTypes.USER_CATEGORY3.toString(), 
                 "FEMALE"
             );
         }
         else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
         {
-            formattedCustomer.insertValue(
-                FlatUserExtendedFieldTypes.USER.name(), 
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                 FlatUserFieldTypes.USER_CATEGORY3.toString(), 
                 "MALE"
             );
         }
         else
         {
-            formattedCustomer.insertValue(
-                FlatUserExtendedFieldTypes.USER.name(), 
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                 FlatUserFieldTypes.USER_CATEGORY3.toString(), 
                 "UNKNOWN"
             );
@@ -99,8 +95,7 @@ public final class CARCustomerNormalizer extends SymphonyNormalizer
         
         // Chinook Arch uses CITYPROV instead of default CITY/STATE in the
         // address 1 table so let's rename that field.
-        formattedCustomer.renameField(
-                FlatUserExtendedFieldTypes.USER_ADDR1.name(),
+        formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
                 FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
                 FlatUserFieldTypes.CITY_PROV.toString());
     }

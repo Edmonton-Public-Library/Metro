@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import json.RequestDeserializer;
 import mecard.Request;
-import mecard.config.FlatUserExtendedFieldTypes;
+import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -125,7 +125,7 @@ public class FlatFormattedCustomerTest
     {
         System.out.println("==insertTable==");
         MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
-        MeCardDataToNativeData table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR1, new HashMap<String, String>());
+        MeCardDataToNativeData table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR1, new HashMap<String, String>());
         formatter.insertTable(table, 1);
         List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
@@ -134,7 +134,7 @@ public class FlatFormattedCustomerTest
         }
         
         formatter = new MeCardCustomerToFlat(customer);
-        table = MeCardDataToFlatData.getInstanceOf(FlatUserExtendedFieldTypes.USER_ADDR2, new HashMap<String, String>());
+        table = MeCardDataToFlatData.getInstanceOf(FlatUserTableTypes.USER_ADDR2, new HashMap<String, String>());
         formatter.insertTable(table, 99);
         result = formatter.getFormattedCustomer();
         for (String s: result)
@@ -152,7 +152,7 @@ public class FlatFormattedCustomerTest
         System.out.println("==InsertKeyValuePair==");
         MeCardCustomerToNativeFormat formatter = new MeCardCustomerToFlat(customer);
         assertTrue(formatter.containsKey(FlatUserFieldTypes.USER_FIRST_NAME.name()));
-        assertTrue(formatter.insertValue(FlatUserExtendedFieldTypes.USER.name(), "HOCKEY_STAR", "Gretzky"));
+        assertTrue(formatter.insertValue(FlatUserTableTypes.USER.name(), "HOCKEY_STAR", "Gretzky"));
         assertFalse(formatter.insertValue("NON_EXISTANT_TABLE", "SOCCER_STAR", "Beckem"));
         List<String> result = formatter.getFormattedCustomer();
         for (String s: result)
