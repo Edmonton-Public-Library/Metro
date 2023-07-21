@@ -21,7 +21,7 @@ public class ILSIT {
         System.out.println("ILS.toString");
         ILS instance = new ILS();
         // this will depend on what you have set in your environment.properties file.
-        String expResult = "BIMPORT";
+        String expResult = "POLARIS";
         String result = instance.toString();
         System.out.println("result: '" + result + "'");
         assertEquals(expResult, result);
@@ -34,7 +34,7 @@ public class ILSIT {
     public void testGetILSType() {
         System.out.println("getILSType");
         ILS instance = new ILS();
-        ILS.IlsType expResult = ILS.IlsType.HORIZON;
+        ILS.IlsType expResult = ILS.IlsType.POLARIS;
         ILS.IlsType result = instance.getILSType();
         assertEquals(expResult, result);
     }

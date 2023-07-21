@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
+import mecard.config.ILS;
 import mecard.config.PropertyReader;
 
 /**
@@ -114,6 +115,10 @@ public final class AlbertaCity extends City
             cityMap.put(key, placeNames.getProperty(key));
         }
         System.out.println("Read " + placeNames.size() + " place names.");
+        // Check if the local preferred place names overly one-to-one on recognized
+        // Alberta place names. We message HORIZON users only.
+        ILS ils = new ILS();
+        ILS.IlsType ourILS = ils.getILSType();
         boolean isSpellingMistake = false;
         // Now we overlay place name records with config requested codes for BImport
         // which will be empty if the ILS is not a Horizon system.
@@ -121,15 +126,16 @@ public final class AlbertaCity extends City
         for(String customPlaceName : bimportCodeProperties.stringPropertyNames())
         {
             
-            if (cityMap.get(customPlaceName) == null)
+            if (cityMap.get(customPlaceName) == null && ourILS == ILS.IlsType.HORIZON)
             {
                 // if this is the first spelling mistake, put this title but
                 // only once, any other spelling mistakes will just be listed below it.
                 if (isSpellingMistake == false)
                 {
                     System.out.println(new Date() +
-                            " The following not recognized as official "
-                            + "Alberta place name(s):");
+                        " There are new place names that are not in your "
+                        + "custom 'city_st.properties' file. Please update "
+                        + "it with the following cities: ");
                 }
                 System.out.println("=>'" + customPlaceName + "'<=");
                 isSpellingMistake = true;
