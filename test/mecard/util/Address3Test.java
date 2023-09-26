@@ -727,5 +727,27 @@ public class Address3Test
         assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
         assertTrue(instance.getPhone().compareTo(PHONE) == 0);
         System.out.println("CONTENT:'"+instance+"'");
+        
+        // 64              00120230707    102544000000020007000000000000AO203|AA20400260002117|AEBender, Teagan|BZ0100|CA0100|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BDBox 1146, Diamond Valley, AB T0L 2A0|BElizzie10-1@hotmail.com|BF403-554-1783|BC|PA4|PEABDSRC|PSAdult (18-64)|U1Diamond Valley - Town|U2Davies, Kim|U3FR|U4(none)|U5|PZT0L 2A0|PX20240213    235959|PYN|FA2.70|PC180565|PB20400260002117|AFPatron status is ok.|AGPatron status is ok.|AY1AZ85F3
+        System.out.println("=== Address28 Breaking Marigold ===");
+        thisAddress = "Box 1146, Diamond Valley, AB T0L 2A0";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "Box 1146";
+        CITY = "Diamond Valley";
+        POSTALC = "T0L 2A0";
+        PROVINC = "AB";
+//        PHONE = "403-554-1783";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+//        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
     }
 }

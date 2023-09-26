@@ -38,7 +38,7 @@ The guest then creates a new user record in their ILS.
 * If using PAPI uses the date format (set in the **environment properties**) to `“yyyy-MM-dd'T'HH:mm:ss”`.
 * The **environment properties** file should now have an entry to test if a customer exists. While this is called a protocol, the ME Libraries front end never sends this as a request. Instead it is used internally by the Responder object.
 ```xml
-<entry key="exists-protocol">polaris-api</entry> <!-- or symphony-api or what have you -->
+<entry key="exists-protocol">polaris-api</entry> <!-- or symphony-api etc -->
 ```
 * Make sure to add a **papi.properties** file with the correct configuration. Of
 ```xml
@@ -142,7 +142,7 @@ The guest then creates a new user record in their ILS.
 * The sip2.properties file now requires a new entry as follows.
 ```xml
 <entry key="user-pin-invalid">[Text from 'AF' field of the sip2 response]</entry>
-<!-- typically 'Invalid user pin' -->
+<!-- typically 'Invalid user PIN[ for station user]' -->
 ```
   The exact message will depend on your vendor, and can change between versions of the same 
   sip2 server implementation. Use the Perl script `sip2emu.pl` and a valid user ID but an *invalid*

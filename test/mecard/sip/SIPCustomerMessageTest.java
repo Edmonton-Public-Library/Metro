@@ -53,6 +53,7 @@ public class SIPCustomerMessageTest
     private final String nonResident;
     private final String expired;
     private final String lost;
+    private final String testCustomer;
     private final WhichLib library;
     
     public SIPCustomerMessageTest()
@@ -78,6 +79,7 @@ public class SIPCustomerMessageTest
 //        Recall Overdue :                     
 //        Too Many Items Billed :
         // these are returned from CAR (ChinookArch).
+        this.testCustomer = "64              00120230707    102544000000020007000000000000AO203|AA20400260002117|AEBender, Teagan|BZ0100|CA0100|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BDBox 1146, Diamond Valley, AB T0L 2A0|BElizzie10-1@hotmail.com|BF403-554-1783|BC|PA4|PEABDSRC|PSAdult (18-64)|U1Diamond Valley - Town|U2Davies, Kim|U3FR|U4(none)|U5|PZT0L 2A0|PX20240213    235959|PYN|FA2.70|PC180565|PB20400260002117|AFPatron status is ok.|AGPatron status is ok.|AY1AZ85F3";
         library = WhichLib.AWB_MEMBERS;
         
         if (library == WhichLib.AWB_MEMBERS)
@@ -110,6 +112,7 @@ public class SIPCustomerMessageTest
         }
         
 //        recv:64              00020140304    070512000000000000000000000000AO|AA21817002446849|AEGAMACHE, ARMAND|AQLPL|BZ9999|CA9999|CB9999|BLY|CQY|BV 0.00|BDBOX 43 LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234|BEpwauters@hotmail.com|BF403-555-1234|BHUSD|PA20150218    235900|PD|PCLPLADULT|PELETHCITY|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY0AZACA0
+
     }
 
     /**
@@ -140,6 +143,12 @@ public class SIPCustomerMessageTest
         
         sipMessage = new SIPCustomerMessage(expired);
         System.out.println("expired:>>"+sipMessage + "<<");
+        this.printContents(sipMessage);
+        
+        
+        // Special issue with TRAC (Marigold) customer
+        sipMessage = new SIPCustomerMessage(this.testCustomer);
+        System.out.println("Marigold Problem customer:>>"+sipMessage + "<<");
         this.printContents(sipMessage);
         
     }
@@ -179,7 +188,7 @@ public class SIPCustomerMessageTest
         }
         System.out.println(CustomerFieldTypes.SEX + ":" + sipMessage.getField("PF"));
         // Complete address
-        System.out.println("===ADDRESS===\nShould be in field BD>>"
+        System.out.println("===ADDRESS Start===\nShould be in field BD>>"
                 + sipMessage.getField("BD") + "<<");
         Address3 address = new Address3(sipMessage.getField("BD"));
         System.out.println(CustomerFieldTypes.STREET + ":" + address.getStreet());
@@ -190,7 +199,7 @@ public class SIPCustomerMessageTest
         // the phone in the correct field parsing this will erase the phone we already
         // collected.
         System.out.println(CustomerFieldTypes.PHONE + ":" + address.getPhone());
-        System.out.println("===ADDRESS===\n\n");
+        System.out.println("===ADDRESS End===\n\n");
     }
 
     /**
