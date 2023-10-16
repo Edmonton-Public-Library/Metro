@@ -149,6 +149,17 @@ public class PhoneTest
         assertTrue("000-000-0000".compareTo(result) == 0);
         System.out.println("RESULT:"+result);
         
+        p = "587-550-2008 EXT 121";
+        System.out.println("TESTING =>"+p+"<=");
+        result = Phone.formatPhone(p);
+        System.out.println("RESULT =>"+result+"<=");
+        assertTrue("587-550-2008".compareTo(result) == 0);
+        
+        
+        p = "587-550-2008 EXT 12345";
+        result = Phone.formatPhone(p);
+        assertTrue("587-550-2008".compareTo(result) == 0);
+        
         Phone phone = new Phone("");
         assertTrue(phone.isUnset());
         

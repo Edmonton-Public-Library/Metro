@@ -196,7 +196,7 @@ public final class Address3
             // end of line matching important to avoid 209-1123 street matching.
             // I added the optional 'T' because a library prefixes textable phone numbers 
             // with 'T', yeah I know right?
-            this.phonePattern = Pattern.compile("T?(\\+1)?\\(?\\d{3}\\)?[-| ]?\\d{3}[-| ]?\\d{4}$");
+            this.phonePattern = Pattern.compile("T?(\\+1)?\\(?\\d{3}\\)?[-| ]?\\d{3}[-| ]?\\d{4}((\\s)?\\D{1,3}?(\\.)?(\\s\\d{2,4}))?$");
         }
         
         /**
@@ -230,7 +230,11 @@ public final class Address3
             // This to get rid of stored 'T', which is annoying as I've said.
             // you have to do it here or it upsets the indexing of other elements
             // like postal code and province.
-            return this.value.replaceAll("T", "");
+            if (this.value.startsWith("T"))
+            {
+                this.value = this.value.replaceFirst("T", "");
+            }
+            return this.value;
         }
 
         @Override

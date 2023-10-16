@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013-2023  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,14 @@ package mecard.util;
 
 /**
  * Provides phone conversion.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
 public class Phone 
 {
     public final static CharSequence DEFAULT_PHONE_DELIMITER = "-";
     public final static String DEFAULT_PHONE_NUMBER = "000-000-0000";
     public final static String DEFAULT_UNFORMATTED_PHONE_NUMBER = "0000000000";
+    public final static int MAX_PHONE_NUMBER_SIZE = 10;
     private final String phone;
     
     public Phone(String p)
@@ -65,21 +66,18 @@ public class Phone
             {
                 sb.append(p.charAt(i));
             }
+            if (sb.length() == MAX_PHONE_NUMBER_SIZE)
+            {
+                // Do in this order or the length changes and offset is off by one.
+                sb.insert(6, DEFAULT_PHONE_DELIMITER);
+                sb.insert(3, DEFAULT_PHONE_DELIMITER);
+                formattedPhone = sb.toString();
+                if (debug) System.out.println("PHONE_NUM:" + formattedPhone);
+                return formattedPhone;
+            }
         }
-        // Should now contain just numbers and if correct should be 10 digits for 
-        // North AM phones, otherwise it is not a good phone number.
-        if (sb.length() != 10)
-        {
-            return formattedPhone;
-        }
-        else
-        {
-            // Do in this order or the length changes and offset is off by one.
-            sb.insert(6, DEFAULT_PHONE_DELIMITER);
-            sb.insert(3, DEFAULT_PHONE_DELIMITER);
-        }
-        formattedPhone = sb.toString();
-        if (debug) System.out.println("PHONE_NUM:" + formattedPhone);
+        
+        if (debug) System.out.println("Problem parsing phone number:" + p);
         return formattedPhone;
     }
     

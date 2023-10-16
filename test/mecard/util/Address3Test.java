@@ -749,5 +749,90 @@ public class Address3Test
         assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
 //        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
         System.out.println("CONTENT:'"+instance+"'");
+        
+        
+//        '64              00020231010    132352000000010004000000000001AO|AA21817010541128|AEGRXXXXXX, PXXXXXX
+//          |AQVUL|BZ9999|CA9999|CB9999|BLY|CQY|BV0.00
+//          |BDRR#1 MILO, ALBERTA T0L 1L0 587-550-2008 EXT 121
+//          |BExxxxxxxxxxx@gmail.com|BF587-550-2008 EXT 121
+//          |BHCAD|PA20231024    235900|PD19921122|PCVULADULT
+//          |PEVULCOUNTY|PFADULT|PGMALE|DB$0.00|DM$500.00|AFUser DELINQUENT|AY1AZA5E6'
+        System.out.println("=== Address29 Breaking Chinook (Vulcan) ===");
+//        thisAddress = "RR#1 MILO, ALBERTA T0L 1L0 587-550-2008 EXT 121";   // Original
+        thisAddress   = "RR#1 MILO, ALBERTA, T0L 1L0 T587-550-2008 EXT 121";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "Rr#1";
+        CITY = "Milo";
+        POSTALC = "T0L 1L0";
+        PROVINC = "AB";
+        PHONE = "587-550-2008 EXT 121";
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        
+        System.out.println("=== Address30 Breaking Chinook (Vulcan) continued ===");
+        thisAddress = "RR#1 MILO, ALBERTA T0L 1L0 587-550-2008 EXT 121";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        STREET = "Rr#1";
+        CITY = "Milo";
+        POSTALC = "T0L 1L0";
+        PROVINC = "AB";
+        PHONE = "587-550-2008 EXT 121";  // Notice chopped 't' from EXT
+        System.out.println("STREET:'"+instance.getStreet()+"'");
+        System.out.println("CITY:'"+instance.getCity()+"'");
+        System.out.println("POSTALC:'"+instance.getPostalCode()+"'");
+        System.out.println("PROVINC:'"+instance.getProvince()+"'");
+        System.out.println("PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getStreet().compareTo(STREET) == 0);
+        assertTrue(instance.getCity().compareTo(CITY) == 0);
+        assertTrue(instance.getPostalCode().compareTo(POSTALC) == 0);
+        assertTrue(instance.getProvince().compareTo(PROVINC) == 0);
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address31 Breaking Chinook (Vulcan) continued ===");
+        thisAddress = "RR#1 MILO, ALBERTA T0L 1L0 587-550-2008 ext 121";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        PHONE = "587-550-2008 ext 121";
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address32 Breaking Chinook (Vulcan) continued ===");
+        thisAddress = "RR#1 MILO, ALBERTA T0L 1L0 587-550-2008 ext. 121";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        PHONE = "587-550-2008 ext. 121";
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address33 Breaking Chinook (Vulcan) continued ===");
+        thisAddress = "RR#1 MILO, ALBERTA T0L 1L0 587-550-2008 X 121";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        PHONE = "587-550-2008 X 121";
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
+        System.out.println("=== Address34 Breaking Chinook (Vulcan) continued ===");
+        thisAddress = "RR#1 MILO, ALBERTA T0L 1L0 587-550-2008 Tel. 121";
+        System.out.println("ADDR_COMPLETE:"+thisAddress);
+        instance = new Address3(thisAddress);
+        PHONE = "587-550-2008 Tel. 121";
+        System.out.println("===>PHONE:'"+instance.getPhone()+"'");
+        assertTrue(instance.getPhone().compareTo(PHONE) == 0);
+        System.out.println("CONTENT:'"+instance+"'");
+        
     }
 }
