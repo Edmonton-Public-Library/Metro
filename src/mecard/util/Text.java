@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2021 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,6 +136,11 @@ public final class Text
     }
     
     /**
+     * @deprecated The ME server now hashes the customer's existing password
+     * to a string of digits. This is preferrable because their password always
+     * hashes to the same value.
+     * @see #getNew4DigitPin(String) for alternate.
+     * @see #getHashedPassword() for alternate.
      * Creates a random 4 digit PIN suitable for Horizon requirements.
      * @return 4 digit pin of random numbers as a String.
      */
@@ -155,11 +160,45 @@ public final class Text
      */
     public static String getNew4DigitPin(String password)
     {
-        // Use Java's hashCode and mod it by 10000 to get a number between
-        // 0-9999. The hashCode produces a signed int so abs().
-        int hashCode = Math.abs(password.hashCode() % 10000);
-        // If the number is less than 1000, pad with leading zeros.
-        return String.format("%04d" , hashCode);
+        return Text.getHashedPassword(password, 4);
+    }
+    
+    /**
+     * Creates an arbitrary-length hash digits of a password string.
+     * Some ILSes (notably Polaris) have settings that can restrict customer
+     * passwords to 4-10 digits. Horizon requires 4-digit PINs. Many customers
+     * have more advanced passwords so to be able to create an account the 
+     * out-of-spec password is hashed to a arbitrary but specific length 
+     * string of digits.
+     * 
+     * @param password the customer's original password.
+     * @param hashLength maximum length of password hash string.
+     * @return a string hash of the password that is of hashLength digits long.
+     */
+    public static String getHashedPassword(String password, int hashLength)
+    {
+        // Use Java's hashCode and mod it by 10^hashLength to get a number between
+        // 0-9999... The hashCode produces a signed int so abs().
+        int minLength = 4;
+        int maxLength = 19;
+        if (hashLength < minLength)
+        {
+            System.out.println("*Warning password hash will be set to minimum"
+                    + " length of "+minLength+" digits.");
+            hashLength = minLength;
+        }
+        if (hashLength > maxLength)
+        {
+            System.out.println("*Warning password hash will be set to maximum"
+                    + " length of "+maxLength+" digits.");
+            hashLength = maxLength;
+        }
+        // Build up a formatted version of the password as a series of digits.
+        StringBuilder formatCode = new StringBuilder("%0");
+        formatCode.append(String.valueOf(hashLength)).append("d");
+        long hashWidth = (long)Math.pow(10, hashLength);
+        long hashCode = Math.abs(password.hashCode() % hashWidth);
+        return String.format(formatCode.toString(), hashCode);
     }
     
     /** 

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 package mecard.sip;
 
 import api.CustomerMessage;
-import mecard.sip.SIPCustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import mecard.util.Address3;
 import mecard.util.DateComparer;
@@ -36,7 +35,7 @@ import static org.junit.Assert.*;
  * good and bad standing customers. Once done you can use this class to test 
  * that data and make sure the metro server will recieve and be able to make 
  * use of what you get back.
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew nisbet at dev-ils.com>
  */
 
 

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2023  Edmonton Public Library
+ *    Copyright (C) 2023 - 2024 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,12 @@ public enum PapiPropertyTypes
     CONNECTION_TIMEOUT("connection-timeout"),
     DEBUG("debug"),
     SERVER_TYPE("server-type");
+    // These are optional values, here for reference. Don't uncomment unless
+    // you want all sites to require these config parameters. If you do decide
+    // revisit the code in PolarisPatronPasswordChecker.java.
+//    PASSWORD_MAX_LENGTH("password-max-length"),
+//    PASSWORD_MIN_LENGTH("password-min-length"),
+//    PASSWORD_ALLOWED_CHARS("allowed-password-characters");
     
     private final String type;
 

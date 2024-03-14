@@ -33,6 +33,20 @@ The guest then creates a new user record in their ILS.
 ----------
 # What's new
 ----------
+## Version 2.02.00
+* Bug fix for Polaris libraries that use `User1` through `User5` properties. These are now set correctly if the site opts to make them required. They can be set up in the site's `CustomerNormalizer`.
+* Polaris sites can now set password restrictions on inbound customer accounts. If the passwords don't meet the restrictions a new password hash is computed and sent back to the customer. This is similar to how customer PINs are handled on Horizon.
+The **environment.properties** can include *any* or *all* of the following additional **optional** keys.
+```xml
+<entry key="password-max-length">16</entry>
+<entry key="password-min-length">4</entry>
+<!-- this means only allow digits 0-9 in passwords. -->
+<entry key="allowed-password-characters">1234567890</entry>
+```
+**Note** that the allowed-password-characters can be defined by the site administrator, but all passwords that contravene the site requirements are hashed to strings of digits, which are then sent back to the customer as their new site-specific password in an email from the ME Libraries web site server.
+
+**Note to the developer**: To implement this on another ILS or node you will want to make the changes in the sites `site.example.ExampleCustomerNormalizer.normalize()` and `site.example.ExampleCustomerNormalizer.finalize()` methods.
+
 ## Version 2.00.XX
 * MeCard servers now support Polaris web services (PAPI) version 7.x. 
 * If using PAPI uses the date format (set in the **environment properties**) to `“yyyy-MM-dd'T'HH:mm:ss”`.

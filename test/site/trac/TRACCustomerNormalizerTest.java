@@ -7,7 +7,6 @@ import mecard.polaris.sql.MeCardCustomerToPolarisSQL;
 import mecard.sip.SIPToMeCardCustomer;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import site.shortgrass.SLSCustomerNormalizer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**

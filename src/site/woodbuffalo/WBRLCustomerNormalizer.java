@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2022  Edmonton Public Library
+*    Copyright (C) 2022 - 2024  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,11 @@ package site.woodbuffalo;
 
 import mecard.Response;
 import mecard.ResponseTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
+import mecard.polaris.papi.PapiElementOrder;
+import mecard.security.CustomerPasswordRestrictions;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -34,9 +37,11 @@ import site.CustomerLoadNormalizer;
  */
 public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
 {    
+    private final CustomerPasswordRestrictions passwordChecker;
     public WBRLCustomerNormalizer(boolean debug)
     {
         super(debug);
+        this.passwordChecker = new CustomerPasswordRestrictions();
     }
 
     /**
@@ -78,8 +83,13 @@ public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
     public ResponseTypes normalize(Customer customer, StringBuilder responseStringBuilder)
     {
         // You would change this if you wanted to signal some event to the 
-        // customer like PIN_CHANGE_REQUIRED.
+        // customer like ResponseTypes.PIN_CHANGE_REQUIRED.
         ResponseTypes rType = ResponseTypes.SUCCESS;
+        String password = customer.get(CustomerFieldTypes.PIN);
+        if ( this.passwordChecker.requiresHashedPassword(password) )
+        {
+            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+        }
         return rType;
     }
 
@@ -99,6 +109,18 @@ public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
     @Override
     public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {    
+        // WBRL uses an unusual PIN requirement of between 4-16 digits. 
+        // All others will fail, so convert if necessary and return PIN_CHANGE 
+        // ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+        String password = unformattedCustomer.get(CustomerFieldTypes.PIN);
+        password = this.passwordChecker.checkPassword(password);
+        formattedCustomer.setValue(PapiElementOrder.PASSWORD.name(), password);
+        // This seems to be required or you will get an error -3509 Passwords do not match.
+        formattedCustomer.setValue(PapiElementOrder.PASSWORD_2.name(), password);
+        
+        // This is required for all customers at WBRL
+        formattedCustomer.setValue(PapiElementOrder.USER1.name(), "Inside Alberta (outside RMWB)");
+        
         // All PAPI sites use the same date formatting, gender formatting etc.
         // so all this code is being moved up to the MeCardCustomerToPapi class.
         //

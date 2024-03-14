@@ -16,6 +16,36 @@ public class TextTest
     }
     
     @Test
+    public void testGetHashedPassword()
+    {
+        System.out.println("==testGetHashedPassword==");
+        String input = "abcdefg";
+        int maxLen = 5;
+        String output= Text.getHashedPassword(input, maxLen);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 5);
+        assertTrue(output.compareTo("91356") == 0);
+        
+        input = "abcdefg";
+        maxLen = 10;
+        output= Text.getHashedPassword(input, maxLen);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 10);
+        assertTrue(output.compareTo("1206291356") == 0);
+        
+        input = "7konnmrfdudQROEQTZ";
+        output= Text.getHashedPassword(input, 3);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 4);
+        assertTrue(output.compareTo("2349") == 0);
+        
+        output= Text.getHashedPassword(input, 20);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 19);
+        assertTrue(output.compareTo("0000000000916722349") == 0);
+    }
+    
+    @Test
     public void testGetUpTo()
     {
         System.out.println("==getUpTo==");

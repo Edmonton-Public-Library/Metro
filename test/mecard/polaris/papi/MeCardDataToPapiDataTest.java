@@ -115,11 +115,11 @@ public class MeCardDataToPapiDataTest
         //	<User4>string</User4>
         //	<User5>string</User5>
         //	<Gender>string</Gender>
-        papiTable.setValue(PapiElementOrder.USER_5.name(), "9");
-        papiTable.setValue(PapiElementOrder.USER_4.name(), "8");
-        papiTable.setValue(PapiElementOrder.USER_3.name(), "7");
-        papiTable.setValue(PapiElementOrder.USER_2.name(), "6");
-        papiTable.setValue(PapiElementOrder.USER_1.name(), "5");
+        papiTable.setValue(PapiElementOrder.USER5.name(), "9");
+        papiTable.setValue(PapiElementOrder.USER4.name(), "8");
+        papiTable.setValue(PapiElementOrder.USER3.name(), "7");
+        papiTable.setValue(PapiElementOrder.USER2.name(), "6");
+        papiTable.setValue(PapiElementOrder.USER1.name(), "5");
         papiTable.setValue(PapiElementOrder.NAME_LAST.name(), "4");
         papiTable.setValue(PapiElementOrder.NAME_FIRST.name(), "3");
         papiTable.setValue(PapiElementOrder.STREET_TWO.name(), "2");

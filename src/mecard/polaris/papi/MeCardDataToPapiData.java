@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -439,7 +439,7 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
         catch (IllegalArgumentException ex)
         {
             System.out.println(MeCardDataToPapiData.class.getName() + 
-                    "getValue failed: Couldn't use key: '" + papiElementOrderkey + 
+                    ".getValue failed: Couldn't use key: '" + papiElementOrderkey + 
                     " as reference in papi table.");
             return "";
         }
