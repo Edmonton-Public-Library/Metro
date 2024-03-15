@@ -113,73 +113,17 @@ public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
         // All others will fail, so convert if necessary and return PIN_CHANGE 
         // ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
         String password = unformattedCustomer.get(CustomerFieldTypes.PIN);
-        password = this.passwordChecker.checkPassword(password);
-        formattedCustomer.setValue(PapiElementOrder.PASSWORD.name(), password);
-        // This seems to be required or you will get an error -3509 Passwords do not match.
-        formattedCustomer.setValue(PapiElementOrder.PASSWORD_2.name(), password);
-        
+        if ( this.passwordChecker.requiresHashedPassword(password) )
+        {
+            ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+            password = this.passwordChecker.checkPassword(password);
+            formattedCustomer.setValue(PapiElementOrder.PASSWORD.name(), password);
+            // This seems to be required or you will get an error -3509 Passwords do not match.
+            formattedCustomer.setValue(PapiElementOrder.PASSWORD_2.name(), password);
+            response.setResponse(password);
+            response.setCode(rType);
+        }
         // This is required for all customers at WBRL
         formattedCustomer.setValue(PapiElementOrder.USER1.name(), "Inside Alberta (outside RMWB)");
-        
-        // All PAPI sites use the same date formatting, gender formatting etc.
-        // so all this code is being moved up to the MeCardCustomerToPapi class.
-        //
-        // 2020-02-11 WBRL does not support gender. There is code to handle 
-        // gender in a Polaris-like manner, but only if the value is NOT empty.
-        // so here any gender value is ignored and a default field value is stored.
-        // 
-                
-//        // Privilege expiry logic. Use the customer's expiry and if one isn't 
-//        // set set it to expire in a year.
-//        String expiry = unformattedCustomer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
-//        if (expiry.isEmpty())
-//        {
-//            expiry = DateComparer.getFutureDate(365);
-//            try
-//            {
-//                expiry = DateComparer.ANSIToConfigDate(expiry);
-//            } 
-//            catch (ParseException ex)
-//            {
-//                Logger.getLogger(WBRLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        else
-//        {
-//            try
-//            {
-//                expiry = DateComparer.ANSIToConfigDate(expiry);
-//            } 
-//            catch (ParseException ex)
-//            {
-//                Logger.getLogger(WBRLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        formattedCustomer.setValue(PapiElementOrder.EXPIRATION_DATE.toString(), expiry);
-//        
-//        // Do the same for Birthday, but birthday can be blank
-//        String birthday = unformattedCustomer.get(CustomerFieldTypes.DOB);
-//        if (! birthday.isEmpty())
-//        {
-//            try
-//            {
-//                birthday = DateComparer.ANSIToConfigDate(birthday);
-//                formattedCustomer.setValue(PapiElementOrder.BIRTHDATE.toString(), birthday);
-//            } 
-//            catch (ParseException ex)
-//            {
-//                Logger.getLogger(WBRLCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        
-//        // Finally make sure the postal code has a space.
-//        //    postal codes. T9H5C5 != T9H 5C5.
-//        String postalCode = unformattedCustomer.get(CustomerFieldTypes.POSTALCODE);
-//        // Shouldn't be empty it is a required field, but guard for it just in case.
-//        if (! postalCode.isEmpty())
-//        {
-//            formattedCustomer.setValue(PapiElementOrder.POSTAL_CODE.toString(), 
-//                PostalCode.formatPostalCode(postalCode));
-//        }
     }
 }
