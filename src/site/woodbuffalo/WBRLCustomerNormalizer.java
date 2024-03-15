@@ -123,6 +123,11 @@ public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
             response.setResponse(password);
             response.setCode(rType);
         }
+        else
+        {
+            ResponseTypes rType = ResponseTypes.SUCCESS;
+            response.setCode(rType);
+        }
         // This is required for all customers at WBRL
         formattedCustomer.setValue(PapiElementOrder.USER1.name(), "Inside Alberta (outside RMWB)");
     }
