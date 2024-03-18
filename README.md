@@ -33,6 +33,9 @@ The guest then creates a new user record in their ILS.
 ----------
 # What's new
 ----------
+## Version 2.03.02
+* Horizon sites are warned if they don't use password-restriction entries in `environment.properties`. See [Version 2.02.00 notes](#version-20200) for more information.
+
 ## Version 2.03.01
 * Horizon sites now use the `SitePasswordRestrictions` as do the `SIP` class(es). The password-restriction entries in `environment.properties` remain optional. See [Version 2.02.00 notes](#version-20200) for more information.
 

@@ -19,9 +19,11 @@
  *
  */
 package mecard.security;
+import java.util.Date;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import java.util.Properties;
+import mecard.config.ILS;
 
 /**
  * Provides methods to check environment.properties and test passwords for site policy
@@ -56,14 +58,22 @@ public final class SitePasswordRestrictions
     
     public SitePasswordRestrictions()
     {
+        ILS ils = new ILS();
+        ILS.IlsType ourIls = ils.getILSType();
+        String missingConfigMessage = " WARNING: Horizon sites should include "
+            + "entries for password-max-length and password-allowed-characters. "
+            + "See README.md for more information.";
         // if possible, get the password restrictions, but they are optional.
         String passwordMaxLengthProperty = this.properties.getProperty("password-max-length","");
         String passwordMinLengthProperty = this.properties.getProperty("password-min-length","");
         String passwordAllowedCharsProperty = this.properties.getProperty("allowed-password-characters","");
         
-        
         if ( passwordMaxLengthProperty.isEmpty() )
         {
+            if (ourIls == ILS.IlsType.HORIZON)
+            {
+                System.out.println(new Date() + missingConfigMessage);
+            }
             // there are no restrictions so these values are not used.
             this.passwordMaxLength = 256;
         }
@@ -90,6 +100,10 @@ public final class SitePasswordRestrictions
         
         if ( passwordAllowedCharsProperty.isEmpty() )
         {
+            if (ourIls == ILS.IlsType.HORIZON)
+            {
+                System.out.println(new Date() + missingConfigMessage);
+            }
             this.allowedCharacters = "abcdefghijklmnopqrstuvwxyz "
                 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
                 + "!@#$%^&*()-_=+[]{}|;:'\",.<>/?`";
