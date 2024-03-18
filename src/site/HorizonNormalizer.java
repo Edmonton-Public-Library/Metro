@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2021 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import mecard.customer.Customer;
 import mecard.util.Text;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.MeCardDataToNativeData;
+import mecard.security.SitePasswordRestrictions;
 
 /**
  * Horizon common normalization algorithms. This includes things like making
@@ -40,52 +41,58 @@ import mecard.customer.MeCardDataToNativeData;
  */
 public abstract class HorizonNormalizer extends CustomerLoadNormalizer
 {
-    public final static int MAXIMUM_PIN_WIDTH = 4;
     public final static int SENIOR = 65;
+    
+    protected final SitePasswordRestrictions passwordChecker;
     
     protected HorizonNormalizer(boolean debug)
     {
         super(debug);
+        this.passwordChecker = new SitePasswordRestrictions();
     }
     
     @Override
     public ResponseTypes normalize(Customer customer, StringBuilder responseStringBuilder)
     {
-        // This will ensure that the customer will always get an email with 
-        // their password that's unique to any Horizon library.
-        ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+        // You would change this if you wanted to signal some event to the 
+        // customer like ResponseTypes.PIN_CHANGE_REQUIRED.
+        ResponseTypes rType = ResponseTypes.SUCCESS;
+        String password = customer.get(CustomerFieldTypes.PIN);
+        if ( this.passwordChecker.requiresHashedPassword(password) )
+        {
+            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+        }
         return rType;
     }
     
     /**
      * This called during the createCustomer directly and indirectly by the 
      * updateCustomer command.
-     * @param customer
+     * @param unformattedCustomer
      * @param formattedCustomer
      * @param response 
      */
     @Override
-    public void finalize(Customer customer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
+    public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {  
-        /*** Be sure to call super.finalize() in inherited classes. **/
-        ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
-        // If the PIN hasn't been hashed or used from customer yet, then get the
-        // customer's password hash if necessary and make it their PIN. We don't
-        // use random numbers anymore.
-        String pin = formattedCustomer.getValue(BImportDBFieldTypes.PIN.toString());
-        if (Text.isUpToMaxDigits(pin, MAXIMUM_PIN_WIDTH) == false)
+        /*** Be sure to call super.finalize() in inherited classes. See 
+         * SAPLCustomerNormalizer as an example. 
+         ***/
+        ResponseTypes rType = ResponseTypes.SUCCESS;
+        // If the unformattedCustomer's PIN is a 4-digit PIN then don't hash it, otherwise
+        // hash it and signal that in the response message.
+        String password = unformattedCustomer.get(CustomerFieldTypes.PIN);
+        if (this.passwordChecker.requiresHashedPassword(password))
         {
-            pin = customer.get(CustomerFieldTypes.PIN);
-            // Get the hash of the current password instead of random digits.
-            String newPin = Text.getNew4DigitPin(pin);
-            formattedCustomer.setValue(BImportDBFieldTypes.PIN.toString(), newPin);
+            password = this.passwordChecker.checkPassword(password);
+            formattedCustomer.setValue(BImportDBFieldTypes.PIN.toString(), password);
             System.out.println(new Date()
                 + " Customer's PIN was not 4 digits as required by Horizon. "
                 + " HN.finalize() set to: '" 
-                + newPin + "'.");
-            pin = newPin;
+                + password + "'.");
+            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+            response.setResponse(password);
         }
-        response.setResponse(pin);
         response.setCode(rType);
     }
     

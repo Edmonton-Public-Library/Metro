@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2021 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,9 @@ import mecard.util.City;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
 import mecard.util.PostalCode;
-import mecard.util.Text;
-import site.HorizonNormalizer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.MeCardDataToNativeData;
+import mecard.security.SitePasswordRestrictions;
 
 /**
  * Instance of a customer formatted for loading.
@@ -50,10 +49,12 @@ import mecard.customer.MeCardDataToNativeData;
 public final class MeCardCustomerToBImport implements MeCardCustomerToNativeFormat
 {
     private final List<MeCardDataToBImportData> customerAccount;
+    private final SitePasswordRestrictions passwordChecker;
     
     public MeCardCustomerToBImport(Customer customer)
     {
         this.customerAccount = new ArrayList<>();
+        this.passwordChecker = new SitePasswordRestrictions();
         // initial formatting of the customer
                 // Basic borrower table.
         HashMap<String, String> customerTable = new HashMap<>();
@@ -97,24 +98,21 @@ public final class MeCardCustomerToBImport implements MeCardCustomerToNativeForm
         {
             System.out.println(new Date() + " unable to parse DOB '" + customer.get(CustomerFieldTypes.DOB) + "'");
         }
-        // Add the pin no matter what. It may be a hashed pin of their password
-        // or an actual 4-digit pin, but it always should be overlayed since we
-        // don't change pins to random digits anymore.
+        // Test if the PIN requires hashing. Horizon is currently limited to
+        // 4-digit PINs.
         String pin = customer.get(CustomerFieldTypes.PIN);
-        if (Text.isUpToMaxDigits(pin, HorizonNormalizer.MAXIMUM_PIN_WIDTH))
+        if (this.passwordChecker.requiresHashedPassword(pin))
         {
-            customerTable.put(BImportDBFieldTypes.PIN.toString(), 
-                customer.get(CustomerFieldTypes.PIN));
+            String newPin = this.passwordChecker.checkPassword(pin);
+            customerTable.put(BImportDBFieldTypes.PIN.toString(), newPin);
+            System.out.println(new Date()
+                + " BimportFormattedCustomer hashing pin " 
+                + "becaue the old pin didn't meet site "
+                + "password restrictions.");
         }
         else
         {
-            // Get the hash of the current password instead of random digits.
-            String newPin = Text.getNew4DigitPin(pin);
-            customerTable.put(BImportDBFieldTypes.PIN.toString(), newPin);
-            System.out.println(new Date()
-                + " BimportFormattedCustomer setting pin to: '" 
-                + newPin + "' because old pin was '" + pin + "'.");
-            
+            customerTable.put(BImportDBFieldTypes.PIN.toString(), pin);
         }
         customerAccount.add(MeCardDataToBImportData.getInstanceOf(BImportTableTypes.BORROWER_TABLE, customerTable));
         

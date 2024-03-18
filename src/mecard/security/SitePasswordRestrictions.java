@@ -22,7 +22,6 @@ package mecard.security;
 import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import java.util.Properties;
-import mecard.util.Text;
 
 /**
  * Provides methods to check environment.properties and test passwords for site policy
@@ -47,14 +46,15 @@ import mecard.util.Text;
  * }</pre>
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public final class CustomerPasswordRestrictions
+public final class SitePasswordRestrictions
 {
     private final Properties properties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
     private final int passwordMaxLength;
     private final int passwordMinLength;
     private final String allowedCharacters;
+    private final boolean debug = false;
     
-    public CustomerPasswordRestrictions()
+    public SitePasswordRestrictions()
     {
         // if possible, get the password restrictions, but they are optional.
         String passwordMaxLengthProperty = this.properties.getProperty("password-max-length","");
@@ -70,7 +70,8 @@ public final class CustomerPasswordRestrictions
         else
         {
             this.passwordMaxLength = Integer.parseInt(passwordMaxLengthProperty);
-            System.out.println("DEBUG: env.passwordMaxLength = " + this.passwordMaxLength);
+            if (this.debug)
+                System.out.println("DEBUG: env.passwordMaxLength = " + this.passwordMaxLength);
         }
         
         
@@ -81,19 +82,23 @@ public final class CustomerPasswordRestrictions
         else
         {
             this.passwordMinLength = Integer.parseInt(passwordMinLengthProperty);
-            System.out.println("DEBUG: env.passwordMinLength = " + this.passwordMinLength);
+            if (this.debug)
+                System.out.println("DEBUG: env.passwordMinLength = " 
+                    + this.passwordMinLength);
         }
         
         
         if ( passwordAllowedCharsProperty.isEmpty() )
         {
-            this.allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n" +
-                "!@#$%^&*()-_=+[]{}|;:'\",.<>/?`";
+            this.allowedCharacters = "abcdefghijklmnopqrstuvwxyz "
+                + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                + "!@#$%^&*()-_=+[]{}|;:'\",.<>/?`";
         }
         else
         {
             this.allowedCharacters = passwordAllowedCharsProperty;
-            System.out.println("DEBUG: env.allowedCharacters = " + this.allowedCharacters);
+            if (this.debug)
+                System.out.println("DEBUG: env.allowedCharacters = " + this.allowedCharacters);
         }  
     }
     
@@ -134,8 +139,43 @@ public final class CustomerPasswordRestrictions
     {
         if ( this.requiresHashedPassword( password ) )
         {
-            return Text.getHashedPassword( password, this.passwordMaxLength );
+            return this.getHashedPassword( password, this.passwordMaxLength );
         }
         return password;
+    }
+    
+    /**
+     * Creates an arbitrary-length hash digits of a password string.
+     * Some ILSes (notably Polaris) have settings that can restrict customer
+     * passwords to 4-10 digits. Horizon requires 4-digit PINs. Many customers
+     * have more advanced passwords so to be able to create an account the 
+     * out-of-spec password is hashed to a arbitrary but specific length 
+     * string of digits.
+     * 
+     * @param password the customer's original password.
+     * @param hashLength maximum length of password hash string.
+     * @return a string hash of the password that is of hashLength digits long.
+     */
+    public String getHashedPassword(String password, int hashLength)
+    {
+        // Use Java's hashCode and mod it by 10^hashLength to get a number between
+        // 0-9999... The hashCode produces a signed int so abs().
+        
+        // This is the maximum number of digits that a Long can hold in Java
+        // which is the restriction for hashes of just digits using the Java
+        // Java hashCode() method.
+        int maxLength = 19;
+        if (hashLength > maxLength)
+        {
+            System.out.println("*Warning maximum hash length supported by the"
+                    + " system is "+maxLength+" digits.");
+            hashLength = maxLength;
+        }
+        // Build up a formatted version of the password as a series of digits.
+        StringBuilder formatCode = new StringBuilder("%0");
+        formatCode.append(String.valueOf(hashLength)).append("d");
+        long hashWidth = (long)Math.pow(10, hashLength);
+        long hashCode = Math.abs(password.hashCode() % hashWidth);
+        return String.format(formatCode.toString(), hashCode);
     }
 }

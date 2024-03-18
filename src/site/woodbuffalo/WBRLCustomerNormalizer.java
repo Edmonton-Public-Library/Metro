@@ -20,13 +20,14 @@
 */
 package site.woodbuffalo;
 
+import java.util.Date;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.polaris.papi.PapiElementOrder;
-import mecard.security.CustomerPasswordRestrictions;
+import mecard.security.SitePasswordRestrictions;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -37,11 +38,11 @@ import site.CustomerLoadNormalizer;
  */
 public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
 {    
-    private final CustomerPasswordRestrictions passwordChecker;
+    private final SitePasswordRestrictions passwordChecker;
     public WBRLCustomerNormalizer(boolean debug)
     {
         super(debug);
-        this.passwordChecker = new CustomerPasswordRestrictions();
+        this.passwordChecker = new SitePasswordRestrictions();
     }
 
     /**
@@ -111,23 +112,22 @@ public final class WBRLCustomerNormalizer extends CustomerLoadNormalizer
     {    
         // WBRL uses an unusual PIN requirement of between 4-16 digits. 
         // All others will fail, so convert if necessary and return PIN_CHANGE 
-        // ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
+        ResponseTypes rType = ResponseTypes.SUCCESS;
         String password = unformattedCustomer.get(CustomerFieldTypes.PIN);
         if ( this.passwordChecker.requiresHashedPassword(password) )
         {
-            ResponseTypes rType = ResponseTypes.PIN_CHANGE_REQUIRED;
             password = this.passwordChecker.checkPassword(password);
             formattedCustomer.setValue(PapiElementOrder.PASSWORD.name(), password);
             // This seems to be required or you will get an error -3509 Passwords do not match.
             formattedCustomer.setValue(PapiElementOrder.PASSWORD_2.name(), password);
+            System.out.println(new Date()
+                + " Customer's PIN did not meet site requirements"
+                + " and was hashed to a new PIN.'");
+            rType = ResponseTypes.PIN_CHANGE_REQUIRED;
             response.setResponse(password);
-            response.setCode(rType);
         }
-        else
-        {
-            ResponseTypes rType = ResponseTypes.SUCCESS;
-            response.setCode(rType);
-        }
+        response.setCode(rType);
+        
         // This is required for all customers at WBRL
         formattedCustomer.setValue(PapiElementOrder.USER1.name(), "Inside Alberta (outside RMWB)");
     }

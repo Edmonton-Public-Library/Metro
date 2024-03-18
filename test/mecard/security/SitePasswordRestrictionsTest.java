@@ -8,10 +8,10 @@ import org.junit.Test;
  *
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class CustomerPasswordRestrictionsTest
+public class SitePasswordRestrictionsTest
 {
     
-    public CustomerPasswordRestrictionsTest()
+    public SitePasswordRestrictionsTest()
     {
         // The success of these tests depends on 3 OPTIONAL entries in the 
         // environment.properties file.
@@ -29,13 +29,13 @@ public class CustomerPasswordRestrictionsTest
 
 
     /**
-     * Test of requiresHashedPassword method, of class CustomerPasswordRestrictions.
+     * Test of requiresHashedPassword method, of class SitePasswordRestrictions.
      */
     @Test
     public void testRequiresHashedPassword()
     {
         System.out.println("requiresHashedPassword");
-        CustomerPasswordRestrictions instance = new CustomerPasswordRestrictions();
+        SitePasswordRestrictions instance = new SitePasswordRestrictions();
         assertEquals(false, instance.requiresHashedPassword("Hello"));
         // This will pass if you add the following entry to the environment.properties
         // in the projects root directory:
@@ -57,13 +57,13 @@ public class CustomerPasswordRestrictionsTest
     }
 
     /**
-     * Test of checkPassword method, of class CustomerPasswordRestrictions.
+     * Test of checkPassword method, of class SitePasswordRestrictions.
      */
     @Test
     public void testCheckPassword()
     {
         System.out.println("checkPassword");
-        CustomerPasswordRestrictions instance = new CustomerPasswordRestrictions();
+        SitePasswordRestrictions instance = new SitePasswordRestrictions();
         assertEquals("Hello7", instance.checkPassword("Hello7"));
         assertEquals("2054162789", instance.checkPassword("1234567890"));
         String password = "1234567890";
@@ -71,4 +71,59 @@ public class CustomerPasswordRestrictionsTest
         assertEquals("2054162789", password);
     }
     
+    @Test
+    public void testGetHashedPassword()
+    {
+        System.out.println("==testGetHashedPassword==");
+        String input = "abcdefg";
+        int maxLen = 5;
+        SitePasswordRestrictions passwordChecker = new SitePasswordRestrictions();
+        String output= passwordChecker.getHashedPassword(input, maxLen);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 5);
+        assertTrue(output.compareTo("91356") == 0);
+        
+        input = "abcdefg";
+        maxLen = 10;
+        output= passwordChecker.getHashedPassword(input, maxLen);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 10);
+        assertTrue(output.compareTo("1206291356") == 0);
+        
+        input = "7konnmrfdudQROEQTZ";
+        output= passwordChecker.getHashedPassword(input, 3);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 3);
+        assertTrue(output.compareTo("349") == 0);
+        
+        output= passwordChecker.getHashedPassword(input, 20);
+        System.out.println("hashed password: '" + output + "'");
+        assertTrue(output.length() == 19);
+        assertTrue(output.compareTo("0000000000916722349") == 0);
+    }
+    
+    /**
+     * This test allows testing of various settings in the 
+     * environment.properties file.
+     * 
+     * Adjust what you like there and repeat tests. Note that some changes
+     * could cause other tests above to fail.
+     */
+    @Test
+    public void testVariousPasswordCharacters()
+    {
+        System.out.println("==testVariousPasswordCombos==");
+        SitePasswordRestrictions passwordChecker = new SitePasswordRestrictions();
+        String password = "this that";
+        int passwordLen = 10;
+        if (passwordChecker.requiresHashedPassword(password))
+        {
+            System.out.println("password not allowed and hashed to " + 
+                passwordChecker.getHashedPassword(password, passwordLen));
+        }
+        else
+        {
+            System.out.println("password allowed");
+        }
+    }
 }

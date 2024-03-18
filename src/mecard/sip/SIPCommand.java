@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2021 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@ import mecard.config.PropertyReader;
 import java.util.Properties;
 import mecard.config.ILS;
 import mecard.exception.SIPException;
+import mecard.security.SitePasswordRestrictions;
 import mecard.util.Text;
-import site.HorizonNormalizer;
 
 /**
  * Implementation of SIP2 command.
@@ -41,10 +41,9 @@ public class SIPCommand implements Command
     private final SIPConnector sipConnector;
     private final String queryString;
     private final String institutionalID;
-    private final String userNotFoundMessageString;
-    private final String userPinInvalidMessageString;
+    private final String userNotFoundSIPString;
+    private final String userPinInvalidSIPString;
     private final ILS ils;
-    private final Properties messageProps = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
     
     public static class Builder
     {
@@ -120,8 +119,8 @@ public class SIPCommand implements Command
         this.sipConnector = b.connector;
         // Will return an empty string if not set.
         this.institutionalID = this.sipConnector.getInstitutionalID();
-        this.userNotFoundMessageString   = b.userNotFound;
-        this.userPinInvalidMessageString = b.userPinInvalid;
+        this.userNotFoundSIPString   = b.userNotFound;
+        this.userPinInvalidSIPString = b.userPinInvalid;
         this.ils = b.ilsType;
         if (b.isStatusRequest)
         {
@@ -162,19 +161,19 @@ public class SIPCommand implements Command
         * there is an account before updating, but we need to check if the 
         * account exists and that would require authentication on most SIP2
         * server configurations.
+        * Note that environment.properties should have the following entries.
+        * if there are PIN restrictions.
+        * <entry key="password-max-length">10</entry>
+        * <entry key="password-min-length">4</entry>
+        * <entry key="allowed-password-characters">eloH12345678[blah blah]</entry>
         */
-        if (this.ils.getILSType() == ILS.IlsType.HORIZON)
+        SitePasswordRestrictions passwordChecker = new SitePasswordRestrictions();
+        if (passwordChecker.requiresHashedPassword(userPin))
         {
-            if (!Text.isUpToMaxDigits(userPin, HorizonNormalizer.MAXIMUM_PIN_WIDTH))
-            {
-                // Get the hash of the current password instead of random digits.
-                String newPin = Text.getNew4DigitPin(userPin);
-                userPin = newPin;
-                System.out.println(new Date() 
-                    + " trying with hashed PIN because Customer's PIN was "
-                    + "not 4 digits as required by Horizon. Checking with: '" 
-                    + newPin + "'.");
-            }
+            userPin = passwordChecker.checkPassword(userPin);
+            System.out.println(new Date() 
+                + " trying with hashed PIN because Customer's PIN"
+                + "does not meet site password requirements.'");
         }
         // sipData should look like: "63                               AO|AA21221012345678|AD64058|AY1AZF374\r"
         StringBuilder request = new StringBuilder();
@@ -212,12 +211,12 @@ public class SIPCommand implements Command
             // be more robust and test the 2 lines below.
             // This will only work if all SIP servers use AF for status message.
             SIPMessage statusMsg = new SIPMessage(status.getStdout());
-            if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundMessageString))
+            if (Text.isLike(statusMsg.getField("AF"), this.userNotFoundSIPString))
             {
                 System.out.println("==> USER_NOT_FOUND");
                 status.setResponse(ResponseTypes.USER_NOT_FOUND);
             }
-            else if (Text.isLike(statusMsg.getField("AF"), this.userPinInvalidMessageString))
+            else if (Text.isLike(statusMsg.getField("AF"), this.userPinInvalidSIPString))
             {
                 System.out.println("==> USER_PIN_INVALID");
                 status.setResponse(ResponseTypes.USER_PIN_INVALID);
