@@ -34,14 +34,10 @@ The guest then creates a new user record in their ILS.
 # What's new
 ----------
 ## Version 2.03.01
-* Horizon sites now use the `SitePasswordRestrictions` class as can any site with password restrictions. The password restriction entries in `environment.properties` (see [Version 2.02.00](#version-20200)) are still optional, but default to 4-256 characters of any combination of the following:
-```
-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+ []{}|;:'\",.<>/?`
-```
-**Note**: The space character is the only white space allowed by default.
+* Horizon sites now use the `SitePasswordRestrictions` as do the `SIP` class(es). The password-restriction entries in `environment.properties` remain optional. See [Version 2.02.00 notes](#version-20200) for more information.
 
 ## Version 2.02.00
-* Bug fix for Polaris libraries that use `User1` through `User5` properties. These are now set correctly if the site opts to make them required. They can be set up in the site's `CustomerNormalizer`.
+* Bug fix for Polaris libraries that use `User1` through `User5` properties. These are now set correctly if the site opts to make them required. They can be set up in the site's `CustomerNormalizer` class.
 
 * Polaris sites can now set password restrictions on inbound customer accounts. All passwords that contravene the restrictions are hashed to strings of digits to a maximum 19 digits long. The hashed PIN is then sent back to the customer in an email from the ME Libraries web site. This is similar to how customer PINs are handled on Horizon.
 
@@ -61,6 +57,7 @@ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+ []{
 <entry key="password-min-length">4</entry>
 <entry key="allowed-password-characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:'\",.<>/?` </entry>
 ```
+**Note**: The space character is the only white space allowed by default.
 
 **Note to the developer**: To implement this on another ILS or node you will want to make the changes in the sites `site.example.ExampleCustomerNormalizer.normalize()` and `site.example.ExampleCustomerNormalizer.finalize()` methods.
 
