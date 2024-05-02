@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2023  Edmonton Public Library
+*    Copyright (C) 2024  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,10 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
         formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                     FlatUserFieldTypes.USER_CATEGORY5.toString(), 
                     "ECONSENT");
+        // Suppress preferred user name.
+        formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
+            FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
+        );
         this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
     }
 }
