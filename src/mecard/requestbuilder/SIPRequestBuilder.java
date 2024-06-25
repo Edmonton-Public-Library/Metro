@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,10 +180,13 @@ public class SIPRequestBuilder extends ILSRequestBuilder
                         result = false;
                         break;
                         
-                    /**
-                     * No test required for invalid pin because the server is
-                     * testing if an account exists only!
-                     */
+                    case USER_PIN_INVALID:
+                        response.setCode(ResponseTypes.USER_PIN_INVALID);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                        System.out.println(new Date() + "customer sent invalid pin.");
+                        result = false;
+                        break;
+                        
                     default:
                         response.setCode(status.getStatus());
                         response.setResponse(status.getStatus().name());
