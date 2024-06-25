@@ -33,6 +33,9 @@ The guest then creates a new user record in their ILS.
 ----------
 # What's new
 ----------
+## Version 2.03.03a
+* Fixed invalid PIN messaging. When the customer would enter an invalid PIN the mecard server would respond with a message stating the account could not be registered because of a missing email.
+
 ## Version 2.03.02
 * Horizon sites are warned if they don't use password-restriction entries in `environment.properties`. See [Version 2.02.00 notes](#version-20200) for more information.
 
