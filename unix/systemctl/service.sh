@@ -32,7 +32,7 @@ MECARD_HOME="/home/its/metro"
 # 4.4.0-81-generic #104-Ubuntu SMP Wed Jun 14 08:17:06 UTC 2017 
 # that causes jsvc to fail on startup.
 export JSVC_EXTRA_OPTS="$JSVC_EXTRA_OPTS -Xss1280k"
-export JAVA_HOME=$(readlink -ze /usr/bin/javac | xargs -0 dirname -z | xargs -0 dirname)
+export JAVA_HOME=$(readlink -ze /usr/bin/java | xargs -0 dirname -z | xargs -0 dirname)
 CLASS_PATH="$MECARD_HOME/dist/lib/commons-daemon-1.0.15.jar":"$MECARD_HOME/dist/MeCard.jar"
 WDPATH=$MECARD_HOME/logs
 PID=$WDPATH/metro.pid

@@ -33,6 +33,30 @@ The guest then creates a new user record in their ILS.
 ----------
 # What's new
 ----------
+## Java Upgrade
+Java 11 is now end of life, to be replaced by Java 17. If you upgrade please ask for a new version of the MeCard.jar compiled to version 17. To update your system's version of Java do the following.
+
+### Ubuntu
+On Ubuntu 20.04 and above do the following.
+1) `sudo apt install openjdk-17-jdk` (or `openjdk-17-jdk-headless` if you want `javac` which is not required for the Metro server).
+2) At this point you can test the install with `java -version`. If java is still at version '11' or below, use the command `sudo update-alternatives --config java` (and `sudo update-alternatives --config javac` if you chose the `headless` install), it will show a number of selections similar to the following.
+```bash
+There are 2 choices for the alternative java (providing /usr/bin/java).
+
+  Selection    Path                                         Priority   Status
+------------------------------------------------------------
+* 0            /usr/lib/jvm/java-17-openjdk-amd64/bin/java   1711      auto mode
+  1            /usr/lib/jvm/java-11-openjdk-amd64/bin/java   1111      manual mode
+  2            /usr/lib/jvm/java-17-openjdk-amd64/bin/java   1711      manual mode
+
+Press <enter> to keep the current choice[*], or type selection number:
+```
+TODO: You may also need to install a new version of `jsvc` which will require [`commons-daemon-1.4.0-bin.tar.gz`](https://commons.apache.org/proper/commons-daemon/download_daemon.cgi) added to the distribution libraries.
+
+Use a similar approach to update jsvc.
+1) `sudo apt install jsvc`.
+2) `sudo update-alternatives --config jsvc`.
+
 ## Version 2.03.03a
 * Fixed invalid PIN messaging. When the customer would enter an invalid PIN the mecard server would respond with a message stating the account could not be registered because of a missing email.
 
