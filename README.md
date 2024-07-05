@@ -57,6 +57,9 @@ Use a similar approach to update jsvc.
 1) `sudo apt install jsvc`.
 2) `sudo update-alternatives --config jsvc`.
 
+## Version 2.03.03b
+* Made `Text.isLike()` method more flexible when matching strings in property files. For example a `sip2.properties` entry like `<entry "user-not-found">unknown borrower</entry>` now matches the phrase `#Unknown borrower barcode - please refer to the circulation desk.`.
+
 ## Version 2.03.03a
 * Fixed invalid PIN messaging. When the customer would enter an invalid PIN the mecard server would respond with a message stating the account could not be registered because of a missing email.
 
