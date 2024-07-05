@@ -308,11 +308,23 @@ public final class Text
     public static boolean isLike(String strOne, String strTwo)
     {
         String badChars = "[\\W\\s]";
-        if (strOne == null) strOne = "";
-        if (strTwo == null) strTwo = "";
-        String s1 = strOne.replaceAll(badChars, "");
-        String s2 = strTwo.replaceAll(badChars, "");
-        return Math.abs(s1.compareToIgnoreCase(s2)) == 0;
+        // So string.contains("") returns true, so preload with a character
+        // that won't be removed by replaceAll() later.
+        String s1 = "y";
+        String s2 = "z";
+        if (strOne != null) s1 = strOne;
+        if (strTwo != null) s2 = strTwo;
+        s1 = s1.replaceAll(badChars, "");
+        s2 = s2.replaceAll(badChars, "");
+        if (s1.length() < s2.length())
+        {
+            return s2.toLowerCase().contains(s1.toLowerCase());
+        }
+        else
+        {
+            return s1.toLowerCase().contains(s2.toLowerCase());
+        }
+//        return Math.abs(s1.compareToIgnoreCase(s2)) == 0;
     }
     
     /**

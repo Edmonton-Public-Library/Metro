@@ -465,6 +465,8 @@ public class TextTest
         assertTrue(Text.isLike("DOG", "D- o -!-*g"));
         assertTrue(Text.isLike("DOG", "D- o -!-*g"));
         assertFalse(Text.isLike("patron  does not exist", "Patron doesn't exist."));
+        assertTrue(Text.isLike("#Unknown borrower barcode - please refer to the circulation desk.", "unknown borrower"));
+        assertTrue(Text.isLike("unknown borrower", "#Unknown borrower barcode - please refer to the circulation desk."));
     }
     
     @Test
