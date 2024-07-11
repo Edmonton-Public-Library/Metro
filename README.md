@@ -51,11 +51,11 @@ There are 2 choices for the alternative java (providing /usr/bin/java).
 
 Press <enter> to keep the current choice[*], or type selection number:
 ```
-TODO: You may also need to install a new version of `jsvc` which will require [`commons-daemon-1.4.0-bin.tar.gz`](https://commons.apache.org/proper/commons-daemon/download_daemon.cgi) added to the distribution libraries.
-
-Use a similar approach to update jsvc.
-1) `sudo apt install jsvc`.
-2) `sudo update-alternatives --config jsvc`.
+3) Test with
+```bash 
+java -version
+```
+**Note**: Testing the MeCard.jar version 17 AND version 11 work with Java 17 on Ubuntu (20.04.6) without any changes.
 
 ## Version 2.03.03b
 * Made `Text.isLike()` method more flexible when matching strings in property files. For example a `sip2.properties` entry like `<entry "user-not-found">unknown borrower</entry>` now matches the phrase `#Unknown borrower barcode - please refer to the circulation desk.`.
