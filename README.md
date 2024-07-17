@@ -99,7 +99,7 @@ java -version
 * If using PAPI uses the date format (set in the **environment properties**) to `“yyyy-MM-dd'T'HH:mm:ss”`.
 * The **environment properties** file should now have an entry to test if a customer exists. While this is called a protocol, the ME Libraries front end never sends this as a request. Instead it is used internally by the Responder object.
 ```xml
-<entry key="exists-protocol">polaris-api</entry> <!-- or symphony-api etc -->
+<entry key="exists-protocol">polaris-api</entry> <!-- or sip2 etc -->
 ```
 * Make sure to add a **papi.properties** file with the correct configuration. Of
 ```xml

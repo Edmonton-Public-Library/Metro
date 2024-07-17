@@ -7,7 +7,7 @@ nbproject/
 test/mecard/MetroClient.class
 *.z_
 *.tar
-dist/MeCard.jar
+
 TESTconfiguration/sip2cemu.pl
 test/mecard/MetroClient.java
 windows/*.exe
@@ -22,12 +22,12 @@ after_install.txt
 windows/Output/
 windows/bimport/
 extlibs/
-/dist/*.properties
+
 *.properties
 dist/javadoc/*
 dist/lib/junit-4.10.jar
 *.zip
-/dist/
+
 config_EPL.tgz
 TESTconfiguration/*.sip
 Andrew.note.md
