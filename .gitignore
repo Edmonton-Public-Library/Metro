@@ -46,3 +46,10 @@ test/mecard/MetroClient.class_old
 unix/loaduser_SG.sh
 *.fail
 *.lost
+
+# Not implemented in production but if 
+# this is to be incorporated, remove these
+# and add them to the project.
+SSHClient.java
+SSHClientTest.java
+dist/lib/jsch-0.1.55.jar
