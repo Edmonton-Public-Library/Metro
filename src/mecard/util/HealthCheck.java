@@ -25,9 +25,11 @@ import java.util.concurrent.TimeUnit;
 public class HealthCheck
 {
 
-    public static long getServerUptime() {
+    public static long getServerUptime() 
+    {
         String os = System.getProperty("os.name").toLowerCase();
-        try {
+        try 
+        {
             if (os.contains("win")) {
                 Process uptimeProc = Runtime.getRuntime().exec("net stats srv");
                 BufferedReader in = new BufferedReader(new InputStreamReader(uptimeProc.getInputStream()));
@@ -41,7 +43,9 @@ public class HealthCheck
                                Integer.parseInt(timeParts[2]);
                     }
                 }
-            } else if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+            } 
+            else if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix")) 
+            {
                 Process uptimeProc = Runtime.getRuntime().exec("uptime");
                 BufferedReader in = new BufferedReader(new InputStreamReader(uptimeProc.getInputStream()));
                 String line = in.readLine();
@@ -71,26 +75,31 @@ public class HealthCheck
                     return ((days * 24 * 60 * 60) + (hours * 60 * 60) + (minutes * 60)) / (60 * 60);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } 
+        catch (IOException | NumberFormatException e) 
+        {  }
         return -1; // Return -1 if unable to determine uptime
     }
 
-    public static long getLogFileSize(String filePath) {
+    public static long getLogFileSize(String filePath) 
+    {
         File file = new File(filePath);
         return file.length() / 1000;
     }
 
-    public static int countLogTransactions(String filePath) throws IOException {
+    public static int countLogTransactions(String filePath) throws IOException 
+    {
         int customerCount = 0;
         Pattern pattern = Pattern.compile("^\\w{3} \\w{3} \\d{2} \\d{2}:\\d{2}:\\d{2} \\w{3} \\d{4} transaction completed\\.$");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) 
+        {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) 
+            {
                 Matcher matcher = pattern.matcher(line);
-                while (matcher.find()) {
+                while (matcher.find()) 
+                {
                     customerCount++;
                 }
             }
@@ -99,14 +108,16 @@ public class HealthCheck
         return customerCount;
     }
 
-    public static LocalDateTime getLastActivityDateTime(String filePath) throws IOException {
+    public static LocalDateTime getLastActivityDateTime(String filePath) throws IOException 
+    {
         Path path = Paths.get(filePath);
         BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
         Instant instant = attr.lastModifiedTime().toInstant();
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
-    public static String getHostDiskSpace(String path) {
+    public static String getHostDiskSpace(String path) 
+    {
         File file = new File(path);
         long totalSpace = file.getTotalSpace();
         long freeSpace = file.getFreeSpace();
@@ -118,15 +129,18 @@ public class HealthCheck
                 usableSpace / (1024 * 1024 * 1024));
     }
 
-    public static String getLastVersionNumber(String filePath) throws IOException {
+    public static String getLastVersionNumber(String filePath) throws IOException 
+    {
         String lastVersion = null;
         Pattern pattern = Pattern.compile("Metro \\(MeCard\\) server version (\\d+\\.\\d+\\.\\d+(?:[_a-zA-Z]+)?)");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) 
+            {
                 Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
+                if (matcher.find()) 
+                {
                     lastVersion = matcher.group(1);
                 }
             }
@@ -135,12 +149,14 @@ public class HealthCheck
         return lastVersion != null ? lastVersion : "No version found";
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         String logFilePath = "logs/metro.out";
         String errFilePath = "logs/metro.err";
         String diskPath = "/"; // Root directory for disk space check
 
-        try {
+        try 
+        {
             System.out.println("MeCard version number: " + getLastVersionNumber(logFilePath));
             System.out.println("Server uptime: " + getServerUptime() + " hours");
             System.out.println("Out file size: " + getLogFileSize(logFilePath) + " KB");
