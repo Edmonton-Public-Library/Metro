@@ -24,7 +24,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class HealthCheck
 {
-
+    /**
+     * Get the server up time. Does its best to work with Unix, Mac, and Windows.
+     * @return up time in hours.
+     */
     public static long getServerUptime() 
     {
         String os = System.getProperty("os.name").toLowerCase();
@@ -81,12 +84,24 @@ public class HealthCheck
         return -1; // Return -1 if unable to determine uptime
     }
 
-    public static long getLogFileSize(String filePath) 
+    /**
+     * Computes and returns the size of a given file, esp. the log or error
+     * file.
+     * @param logPath
+     * @return long size in KBs.
+     */
+    public static long getLogFileSize(String logPath) 
     {
-        File file = new File(filePath);
+        File file = new File(logPath);
         return file.length() / 1000;
     }
 
+    /**
+     * Counts the number of transactions performed.
+     * @param filePath - log file path and name.
+     * @return integer number of transactions.
+     * @throws IOException 
+     */
     public static int countLogTransactions(String filePath) throws IOException 
     {
         int customerCount = 0;
@@ -107,7 +122,13 @@ public class HealthCheck
 
         return customerCount;
     }
-
+    
+    /**
+     * Returns the last modification time of the log file.
+     * @param filePath path and name of the log file.
+     * @return The last modification time stamp.
+     * @throws IOException 
+     */
     public static LocalDateTime getLastActivityDateTime(String filePath) throws IOException 
     {
         Path path = Paths.get(filePath);
@@ -116,6 +137,11 @@ public class HealthCheck
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
+    /**
+     * Returns the disk space available to the system (on this partition anyway).
+     * @param path
+     * @return String of the total, free, and usable disk space on the system.
+     */
     public static String getHostDiskSpace(String path) 
     {
         File file = new File(path);
@@ -129,6 +155,13 @@ public class HealthCheck
                 usableSpace / (1024 * 1024 * 1024));
     }
 
+    /**
+     * Returns the most recent version number of the MeCard server.
+     * @param filePath path and name of the metro stdout log file.
+     * @return String of the version number or 'No version found' if the MeCard
+     * server is so early it doesn't report its version number.
+     * @throws IOException 
+     */
     public static String getLastVersionNumber(String filePath) throws IOException 
     {
         String lastVersion = null;
@@ -148,11 +181,22 @@ public class HealthCheck
 
         return lastVersion != null ? lastVersion : "No version found";
     }
-
-    public static void main(String[] args) 
+    
+    /**
+     * Prints out basic server health as:
+     * <li>Version number.</li>
+     * <li>Server up time.</li>
+     * <li>Log file size.</li>
+     * <li>Error file size.</li>
+     * <li>Number of transactions.</li>
+     * <li>Last activity of the MeCard server.</li>
+     * <li>Host disk space.</li>
+     * @param filePath 
+     */
+    public static void getServerHealth(String filePath)
     {
-        String logFilePath = "logs/metro.out";
-        String errFilePath = "logs/metro.err";
+        String logFilePath = filePath + "/metro.out";
+        String errFilePath = filePath + "/metro.err";
         String diskPath = "/"; // Root directory for disk space check
 
         try 
@@ -171,5 +215,15 @@ public class HealthCheck
         } catch (IOException e) {
             System.out.println("***error (IO exception) while checking server health!");
         }
+    }
+    
+    /**
+     * For testing from command line.
+     * @param args 
+     */
+    public static void main(String[] args) 
+    {
+        String logPath = "logs";
+        getServerHealth(logPath);
     }
 }
