@@ -55,9 +55,23 @@ Press <enter> to keep the current choice[*], or type selection number:
 ```bash 
 java -version
 ```
-**Note**: Testing the MeCard.jar version 17 on Ubuntu (20.04.6) has not been successful **do not upgrade until further notice!** 
+4) You _may_ need to add the following. It was a hack carried over from Java 11 installation instructions. I am currently testing this.
+```bash
+$ sudo mkdir /usr/lib/jvm/java-17-openjdk-amd64/lib/amd64
+$ sudo ln -s /usr/lib/jvm/java-17-openjdk-amd64/lib/server /usr/lib/jvm/java-17-openjdk-amd64/lib/amd64/
+```
+5) Update `service.sh` as follows.
+```bash
+# replace this -> JAVA_HOME=/usr/lib/jvm/default-java
+# with the following. 
+export JAVA_HOME=$(/bin/readlink -ze /usr/bin/javac | xargs -0 dirname -z | xargs -0 dirname)
+```
 
-While the envirionment reports java-17-openjdk-amd64, the VM the MeCard uses is still java-11. The link in `/usr/lib/jvm/default-java` does not update, and forcing it to give the error `Cannot find any VM in Java Home /usr/lib/jvm/default-java`. 
+**Note**:
+When root starts the process it doesn't seem to have access to `readlink` so I explicitly path it. If that doesn't work you can add `JAVA_HOME` explicitly as follows. 
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+```
 
 ## Version 2.04.01f
 * Includes a health check function that augments the `GET_STATUS` command. To use it open a `telnet` session on the ME Libraries web server, and enter the following.
@@ -67,6 +81,7 @@ While the envirionment reports java-17-openjdk-amd64, the VM the MeCard uses is 
 {"code":"OK","responseMessage":"Linux version: 5.4.0-189-generic arch:amd64, Java: 11.0.23+9-post-Ubuntu-1ubuntu120.04.2, MeCard version: 2.04.01d, User: its, Up time:  20:44:47 up 15:44,  1 user,  load average: 0.00, 0.03, 0.05 hours, Last active: 2024-07-24 20:44:47, Log size: 8427 KB, Transactions: 3149, Err size: 5 KB, Host disk: Total: 14 GB, Free: 5 GB, Usable: 5 GB:Services up.","customer":"null"}
 ...
 ```
+**Note**: If there are two MeCard servers running as may be if there is a Test and Production version, the test server's `metro.out` and `metro.err` files may be reported instead of Production. This is because the a search has to be made of the local FS because their location is specified in [`service.sh`](#startup).
 
 ## Version 2.03.03b
 * Made `Text.isLike()` method more flexible when matching strings in property files. For example a `sip2.properties` entry like `<entry "user-not-found">unknown borrower</entry>` now matches the phrase `#Unknown borrower barcode - please refer to the circulation desk.`.
@@ -340,7 +355,10 @@ If the system has Java 11 running, but has `MeCard.jar` version is 1.x.xx, you m
 export JAVA_HOME=$(readlink -ze /usr/bin/javac | xargs -0 dirname -z | xargs -0 dirname)
 ```
 * Run `./configure` The `jsvc` executable will be created if all goes well.
-* Run sudo ln -s `/home/user/path/to/jsvc` `/usr/bin/jsvc`
+* Run sudo 
+```bash
+ln -s /home/user/path/to/jsvc /usr/bin/jsvc
+```
 * Test with 
 ```bash
 jsvc –help #or other jsvc command.
@@ -524,8 +542,8 @@ sudo systemctl restart firewalld
 * Google has flagged the `setup.exe` as malware. The development team has asked for a review of the application, but until that time the exe may have to be sent by other means. February 9, 2022.
 ## Windows
 * The `-c c:\path\to\configs` switch doesn't seem to work as expected. I have experimented with several different ways of passing the parameters in prunmgr, but none have panned out. To fix just copy your config properties file into the c:\Metro directory. The MeCard server looks there for properties files by default.
-## Ubuntu
-* When using Java 11 you may have an issue with jsvc complaining that it can’t find the JVM environment because jsvc can’t find a jvm in `/usr/bin/default-java`. The solution from StackOverflow.   
+## Ubuntu Java 11
+* When using **Java 11** you may have an issue with jsvc complaining that it can’t find the JVM environment because jsvc can’t find a jvm in `/usr/bin/default-java`. The solution from StackOverflow.   
 
 _I experienced the issue with jsvc version 1.0.6, which is the one you get if you run apt install jsvc on Ubuntu. To check the version installed run:_
 ```bash
@@ -547,11 +565,13 @@ If you get something like the following:
 `-bash: /usr/lib/jvm/default-java/bin/java: No such file or directory`
 proceed with the following.
 ```bash
-sudo mkdir /usr/lib/jvm/java-11-openjdk-amd64/lib/amd64
-sudo ln -s /usr/lib/jvm/java-11-openjdk-amd64/lib/server /usr/lib/jvm/java-11-openjdk-amd64/lib/amd64/
-# The changes in the `service.sh` file are as follows:
-# In `service.sh`, change the executable as follows:
-JAVA_HOME=/usr/lib/jvm/default-java becomes JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/lib/amd64
+$ sudo mkdir /usr/lib/jvm/java-11-openjdk-amd64/lib/amd64
+$ sudo ln -s /usr/lib/jvm/java-11-openjdk-amd64/lib/server /usr/lib/jvm/java-11-openjdk-amd64/lib/amd64/
+```
+The changes in the `service.sh` file are as follows:
+```bash
+# CHANGE: JAVA_HOME=/usr/lib/jvm/default-java 
+#     TO: JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/lib/amd64
 $EXEC -home=$JAVA_HOME -XXaltjvm=$JAVA_HOME -cp $CLASS_PATH -user $USER -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
 ```
 
@@ -562,9 +582,11 @@ You can find updated scripts and configs mentioned in the above instructions in 
 ## Dependencies
 * commons-cli-1.2.jar
 * commons-codec-1.8.jar
-* commons-daemon-1.3.1.jar
+* commons-daemon-
+  * 1.3.1.jar for Java 11
+  * 1.4.0.jar for Java 17 though works with older versions.
 * gson-2.2.4.jar
-* mssql-jdbc-10.2.1.jre11.jar
+* mssql-jdbc-10.2.1.jre11.jar. MeCard not tested with newer version (take note TRAC).
 * mysql-connector-java-5.1.31-bin.jar
 
 # Notes
