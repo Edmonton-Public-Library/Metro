@@ -35,6 +35,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+import mecard.config.PropertyReader;
 
 /**
  * Utility class to report important environment diagnostic information.
@@ -53,12 +57,14 @@ public class HealthCheck
         try 
         {
             String line;
-            if (os.contains("win")) {
+            if (os.contains("win")) 
+            {
                 long value = 0;
                 Process uptimeProc = Runtime.getRuntime().exec("net stats srv");
                 BufferedReader in = new BufferedReader(new InputStreamReader(uptimeProc.getInputStream()));
-                while ((line = in.readLine()) != null) {
-                    outLine.append(line).append("\n");
+                while ((line = in.readLine()) != null) 
+                {
+                    outLine.append(line).append(", ");
                 }
             } 
             else if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix")) 
@@ -143,33 +149,70 @@ public class HealthCheck
                 freeSpace / (1024 * 1024 * 1024),
                 usableSpace / (1024 * 1024 * 1024));
     }
-
-    /**
-     * Returns the most recent version number of the MeCard server.
-     * @param filePath path and name of the metro stdout log file.
-     * @return String of the version number or 'No version found' if the MeCard
-     * server is so early it doesn't report its version number.
-     * @throws IOException 
-     */
-    public static String getLastVersionNumber(String filePath) throws IOException 
+    
+    protected static class LogFinder 
     {
-        String lastVersion = null;
-        Pattern pattern = Pattern.compile("Metro \\(MeCard\\) server version (\\d+\\.\\d+\\.\\d+(?:[_a-zA-Z]+)?)");
+        private String startDirectory;
+        private String logFilePath;
+        private String errFilePath;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) 
-            {
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) 
-                {
-                    lastVersion = matcher.group(1);
-                }
-            }
+        public LogFinder(String startDirectory) 
+        {
+            this.startDirectory = startDirectory;
         }
 
-        return lastVersion != null ? lastVersion : "No version found";
+        public String findLogPath() 
+        {
+           return searchDirectory(new File(startDirectory));
+        }
+
+        private String searchDirectory(File directory) 
+        {
+            File[] files = directory.listFiles();
+            if (files != null) 
+            {
+                for (File file : files) 
+                {
+                    if (file.isFile()) 
+                    {
+                        String fileName = file.getName();
+                        if (fileName.equals("metro.out")) 
+                        {
+                            this.logFilePath = file.getAbsolutePath();
+                            this.errFilePath = file.getParent() + File.separator + "metro.err";
+                            return file.getParent();
+                        }
+                        else if (fileName.equals("stdout.txt"))
+                        {
+                            this.logFilePath = file.getAbsolutePath();
+                            this.errFilePath = file.getParent() + File.separator + "stderr.txt";
+                            return file.getParent();
+                        }
+                    } 
+                    else if (file.isDirectory()) 
+                    {
+                        String result = searchDirectory(file);
+                        if (result != null) 
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        
+        public String getLogFile()
+        {
+            return this.logFilePath;
+        }
+        
+        public String getErrFile()
+        {
+            return this.errFilePath;
+        }
     }
+    
     
     /**
      * Prints out basic server health as:
@@ -179,39 +222,47 @@ public class HealthCheck
      * <li>Error file size.</li>
      * <li>Number of transactions.</li>
      * <li>Last activity of the MeCard server.</li>
-     * <li>Host disk space.</li>
-     * @param filePath 
+     * <li>Host disk space.</li> 
      * @return System information in a String.
      */
-    public static String getServerHealth(String filePath)
+    public static String getServerHealth()
     {
-        String logFilePath = filePath + "/metro.out";
-        String errFilePath = filePath + "/metro.err";
-        String diskPath = "/"; // Root directory for disk space check
         StringBuilder outStr = new StringBuilder();
         try 
         {
-            outStr.append(System.getProperty("os.name"))
-                    .append(" version: ")
-                    .append(System.getProperty("os.version"))
-                    .append(" arch:")
-                    .append(System.clearProperty("os.arch"))
-                    .append("\n");
-            outStr.append("Java: ").append(System.getProperty("java.version")).append("\n");
-            outStr.append("MeCard version: ").append(getLastVersionNumber(logFilePath)).append("\n");
-            outStr.append("User: ").append(System.getProperty("user.name")).append("\n");
-            outStr.append("User dir: ").append(System.getProperty("user.dir")).append("\n");
-            outStr.append("Up time: ").append(getServerUptime()).append(" hours").append("\n");
-            LocalDateTime lastActivity = getLastActivityDateTime(logFilePath);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            outStr.append("Last active: ").append(lastActivity.format(formatter)).append("\n");
-            outStr.append("Host disk: ").append(getHostDiskSpace(diskPath)).append("\n");
-            outStr.append("Log size: ").append(getLogFileSize(logFilePath)).append(" KB").append("\n");
-            outStr.append("Err size: ").append(getLogFileSize(errFilePath)).append(" KB").append("\n");
-            outStr.append("Transactions: ").append(countLogTransactions(logFilePath)).append("\n");
+            String os = System.getProperty("os.name").toLowerCase();
+            outStr.append(System.getProperty("os.name"));
+            outStr.append(" version: ").append(System.getProperty("os.version"));
+            outStr.append(" arch:").append(System.clearProperty("os.arch")).append(", ");
+            outStr.append("Java: ").append(System.getProperty("java.runtime.version")).append(", ");
+            outStr.append("MeCard version: ").append(PropertyReader.getVersion()).append(", ");
+            outStr.append("User: ").append(System.getProperty("user.name")).append(", ");
+            outStr.append("Up time: ").append(getServerUptime()).append(" hours").append(", ");
+            
+            System.out.println(">>>" + System.getenv("LOG_OUT") + "<<<");
+            String homeDir = System.getProperty("user.home");
+            LogFinder finder = new LogFinder(homeDir);
+            String logPath = finder.findLogPath();
+            // Testing log file specifically.
+            if (logPath != null) 
+            {
+                String logFilePath = finder.getLogFile();
+                String errFilePath = finder.getErrFile();
+                LocalDateTime lastActivity = getLastActivityDateTime(logFilePath);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                outStr.append("Last active: ").append(lastActivity.format(formatter)).append(", ");
+                outStr.append("Log size: ").append(getLogFileSize(logFilePath)).append(" KB").append(", ");
+                outStr.append("Transactions: ").append(countLogTransactions(logFilePath)).append(", ");
+                outStr.append("Err size: ").append(getLogFileSize(errFilePath)).append(" KB").append(", ");
+                outStr.append("Host disk: ").append(getHostDiskSpace(logPath));
+            }
+            else
+            {
+                outStr.append("log file not found. Some tests cannot be completed.");
+            }
         } catch (IOException e) {
             outStr.append("***error (IO exception) while checking server health!")
-                    .append(" Is the log file missing?").append("\n");
+                  .append(" Is the log file missing?");
         }
         return outStr.toString();
     }
@@ -222,7 +273,6 @@ public class HealthCheck
      */
     public static void main(String[] args) 
     {
-        String logPath = "logs";
-        System.out.println(getServerHealth(logPath));
+        System.out.println(getServerHealth());
     }
 }

@@ -55,7 +55,18 @@ Press <enter> to keep the current choice[*], or type selection number:
 ```bash 
 java -version
 ```
-**Note**: Testing the MeCard.jar version 17 AND version 11 work with Java 17 on Ubuntu (20.04.6) without any changes.
+**Note**: Testing the MeCard.jar version 17 on Ubuntu (20.04.6) has not been successful **do not upgrade until further notice!** 
+
+While the envirionment reports java-17-openjdk-amd64, the VM the MeCard uses is still java-11. The link in `/usr/lib/jvm/default-java` does not update, and forcing it to give the error `Cannot find any VM in Java Home /usr/lib/jvm/default-java`. 
+
+## Version 2.04.01f
+* Includes a health check function that augments the `GET_STATUS` command. To use it open a `telnet` session on the ME Libraries web server, and enter the following.
+```bash
+...
+{"code":"GET_STATUS","authorityToken":"[token here]","userId":"","pin":"","customer":"null"}
+{"code":"OK","responseMessage":"Linux version: 5.4.0-189-generic arch:amd64, Java: 11.0.23+9-post-Ubuntu-1ubuntu120.04.2, MeCard version: 2.04.01d, User: its, Up time:  20:44:47 up 15:44,  1 user,  load average: 0.00, 0.03, 0.05 hours, Last active: 2024-07-24 20:44:47, Log size: 8427 KB, Transactions: 3149, Err size: 5 KB, Host disk: Total: 14 GB, Free: 5 GB, Usable: 5 GB:Services up.","customer":"null"}
+...
+```
 
 ## Version 2.03.03b
 * Made `Text.isLike()` method more flexible when matching strings in property files. For example a `sip2.properties` entry like `<entry "user-not-found">unknown borrower</entry>` now matches the phrase `#Unknown borrower barcode - please refer to the circulation desk.`.

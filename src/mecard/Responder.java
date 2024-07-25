@@ -1,7 +1,7 @@
 /*
  * Metro allows customers from any affiliate library to join any other 
  * member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 import mecard.customer.NativeFormatToMeCardCustomer;
+import mecard.util.HealthCheck;
 
 /**
  * Responder object handles requests and responses to and from the ILS in a 
@@ -257,6 +258,8 @@ public class Responder
      */
     private void getILSStatus(Response response)
     {
+        // Do a health check on the local server.
+        response.setResponse(HealthCheck.getServerHealth());
         ILSRequestBuilder requestBuilder = ILSRequestBuilder.getInstanceOf(QueryTypes.GET_STATUS, debug);
         Command statusCommand = requestBuilder.getStatusCommand(response);
         CommandStatus status = statusCommand.execute();
@@ -277,7 +280,7 @@ public class Responder
      * with the new bar code, once the metro server returns a successful message
      * (ResponseTypes.LOST_CARD). The signal means the customer can't use the 
      * card until they confirm with the guest library. Once done staff can run
-     * the 'lost card' process.
+     * the 'lostcard' process.
      * 
      * @param response object
      */

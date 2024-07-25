@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2023 Edmonton Public Library
+ *    Copyright (C) 2024 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ import mecard.util.PlaceNameWGet;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "2.04.00"; // server version
+    public final static String VERSION           = "2.04.01f"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -77,6 +77,15 @@ public class PropertyReader
     private static Properties SQLProperties;      // Optional config for sites that use POLARIS_SQL for transactions.
     private static Properties regionalNameConfigProperties; // Location of global XML properties file.
     private static Properties regionalNamesProperties;// Names of places, lookup for util.city and derivations.
+    
+    /**
+     * MeCard server version number.
+     * @return MeCard (metro) version number as a string.
+     */
+    public static String getVersion()
+    {
+        return VERSION;
+    }
     
     /**
      * Parses a list of ',' comma separated types from a given entry in the 
