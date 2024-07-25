@@ -55,7 +55,7 @@ Press <enter> to keep the current choice[*], or type selection number:
 ```bash 
 java -version
 ```
-4) You _may_ need to add the following. It was a hack carried over from Java 11 installation instructions. I am currently testing this.
+4) You need to add the following directory and link. It's a hack carried over from Java 11 installation instructions.
 ```bash
 $ sudo mkdir /usr/lib/jvm/java-17-openjdk-amd64/lib/amd64
 $ sudo ln -s /usr/lib/jvm/java-17-openjdk-amd64/lib/server /usr/lib/jvm/java-17-openjdk-amd64/lib/amd64/
