@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024 Edmonton Public Library
+ *    Copyright (C) 2012 - 2024 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ import mecard.util.PlaceNameWGet;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "2.04.01f"; // server version
+    public final static String VERSION           = "3.00.00_dev"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -54,6 +54,7 @@ public class PropertyReader
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
+    private static String SIRSIDYNIX_API_FILE    = "sdapi.properties";
     private static String POLARIS_PAPI_FILE      = "papi.properties";
     private static String ENVIRONMENT_FILE       = "environment.properties";
     private static String SIP2_FILE              = "sip2.properties";
@@ -65,7 +66,8 @@ public class PropertyReader
     private static String REGIONAL_NAMES_CONFIG_FILE = "region_config.properties"; // Where to get the properties by URL.
     private static String REGIONAL_NAMES_FILE    = "region.properties"; // File that contains the actual names locally.
         // There are no mandatory variables, so no checking is done.
-    private static Properties polarisAPI;            // Default properties needed by Polaris.
+    private static Properties sirsidynixAPI;      // Default properties needed by SirsiDynix web servcies.
+    private static Properties polarisAPI;         // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
     private static Properties bimport;            // Properties Metro needs to operate BImport.
     private static Properties environment;        // Basic envrionment values.
@@ -135,6 +137,7 @@ public class PropertyReader
         System.out.println(new Date() + " CONFIG: dir set to '" + CONFIG_DIR + "'");
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
+        SIRSIDYNIX_API_FILE    = CONFIG_DIR + SIRSIDYNIX_API_FILE;
         POLARIS_PAPI_FILE      = CONFIG_DIR + POLARIS_PAPI_FILE;
         MESSAGES_PROPERTY_FILE = CONFIG_DIR + MESSAGES_PROPERTY_FILE;
         ENVIRONMENT_FILE       = CONFIG_DIR + ENVIRONMENT_FILE;
@@ -175,7 +178,8 @@ public class PropertyReader
     {
         switch (type)
         {
-            case SYMPHONY: // Additional properties that are given to a customer by default at creation time.
+            case SYMPHONY -> {
+                // Additional properties that are given to a customer by default at creation time.
                 symphony = readPropertyFile(PropertyReader.SYMPHONY_PROPERTY_FILE);
                 // Now check manditory fields
                 for (SymphonyPropertyTypes sType : SymphonyPropertyTypes.values())
@@ -187,8 +191,9 @@ public class PropertyReader
                     }
                 }
                 return symphony;
+            }
                 
-            case ENVIRONMENT:
+            case ENVIRONMENT -> {
                 environment = readPropertyFile(PropertyReader.ENVIRONMENT_FILE);
                 // now check that all mandetory values are here.
                 for (LibraryPropertyTypes lType : LibraryPropertyTypes.values())
@@ -200,8 +205,9 @@ public class PropertyReader
                     }
                 }
                 return environment;
+            }
                 
-            case SIP2:
+            case SIP2 -> {
                 sip2 = readPropertyFile(PropertyReader.SIP2_FILE);
                 // now check that all mandetory values are here.
                 for (SipPropertyTypes sType : SipPropertyTypes.values())
@@ -213,8 +219,9 @@ public class PropertyReader
                     }
                 }
                 return sip2;
+            }
                 
-            case BIMPORT:
+            case BIMPORT -> {
                 bimport = readPropertyFile(PropertyReader.BIMPORT_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (BImportPropertyTypes bType : BImportPropertyTypes.values())
@@ -226,12 +233,14 @@ public class PropertyReader
                     }
                 }
                 return bimport;
+            }
 
-            case BIMPORT_CITY_MAPPING:
+            case BIMPORT_CITY_MAPPING -> {
                 city = readPropertyFile(PropertyReader.BIMPORT_CITY_MAPPING);
                 return city;
+            }
 
-            case DEBUG:
+            case DEBUG -> {
                 debugProperties = readPropertyFile(PropertyReader.DEBUG_SETTINGS_FILE);
                 // now check that all mandetory values are here.
                 for (DebugQueryConfigTypes dType : DebugQueryConfigTypes.values())
@@ -243,12 +252,15 @@ public class PropertyReader
                     }
                 }
                 return debugProperties;
+            }
 
-            case VARS: // Additional variables used by this application as a user on a system like PATH.
+            case VARS -> {
+                // Additional variables used by this application as a user on a system like PATH.
                 systemVariables = readPropertyFile(PropertyReader.VARIABLES_FILE);
                 return systemVariables;
+            }
                 
-            case PAPI:
+            case PAPI -> {
                 polarisAPI = readPropertyFile(PropertyReader.POLARIS_PAPI_FILE);
                 // now check that all mandetory values are here.
                 for (PapiPropertyTypes pType : PapiPropertyTypes.values())
@@ -260,8 +272,23 @@ public class PropertyReader
                     }
                 }
                 return polarisAPI;
-            // POLARIS_SQL required properties if the user is using POLARIS_SQL for any protocol.    
-            case POLARIS_SQL:
+            }
+            
+            case SIRSIDYNIX_API -> {
+                sirsidynixAPI = readPropertyFile(PropertyReader.SIRSIDYNIX_API_FILE);
+                // now check that all mandetory values are here.
+                for (PapiPropertyTypes pType : PapiPropertyTypes.values())
+                {
+                    if (sirsidynixAPI.get(pType.toString()) == null)
+                    {
+                        String msg = "'" + pType + "' unset in " + PropertyReader.SIRSIDYNIX_API_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
+                    }
+                }
+                return sirsidynixAPI;
+            }
+            
+            case POLARIS_SQL -> {
                 SQLProperties = readPropertyFile(PropertyReader.POLARIS_SQL_FILE);
                 // now check that all mandetory values are here.
                 for (PolarisSQLPropertyTypes sType : PolarisSQLPropertyTypes.values())
@@ -273,8 +300,9 @@ public class PropertyReader
                     }
                 }
                 return SQLProperties;
+            }
                 
-            case MESSAGES:
+            case MESSAGES -> {
                 messagesProperties = readPropertyFile(PropertyReader.MESSAGES_PROPERTY_FILE);
                 // now check that all mandetory values are here.
                 for (MessagesTypes mType : MessagesTypes.values())
@@ -286,8 +314,9 @@ public class PropertyReader
                     }
                 }
                 return messagesProperties;
+            }
                 
-            case REGIONAL_NAMES:
+            case REGIONAL_NAMES -> {
                 // If there is a local version of the regional names properties
                 if (regionalNamesProperties != null) 
                 {
@@ -302,8 +331,9 @@ public class PropertyReader
                     throw new ConfigurationException(msg);
                 }
                 return regionalNamesProperties;
+            }
                 
-            case REGIONAL_NAMES_CONFIG:
+            case REGIONAL_NAMES_CONFIG -> {
                 // If there is a local version of the regional names properties
                 if (regionalNameConfigProperties != null)
                 {
@@ -320,10 +350,11 @@ public class PropertyReader
                     }
                 }
                 return regionalNameConfigProperties;
+            }
                 
-            default:
-                throw new UnsupportedOperationException("unsupported property file");
+            default -> throw new UnsupportedOperationException("unsupported property file");
         }
+        // POLARIS_SQL required properties if the user is using POLARIS_SQL for any protocol.
     }
 
     /**
