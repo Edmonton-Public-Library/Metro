@@ -30,9 +30,39 @@ transaction is a way that ensures that no identifiable customer information is
 stored then passes the response on again as another request to the guest library.
 The guest then creates a new user record in their ILS. 
 
+TODO: In the future all operational parameters may be set in the `.env` file, not the `properties` files.
+
 ----------
 # What's new
 ----------
+## Version 3.00.00
+Added SirsiDynix web services for Symphony and Horizon libraries.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>
+    SirsiDynix Web Service settings.
+</comment>
+	<entry key="client-id">MY_APP_ID</entry>
+    <entry key="env-file-path">.env</entry>
+    <entry key="base-url">https://ws.sirsidynix.net</entry>
+    <entry key="app-id">ilsws</entry>
+    <entry key="web-service-version">6.4.0</entry>
+</properties>
+```
+There is a new `sdapi.properties` file, and a `.env` where the staff ID and staff password will be read from. 
+```bash
+# Environment file for MeCard server. 
+# This file is used for SDapi to store the 'STAFF_PASSWORD' 
+# and 'STAFF_ID'.
+
+# Application settings
+STAFF_ID="some_staff_id"
+STAFF_PASSWORD="supersecretpassword!"
+```
+
+
 ## Java Upgrade
 Java 11 is now end of life, to be replaced by Java 17. If you upgrade please ask for a new version of the MeCard.jar compiled to version 17. To update your system's version of Java do the following.
 

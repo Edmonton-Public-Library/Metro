@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021  Edmonton Public Library
+ *    Copyright (C) 2021 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,20 +23,22 @@ package mecard.requestbuilder;
 /**
  * Every command that Metro executes must have a strategy defined for how it will
  * execute that command. There are just four strategies for satisfying requests 
- * from the metro server. These values have to be entered in the environment configuration XML file
- * @author andrew
+ * from the metro server. These values have to be entered in the environment 
+ * configuration XML file.
+ * @author andrew (at) dev-ils.com
  */
 public enum ResponderMethodTypes
 {
-    SYMPHONY_API("symphony-api"), // SQL or API  
+    SYMPHONY_API("symphony-api"), // Command line API through SSH.
     SIP2("sip2"),
     BIMPORT("bimport"), 
-    DEBUG("dummy"),
-    OUTAGE("outage"),
-    POLARIS_API("polaris-api"), // restful service. untested.
-    POLARIS_SQL("polaris-sql"); 
+    DEBUG("dummy"),   // Used for testing.
+    OUTAGE("outage"), // Used for planned outage. Sets the server into loopback mode.
+    SIRSIDYNIX_API("sirsidynix-api"), // Symphony & Horizon web services.
+    POLARIS_API("polaris-api"), // restful service.
+    POLARIS_SQL("polaris-sql"); // Polaris SQL 
     
-    private String type;
+    private final String type;
     
     private ResponderMethodTypes(String t)
     {

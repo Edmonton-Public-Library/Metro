@@ -20,71 +20,30 @@
  */
 package mecard.security;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Reads secure password and staff user ID from env file.
  * @author anisbet
  */
-public final class SDSecurity 
+public final class SDapiSecurity extends EnvFileParser 
 {
-    private String staffId;
-    private String staffPassword;
-    
-    public SDSecurity(String envFilePath) throws IOException 
+    public SDapiSecurity(String envFilePath) throws IOException
     {
-        Path path = Paths.get(envFilePath);
-        this.staffId = "";
-        this.staffPassword = "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) 
-        {
-            String line;
-            while ((line = reader.readLine()) != null) 
-            {
-                // Skip empty lines and comments
-                if (line.trim().isEmpty() || line.trim().startsWith("#")) 
-                {
-                    continue;
-                }
-                
-                // Split on first equals sign
-                String[] parts = line.split("=", 2);
-                if (parts.length == 2) 
-                {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim();
-                    
-                    // Remove quotes if present
-                    if (value.startsWith("\"") && value.endsWith("\"") ||
-                        value.startsWith("'") && value.endsWith("'")) {
-                        value = value.substring(1, value.length() - 1);
-                    }
-                    
-                    if (key.equals("STAFF_PASSWORD")) 
-                    {
-                        this.staffPassword = value;
-                    }
-                    
-                    if (key.equals("STAFF_ID")) 
-                    {
-                        this.staffId = value;
-                    }
-                }
-            }
-        }
+        super(envFilePath);
     }
     
     public String getStaffId()
     {
-        return this.staffId;
+        return this.getValue("STAFF_ID");
     }
     
-    public String getStaffPassword()
+    /**
+     * Gets the staff password specifically
+     * @return The staff password if found, null otherwise
+     */
+    public String getStaffPassword() 
     {
-        return this.staffPassword;
+        return this.getValue("STAFF_PASSWORD");
     }
 }

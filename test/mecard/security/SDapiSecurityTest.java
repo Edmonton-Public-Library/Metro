@@ -27,17 +27,17 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDSecurityTest 
+public class SDapiSecurityTest 
 {
     
     private final String envFilePath;
-    public SDSecurityTest() 
+    public SDapiSecurityTest() 
     {
         envFilePath = "/home/anisbet/MeCard/.testenv";
     }
 
     /**
-     * Test of getStaffPassword method, of class SDSecurity.
+     * Test of getStaffPassword method, of class SDapiSecurity.
      * @throws java.lang.Exception
      */
     @Test
@@ -45,19 +45,19 @@ public class SDSecurityTest
     {
         System.out.println("==getStaffPassword==");
         String expResult = "testStaffPassword";
-        SDSecurity sds = new SDSecurity(envFilePath);
+        SDapiSecurity sds = new SDapiSecurity(envFilePath);
         String result = sds.getStaffPassword();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getStaffId method, of class SDSecurity.
+     * Test of getStaffId method, of class SDapiSecurity.
      * @throws java.lang.Exception
      */
     @Test
     public void testGetStaffId() throws Exception {
         System.out.println("getStaffId");
-        SDSecurity instance = new SDSecurity(envFilePath);
+        SDapiSecurity instance = new SDapiSecurity(envFilePath);
         String expResult = "testStaffId";
         String result = instance.getStaffId();
         assertEquals(expResult, result);

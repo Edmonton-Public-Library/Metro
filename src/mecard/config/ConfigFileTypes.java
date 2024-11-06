@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2024 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ package mecard.config;
 
 /**
  *
- * @author Andrew Nisbet <anisbet@epl.ca>
+ * @author Andrew Nisbet <andrew@dev-ils.com>
  */
 public enum ConfigFileTypes
 {
@@ -31,7 +31,8 @@ public enum ConfigFileTypes
     SIP2,      // SIP2 settings.
     BIMPORT,   // Maps bimport settings.
     BIMPORT_CITY_MAPPING, // Maps city names to codes for Horizon users.
-    PAPI,
+    PAPI,      // Polaris API
+    SIRSIDYNIX_API,       // SirsiDynix API
     POLARIS_SQL,   // Used for general POLARIS_SQL API transactions.
     DEBUG, // used with DummyResponder, this file contains canned results to return to client.
     VARS,  // System variables like PATH, UPATH, etc.
