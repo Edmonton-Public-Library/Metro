@@ -1,0 +1,8 @@
+# Environment file for MeCard server. 
+# This file is used for SDapi to store the 'staffPassword' 
+# however it could be extended to the papi security class 
+# as well.
+
+# Application settings
+STAFF_ID="testStaffId"
+STAFF_PASSWORD="testStaffPassword"
