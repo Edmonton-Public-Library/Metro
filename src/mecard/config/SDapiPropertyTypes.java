@@ -30,7 +30,10 @@ public enum SDapiPropertyTypes
     ENV("env-file-path"), 
     BASE_URL("base-url"), 
     APP_ID("app-id"), 
-    WEB_SERVICE_VERSION("web-service-version");
+    WEB_SERVICE_VERSION("web-service-version"),
+    CONNECTION_TIMEOUT("connection-timeout"),
+    HTTP_VERSION("http-version"),
+    DEBUG("debug");
     
     private final String type;
 

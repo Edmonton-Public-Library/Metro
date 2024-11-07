@@ -49,6 +49,9 @@ Added SirsiDynix web services for Symphony and Horizon libraries.
     <entry key="base-url">https://ws.sirsidynix.net</entry>
     <entry key="app-id">ilsws</entry>
     <entry key="web-service-version">6.4.0</entry>
+    <entry key="connection-timeout">10</entry>
+    <entry key="http-version">2.0</entry>
+    <entry key="debug">true</entry>
 </properties>
 ```
 There is a new `sdapi.properties` file, and a `.env` where the staff ID and staff password will be read from. 
