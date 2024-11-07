@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -443,7 +443,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         String nullResponseMessage = " timeout because of too many tries?";
         switch (commandType)
         {
-            case GET_STATUS:
+            case GET_STATUS -> {
                 PapiXmlStatusResponse papiStatus;
                 try
                 {
@@ -464,16 +464,18 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 }
                 response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
-                System.out.println("**error, the PAPI web service version your"
-                        + " library\n currently uses is older than the version\n"
-                        + "specified in the papi.properties file.\n"
-                        + "Please check the ''minimum-web-service-compliance-version'\n"
-                        + "value. The ILS's PAPI version is " + papiStatus.getPAPIVersion()
-                        + " and the configured value is " + WEB_SERVICE_VERSION
+                System.out.println("""
+                    **error, the PAPI web service version your library
+                     currently uses is older than the version
+                    specified in the papi.properties file.
+                    Please check the ''minimum-web-service-compliance-version'
+                    value. The ILS's PAPI version is """ + papiStatus.getPAPIVersion()
+                    + " and the configured value is " + WEB_SERVICE_VERSION
                 );
                 return false;
+            }
                 
-            case TEST_CUSTOMER:
+            case TEST_CUSTOMER -> {
                 // but see ILSRequestBuilder for how to implement in future.
                 // DummyCommand puts a '1' in stdout.
                 // Authentication failures return status error authentication error, and an empty xml document.
@@ -498,11 +500,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.USER_NOT_FOUND);
                 response.setResponse(messageProperties.getProperty(
                         MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                System.out.println("**failed to find customer with message: " 
-                            + papiTestCustomer.errorMessage());
+                System.out.println("**failed to find customer with message: "
+                        + papiTestCustomer.errorMessage());
                 return false;
+            }
                 
-            case GET_CUSTOMER:
+            case GET_CUSTOMER -> {
                 PapiXmlPatronBasicDataResponse papiGetCustomer;
                 try
                 {
@@ -537,11 +540,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                                 MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                         break;
                 }
-                System.out.println("**error getting customer: " 
-                            + papiGetCustomer.errorMessage());
+                System.out.println("**error getting customer: "
+                        + papiGetCustomer.errorMessage());
                 return false;
+            }
                 
-            case UPDATE_CUSTOMER:
+            case UPDATE_CUSTOMER -> {
                 // DummyCommand puts a '1' in stdout.
                 PapiXmlResponse papiUpdateCustomer;
                 try
@@ -565,25 +569,19 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.FAIL);
                 switch (status.getStatus())
                 {
-                    case UNAUTHORIZED:
-                    case USER_PIN_INVALID:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                        break;
-                    case USER_NOT_FOUND:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                        break;
-                    default:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
-                        break;
+                    case UNAUTHORIZED, USER_PIN_INVALID -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                    case USER_NOT_FOUND -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    default -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
                 }
-                System.out.println("**error update: " 
-                            + papiUpdateCustomer.errorMessage());
+                System.out.println("**error update: "
+                        + papiUpdateCustomer.errorMessage());
                 return false;
+            }
 
-            case CREATE_CUSTOMER:
+            case CREATE_CUSTOMER -> {
                 PapiXmlResponse papiCreateCustomer;
                 try
                 {
@@ -606,16 +604,18 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 {
                     response.setCode(ResponseTypes.FAIL);
                     response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
-                    System.out.println("**error create: " 
-                        + papiCreateCustomer.errorMessage());
+                    System.out.println("**error create: "
+                            + papiCreateCustomer.errorMessage());
                     return false;
                 }
-            default:
+            }
+            default -> {
                 response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println("**error, the requested command " 
                         + commandType.name() + " has no test for success.");
                 return false;
+            }
         }
     }
 
