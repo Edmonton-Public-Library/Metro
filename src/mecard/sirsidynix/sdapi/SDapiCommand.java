@@ -189,7 +189,6 @@ public class SDapiCommand implements Command
             urlString.append(this.baseUrl)
                     .append("/")
                     .append(this.appId)
-                    .append("/")
                     .append(endpoint);
             this.uri = URI.create(urlString.toString());
             return this;
@@ -212,6 +211,11 @@ public class SDapiCommand implements Command
      */
     private SDapiCommand(Builder builder)
     {
+//        sd-originating-app-id: {{MyAppID}}
+//        x-sirs-clientID: {{CLIENT-ID}}
+//        x-sirs-sessionToken: {{ffffffff-ffff-ffff-ffff-ffffffffffff}}
+//        The session token is sent in the response body of the login request.
+//        Content-Type: application/vnd.sirsidynix.roa.resource.v2+json
         SDapiCommand.debug        = builder.debug;
         SDapiCommand.httpMethod   = builder.httpMethod;
         SDapiCommand.jsonBodyText = builder.bodyText;
@@ -345,6 +349,12 @@ public class SDapiCommand implements Command
     @Override
     public String toString()
     {
+        StringBuilder out = new StringBuilder();
+        // TODO: Output headers, and obfuscate the security token.
+//        headers.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
+        // TODO: output the body of the request.
+        out.append("URL: ").append(SDapiCommand.uri.toASCIIString()).append("\n");
+        // out.append("body:" + bodyText);
         return SDapiCommand.uri.toASCIIString();
     }
     

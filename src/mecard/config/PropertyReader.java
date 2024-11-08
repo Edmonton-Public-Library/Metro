@@ -277,7 +277,7 @@ public class PropertyReader
             case SIRSIDYNIX_API -> {
                 sirsidynixAPI = readPropertyFile(PropertyReader.SIRSIDYNIX_API_FILE);
                 // now check that all mandetory values are here.
-                for (PapiPropertyTypes pType : PapiPropertyTypes.values())
+                for (SDapiPropertyTypes pType : SDapiPropertyTypes.values())
                 {
                     if (sirsidynixAPI.get(pType.toString()) == null)
                     {

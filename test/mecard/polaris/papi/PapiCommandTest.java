@@ -20,7 +20,6 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.PapiCommand;
 import api.CommandStatus;
 import java.util.Properties;
 import mecard.ResponseTypes;
@@ -138,6 +137,19 @@ public class PapiCommandTest
         // will fail on repeated attempts because the AccessSecret and AccessToken
         // will change over time.
         assertTrue(true);
+    }
+
+    /**
+     * Test of staffAccessSecret method, of class PapiCommand.
+     */
+    @Test
+    public void testStaffAccessSecret() {
+        System.out.println("staffAccessSecret");
+        String accessSecret = "";
+        PapiCommand instance = null;
+        instance.staffAccessSecret(accessSecret);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
     
 }
