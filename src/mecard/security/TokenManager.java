@@ -24,7 +24,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 /**
  *
@@ -32,7 +31,7 @@ import java.util.Optional;
  */
 public class TokenManager 
 {
-    private static final String FILE_PATH = ".sd_token.cache";
+    protected static final String CACHE_PATH = ".sd_token.cache";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     // Writes the token and expiration time to file
@@ -43,7 +42,7 @@ public class TokenManager
         
         try 
         {
-            Files.write(Paths.get(FILE_PATH), data.getBytes());
+            Files.write(Paths.get(CACHE_PATH), data.getBytes());
         } 
         catch (IOException e) 
         {
@@ -51,46 +50,72 @@ public class TokenManager
         }
     }
 
-    // Reads the token from the file
-    public Optional<String> getToken() 
+    /**
+     * Reads the token from the file.
+     * @return token or empty string if the cache file doesn't exist or the 
+     * token is not set.
+     */
+    public String getToken()
+    {
+        return getToken(false);
+    }
+    
+    /**
+     * Reads the token from the file, with optional debug information
+     * @param isDebug
+     * @return token or empty string if the cache file doesn't exist or the 
+     * token is not set. 
+     */
+    public String getToken(boolean isDebug)
     {
         try 
         {
-            String token = Files.readAllLines(Paths.get(FILE_PATH)).get(0);
-            return Optional.of(token);
+            String token = Files.readAllLines(Paths.get(CACHE_PATH)).get(0);
+            return token;
         } 
         catch (IOException | IndexOutOfBoundsException e) 
         {
-            System.err.println("**error reading token from file: " + e.getMessage());
-            return Optional.empty();
+            if (isDebug)
+            {
+                System.err.println("**error reading token from file: " + e.getMessage());
+            }
+            return "";
         }
     }
-
-    // Checks if the token is older than the specified number of minutes
+    
+    /**
+     * Checks if the token is older than the specified number of minutes.
+     * @param minutes to expiry (as long).
+     * @return true if the token is more than 'minutes' old, or is not cached at
+     * all, and false otherwise.
+     */
     public boolean isTokenExpired(long minutes) 
+    {
+        return isTokenExpired(minutes, true);
+    }
+    /**
+     * Checks if the token is older than the specified number of minutes.
+     * @param minutes to expiry (as long).
+     * @param isDebug If true issues error message if cache file is empty or 
+     * does not exist.
+     * @return true if the token is more than 'minutes' old, or is not cached at
+     * all, and false otherwise.
+     */
+    public boolean isTokenExpired(long minutes, boolean isDebug) 
     {
         try 
         {
-            String expirationTimeStr = Files.readAllLines(Paths.get(FILE_PATH)).get(1);
+            String expirationTimeStr = Files.readAllLines(Paths.get(CACHE_PATH)).get(1);
             LocalDateTime expirationTime = LocalDateTime.parse(expirationTimeStr, FORMATTER);
             return Duration.between(expirationTime, LocalDateTime.now()).toMinutes() >= minutes;
         } 
         catch (IOException | IndexOutOfBoundsException e) 
         {
-            System.err.println("Error reading expiration time from file: " + e.getMessage());
+            if (isDebug)
+            {
+                System.err.println("Warning, token cache is empty or does not exist: " + e.getMessage());
+            }
             return true; // Assume expired if there's an error
         }
-    }
-
-    public static void main(String[] args) 
-    {
-        TokenManager tokenManager = new TokenManager();
-        tokenManager.writeToken("my_secure_token", Duration.ofMinutes(10));
-
-        // Retrieve token
-        tokenManager.getToken().ifPresent(token -> System.out.println("Token: " + token));
-
-        // Check if token is expired
-        System.out.println("Is token expired? " + tokenManager.isTokenExpired(5));
     }
 }
