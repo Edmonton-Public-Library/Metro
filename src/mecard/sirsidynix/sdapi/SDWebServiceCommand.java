@@ -21,9 +21,7 @@
 package mecard.sirsidynix.sdapi;
 
 import api.Command;
-import api.CommandStatus;
 import api.HttpCommandStatus;
-import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Properties;
@@ -32,17 +30,20 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.http.HttpRequest.BodyPublishers;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import mecard.exception.ConfigurationException;
-import mecard.security.SDapiSecurity;
+import java.util.List;
+import java.util.Map;
+import mecard.ResponseTypes;
 
 /**
  * 
  * @author anisbet
  */
-public class SDapiCommand implements Command
+public class SDWebServiceCommand implements Command
 {
+
+    
     public enum HttpVerb
     {
         GET,
@@ -52,31 +53,33 @@ public class SDapiCommand implements Command
     
     private static URI uri;
     private static HttpVerb httpMethod;
-    private static String staffPassword;
-    private static String patronAccessToken;
     private static boolean debug;
-    private static String staffId;
     private static HttpClient httpClient;
-    private static String clientId;
-    private static String jsonBodyText;
+    private static String staffClientId;
+    private static HttpRequest.BodyPublisher jsonBodyText;
+    private static String originAppId;
+    private static String sessionToken;
+    private HttpCommandStatus status;
     
     public static class Builder
     {
         private boolean debug;
         private HttpVerb httpMethod;
         private Properties webServiceProperties;
-        private String bodyText;
-        private String staffPassword;
-        private String staffId;
+        private HttpRequest.BodyPublisher bodyText;
         private int connectionTimeout;
         private HttpClient.Version httpVersion;
-        private String clientId;
-        private String appId;
+        private String staffClientId;
+        private String webApp;
         private String baseUrl;
-        private String endPoint;
         private URI uri;
+        private String originAppId;
+        private String sessionToken;
         
-        public Builder(Properties wsConfigs, String httpMethod)
+        public Builder(
+                Properties wsConfigs, 
+                String httpMethod
+        )
         {
             webServiceProperties = wsConfigs;
             switch(httpMethod)
@@ -95,35 +98,7 @@ public class SDapiCommand implements Command
                     "**error, " + httpMethod + " not supported.");
             }
             
-            // Get staff ID and password from the .env file
-            String envFilePath = this.webServiceProperties.getProperty(SDapiPropertyTypes.ENV.toString());
-            if (envFilePath == null || envFilePath.isBlank())
-            {
-                throw new ConfigurationException("""
-                    **error, the sdapi.properties file does not contain an entry
-                    for the environment file (.env). The entry should look like this example:
-                    <entry key="env-file-path">/MeCard/path/to/.env</entry>
-                    Add entry or check for spelling mistakes.
-                     """);
-            }
-            
-            
-            // Read the staff ID and password.
-            try 
-            {
-                SDapiSecurity sds = new SDapiSecurity(envFilePath);
-                this.staffId = sds.getStaffId();
-                this.staffPassword = sds.getStaffPassword();
-            } 
-            catch (IOException e) 
-            {
-                System.out.println("""
-                    **error, expected an .env file but it is missing or can't be found.
-                    The .env file should include entries for staff ID and password. For example,
-                    STAFF_ID="SomeStaffId"
-                    STAFF_PASSWORD="SomeStaffPassword"
-                    """ + e);
-            } 
+             
             
             
             String version = this.webServiceProperties.getProperty(SDapiPropertyTypes.HTTP_VERSION.toString(), "1.1");
@@ -140,9 +115,22 @@ public class SDapiCommand implements Command
                     break;
             }
             
-            this.clientId = this.webServiceProperties.getProperty(SDapiPropertyTypes.CLIENT_ID.toString());
-            this.appId = this.webServiceProperties.getProperty(SDapiPropertyTypes.APP_ID.toString());
+            this.staffClientId = this.webServiceProperties.getProperty(SDapiPropertyTypes.CLIENT_ID.toString());
+            this.originAppId = this.webServiceProperties.getProperty(SDapiPropertyTypes.SD_ORIGINATING_APP_ID.toString());
+            this.webApp = this.webServiceProperties.getProperty(SDapiPropertyTypes.WEB_APP.toString());
             this.baseUrl = this.webServiceProperties.getProperty(SDapiPropertyTypes.BASE_URL.toString());
+//            String strTokenExpiry = this.webServiceProperties.getProperty(SDapiPropertyTypes.SESSION_TOKEN_EXPIRY_TIME.toString());
+//            try
+//            {
+//                this.tokenExpiry = Long.parseLong(strTokenExpiry);
+//            }
+//            catch (NumberFormatException e)
+//            {
+//                System.out.println("""
+//                    *warn: invalid sessionToken expiry timelimit set in sdapi.properties 
+//                    value must be a long integer type. Defaulting to 60 minutes.""");
+//                this.tokenExpiry = 60;
+//            }
             
             // Connection timeout
             String cTimeout = this.webServiceProperties.getProperty(SDapiPropertyTypes.CONNECTION_TIMEOUT.toString());
@@ -164,20 +152,35 @@ public class SDapiCommand implements Command
         }
         
         /**
-         * Adds body text to a request.
-         * @TODO check if the data inbound is already JSON.
+         * Adds body text, as JSON, to a request.
          * @param bodyText - text for the body of the request.
          * @return Builder object.
          */
-        public Builder bodyText(JsonObject bodyText)
+        public Builder bodyText(String bodyText)
         {
-            // JSON-ify inbound text.
-//            this.bodyText = bodyText;
+            this.bodyText = HttpRequest.BodyPublishers.ofString(
+                bodyText, 
+                StandardCharsets.UTF_8
+            );
             return this;
         }
         
         /**
-         * Allows setting a web service endpoint.
+         * Takes a session token from a successful login, and applies it to the
+         * request. An empty string is also permitted.
+         * @param sessionToken
+         * @return Builder object.
+         */
+        public Builder sessionToken(String sessionToken)
+        {
+            // Session token for methods that require staff permissions.
+            this.sessionToken = sessionToken;
+            return this;
+        }
+        
+        /**
+         * Allows setting a web service endpoint. The end point is everything 
+         * after the base URL and web app name, such as '/user/staff/login'.
          * @param endpoint
          * @return Builder object.
          */
@@ -188,7 +191,8 @@ public class SDapiCommand implements Command
             StringBuilder urlString = new StringBuilder();
             urlString.append(this.baseUrl)
                     .append("/")
-                    .append(this.appId)
+                    .append(this.webApp)
+                    // remember to include the '/' for the endpoint!
                     .append(endpoint);
             this.uri = URI.create(urlString.toString());
             return this;
@@ -199,9 +203,9 @@ public class SDapiCommand implements Command
          *
          * @return Web Service Command reference.
          */
-        public SDapiCommand build()
+        public SDWebServiceCommand build()
         {
-            return new SDapiCommand(this);
+            return new SDWebServiceCommand(this);
         }
     }
     
@@ -209,23 +213,26 @@ public class SDapiCommand implements Command
      * Create the Web Service.
      * @param builder 
      */
-    private SDapiCommand(Builder builder)
+    private SDWebServiceCommand(Builder builder)
     {
 //        sd-originating-app-id: {{MyAppID}}
 //        x-sirs-clientID: {{CLIENT-ID}}
 //        x-sirs-sessionToken: {{ffffffff-ffff-ffff-ffff-ffffffffffff}}
-//        The session token is sent in the response body of the login request.
+//        The session sessionToken is sent in the response body of the login request.
 //        Content-Type: application/vnd.sirsidynix.roa.resource.v2+json
-        SDapiCommand.debug        = builder.debug;
-        SDapiCommand.httpMethod   = builder.httpMethod;
-        SDapiCommand.jsonBodyText = builder.bodyText;
-        SDapiCommand.staffId      = builder.staffId;
-        SDapiCommand.staffPassword= builder.staffPassword;
-        SDapiCommand.clientId     = builder.clientId;
-        SDapiCommand.uri          = builder.uri;
-
+        SDWebServiceCommand.debug         = builder.debug;
+        SDWebServiceCommand.httpMethod    = builder.httpMethod;
+        SDWebServiceCommand.jsonBodyText  = builder.bodyText;
+        // Headers
+        // x-sirs-clientId: Like 'VSD'
+        SDWebServiceCommand.staffClientId = builder.staffClientId;
+        // SD-Originating-App-Id: 'MeCard' used when logging requests.
+        SDWebServiceCommand.originAppId   = builder.originAppId;
+        // URL string with endpoint.
+        SDWebServiceCommand.uri           = builder.uri;
+        SDWebServiceCommand.sessionToken  = builder.sessionToken;
         // Create the httpClient.
-        SDapiCommand.httpClient  = HttpClient.newBuilder()
+        SDWebServiceCommand.httpClient    = HttpClient.newBuilder()
             .version(builder.httpVersion)
             .connectTimeout(Duration.ofSeconds(builder.connectionTimeout))
             .build();
@@ -233,116 +240,94 @@ public class SDapiCommand implements Command
     
     
     @Override
-    public CommandStatus execute() 
+    public HttpCommandStatus execute() 
     {
-        HttpCommandStatus status = new HttpCommandStatus();
-//        try
-//        {
-//            HttpRequest request = null;
-//            HttpResponse<String> response;
-//            switch(PapiCommand.httpMethod)
-//            {
-//                case GET -> {
-//                    if (PapiCommand.useStaffMode)
-//                    {
-//                        request = HttpRequest.newBuilder()
-//                                .GET()
-//                                .uri(PapiCommand.uri)
-//                                .setHeader("accept", "application/xml")
-//                                .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
-//                                .setHeader("Authorization", computeAuthorizationToken())
-//                                .setHeader("PolarisDate", getPolarisDate())
-//                                .build();
-//                    }
-//                    else
-//                    {
-//                        request = HttpRequest.newBuilder()
-//                                .GET()
-//                                .uri(PapiCommand.uri)
-//                                .setHeader("accept", "application/xml")
-//                                .setHeader("Authorization", computeAuthorizationToken())
-//                                .setHeader("PolarisDate", getPolarisDate())
-//                                .build();
-//                    }
-//                }
-//                case POST -> {
-//                    if (PapiCommand.useStaffMode)
-//                    {
-//                        request = HttpRequest.newBuilder()
-//                                .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-//                                .uri(PapiCommand.uri)
-//                                .setHeader("accept", "application/xml")
-//                                .setHeader("Content-Type", "application/xml")
-//                                .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
-//                                .setHeader("Authorization", computeAuthorizationToken())
-//                                .setHeader("PolarisDate", getPolarisDate())
-//                                .build();
-//                    }
-//                    else
-//                    {
-//                        request = HttpRequest.newBuilder()
-//                                .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-//                                .uri(PapiCommand.uri)
-//                                .setHeader("accept", "application/xml")
-//                                .setHeader("Content-Type", "application/xml")
-//                                .setHeader("Authorization", computeAuthorizationToken())
-//                                .setHeader("PolarisDate", getPolarisDate())
-//                                .build();
-//                    }
-//                }
-//                case PUT -> {
-//                    if (PapiCommand.useStaffMode)
-//                    {
-//                        request = HttpRequest.newBuilder()
-//                                .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-//                                .uri(PapiCommand.uri)
-//                                .setHeader("accept", "application/xml")
-//                                .setHeader("Content-Type", "application/xml")
-//                                .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
-//                                .setHeader("Authorization", computeAuthorizationToken())
-//                                .setHeader("PolarisDate", getPolarisDate())
-//                                .build();
-//                    }
-//                    else
-//                    {
-//                        request = HttpRequest.newBuilder()
-//                                .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-//                                .uri(PapiCommand.uri)
-//                                .setHeader("accept", "application/xml")
-//                                .setHeader("Content-Type", "application/xml")
-//                                .setHeader("Authorization", computeAuthorizationToken())
-//                                .setHeader("PolarisDate", getPolarisDate())
-//                                .build();
-//                    }
-//                }
-//                default -> {
-//                }
-//            }
-//            
-//            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-//            HttpHeaders headers = response.headers();
-//            status.setStatus(response.statusCode());
-//            status.setStdout(response.body());
-//            // The rest of the command.
-//            if (PapiCommand.debug)
-//            {
-//                System.out.println("HEADERS RETURNED:");
-//                headers.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
-//                System.out.println("   CODE RETURNED: '" + status.getStatus()+ "'.");
-//                System.out.println("CONTOUT RETURNED: '" + status.getStdout()+ "'.");
-//                System.out.println("CONTERR RETURNED: '" + status.getStderr()+ "'.");
-//            }
-//        } 
-//        catch (InterruptedException ex)
-//        {
-//            status.setEnded(ResponseTypes.UNAVAILABLE.ordinal());
-//            System.out.println(ex.getMessage());
-//        } 
-//        catch (IOException ex)
-//        {
-//            status.setEnded(ResponseTypes.FAIL.ordinal());
-//            System.out.println(ex.getMessage());
-//        } 
+        
+        try
+        {
+            HttpRequest request = null;
+            HttpResponse<String> response;
+            switch(SDWebServiceCommand.httpMethod)
+            {
+                case GET -> {
+                    // Search, Get user info.
+                    request = HttpRequest.newBuilder()
+                        .GET()
+                        .uri(SDWebServiceCommand.uri)
+                        .setHeader("Accept", "*/*")
+                        .setHeader("x-sirs-sessionToken", SDWebServiceCommand.sessionToken)
+                        .setHeader("SD-Originating-App-Id", SDWebServiceCommand.originAppId)
+                        .setHeader("x-sirs-clientID", SDWebServiceCommand.staffClientId)
+                        .setHeader("Content-Type", "application/json")
+                        .build();
+                }
+                case POST -> {
+                    // Used for getting new session sessionToken.
+                    if (SDWebServiceCommand.sessionToken == null || ! SDWebServiceCommand.sessionToken.isBlank())
+                    {
+                        request = HttpRequest.newBuilder()
+                            .POST(SDWebServiceCommand.jsonBodyText)
+                            .uri(SDWebServiceCommand.uri)
+                            .setHeader("Accept", "*/*")
+                            .setHeader("SD-Originating-App-Id", SDWebServiceCommand.originAppId)
+                            .setHeader("x-sirs-clientID", SDWebServiceCommand.staffClientId)
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    }
+                    else // Used for Create user.
+                    {
+                        request = HttpRequest.newBuilder()
+                            .POST(SDWebServiceCommand.jsonBodyText)
+                            .uri(SDWebServiceCommand.uri)
+                            .setHeader("Accept", "*/*")
+                            .setHeader("x-sirs-sessionToken", SDWebServiceCommand.sessionToken)
+                            .setHeader("SD-Originating-App-Id", SDWebServiceCommand.originAppId)
+                            .setHeader("x-sirs-clientID", SDWebServiceCommand.staffClientId)
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    }
+                }
+                case PUT -> {
+                    // Used for updating accounts.
+                    request = HttpRequest.newBuilder()
+                        .PUT(SDWebServiceCommand.jsonBodyText)
+                        .uri(SDWebServiceCommand.uri)
+                        .setHeader("Accept", "*/*")
+                        .setHeader("x-sirs-sessionToken", SDWebServiceCommand.sessionToken)
+                        .setHeader("SD-Originating-App-Id", SDWebServiceCommand.originAppId)
+                        .setHeader("x-sirs-clientID", SDWebServiceCommand.staffClientId)
+                        .setHeader("Content-Type", "application/vnd.sirsidynix.roa.resource.v2+json")
+                        .build();
+                }
+                default -> { }
+            }
+            
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            status = new HttpCommandStatus(response);
+            
+            HttpHeaders responseHeaders = response.headers();
+            // Show the command results if debug.
+            if (SDWebServiceCommand.debug)
+            {
+                System.out.println("HEADERS RETURNED:");
+                responseHeaders.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
+                System.out.println("   CODE RETURNED: '" + status.getStatus()+ "'.");
+                System.out.println("CONTOUT RETURNED: '" + status.getStdout()+ "'.");
+                System.out.println("CONTERR RETURNED: '" + status.getStderr()+ "'.");
+            }
+        } 
+        catch (InterruptedException ex)
+        {
+            status = new HttpCommandStatus();
+            status.setEnded(ResponseTypes.UNAVAILABLE.ordinal());
+            System.out.println(ex.getMessage());
+        } 
+        catch (IOException ex)
+        {
+            status = new HttpCommandStatus();
+            status.setEnded(ResponseTypes.FAIL.ordinal());
+            System.out.println(ex.getMessage());
+        } 
         return status;
     }
     
@@ -350,12 +335,54 @@ public class SDapiCommand implements Command
     public String toString()
     {
         StringBuilder out = new StringBuilder();
-        // TODO: Output headers, and obfuscate the security token.
-//        headers.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
-        // TODO: output the body of the request.
-        out.append("URL: ").append(SDapiCommand.uri.toASCIIString()).append("\n");
-        // out.append("body:" + bodyText);
-        return SDapiCommand.uri.toASCIIString();
+        out.append(SDWebServiceCommand.uri)
+            .append(" ")
+            .append(SDWebServiceCommand.httpMethod)
+            .append("\n");
+        if (status != null)
+        {
+            if (status.getResponse() != null)
+            {
+                // Output responseHeaders, and obfuscate the security sessionToken.
+                for (Map.Entry<String, List<String>> header : status.getResponse().headers().map().entrySet()) 
+                {
+                    String headerName = header.getKey();
+                    String headerValue = String.join(",", header.getValue());
+
+                    // Check if the header is the sessionToken and obfuscate if it is
+                    if ("sessionToken".equalsIgnoreCase(headerName)) 
+                    {
+                        // Replace with obfuscated text or mask part of the token
+                        headerValue = obfuscateToken(headerValue);
+                    }
+                    out.append(headerName).append(": ").append(headerValue).append("\n");
+                }
+                out.append("URI: ").append(status.getResponse().uri()).append("\n");
+            }
+            out.append("status:")
+                    .append(status.getStatus())
+                    .append("\n")
+                    .append("body:")
+                    .append(status.getStdout());
+        } 
+        else
+        {
+            out.append("<pending response>");
+        }
+        return out.toString();
+    }
+    
+    private static String obfuscateToken(String token) 
+    {
+        // Adjust the obfuscation logic as needed, e.g., show first 10 characters only
+        if (token.length() > 10) 
+        {
+            return token.substring(0, 10) + "**********";
+        } 
+        else 
+        {
+            return "**********"; // in case token is too short
+        }
     }
     
 }

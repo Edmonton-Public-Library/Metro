@@ -26,15 +26,20 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 /**
- *
- * @author anisbet
+ * Manages session tokens. Can save, retrieve, and test expiry of web
+ * service session tokens.
+ * @author anisbet <andrew (at) dev-ils dot com>
  */
 public class TokenManager 
 {
-    protected static final String CACHE_PATH = ".sd_token.cache";
+    public static final String CACHE_PATH = ".sd_token.cache";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    // Writes the token and expiration time to file
+    /** 
+     * Writes the token and expiration time to file.
+     * @param token 
+     * @param validDuration time to expire in minutes.
+     */
     public void writeToken(String token, Duration validDuration) 
     {
         LocalDateTime expirationTime = LocalDateTime.now().plus(validDuration);
@@ -93,6 +98,7 @@ public class TokenManager
     {
         return isTokenExpired(minutes, true);
     }
+    
     /**
      * Checks if the token is older than the specified number of minutes.
      * @param minutes to expiry (as long).
@@ -117,5 +123,36 @@ public class TokenManager
             }
             return true; // Assume expired if there's an error
         }
+    }
+
+    /**
+     * Given a JSON response from a web service, extracts the session token and
+     * writes it to cache.
+     * @param tokenMarker The string that denotes the session token in the json,
+     * like 'sessionToken', probably.
+     * @param jsonString response from a web service call.
+     * @param d - duration in minutes.
+     */
+    public void writeTokenFromStdout(String tokenMarker, String jsonString, Duration d) 
+    {
+        // '{"staffKey":"776715","pinCreateDate":"2024-03-26","pinExpirationDate":null,"name":"Web Service Requests for Online Registration","sessionToken":"08eff918-aefa-44a6-b6a6-51ddd40b38ad","pinStatus":{"resource":"/policy/userPinStatus","key":"A","fields":{"policyNumber":1,"description":"$<userpin_active_status>","displayName":"A","translatedDescription":"User's PIN is active"}},"message":null}'
+        // Test for, and save returned 'sessionToken'
+        String marker = "\""+tokenMarker+"\":\"";
+        int tokenIndex = jsonString.indexOf(marker);
+        if (tokenIndex == -1) 
+        {
+            return;
+        }
+        
+        // Start after the field name and opening quote
+        int startIndex = tokenIndex + marker.length();
+        
+        // Find the closing quote
+        int endIndex = jsonString.indexOf("\"", startIndex);
+        if (endIndex == -1) {
+            return;
+        }
+        
+        this.writeToken(jsonString.substring(startIndex, endIndex), d);
     }
 }

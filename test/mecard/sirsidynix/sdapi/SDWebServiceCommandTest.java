@@ -20,11 +20,10 @@
  */
 package mecard.sirsidynix.sdapi;
 
-import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import api.CommandStatus;
+import api.HttpCommandStatus;
 import java.util.Properties;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
@@ -33,19 +32,25 @@ import mecard.config.SDapiPropertyTypes;
 import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.time.Duration;
+import mecard.exception.ConfigurationException;
+import mecard.security.SDapiSecurity;
+import mecard.security.TokenManager;
 
 /**
  *
  * @author anisbet
  */
-public class SDapiCommandTest 
+public class SDWebServiceCommandTest 
 {
     
     private final Properties sdapiProperties;
+    private String staffId;
+    private String staffPassword;
 
-    public SDapiCommandTest() 
+    public SDWebServiceCommandTest() 
     {
         this.sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
         JsonObject userGson = new JsonObject();
@@ -60,47 +65,122 @@ public class SDapiCommandTest
     }
 
     /**
-     * Test of execute method, of class SDapiCommand.
+     * Test of execute method, of class SDWebServiceCommand.
      */
     @Test
     public void testExecute() {
-//        System.out.println("==execute==");
+        System.out.println("==execute==");
 ////        POST: https://{{HOST}}/{{WEBAPP}}/user/staff/login
 ////        Body: {
 ////        "login": "{{staffId}}",
 ////        "password": "{{staffPassword}}"
 ////        }
-//
-//        SDapiCommand command = new SDapiCommand.Builder(sdapiProperties, "POST")
-//            .endpoint("/user/staff/login")
-//            .build();
-//        CommandStatus result = command.execute();
-//        System.out.println("login toString: '" + command.toString() + "'");
-//        System.out.println("Authentication OUTPUT: '" + result.getStdout() + "'");
-//        assertNotNull(result);
-//        assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
+        // Get staff ID and password from the .env file
+        String envFilePath = sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
+        if (envFilePath == null || envFilePath.isBlank())
+        {
+            throw new ConfigurationException("""
+                **error, the sdapi.properties file does not contain an entry
+                for the environment file (.env). The entry should look like this example:
+                <entry key="env-file-path">/MeCard/path/to/.env</entry>
+                Add entry or check for spelling mistakes.
+                 """);
+        }
+
+
+        // Read the staff ID and password.
+        try 
+        {
+            SDapiSecurity sds = new SDapiSecurity(envFilePath);
+            this.staffId = sds.getStaffId();
+            this.staffPassword = sds.getStaffPassword();
+            System.out.println(">>>login:" + this.staffId + "\n>>>password:");
+        } 
+        catch (IOException e) 
+        {
+            System.out.println("""
+                **error, expected an .env file but it is missing or can't be found.
+                The .env file should include entries for staff ID and password. For example,
+                STAFF_ID="SomeStaffId"
+                STAFF_PASSWORD="SomeStaffPassword"
+                """ + e);
+        }
+        
+        String loginBodyText = "{\"login\":\""+this.staffId
+                +"\",\"password\":\""+ this.staffPassword +"\"}";
+        
+        SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+            .endpoint("/user/staff/login")
+            .bodyText(loginBodyText)
+            .build();
+        HttpCommandStatus result = command.execute();
+        System.out.println("login toString: '" + command.toString() + "'");
+        System.out.println("Authentication OUTPUT: '" + result.getStdout() + "'");
+        
+        System.out.println("==toString==\n" + command.toString());
+        
+        
+        // Test token manager methods.
+        TokenManager tokenManager = new TokenManager();
+        tokenManager.writeTokenFromStdout("sessionToken", result.getStdout(), Duration.ofMinutes(10));
+        assertNotNull(result);
+        assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
+        assertFalse(tokenManager.isTokenExpired(50L));
+        
     }
 
     /**
-     * Test of toString method, of class SDapiCommand.
+     * Test of toString method, of class SDWebServiceCommand.
      */
     @Test
     public void testToString() {
-        System.out.println("toString");
-        System.out.println("==execute==");
+        System.out.println("==toString==");
 //        POST: https://{{HOST}}/{{WEBAPP}}/user/staff/login
 //        Body: {
 //        "login": "{{staffId}}",
 //        "password": "{{staffPassword}}"
 //        }
 
-        SDapiCommand command = new SDapiCommand.Builder(sdapiProperties, "POST")
+        String envFilePath = sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
+        if (envFilePath == null || envFilePath.isBlank())
+        {
+            throw new ConfigurationException("""
+                **error, the sdapi.properties file does not contain an entry
+                for the environment file (.env). The entry should look like this example:
+                <entry key="env-file-path">/MeCard/path/to/.env</entry>
+                Add entry or check for spelling mistakes.
+                 """);
+        }
+
+
+        // Read the staff ID and password.
+        try 
+        {
+            SDapiSecurity sds = new SDapiSecurity(envFilePath);
+            this.staffId = sds.getStaffId();
+            this.staffPassword = sds.getStaffPassword();
+            System.out.println(">>>login:" + this.staffId + "\n>>>password:");
+        } 
+        catch (IOException e) 
+        {
+            System.out.println("""
+                **error, expected an .env file but it is missing or can't be found.
+                The .env file should include entries for staff ID and password. For example,
+                STAFF_ID="SomeStaffId"
+                STAFF_PASSWORD="SomeStaffPassword"
+                """ + e);
+        }
+
+        String loginBodyText = "{\"login\":\""+this.staffId
+                +"\",\"password\":\""+ this.staffPassword +"\"}";
+        
+        SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
             .endpoint("/user/staff/login")
+            .bodyText(loginBodyText)
             .build();
-        CommandStatus result = command.execute();
-        System.out.println("login toString: '" + command.toString() + "'");
-//        assertNotNull(result);
-//        assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
+        
+        System.out.println("toString()>>>\n'" + command.toString() + "'");
+        
     }
     
 }

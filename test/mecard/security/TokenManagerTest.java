@@ -58,6 +58,7 @@ public class TokenManagerTest
     public void testGetToken() 
     {
         System.out.println("==getToken==");
+        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
         TokenManager tokenManager = new TokenManager();
         String expResult = "";
         String result = tokenManager.getToken();
@@ -145,6 +146,30 @@ public class TokenManagerTest
         String token = "ffffffff-ffff-ffff-ffff-ffffffffffff";
         tokenManager.writeToken(token, Duration.ofMinutes(10));
         assertFalse(tokenManager.isTokenExpired(minutes, isDebug));
+    }
+
+    /**
+     * Test of writeTokenFromStdout method, of class TokenManager.
+     */
+    @Test
+    public void testWriteTokenFromStdout() 
+    {
+        System.out.println("==writeTokenFromResponse==");
+        String tokenMarker = "sessionToken";
+        String jsonString = "{\"staffKey\":\"776715\",\"pinCreateDate\":\"2024-03-26\","
+                + "\"pinExpirationDate\":null,\"name\":"
+                + "\"Web Service Requests for Online Registration\","
+                + "\"sessionToken\":\"08eff918-aefa-44a6-b6a6-51ddd40b38ad\","
+                + "\"pinStatus\":{\"resource\":\"/policy/userPinStatus\","
+                + "\"key\":\"A\",\"fields\":{\"policyNumber\":1,"
+                + "\"description\":\"$<userpin_active_status>\","
+                + "\"displayName\":\"A\",\"translatedDescription\":"
+                + "\"User's PIN is active\"}},\"message\":null}";
+        Duration d = Duration.ofMinutes(60L);
+        TokenManager tokenManager = new TokenManager();
+        tokenManager.writeTokenFromStdout(tokenMarker, jsonString, d);
+        assertFalse(tokenManager.isTokenExpired(50L));
+        assertEquals(tokenManager.getToken(), "08eff918-aefa-44a6-b6a6-51ddd40b38ad");
     }
     
 }

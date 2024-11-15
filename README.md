@@ -37,6 +37,9 @@ TODO: In the future all operational parameters may be set in the `.env` file, no
 ----------
 ## Version 3.00.00
 Added SirsiDynix web services for Symphony and Horizon libraries.
+To use it there is a new `sdapi.properties` file as seen below.
+**Note**: the entry `sd-originating-app-id` as far as I know, can be any string and is used as a transaction ID in the logs. The `x-sirs-clientId` is a web service ID that has permission to register customers.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -47,15 +50,17 @@ Added SirsiDynix web services for Symphony and Horizon libraries.
   <entry key="client-id">MY_APP_ID</entry>
   <entry key="env-file-path">.env</entry>
   <entry key="base-url">https://ws.sirsidynix.net</entry>
-  <entry key="app-id">ilsws</entry>
+  <entry key="x-sirs-clientId">ilsws</entry>
+  <entry key="sd-originating-app-id">MeCard</entry>
   <entry key="web-service-version">6.4.0</entry>
   <entry key="connection-timeout">10</entry>
   <entry key="http-version">2.0</entry>
-  <entry key="security-token-expire-time">60</entry>
+  <entry key="session-token-expire-time">60</entry>
   <entry key="debug">true</entry>
 </properties>
 ```
-There is a new `sdapi.properties` file, and a `.env` where the staff ID and staff password will be read from. 
+
+The staff ID and password are kept in a `.env` file in the `${METRO_HOME}` directory. See example below.
 ```bash
 # Environment file for MeCard server. 
 # This file is used for SDapi to store the 'STAFF_PASSWORD' 
