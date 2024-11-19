@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class PapiAuthenticationData extends AuthenticationData
+public class PapiAuthenticationData implements AuthenticationData
 {
     enum PatronTag {
         Barcode,
@@ -67,7 +67,7 @@ public class PapiAuthenticationData extends AuthenticationData
      * @param password String of the customer's password.
      * @return XML string version of the PAPI Patron authentication data document.
      */
-    public static String getStaffAuthentication(String domain, String userId, String password)
+    public String getStaffAuthentication(String domain, String userId, String password)
     {
 //      <PatronAuthenticationData xmlns:i="http://www.w3.org/2001/XMLSchemainstance">
 //         <Barcode>userId</Barcode>
@@ -128,7 +128,7 @@ public class PapiAuthenticationData extends AuthenticationData
      * @param password String of the customer's password.
      * @return XML string version of the PAPI Patron authentication data document.
      */
-    public static String getPatronAuthentication(String userId, String password)
+    public String getPatronAuthentication(String userId, String password)
     {
 //      <PatronAuthenticationData xmlns:i="http://www.w3.org/2001/XMLSchemainstance">
 //         <Barcode>userId</Barcode>

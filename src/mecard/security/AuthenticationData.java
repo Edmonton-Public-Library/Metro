@@ -24,16 +24,10 @@ package mecard.security;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
-public abstract class AuthenticationData 
+public interface AuthenticationData 
 {
     
-    public static String getAuthentication(String userId, String password)
-    {
-        return "";
-    }
+    public String getPatronAuthentication(String userId, String password);
     
-    public static String getAuthentication(String domain, String userId, String password)
-    {
-        return "";
-    }
+    public String getStaffAuthentication(String domain, String userId, String password);
 }

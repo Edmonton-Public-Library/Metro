@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import mecard.security.AuthenticationData;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -45,7 +46,8 @@ public class PapiAuthenticationDataTest
                 + "<Barcode>21221012345678</Barcode>"
                 + "<Password>mYp@sSw0rd!</Password>"
                 + "</PatronAuthenticationData>";
-        String result = PapiAuthenticationData.getPatronAuthentication(userId, password);
+        AuthenticationData authData = (AuthenticationData) new PapiAuthenticationData();
+        String result = authData.getPatronAuthentication(userId, password);
         System.out.println(result);
         assertEquals(expResult, result);
     }
@@ -66,7 +68,8 @@ public class PapiAuthenticationDataTest
                 + "<Username>SB-DEWEY\\PolarisStaff</Username>"
                 + "<Password>PolarisSandbox01</Password>"
                 + "</AuthenticationData>";
-        String result = PapiAuthenticationData.getStaffAuthentication(domain, userId, password);
+        AuthenticationData authData = (AuthenticationData) new PapiAuthenticationData();
+        var result = authData.getStaffAuthentication(domain, userId, password);
         System.out.println(result);
         assertEquals(expResult, result);
         
