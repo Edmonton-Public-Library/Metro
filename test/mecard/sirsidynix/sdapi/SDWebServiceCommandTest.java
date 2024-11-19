@@ -87,7 +87,6 @@ public class SDWebServiceCommandTest
                  """);
         }
 
-
         // Read the staff ID and password.
         try 
         {
@@ -133,7 +132,8 @@ public class SDWebServiceCommandTest
      * Test of toString method, of class SDWebServiceCommand.
      */
     @Test
-    public void testToString() {
+    public void testToString() 
+    {
         System.out.println("==toString==");
 //        POST: https://{{HOST}}/{{WEBAPP}}/user/staff/login
 //        Body: {

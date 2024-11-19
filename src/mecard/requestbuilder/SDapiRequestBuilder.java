@@ -23,65 +23,134 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import java.io.IOException;
+import java.util.Properties;
 import mecard.QueryTypes;
 import mecard.Response;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SDapiPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.NativeFormatToMeCardCustomer;
+import mecard.exception.ConfigurationException;
+import mecard.security.SDapiSecurity;
+import mecard.security.TokenManager;
+import mecard.sirsidynix.sdapi.SDapiJsonCustomerResponse;
+import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
 import site.CustomerLoadNormalizer;
 
 /**
- * This class supports customer registration commands using the Polaris API 
- * or PAPI. This is not LEAP, that would require another request builder.
+ * This class supports customer registration commands using the SirsiDynxi web
+ * service API.
  * 
- * Polaris can use restful web services for all ILS transactions.
+ * Symphony can use restful web services for all ILS transactions.
  * @author Andrew Nisbet andrew at dev-ils.com
  */
 public class SDapiRequestBuilder extends ILSRequestBuilder
 {
+    private final Properties sdapiProperties;
+    private TokenManager tokenManager;
+    private long tokenExpiry;
+    /**
+     * Creates the Sirsi Dynix request builder.
+     */
+    public SDapiRequestBuilder()
+    {
+        // Get the SDapi properties file and set up a token manager.
+        tokenManager = new TokenManager();
+        sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+//        this.tokenExpiry = 
+    }
+    
+    protected String getStaffToken()
+    {
+        if (tokenManager.isTokenExpired(this.tokenExpiry))
+        {
+            String envFilePath = sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
+            String staffId = "";
+            String staffPassword = "";
+            
+            if (envFilePath == null || envFilePath.isBlank())
+            {
+                throw new ConfigurationException("""
+                    **error, the sdapi.properties file does not contain an entry
+                    for the environment file (.env). The entry should look like this example:
+                    <entry key="env-file-path">/MeCard/path/to/.env</entry>
+                    Add entry or check for spelling mistakes.
+                     """);
+            }
+            try 
+            {
+                SDapiSecurity sds = new SDapiSecurity(envFilePath);
+                staffId = sds.getStaffId();
+                staffPassword = sds.getStaffPassword();
+            } 
+            catch (IOException e) 
+            {
+                System.out.println("""
+                    **error, expected an .env file but it is missing or can't be found.
+                    The .env file should include entries for staff ID and password. For example,
+                    STAFF_ID="SomeStaffId"
+                    STAFF_PASSWORD="SomeStaffPassword"
+                    """ + e);
+            }
+        }
+        
+        return tokenManager.getToken();
+    }
 
     @Override
-    public NativeFormatToMeCardCustomer getFormatter() {
+    public NativeFormatToMeCardCustomer getFormatter() 
+    {
+        return new SDapiToMeCardCustomer();
+    }
+
+    @Override
+    public Command getCustomerCommand(String userId, String userPin, Response response) 
+    {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Command getCustomerCommand(String userId, String userPin, Response response) {
+    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
+    {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) {
+    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
+    {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) {
+    public Command getStatusCommand(Response response) 
+    {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Command getStatusCommand(Response response) {
+    public Command testCustomerExists(String userId, String userPin, Response response) 
+    {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Command testCustomerExists(String userId, String userPin, Response response) {
+    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response) 
+    {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean tidy()
+    {
+        return true;
     }
 
     @Override
-    public boolean tidy() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public CustomerMessage getCustomerMessage(String stdout) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public CustomerMessage getCustomerMessage(String stdout)
+    {
+        return new SDapiJsonCustomerResponse(stdout);
     }
     
 }

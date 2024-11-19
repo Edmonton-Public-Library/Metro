@@ -53,8 +53,7 @@ import mecard.polaris.papi.PapiXmlPatronAuthenticateResponse;
 import mecard.polaris.papi.PapiXmlPatronBasicDataResponse;
 import mecard.polaris.papi.PapiXmlRequestPatronValidateResponse;
 import mecard.polaris.papi.PapiXmlResponse;
-import mecard.polaris.papi.PatronAuthenticationData;
-import mecard.polaris.papi.StaffAuthenticationData;
+import mecard.polaris.papi.PapiAuthenticationData;
 import mecard.polaris.papi.TokenCache;
 
 /**
@@ -168,7 +167,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // will be empty.
         if (tokenCache.getValidToken().isEmpty())
         {
-            String authentication = StaffAuthenticationData.getAuthentication(domain, accessId, password);
+            String authentication = PapiAuthenticationData.getStaffAuthentication(domain, accessId, password);
             if (this.debug)
             {
                 System.out.println("AUTHENTICATE XML body: " + authentication);
@@ -234,7 +233,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // will be empty.
         if (tokenCache.getValidToken().isEmpty())
         {
-            String authentication = PatronAuthenticationData.getAuthentication(patronId, password);
+            String authentication = PapiAuthenticationData.getPatronAuthentication(patronId, password);
             if (this.debug)
             {
                 System.out.println("AUTHENTICATE XML body: " + authentication);
