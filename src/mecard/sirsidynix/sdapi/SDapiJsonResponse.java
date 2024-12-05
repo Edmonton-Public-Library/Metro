@@ -26,13 +26,10 @@ import mecard.config.PropertyReader;
 
 
 /**
- * Base class for parsing XML responses from PAPI. While some web service calls
- * can use JSON, Patron Update Data, Patron Registration Create, and Patron 
- * Registration Update must use XML.
+ * Base class for parsing JSON responses from Symphony Web Service API.
  * 
- * Extend this class for specific messages. This class will parse the XML 
- * passed in the constructor, and return any status codes (as integers) and
- * any error messages (which will be empty strings if there was none).
+ * Extend this class for specific messages. This class will parse the JSON 
+ * and allow querying of data in subclasses.
  * 
  * @author Andrew Nisbet andrew@dev-ils.com
  */

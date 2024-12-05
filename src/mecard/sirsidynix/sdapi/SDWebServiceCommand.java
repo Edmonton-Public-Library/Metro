@@ -101,7 +101,7 @@ public class SDWebServiceCommand implements Command
              
             
             
-            String version = this.webServiceProperties.getProperty(SDapiPropertyTypes.HTTP_VERSION.toString(), "1.1");
+            String version = this.webServiceProperties.getProperty(SDapiPropertyTypes.HTTP_VERSION.toString(), "2.0");
             switch(version)
             {
                 case "1.1":
@@ -119,18 +119,6 @@ public class SDWebServiceCommand implements Command
             this.originAppId = this.webServiceProperties.getProperty(SDapiPropertyTypes.SD_ORIGINATING_APP_ID.toString());
             this.webApp = this.webServiceProperties.getProperty(SDapiPropertyTypes.WEB_APP.toString());
             this.baseUrl = this.webServiceProperties.getProperty(SDapiPropertyTypes.BASE_URL.toString());
-//            String strTokenExpiry = this.webServiceProperties.getProperty(SDapiPropertyTypes.SESSION_TOKEN_EXPIRY_TIME.toString());
-//            try
-//            {
-//                this.tokenExpiry = Long.parseLong(strTokenExpiry);
-//            }
-//            catch (NumberFormatException e)
-//            {
-//                System.out.println("""
-//                    *warn: invalid sessionToken expiry timelimit set in sdapi.properties 
-//                    value must be a long integer type. Defaulting to 60 minutes.""");
-//                this.tokenExpiry = 60;
-//            }
             
             // Connection timeout
             String cTimeout = this.webServiceProperties.getProperty(SDapiPropertyTypes.CONNECTION_TIMEOUT.toString());
