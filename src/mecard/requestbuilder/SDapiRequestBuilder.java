@@ -269,7 +269,9 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        return new SDapiJsonCustomerResponse(stdout);
+        SDapiJsonCustomerResponse customerResponse = new SDapiJsonCustomerResponse();
+        customerResponse.parseJson(stdout);
+        return customerResponse;
     }
     
 }

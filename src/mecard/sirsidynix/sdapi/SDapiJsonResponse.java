@@ -33,48 +33,34 @@ import mecard.config.PropertyReader;
  * 
  * @author Andrew Nisbet andrew@dev-ils.com
  */
-public class SDapiJsonResponse
+public abstract class SDapiJsonResponse
 {
     
     protected static Properties messageProperties;
     
-    /**
-     * Parses string of XML and provides accessors for status and any 
-     * error message.
-     * 
-     * @param json String response message. 
-     */
-    public SDapiJsonResponse(String json)
+    public SDapiJsonResponse()
     {
         messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        
-            /*
-            Successful response.
-            --------------------
-            
-            
-            Unsuccessful response.
-            ----------------------
-            
-            
-            */
-        
     }
     
-    public boolean succeeded()
-    {
-        // TODO: finish me
-        return true;
-    }
+    /**
+     * Tests if it is a successful response.
+     * @return true if the response indicates success, and false otherwise.
+     */
+    public abstract boolean succeeded();
+    
+    /**
+     * Parses JSON and returns SDapiJsonResponse object.
+     * @param jsonString
+     * @return SDapiJsonResponse
+     */
+//    public static SDapiJsonResponse parseJson(String jsonString);
     
     /**
      * Provides the error message if there was one.
      * 
      * @return String of the error message or an empty string.
      */
-    public String errorMessage()
-    {
-        return "";
-    }
+    public abstract String errorMessage();
     
 }

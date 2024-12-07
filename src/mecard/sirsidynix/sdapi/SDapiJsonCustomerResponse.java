@@ -31,11 +31,6 @@ public class SDapiJsonCustomerResponse
     implements CustomerMessage
 {
 
-    public SDapiJsonCustomerResponse(String json) 
-    {
-        super(json);
-    }
-
     @Override
     public String getCustomerProfile() 
     {
@@ -75,6 +70,20 @@ public class SDapiJsonCustomerResponse
     @Override
     public boolean isInGoodStanding() 
     {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean succeeded() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public SDapiJsonResponse parseJson(String jsonString) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String errorMessage() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
