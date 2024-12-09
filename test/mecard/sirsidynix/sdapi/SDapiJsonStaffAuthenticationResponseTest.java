@@ -1,3 +1,23 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2024  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either httpVersion 2 of the License, or
+ * (at your option) any later httpVersion.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 
 package mecard.sirsidynix.sdapi;
 
@@ -44,22 +64,6 @@ public class SDapiJsonStaffAuthenticationResponseTest
 //        System.out.println(">>>>" + testResponse.errorMessage());
         boolean result = testResponse.succeeded();
         assertEquals(expResult, result);
-        
-        jsonString = """
-                     {
-                         "messageList": [
-                             {
-                                 "code": "unableToLogin",
-                                 "message": "Unable to log in."
-                             }
-                         ]
-                     }
-                     """;
-
-        testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
-//        System.out.println(">>>" + testResponse.getSessionToken());
-//        System.out.println(">>>>" + testResponse.errorMessage());
-        assertEquals("Unable to log in.\n", testResponse.errorMessage());
     }
 
     /**
@@ -82,13 +86,25 @@ public class SDapiJsonStaffAuthenticationResponseTest
      */
     @Test
     public void testErrorMessage() {
-        System.out.println("errorMessage");
+        System.out.println("==errorMessage==");
 //        SDapiJsonStaffAuthenticationResponse instance = new SDapiJsonStaffAuthenticationResponse();
-//        String expResult = "";
-//        String result = instance.errorMessage();
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String jsonString = """
+                     {
+                         "messageList": [
+                             {
+                                 "code": "unableToLogin",
+                                 "message": "Unable to log in."
+                             }
+                         ]
+                     }
+                     """;
+
+        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+//        System.out.println(">>>" + testResponse.getSessionToken());
+//        System.out.println(">>>>" + testResponse.errorMessage());
+        assertEquals("Unable to log in.\n", testResponse.errorMessage());
+        boolean result = testResponse.succeeded();
+        assertFalse(result);
     }
 
     /**
@@ -97,26 +113,34 @@ public class SDapiJsonStaffAuthenticationResponseTest
     @Test
     public void testGetSessionToken() {
         System.out.println("getSessionToken");
-//        SDapiJsonStaffAuthenticationResponse instance = new SDapiJsonStaffAuthenticationResponse();
-//        String expResult = "";
-//        String result = instance.getSessionToken();
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of isErrorResponse method, of class SDapiJsonStaffAuthenticationResponse.
-     */
-    @Test
-    public void testIsErrorResponse() {
-        System.out.println("isErrorResponse");
-//        SDapiJsonStaffAuthenticationResponse instance = new SDapiJsonStaffAuthenticationResponse();
-//        boolean expResult = false;
-//        boolean result = instance.isErrorResponse();
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String jsonString = """
+            {
+              "staffKey": "776715",
+              "pinCreateDate": "2024-03-26",
+              "pinExpirationDate": null,
+              "name": "Web Service Requests for Online Registration",
+              "sessionToken": "ae80-abcdeieio",
+              "pinStatus": {
+                  "resource": "/policy/userPinStatus",
+                  "key": "A",
+                  "fields": {
+                      "policyNumber": 1,
+                      "description": "$<userpin_active_status>",
+                      "displayName": "A",
+                      "translatedDescription": "User's PIN is active"
+                  }
+              },
+              "message": null
+            }
+            """;
+        System.out.println("==succeeded==");
+        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+        boolean expResult = true;
+//        System.out.println(">>>" + testResponse.getSessionToken());
+//        System.out.println(">>>>" + testResponse.errorMessage());
+        boolean result = testResponse.succeeded();
+        assertEquals(expResult, result);
+        assertEquals(testResponse.getSessionToken(), "ae80-abcdeieio");
     }
     
 }
