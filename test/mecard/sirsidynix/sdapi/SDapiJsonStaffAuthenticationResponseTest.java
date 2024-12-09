@@ -71,14 +71,33 @@ public class SDapiJsonStaffAuthenticationResponseTest
      */
     @Test
     public void testParseJson() {
-        System.out.println("parseJson");
-//        String jsonString = "";
-//        SDapiJsonStaffAuthenticationResponse instance = new SDapiJsonStaffAuthenticationResponse();
-//        SDapiJsonResponse expResult = null;
-//        SDapiJsonResponse result = instance.parseJson(jsonString);
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String jsonString = """
+            {
+              "staffKey": "776715",
+              "pinCreateDate": "2024-03-26",
+              "pinExpirationDate": null,
+              "name": "Web Service Requests for Online Registration",
+              "sessionToken": "331789a2-e11d-4f77-ae80-3e4bd216d080",
+              "pinStatus": {
+                  "resource": "/policy/userPinStatus",
+                  "key": "A",
+                  "fields": {
+                      "policyNumber": 1,
+                      "description": "$<userpin_active_status>",
+                      "displayName": "A",
+                      "translatedDescription": "User's PIN is active"
+                  }
+              },
+              "message": null
+            }
+            """;
+        System.out.println("==succeeded==");
+        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+        boolean expResult = true;
+//        System.out.println(">>>" + testResponse.getSessionToken());
+//        System.out.println(">>>>" + testResponse.errorMessage());
+        boolean result = testResponse.succeeded();
+        assertEquals(expResult, result);
     }
 
     /**
@@ -112,7 +131,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
      */
     @Test
     public void testGetSessionToken() {
-        System.out.println("getSessionToken");
+        System.out.println("==getSessionToken==");
         String jsonString = """
             {
               "staffKey": "776715",
@@ -133,7 +152,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
               "message": null
             }
             """;
-        System.out.println("==succeeded==");
+
         SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
         boolean expResult = true;
 //        System.out.println(">>>" + testResponse.getSessionToken());

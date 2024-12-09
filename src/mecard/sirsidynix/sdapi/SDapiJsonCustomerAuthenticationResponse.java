@@ -28,31 +28,37 @@ import java.util.List;
  * A authentication response object.
  * @author anisbet
  */
-public class SDapiJsonStaffAuthenticationResponse extends SDapiJsonResponse
+public class SDapiJsonCustomerAuthenticationResponse extends SDapiJsonResponse
 {
     //    {
-    //      "staffKey": "776715",
-    //      "pinCreateDate": "2024-03-26",
-    //      "pinExpirationDate": null,
-    //      "name": "Web Service Requests for Online Registration",
-    //      "sessionToken": "331789a2-e11d-4f77-ae80-3e4bd216d080",
-    //      "pinStatus": {
-    //          "resource": "/policy/userPinStatus",
-    //          "key": "A",
-    //          "fields": {
-    //              "policyNumber": 1,
-    //              "description": "$<userpin_active_status>",
-    //              "displayName": "A",
-    //              "translatedDescription": "User's PIN is active"
-    //          }
-    //      },
-    //      "message": null
+    //    "pinCreateDate": "2024-03-26",
+    //    "pinExpirationDate": null,
+    //    "customerName": "BILLY, Balzac",
+    //    "sessionToken": "42c08d87-61d0-475a-8480-ddaa05b60506",
+    //    "pinStatus": {
+    //        "resource": "/policy/userPinStatus",
+    //        "key": "A",
+    //        "fields": {
+    //            "policyNumber": 1,
+    //            "description": "$<userpin_active_status>",
+    //            "displayName": "A",
+    //            "translatedDescription": "User's PIN is active"
+    //        }
+    //    },
+    //    "patronKey": "301585",
+    //    "message": null
     //    }
     @SerializedName("sessionToken")
     private String sessionToken;
 
     @SerializedName("message")
     private String message;
+    
+    @SerializedName("patronKey")
+    private String customerKey;
+
+    @SerializedName("customerName")
+    private String customerName;
     
     // Failed
     //    {
@@ -77,11 +83,11 @@ public class SDapiJsonStaffAuthenticationResponse extends SDapiJsonResponse
             return message;
         }
     }
-
-    // Parsing method
+    
+        // Parsing method
     public static SDapiJsonResponse parseJson(String jsonString) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiJsonStaffAuthenticationResponse.class);
+        return gson.fromJson(jsonString, SDapiJsonCustomerAuthenticationResponse.class);
     }
 
     public String getSessionToken() 
@@ -91,12 +97,26 @@ public class SDapiJsonStaffAuthenticationResponse extends SDapiJsonResponse
         return sessionToken;
     }
     
+    public String getCustomerKey() 
+    {
+        if (customerKey == null)
+            return "";
+        return customerKey;
+    }
+    
+    public String getCustomerName() 
+    {
+        if (customerName == null)
+            return "";
+        return customerName;
+    }
+    
     @Override
     public boolean succeeded() 
     {
-        return sessionToken != null;
+        return customerName != null;
     }
-
+    
     @Override
     public String errorMessage() 
     {
@@ -112,5 +132,4 @@ public class SDapiJsonStaffAuthenticationResponse extends SDapiJsonResponse
         }
         return sout.toString();
     }
-
 }
