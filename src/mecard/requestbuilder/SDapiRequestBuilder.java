@@ -28,17 +28,25 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
 import mecard.QueryTypes;
+import static mecard.QueryTypes.CREATE_CUSTOMER;
+import static mecard.QueryTypes.GET_CUSTOMER;
+import static mecard.QueryTypes.GET_STATUS;
+import static mecard.QueryTypes.UPDATE_CUSTOMER;
 import mecard.Response;
+import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SDapiPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import mecard.exception.ConfigurationException;
+import mecard.exception.SDapiException;
 import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
 import mecard.sirsidynix.sdapi.SDWebServiceCommand;
 import mecard.sirsidynix.sdapi.SDapiAuthenticationData;
+import mecard.sirsidynix.sdapi.SDapiJsonCustomerExistsResponse;
 import mecard.sirsidynix.sdapi.SDapiJsonCustomerResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
 import site.CustomerLoadNormalizer;
@@ -53,7 +61,9 @@ import site.CustomerLoadNormalizer;
 public class SDapiRequestBuilder extends ILSRequestBuilder
 {
     private final Properties sdapiProperties;
+    private final Properties messageProperties;
     private final TokenManager tokenManager;
+    private final boolean debug;
     @SuppressWarnings("FieldMayBeFinal")
     private long tokenExpiry;
     /**
@@ -61,9 +71,12 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
      */
     public SDapiRequestBuilder()
     {
+        this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
+        this.sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        this.debug = Boolean.parseBoolean(sdapiProperties.getProperty(SDapiPropertyTypes.DEBUG.toString(),"false"));
+        
         // Get the SDapi properties file and set up a token manager.
-        tokenManager = new TokenManager();
-        sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        this.tokenManager = new TokenManager();
         String strTokenExpiry = sdapiProperties.getProperty(
             SDapiPropertyTypes.SESSION_TOKEN_EXPIRY_TIME.toString());
         try
@@ -176,7 +189,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public NativeFormatToMeCardCustomer getFormatter() 
+    public final NativeFormatToMeCardCustomer getFormatter() 
     {
         return new SDapiToMeCardCustomer();
     }
@@ -242,7 +255,9 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         //       }
         //   ]
         //}
-
+        // This query relies on the user being able to login but 
+        // another method is to allow a staff search of the customer with 
+        // https://{{HOST}}/{{WEBAPP}}/user/patron/search?rw=1&q=ID:21221012345678
         SDapiAuthenticationData authData = new SDapiAuthenticationData();
         String loginTextBody = authData.getPatronAuthentication(userId, userPin);
         
@@ -257,7 +272,59 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String nullResponseMessage = " no json received. Did the server timeout?";
+        switch (commandType)
+        {
+            case GET_STATUS -> {
+                return false;
+            }
+            case GET_CUSTOMER -> {
+                return false;
+            }
+            case UPDATE_CUSTOMER -> {
+                return false;
+            }
+            case CREATE_CUSTOMER -> {
+                return false;
+            }
+            case TEST_CUSTOMER -> {
+                // but see ILSRequestBuilder for how to implement in future.
+                // DummyCommand puts a '1' in stdout.
+                // Authentication failures return status error authentication error, or an empty JSON document.
+                // The response has to match the request, which in the above is 'patron login'
+//                SDapiJsonCustomerExistsResponse testCustomer;
+//                try
+//                {
+//                    testCustomer = (SDapiJsonCustomerExistsResponse) SDapiJsonCustomerExistsResponse.parseJson(status.getStdout());
+//                }
+//                catch (NullPointerException se)
+//                {
+//                    System.out.println("*error, " + se.getMessage() + nullResponseMessage);
+//                    response.setCode(ResponseTypes.TOO_MANY_TRIES);
+//                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
+//                    return false;
+//                }     
+//                if (testCustomer.exists())
+//                {
+//                    response.setCode(ResponseTypes.SUCCESS);
+//                    if (debug) System.out.println("Get customer succeeded.");
+//                    return true;
+//                }
+//                response.setCode(ResponseTypes.USER_NOT_FOUND);
+//                response.setResponse(messageProperties.getProperty(
+//                        MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+//                System.out.println("**failed to find customer: "
+//                        + testCustomer.errorMessage());
+                return false;
+            }
+            default -> {
+                response.setCode(ResponseTypes.FAIL);
+                response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                System.out.println("**error, the requested command " 
+                        + commandType.name() + " has no test for success.");
+                return false;
+            }
+        }
     }
 
     @Override
@@ -269,8 +336,8 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        SDapiJsonCustomerResponse customerResponse = new SDapiJsonCustomerResponse();
-        customerResponse.parseJson(stdout);
+        SDapiJsonCustomerResponse customerResponse = 
+                (SDapiJsonCustomerResponse) SDapiJsonCustomerResponse.parseJson(stdout);
         return customerResponse;
     }
     

@@ -18,6 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
+
 package mecard.sirsidynix.sdapi;
 
 import com.google.gson.Gson;
@@ -84,8 +85,9 @@ public class SDapiJsonCustomerAuthenticationResponse extends SDapiJsonResponse
         }
     }
     
-        // Parsing method
-    public static SDapiJsonResponse parseJson(String jsonString) {
+    // Parsing method
+    public static SDapiJsonResponse parseJson(String jsonString) 
+    {
         Gson gson = new Gson();
         return gson.fromJson(jsonString, SDapiJsonCustomerAuthenticationResponse.class);
     }
