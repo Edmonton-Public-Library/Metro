@@ -205,8 +205,7 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 </properties>
 ```
 
-* Windows Server (2019) is now supported. See Windows instalation notes.
-
+* Windows Server (2019) is now supported. [See Windows installation](#windows-installation) notes.
 
 
 
@@ -265,7 +264,7 @@ The following steps were used at TRAC to install a new MeCard server under Windo
 0) Review any **properties** file changes. Recent addtions include changes to **environment**, **sip2**, **polaris_sql**, **papi**, and **messages**. 
 1) Have a local user account available on the Windows machine with admin privileges.
 2) Download the (Open)JDK 11 (or JRE) from [https://jdk.java.net/java-se-ri/11](https://jdk.java.net/java-se-ri/11). You may also download from Oracle, but you may incur licence fees.
-3) Unpack the zip file in the `c:\metro\Java\java-jdk-17` directory.
+3) Unpack the zip file in the `c:\metro\Java\java-jdk-17` directory. **Tip** if you rename the old folder from `java` to `java_{version#}` then unpack the new zip file to a folder called `java`, you won't have to change any path-ing variables.
 4) Add a `%JAVA_HOME%=c:\metro\Java\java-jdk-17` to the system environment variables and set it to `c:\metro\Java\java-jdk-17`. **Note**: just include the path to the root of the Java directory. For example `c:\Program Files\java-jdk-17` or what have you.
 5) Add `%JAVA_HOME%\bin` (from step 4) to the `%PATH%` system environment variable.
 6) Test by opening a fresh command prompt and typing `java -version`.
