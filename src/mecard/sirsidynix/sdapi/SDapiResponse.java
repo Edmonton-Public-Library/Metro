@@ -33,12 +33,12 @@ import mecard.config.PropertyReader;
  * 
  * @author Andrew Nisbet andrew@dev-ils.com
  */
-public abstract class SDapiJsonResponse
+public abstract class SDapiResponse
 {
     
     protected static Properties messageProperties;
     
-    public SDapiJsonResponse()
+    public SDapiResponse()
     {
         messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
     }
@@ -54,7 +54,7 @@ public abstract class SDapiJsonResponse
      * @param jsonString
      * @return SDapiJsonResponse
      */
-//    public static SDapiJsonResponse parseJson(String jsonString);
+//    public static SDapiResponse parseJson(String jsonString);
     
     /**
      * Provides the error message if there was one.

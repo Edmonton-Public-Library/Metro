@@ -22,12 +22,13 @@ package mecard.sirsidynix.sdapi;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 /**
  *
  * @author anisbet
  */
-public class SDapiJsonCustomerExistsResponse extends SDapiJsonResponse
+public class SDapiUserPatronSearchResponse extends SDapiResponse
 {
     //{
     //   "searchQuery": "ID:21221012345678",
@@ -42,6 +43,24 @@ public class SDapiJsonCustomerExistsResponse extends SDapiJsonResponse
     //       }
     //   ]
     //}
+    @SerializedName("result")
+    private List<ResultList> resultList;
+    
+    // Convienence class.
+    private class ResultList
+    {        
+        @SerializedName("key")
+        private String userKey;
+    }
+    
+    /**
+     * Gets the user's primary key.
+     * @return ILS user key, or an empty string if the user was not found.
+     */
+    public String getUserKey()
+    {
+        return (resultList != null && resultList.size() >= 1) ? resultList.get(0).userKey : "";
+    }
     
     // Failed response
     //{
@@ -56,6 +75,10 @@ public class SDapiJsonCustomerExistsResponse extends SDapiJsonResponse
     @SerializedName("totalResults")
     private Integer searchCount;
     
+    /**
+     * Gets the number of users that matched the search criteria.
+     * @return count of users found in query results.
+     */
     public int getSearchCount()
     {
         if (searchCount == null)
@@ -69,6 +92,11 @@ public class SDapiJsonCustomerExistsResponse extends SDapiJsonResponse
         return !(searchCount == null || searchCount < 1);
     }
     
+    /**
+     * Reports if a customer exists or not.
+     * @return true if the customer of the search query was found and false
+     * otherwise.
+     */
     public boolean exists()
     {
         return this.succeeded();
@@ -93,9 +121,9 @@ public class SDapiJsonCustomerExistsResponse extends SDapiJsonResponse
      * @param jsonString
      * @return 
      */
-    public static SDapiJsonResponse parseJson(String jsonString) 
+    public static SDapiResponse parseJson(String jsonString) 
     {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiJsonCustomerExistsResponse.class);
+        return gson.fromJson(jsonString, SDapiUserPatronSearchResponse.class);
     }
 }

@@ -28,11 +28,11 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDapiJsonStaffAuthenticationResponseTest
+public class SDapiUserStaffLoginResponseTest
 {
 
     /**
-     * Test of succeeded method, of class SDapiJsonStaffAuthenticationResponse.
+     * Test of succeeded method, of class SDapiUserStaffLoginResponse.
      */
     @Test
     public void testSucceeded()
@@ -58,7 +58,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
             }
             """;
         System.out.println("==succeeded==");
-        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+        SDapiUserStaffLoginResponse testResponse = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(jsonString);
         boolean expResult = true;
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
@@ -67,7 +67,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
     }
 
     /**
-     * Test of parseJson method, of class SDapiJsonStaffAuthenticationResponse.
+     * Test of parseJson method, of class SDapiUserStaffLoginResponse.
      */
     @Test
     public void testParseJson() {
@@ -92,7 +92,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
             }
             """;
         System.out.println("==succeeded==");
-        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+        SDapiUserStaffLoginResponse testResponse = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(jsonString);
         boolean expResult = true;
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
@@ -101,12 +101,12 @@ public class SDapiJsonStaffAuthenticationResponseTest
     }
 
     /**
-     * Test of errorMessage method, of class SDapiJsonStaffAuthenticationResponse.
+     * Test of errorMessage method, of class SDapiUserStaffLoginResponse.
      */
     @Test
     public void testErrorMessage() {
         System.out.println("==errorMessage==");
-//        SDapiJsonStaffAuthenticationResponse instance = new SDapiJsonStaffAuthenticationResponse();
+//        SDapiUserStaffLoginResponse instance = new SDapiUserStaffLoginResponse();
         String jsonString = """
                      {
                          "messageList": [
@@ -118,7 +118,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
                      }
                      """;
 
-        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+        SDapiUserStaffLoginResponse testResponse = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(jsonString);
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
         assertEquals("Unable to log in.\n", testResponse.errorMessage());
@@ -127,7 +127,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
     }
 
     /**
-     * Test of getSessionToken method, of class SDapiJsonStaffAuthenticationResponse.
+     * Test of getSessionToken method, of class SDapiUserStaffLoginResponse.
      */
     @Test
     public void testGetSessionToken() {
@@ -153,7 +153,7 @@ public class SDapiJsonStaffAuthenticationResponseTest
             }
             """;
 
-        SDapiJsonStaffAuthenticationResponse testResponse = (SDapiJsonStaffAuthenticationResponse) SDapiJsonStaffAuthenticationResponse.parseJson(jsonString);
+        SDapiUserStaffLoginResponse testResponse = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(jsonString);
         boolean expResult = true;
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());

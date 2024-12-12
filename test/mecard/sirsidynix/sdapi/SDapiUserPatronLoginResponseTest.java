@@ -30,10 +30,10 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDapiJsonCustomerAuthenticationResponseTest {
+public class SDapiUserPatronLoginResponseTest {
     
     private final String jsonString;
-    public SDapiJsonCustomerAuthenticationResponseTest() 
+    public SDapiUserPatronLoginResponseTest() 
     {
         jsonString = """
                 {
@@ -58,14 +58,14 @@ public class SDapiJsonCustomerAuthenticationResponseTest {
     }
 
     /**
-     * Test of parseJson method, of class SDapiJsonCustomerAuthenticationResponse.
+     * Test of parseJson method, of class SDapiUserPatronLoginResponse.
      */
     @Test
     public void testParseJson() {
         System.out.println("==parseJson==");
         
-        SDapiJsonCustomerAuthenticationResponse testResponse = 
-                (SDapiJsonCustomerAuthenticationResponse) SDapiJsonCustomerAuthenticationResponse.parseJson(jsonString);
+        SDapiUserPatronLoginResponse testResponse = 
+                (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonString);
         boolean expResult = true;
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
@@ -74,13 +74,13 @@ public class SDapiJsonCustomerAuthenticationResponseTest {
     }
 
     /**
-     * Test of getSessionToken method, of class SDapiJsonCustomerAuthenticationResponse.
+     * Test of getSessionToken method, of class SDapiUserPatronLoginResponse.
      */
     @Test
     public void testGetSessionToken() {
         System.out.println("==getSessionToken==");
-        SDapiJsonCustomerAuthenticationResponse testResponse = 
-                (SDapiJsonCustomerAuthenticationResponse) SDapiJsonCustomerAuthenticationResponse.parseJson(jsonString);
+        SDapiUserPatronLoginResponse testResponse = 
+                (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonString);
         String expResult = "42c08d87-61d0-475a-8480-ddaa05b60506";
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
@@ -89,40 +89,40 @@ public class SDapiJsonCustomerAuthenticationResponseTest {
     }
 
     /**
-     * Test of getCustomerKey method, of class SDapiJsonCustomerAuthenticationResponse.
+     * Test of getCustomerKey method, of class SDapiUserPatronLoginResponse.
      */
     @Test
     public void testGetCustomerKey() {
         System.out.println("==getCustomerKey==");
-        SDapiJsonCustomerAuthenticationResponse testResponse = 
-                (SDapiJsonCustomerAuthenticationResponse) SDapiJsonCustomerAuthenticationResponse.parseJson(jsonString);
+        SDapiUserPatronLoginResponse testResponse = 
+                (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonString);
         String expResult = "301585";
         String result = testResponse.getCustomerKey();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getCustomerName method, of class SDapiJsonCustomerAuthenticationResponse.
+     * Test of getCustomerName method, of class SDapiUserPatronLoginResponse.
      */
     @Test
     public void testGetCustomerName() {
         System.out.println("==getCustomerName==");
-        SDapiJsonCustomerAuthenticationResponse testResponse = 
-                (SDapiJsonCustomerAuthenticationResponse) SDapiJsonCustomerAuthenticationResponse.parseJson(jsonString);
+        SDapiUserPatronLoginResponse testResponse = 
+                (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonString);
         String expResult = "BILLY, Balzac";
         String result = testResponse.getCustomerName();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of succeeded method, of class SDapiJsonCustomerAuthenticationResponse.
+     * Test of succeeded method, of class SDapiUserPatronLoginResponse.
      */
     @Test
     public void testSucceeded() {
         
         System.out.println("==succeeded==");
-        SDapiJsonCustomerAuthenticationResponse testResponse = 
-                (SDapiJsonCustomerAuthenticationResponse) SDapiJsonCustomerAuthenticationResponse.parseJson(jsonString);
+        SDapiUserPatronLoginResponse testResponse = 
+                (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonString);
         boolean expResult = true;
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
@@ -131,7 +131,7 @@ public class SDapiJsonCustomerAuthenticationResponseTest {
     }
 
     /**
-     * Test of errorMessage method, of class SDapiJsonCustomerAuthenticationResponse.
+     * Test of errorMessage method, of class SDapiUserPatronLoginResponse.
      */
     @Test
     public void testErrorMessage() {
@@ -147,8 +147,8 @@ public class SDapiJsonCustomerAuthenticationResponseTest {
                      }
                      """;
 
-        SDapiJsonCustomerAuthenticationResponse testResponse = 
-                (SDapiJsonCustomerAuthenticationResponse) SDapiJsonCustomerAuthenticationResponse.parseJson(jsonStringError);
+        SDapiUserPatronLoginResponse testResponse = 
+                (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonStringError);
 //        System.out.println(">>>" + testResponse.getSessionToken());
 //        System.out.println(">>>>" + testResponse.errorMessage());
         assertEquals("Unable to log in.\n", testResponse.errorMessage());

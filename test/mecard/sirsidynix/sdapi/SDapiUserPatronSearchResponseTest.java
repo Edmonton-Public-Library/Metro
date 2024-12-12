@@ -30,11 +30,11 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDapiJsonCustomerExistsResponseTest 
+public class SDapiUserPatronSearchResponseTest 
 {
     private String successfulJson;
     private String failedJson;
-    public SDapiJsonCustomerExistsResponseTest() 
+    public SDapiUserPatronSearchResponseTest() 
     {
         this.successfulJson = """
                                 {
@@ -64,46 +64,46 @@ public class SDapiJsonCustomerExistsResponseTest
     }
 
     /**
-     * Test of getSearchCount method, of class SDapiJsonCustomerExistsResponse.
+     * Test of getSearchCount method, of class SDapiUserPatronSearchResponse.
      */
     @Test
     public void testGetCustomerCount() {
         System.out.println("==getCustomerCount==");
-        SDapiJsonCustomerExistsResponse instance = 
-                (SDapiJsonCustomerExistsResponse) SDapiJsonCustomerExistsResponse.parseJson(this.successfulJson);
+        SDapiUserPatronSearchResponse instance = 
+                (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(this.successfulJson);
         int expResult = 1;
         int result = instance.getSearchCount();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of succeeded method, of class SDapiJsonCustomerExistsResponse.
+     * Test of succeeded method, of class SDapiUserPatronSearchResponse.
      */
     @Test
     public void testSucceeded() {
         System.out.println("==succeeded==");
-        SDapiJsonCustomerExistsResponse instance = 
-                (SDapiJsonCustomerExistsResponse) SDapiJsonCustomerExistsResponse.parseJson(this.successfulJson);
+        SDapiUserPatronSearchResponse instance = 
+                (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(this.successfulJson);
         boolean expResult = true;
         boolean result = instance.succeeded();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of errorMessage method, of class SDapiJsonCustomerExistsResponse.
+     * Test of errorMessage method, of class SDapiUserPatronSearchResponse.
      */
     @Test
     public void testErrorMessage() {
         System.out.println("==errorMessage==");
-        SDapiJsonCustomerExistsResponse instance = 
-                (SDapiJsonCustomerExistsResponse) SDapiJsonCustomerExistsResponse.parseJson(this.failedJson);
+        SDapiUserPatronSearchResponse instance = 
+                (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(this.failedJson);
         String expResult = "Account not found.";
         String result = instance.errorMessage();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of parseJson method, of class SDapiJsonCustomerExistsResponse.
+     * Test of parseJson method, of class SDapiUserPatronSearchResponse.
      */
     @Test
     public void testParseJson() 
@@ -111,8 +111,8 @@ public class SDapiJsonCustomerExistsResponseTest
         System.out.println("==parseJson==");
         String jsonString = "{\"result\": []}";
         int expResult = 0;
-        SDapiJsonCustomerExistsResponse instance = 
-                (SDapiJsonCustomerExistsResponse) SDapiJsonCustomerExistsResponse.parseJson(jsonString);
+        SDapiUserPatronSearchResponse instance = 
+                (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(jsonString);
         int result = instance.getSearchCount();
         assertEquals(expResult, result);
     }
