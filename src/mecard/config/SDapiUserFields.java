@@ -30,14 +30,14 @@ public enum SDapiUserFields
     USER_ID("barcode"),
     USER_KEY("key"), // 301585
     //    "displayName": "BILLY, Balzac",
-    DISPLAY_NAME("displayName"),
+    USER_DISPLAY_NAME("displayName"),
     //       "access": 
     //           "key": "PUBLIC"
-    ACCESS("access"),
+    USER_ACCESS("access"),
     //       "alternateID": "",
-    ALTERNATE_ID("alternateID"),
+    USER_ALTERNATE_ID("alternateID"),
     //       "birthDate": "2000-02-29",
-    BIRTHDATE("birthDate"),
+    USER_BIRTHDATE("birthDate"),
     //"checkoutLocation": 
     //    "key": "CHECKEDOUT"
     CHECKOUT_LOCATION("checkoutLocation"),
@@ -54,12 +54,12 @@ public enum SDapiUserFields
     //    "key": "ENGLISH"
     LANGUAGE("language"),
     //"lastName": "BILLY",
-    LAST_NAME("lastName"),
+    USER_LAST_NAME("lastName"),
     //"library": 
     //    "key": "EPLMNA"
-    LIBRARY("library"),
+    USER_LIBRARY("library"),
     //"middleName": "",
-    MIDDLE_NAME("middleName"),
+    USER_MIDDLE_NAME("middleName"),
     //"preferredName": "",
     PREFERRED_NAME("preferredName"),
     //"privilegeExpiresDate": null,
