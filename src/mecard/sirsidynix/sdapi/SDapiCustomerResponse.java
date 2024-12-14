@@ -26,7 +26,6 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import mecard.config.SDapiUserFields;
-import mecard.util.DateComparer;
 
 public class SDapiCustomerResponse 
         extends SDapiResponse
@@ -133,7 +132,7 @@ public class SDapiCustomerResponse
             if (fieldName.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
                 date = this.getCustomerFields().getBirthDate();
             if (fieldName.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
-                date = DateComparer.getANSIDate(this.getCustomerFields().getExpiry());
+                date = this.getCustomerFields().getExpiry();
         }
         catch (NullPointerException ne)
         {
