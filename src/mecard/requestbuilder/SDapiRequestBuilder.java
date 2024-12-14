@@ -47,7 +47,7 @@ import mecard.security.TokenManager;
 import mecard.sirsidynix.sdapi.SDWebServiceCommand;
 import mecard.sirsidynix.sdapi.SDapiAuthenticationData;
 import mecard.sirsidynix.sdapi.SDapiUserPatronLoginResponse;
-import mecard.sirsidynix.sdapi.SDapiCustomerResponse;
+import mecard.sirsidynix.sdapi.SDapiUserPatronSearchCustomerMessage;
 import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
 import site.CustomerLoadNormalizer;
@@ -204,7 +204,12 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     public Command getCustomerCommand(String userId, String userPin, Response response) 
     {
         //  Start with the user key  https://{{HOST}}/{{WEBAPP}}/user/patron/search?rw=1&q=ID:21221012345678
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        SDWebServiceCommand getCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+            // The circRecordList{*} gives expiry and profile.
+            .endpoint("/user/patron/search?rw=1&q=ID:" + userId + "?includeFields=*,circRecordList{*},address1{*}")
+            .build();
+        
+        return getCustomerCommand;
     }
 
     @Override
@@ -224,7 +229,46 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getStatusCommand(Response response) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // Reuse the staff login command.
+        String envFilePath = sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
+        String staffId = "";
+        String staffPassword = "";
+
+        if (envFilePath == null || envFilePath.isBlank())
+        {
+            throw new ConfigurationException("""
+                **error, the sdapi.properties file does not contain an entry
+                for the environment file (.env). The entry should look like this example:
+                <entry key="env-file-path">/MeCard/path/to/.env</entry>
+                Add entry or check for spelling mistakes.
+                 """);
+        }
+        try 
+        {
+            SDapiSecurity sds = new SDapiSecurity(envFilePath);
+            staffId = sds.getStaffId();
+            staffPassword = sds.getStaffPassword();
+        } 
+        catch (IOException e) 
+        {
+            System.out.println("""
+                **error, expected an .env file but it is missing or can't be found.
+                The .env file should include entries for staff ID and password. For example,
+                STAFF_ID="SomeStaffId"
+                STAFF_PASSWORD="SomeStaffPassword"
+                """ + e);
+        }
+        // This query relies on the user being able to login but 
+        // another method is to allow a staff search of the customer with 
+        // https://{{HOST}}/{{WEBAPP}}/user/staff/login
+        SDapiAuthenticationData authData = new SDapiAuthenticationData();
+        String loginBodyText = authData.getStaffAuthentication("", staffId, staffPassword);
+        SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+            .endpoint("/user/staff/login")
+            .bodyText(loginBodyText)
+            .build();
+        
+        return command;
     }
 
     @Override
@@ -268,7 +312,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         //}
         // This query relies on the user being able to login but 
         // another method is to allow a staff search of the customer with 
-        // https://{{HOST}}/{{WEBAPP}}/user/patron/search?rw=1&q=ID:21221012345678
+        // https://{{HOST}}/{{WEBAPP}}/user/patron/login
         SDapiAuthenticationData authData = new SDapiAuthenticationData();
         String loginTextBody = authData.getPatronAuthentication(userId, userPin);
         
@@ -351,8 +395,8 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        SDapiCustomerResponse customerResponse = 
-                (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(stdout);
+        SDapiUserPatronSearchCustomerMessage customerResponse = 
+                (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(stdout);
         return customerResponse;
     }
     

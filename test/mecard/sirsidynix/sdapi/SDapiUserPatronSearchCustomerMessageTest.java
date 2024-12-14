@@ -31,14 +31,14 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDapiCustomerResponseTest 
+public class SDapiUserPatronSearchCustomerMessageTest 
 {
     private final String userPatronSearchFullInfo;
     private final String userPatronSearchFailed;
     private final String userPatronSearchLite;
     private final String userPatronSearchLost;
 
-    public SDapiCustomerResponseTest() 
+    public SDapiUserPatronSearchCustomerMessageTest() 
     {
         //  /user/patron/search?rw=1&q=ID:21221012345678&includeFields=*,address1{*}
         userPatronSearchFailed = """
@@ -399,71 +399,72 @@ public class SDapiCustomerResponseTest
     }
 
     /**
-     * Test of succeeded method, of class SDapiCustomerResponse.
+     * Test of succeeded method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testSucceeded() {
         System.out.println("==succeeded==");
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         boolean expResult = true;
         boolean result = instance1.succeeded();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance2 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        SDapiUserPatronSearchCustomerMessage instance2 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         expResult = false;
         result = instance2.succeeded();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance3 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchLite);
+        SDapiUserPatronSearchCustomerMessage instance3 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchLite);
         expResult = true;
         result = instance3.succeeded();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of errorMessage method, of class SDapiCustomerResponse.
+     * Test of errorMessage method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testErrorMessage() 
     {
         System.out.println("==errorMessage==");
-        SDapiCustomerResponse instance = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        SDapiUserPatronSearchCustomerMessage instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         String expResult = "Account not found.";
         String result = instance.errorMessage();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getCustomerProfile method, of class SDapiCustomerResponse.
+     * Test of getCustomerProfile method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testGetCustomerProfile() 
     {
         System.out.println("==getCustomerProfile==");
-        SDapiCustomerResponse instance = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         String expResult = "EPL_ADULT";
         String result = instance.getCustomerProfile();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchLost);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchLost);
         expResult = "LOST";
         result = instance1.getCustomerProfile();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance2 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        SDapiUserPatronSearchCustomerMessage instance2 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         expResult = "";
         result = instance2.getCustomerProfile();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getField method, of class SDapiCustomerResponse.
+     * Test of getField method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testGetField() 
     {
         System.out.println("==getField==");
-        SDapiCustomerResponse instance = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+//        SDapiUserPatronSearchCustomerMessage instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         String result = instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
         assertEquals("", result);
         assertEquals("301585", instance.getField(SDapiUserFields.USER_KEY.toString()));
@@ -479,19 +480,19 @@ public class SDapiCustomerResponseTest
         assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_PROV.toString()));
         assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
         
-        instance = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         assertEquals("", result);
         assertEquals("", instance.getField(SDapiUserFields.USER_KEY.toString()));
     }
 
     /**
-     * Test of getDateField method, of class SDapiCustomerResponse.
+     * Test of getDateField method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testGetDateField() 
     {
         System.out.println("==getDateField==");
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         String expResult = "";
         String result = instance1.getDateField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
         assertEquals(expResult, result);
@@ -501,89 +502,109 @@ public class SDapiCustomerResponseTest
     }
 
     /**
-     * Test of isEmpty method, of class SDapiCustomerResponse.
+     * Test of isEmpty method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testIsEmpty() 
     {
         System.out.println("==isEmpty==");
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         boolean expResult = true;
         boolean result = instance1.isEmpty(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getStanding method, of class SDapiCustomerResponse.
+     * Test of getStanding method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testGetStanding() 
     {
         System.out.println("==getStanding==");
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         String expResult = "OK";
         String result = instance1.getStanding();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance2 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchLite);
+        SDapiUserPatronSearchCustomerMessage instance2 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchLite);
         expResult = "";
         result = instance2.getStanding();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance3 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        SDapiUserPatronSearchCustomerMessage instance3 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         expResult = "";
         result = instance3.getStanding();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of cardReportedLost method, of class SDapiCustomerResponse.
+     * Test of cardReportedLost method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testCardReportedLost() 
     {
         System.out.println("==cardReportedLost==");
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         boolean expResult = false;
         boolean result = instance1.cardReportedLost();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance2 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchLite);
+        SDapiUserPatronSearchCustomerMessage instance2 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchLite);
         expResult = false;
         result = instance2.cardReportedLost();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance3 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        SDapiUserPatronSearchCustomerMessage instance3 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         expResult = false;
         result = instance3.cardReportedLost();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance4 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchLost);
+        SDapiUserPatronSearchCustomerMessage instance4 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchLost);
         expResult = true;
         result = instance4.cardReportedLost();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of isInGoodStanding method, of class SDapiCustomerResponse.
+     * Test of isInGoodStanding method, of class SDapiUserPatronSearchCustomerMessage.
      */
     @Test
     public void testIsInGoodStanding() 
     {
         System.out.println("==isInGoodStanding==");
-        SDapiCustomerResponse instance1 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronSearchCustomerMessage instance1 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
         boolean expResult = true;
         boolean result = instance1.isInGoodStanding();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance2 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchLite);
+        SDapiUserPatronSearchCustomerMessage instance2 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchLite);
         expResult = false;
         result = instance2.isInGoodStanding();
         assertEquals(expResult, result);
         
-        SDapiCustomerResponse instance3 = (SDapiCustomerResponse) SDapiCustomerResponse.parseJson(userPatronSearchFailed);
+        SDapiUserPatronSearchCustomerMessage instance3 = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
         expResult = false;
         result = instance3.isInGoodStanding();
         assertEquals(expResult, result);
     }
+
+    /**
+     * Test of getTotalResults method, of class SDapiUserPatronSearchCustomerMessage.
+     */
+    @Test
+    public void testGetTotalResults() {
+        System.out.println("==getTotalResults==");
+        SDapiUserPatronSearchCustomerMessage instance1 = 
+                (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
+        int expResult = 1;
+        int result = instance1.getTotalResults();
+        assertEquals(expResult, result);
+        
+        SDapiUserPatronSearchCustomerMessage instance2 = 
+                (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFailed);
+        expResult = 0;
+        result = instance2.getTotalResults();
+        assertEquals(expResult, result);
+    }
+
 }

@@ -10,10 +10,10 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDapiUserPatronKeyResponseTest 
+public class SDapiUserPatronKeyCustomerMessageTest 
 {
     private final String jsonString;
-    public SDapiUserPatronKeyResponseTest() 
+    public SDapiUserPatronKeyCustomerMessageTest() 
     {
         jsonString = """
                      {
@@ -174,25 +174,25 @@ public class SDapiUserPatronKeyResponseTest
     }
 
     /**
-     * Test of succeeded method, of class SDapiUserPatronKeyResponse.
+     * Test of succeeded method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
     public void testSucceeded() {
         System.out.println("succeeded");
-        SDapiUserPatronKeyResponse instance = 
-                (SDapiUserPatronKeyResponse) SDapiUserPatronKeyResponse.parseJson(jsonString);
+        SDapiUserPatronKeyCustomerMessage instance = 
+                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonString);
         boolean expResult = true;
         boolean result = instance.succeeded();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of errorMessage method, of class SDapiUserPatronKeyResponse.
+     * Test of errorMessage method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
     public void testErrorMessage() {
         System.out.println("errorMessage");
-        SDapiUserPatronKeyResponse instance = new SDapiUserPatronKeyResponse();
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
         String expResult = "";
         String result = instance.errorMessage();
         assertEquals(expResult, result);
@@ -201,42 +201,42 @@ public class SDapiUserPatronKeyResponseTest
     }
 
     /**
-     * Test of parseJson method, of class SDapiUserPatronKeyResponse.
+     * Test of parseJson method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
     public void testParseJson() {
         System.out.println("parseJson");
         String jsonString = "";
         SDapiResponse expResult = null;
-        SDapiResponse result = SDapiUserPatronKeyResponse.parseJson(jsonString);
+        SDapiResponse result = SDapiUserPatronKeyCustomerMessage.parseJson(jsonString);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getFields method, of class SDapiUserPatronKeyResponse.
+     * Test of getFields method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
     public void testGetFields() {
         System.out.println("getFields");
-        SDapiUserPatronKeyResponse instance = new SDapiUserPatronKeyResponse();
-        SDapiUserPatronKeyResponse.PatronFields expResult = null;
-        SDapiUserPatronKeyResponse.PatronFields result = instance.getFields();
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        SDapiUserPatronKeyCustomerMessage.PatronFields expResult = null;
+        SDapiUserPatronKeyCustomerMessage.PatronFields result = instance.getFields();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getUserKey method, of class SDapiUserPatronKeyResponse.
+     * Test of getUserKey method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
     public void testGetUserKey() 
     {
         System.out.println("==getUserKey==");
-        SDapiUserPatronKeyResponse instance = 
-                (SDapiUserPatronKeyResponse) SDapiUserPatronKeyResponse.parseJson(this.jsonString);
+        SDapiUserPatronKeyCustomerMessage instance = 
+                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonString);
         String expResult = "301585";
         String result = instance.getUserKey();
         assertEquals(expResult, result);

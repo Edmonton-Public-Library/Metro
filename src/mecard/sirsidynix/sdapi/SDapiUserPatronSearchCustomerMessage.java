@@ -27,20 +27,25 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import mecard.config.SDapiUserFields;
 
-public class SDapiCustomerResponse 
+public class SDapiUserPatronSearchCustomerMessage 
         extends SDapiResponse
         implements CustomerMessage
 {
-//    @SerializedName("searchQuery")
-//    private String searchQuery;
-
+    @SerializedName("totalResults")
+    private Integer totalResults;
+    
+    public int getTotalResults()
+    {
+        return this.totalResults;
+    }
+    
     @SerializedName("result")
     private List<CustomerResult> result;
 
     @Override
     public boolean succeeded() 
     {
-        return (result != null && !result.isEmpty());
+        return this.totalResults == 1;
     }
 
     // Failed response
@@ -185,9 +190,8 @@ public class SDapiCustomerResponse
     }
 
     // Inner class to represent the result
-    private static class CustomerResult {
-//        @SerializedName("resource")
-//        private String resource;
+    private static class CustomerResult 
+    {
 
         @SerializedName("key")
         private String userKey;
@@ -202,9 +206,8 @@ public class SDapiCustomerResponse
     }
 
     // Inner class to represent all fields
-    private static class CustomerFields {
-//        @SerializedName("displayName")
-//        private String displayName;
+    private static class CustomerFields 
+    {
 
         @SerializedName("barcode")
         private String barcode;
@@ -214,9 +217,6 @@ public class SDapiCustomerResponse
 
 //        @SerializedName("createdDate")
 //        private String createdDate;
-
-//        @SerializedName("department")
-//        private String department;
         
         @SerializedName("alternateID")
         private String alternateId;
@@ -227,36 +227,8 @@ public class SDapiCustomerResponse
         @SerializedName("lastName")
         private String lastName;
 
-//        @SerializedName("middleName")
-//        private String middleName;
-
-//        @SerializedName("preferredName")
-//        private String preferredName;
-
         @SerializedName("privilegeExpiresDate")
         private String expiryDate;
-
-//        @SerializedName("groupId")
-//        private String groupId;
-//
-//        @SerializedName("circRecordCount")
-//        private Integer circRecordCount;
-//
-//        // Nested object getters
-//        @SerializedName("access")
-//        private PolicyResource access;
-
-//        @SerializedName("checkoutLocation")
-//        private PolicyResource checkoutLocation;
-//
-//        @SerializedName("environment")
-//        private PolicyResource environment;
-//
-//        @SerializedName("language")
-//        private PolicyResource language;
-
-//        @SerializedName("library")
-//        private PolicyResource library;
 
         @SerializedName("profile")
         private PolicyResource profile;
@@ -264,32 +236,21 @@ public class SDapiCustomerResponse
         @SerializedName("standing")
         private PolicyResource standing;
 
-//        @SerializedName("category02")
-//        private PolicyResource category02;
-//
-//        @SerializedName("category04")
-//        private PolicyResource category04;
-//
-//        @SerializedName("category05")
-//        private PolicyResource category05;
-
         @SerializedName("address1")
         private List<AddressEntry> address1;
 
         // Nested static class for policy resources
-        private static class PolicyResource {
-//            @SerializedName("resource")
-//            private String resource;
-
+        private static class PolicyResource 
+        {
             @SerializedName("key")
             private String key;
 
-//            public String getResource() { return resource; }
             private String getKey() { return key != null ? key : ""; }
         }
 
         // Nested static class for address entries
-        private static class AddressEntry {
+        private static class AddressEntry 
+        {
             @SerializedName("fields")
             private AddressFields fields;
 
@@ -309,27 +270,19 @@ public class SDapiCustomerResponse
         }
 
         // Getters for all fields
-//        public String getDisplayName() { return displayName; }
         private String getBarcode() { return barcode != null ? barcode : ""; }
         private String getAlternateId() { return alternateId != null ? alternateId : ""; }
         private String getBirthDate() { return birthDate != null ? birthDate : ""; }
-//        public String getCreatedDate() { return createdDate; }
-//        public String getDepartment() { return department; }
         private String getFirstName() { return firstName != null ? firstName : ""; }
         private String getLastName() { return lastName != null ? lastName : ""; }
-//        public String getMiddleName() { return middleName; }
-//        public String getPreferredName() { return preferredName; }
         private String getExpiry() { return this.expiryDate != null ? expiryDate : ""; }
-//        public String getGroupId() { return groupId; }
-//        public Integer getCircRecordCount() { return circRecordCount; }
 
-        // Convenience methods for nested resources
-//        public String getAccessKey() { return access != null ? access.getKey() : null; }
-//        public String getLibraryKey() { return library != null ? library.getKey() : null; }
+        // Convenience method for nested resources
         private String getProfile() { return profile != null ? profile.getKey() : null; }
 
         // Method to find specific address by code
-        private String findAddressByCode(String addressCode) {
+        private String findAddressByCode(String addressCode) 
+        {
             if (address1 != null) {
                 for (AddressEntry entry : address1) {
                     if (addressCode.equals(entry.getFields().getCode())) {
@@ -341,12 +294,10 @@ public class SDapiCustomerResponse
         }
 
         // Convenience methods to get specific addresses
-//        public String getEmail() { return findAddressByCode("EMAIL"); }
         private String getEmail() { return findAddressByCode(SDapiUserFields.EMAIL.toString()); }
         private String getPostalCode() { return findAddressByCode(SDapiUserFields.POSTALCODE.toString()); }
         private String getPhone() { return findAddressByCode(SDapiUserFields.PHONE.toString()); }
         private String getStreet() { return findAddressByCode(SDapiUserFields.STREET.toString()); }
-//        public String getCareOf() { return findAddressByCode(SDapiUserFields.CARE_SLASH_OF.toString()); }
         // This may need to be dynamic based on ILS setup.
         private String getCity() 
         {
@@ -382,7 +333,7 @@ public class SDapiCustomerResponse
     // Static method to parse JSON
     public static SDapiResponse parseJson(String jsonString) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiCustomerResponse.class);
+        return gson.fromJson(jsonString, SDapiUserPatronSearchCustomerMessage.class);
     }
 
     // Getter to easily access the first result
