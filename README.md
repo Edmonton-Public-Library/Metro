@@ -244,8 +244,7 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 </properties>
 ```
 
-* Windows Server (2019) is now supported. See Windows instalation notes.
-
+* Windows Server (2019) is now supported. [See Windows installation](#windows-installation) notes.
 
 
 
@@ -278,7 +277,7 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
   to be 'outage'. For example, you can change the get-protocol from 'sip2' 
   to 'outage', as shown below, if you know your sip2 service is going to be unavailable.
   ```xml
-  <entry key="get-protocol">outage|sip2|symphony-api</entry>
+  <entry key="get-protocol">outage|sip2|symphony-api|polaris-api</entry>
   ```
 
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).
@@ -301,18 +300,18 @@ The prunsrv.exe is from commons-daemon-1.1.0-bin-windows.zip /amd64 (REF: http:/
 ## Installation Steps
 The following steps were used at TRAC to install a new MeCard server under Windows server 2019.
 
-0) Review any **properties** file changes. Recent addtions include changes to **environment**, **sip2**, **polaris_sql**, **papi**. 
+0) Review any **properties** file changes. Recent addtions include changes to **environment**, **sip2**, **polaris_sql**, **papi**, and **messages**. 
 1) Have a local user account available on the Windows machine with admin privileges.
 2) Download the (Open)JDK 11 (or JRE) from [https://jdk.java.net/java-se-ri/11](https://jdk.java.net/java-se-ri/11). You may also download from Oracle, but you may incur licence fees.
-3) Unpack the zip file in the `c:\metro\java` directory.
-4) Add a `%JAVA_HOME%=c:\metro\java` to the system environment variables and set it to `c:\Metro\java`.
-5) Add `%JAVA_HOME%\bin` to the `%PATH%` system environment variable.
+3) Unpack the zip file in the `c:\metro\Java\java-jdk-17` directory. **Tip** if you rename the old folder from `java` to `java_{version#}` then unpack the new zip file to a folder called `java`, you won't have to change any path-ing variables.
+4) Add a `%JAVA_HOME%=c:\metro\Java\java-jdk-17` to the system environment variables and set it to `c:\metro\Java\java-jdk-17`. **Note**: just include the path to the root of the Java directory. For example `c:\Program Files\java-jdk-17` or what have you.
+5) Add `%JAVA_HOME%\bin` (from step 4) to the `%PATH%` system environment variable.
 6) Test by opening a fresh command prompt and typing `java -version`.
 7) The MeCard server runs as a daemon (in Unix). The equivalent in Windows is a service which uses Apache’s Procrun server which you can download here:  [https://commons.apache.org/proper/commons-daemon/index.html](https://commons.apache.org/proper/commons-daemon/index.html). Information can be found here: [https://commons.apache.org/proper/commons-daemon/procrun.html](https://commons.apache.org/proper/commons-daemon/procrun.html). The current version is commons-daemon-1.3.1-bin-windows.zip. Each version will contain a commons-daemon-x.x.x.jar which must be added to the build in the (NetBeans) IDE to match the version of the prunmgr.exe and prunsrv.exe.
 8) Download and unpack the latest mecard_Windows.zip file which will include the `MeCard.jar`, lib files, and 64-bit `prunsrv.exe` (AKA procrun) and `prunmgr.exe` files.
 9) Update your config files, and move them to `c:\Metro directory` (until I can figure out how to pass a switch and string as parameters).
 10) From a powershell ISE window opened in admin mode, with `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`.
-11) Run [this command](#powerShell_installation_command) from an Admin PowerShell (ISE).
+11) Run [this command](#powershell-installation-command) from an Admin PowerShell (ISE).
 12)  If required, tweak the parameters using the **prunmgr.exe** with: `c:\Metro\windows\prunmgr.exe //ES//Metro`. [See section below](#tweaking-settings-with-prunmgrexe).
 
 # Tweaking Settings with `prunmgr.exe`
@@ -578,6 +577,10 @@ sudo systemctl restart firewalld
 ```
 
 # Known Issues
+* The `<entry key="date-format"></entry>` entry in `environment.properties` file must be attended to carefully. It refers to the way time is managed by the underlying system that handles dates such as DOB and expiry. Depending on the service protocol used to update and create users the service will be expecting time in a specific format. Here are some examples.
+  * SQL (Polaris) requires `yyyy-MM-dd HH:mm:ss` format.
+  * PAPI timestamp: `yyyy-MM-dd'T'HH:mm:ss`.
+  * Symphony systems (such as EPL, CPL):  `yyyy-MM-dd`, which sounds like it should be `yyyyMMdd` but may be converted in the MeCard subsystem.
 * Google has flagged the `setup.exe` as malware. The development team has asked for a review of the application, but until that time the exe may have to be sent by other means. February 9, 2022.
 ## Windows
 * The `-c c:\path\to\configs` switch doesn't seem to work as expected. I have experimented with several different ways of passing the parameters in prunmgr, but none have panned out. To fix just copy your config properties file into the c:\Metro directory. The MeCard server looks there for properties files by default.
@@ -624,7 +627,9 @@ You can find updated scripts and configs mentioned in the above instructions in 
 * commons-daemon-
   * 1.3.1.jar for Java 11
   * 1.4.0.jar for Java 17 though works with older versions.
-* gson-2.2.4.jar
+* gson-
+  * 2.2.4.jar
+  * 2.10.0.jar for server versions above 3.xx.xx.
 * mssql-jdbc-10.2.1.jre11.jar. MeCard not tested with newer version (take note TRAC).
 * mysql-connector-java-5.1.31-bin.jar
 
