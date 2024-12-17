@@ -1,7 +1,7 @@
 /**
 *
 * This class is part of the Metro, MeCard project.
-*    Copyright (C) 2013  Edmonton Public Library, Edmonton public Library.
+*    Copyright (C) 2013 - 2024  Edmonton Public Library, Edmonton public Library.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -90,12 +90,12 @@ public class DateComparerTest
     {
         System.out.println("==getYearsOld==");
         String date = "19630822"; // "08/22/1963"
-        int expResult = 59;
+        int expResult = 61;
         int result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
         date = "20130408";
-        expResult = 9;
+        expResult = 11;
         result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
 //        
@@ -194,24 +194,28 @@ public class DateComparerTest
     /**
      * Test of getRFC1123Date method, of class DateComparer.
      */
-//    @Test
-//    public void testGetRFC1123Date()
-//    {
-//        System.out.println("ANSIToConfigDate");
-//        String ANSIDate = "";
-//        String expResult = "";
-//        String result = "";
-//        try
-//        {
-//            result = DateComparer.ANSIToConfigDate(ANSIDate);
-//        } catch (ParseException ex)
-//        {
-//            Logger.getLogger(DateComparerTest.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testGetRFC1123Date()
+    {
+        System.out.println("ANSIToConfigDate");
+        String ANSIDate = "20241217";
+        // Note this could fail depending on the config date in the environment.properties file.
+        // There are three notable date formats:
+        // * SQL timestamp: yyyy-MM-dd HH:mm:ss
+        // * PAPI timestamp: yyyy-MM-dd'T'HH:mm:ss
+        // * Standard date:  yyyy-MM-dd
+        // * ANSI date: yyyyMMdd
+        String expResult = "2024-12-17 00:00:00";
+        String result = "";
+        try
+        {
+            result = DateComparer.ANSIToConfigDate(ANSIDate);
+        } catch (ParseException ex)
+        {
+            System.out.println("Opps an error occured: " + ex);
+        }
+        assertEquals(expResult, result);
+    }
 
 
     /**
@@ -287,8 +291,36 @@ public class DateComparerTest
 //        String expResult = "12-31-2021";
         // Depends on what the system time format is set to in the environment.properties.
 //        String expResult = "2021-12-31T00:00:00";
-        String expResult = "2021-12-31";
+        // Note this could fail depending on the config date in the environment.properties file.
+        // There are three notable date formats:
+        // * (Polaris) SQL timestamp: yyyy-MM-dd HH:mm:ss
+        // * PAPI timestamp: yyyy-MM-dd'T'HH:mm:ss
+        // * Standard date:  yyyy-MM-dd
+        // * ANSI date: yyyyMMdd
+        String expResult = "2021-12-31 00:00:00";
         String result;
+        try
+        {
+            System.out.println("ANSIToConfigDate: " + DateComparer.ANSIToConfigDate(ANSIDate));
+            result = DateComparer.ANSIToConfigDate(ANSIDate);
+        }
+        catch (ParseException ex)
+        {
+            result = "";
+        }
+        assertEquals(expResult, result);
+        
+        ANSIDate = "20000229";
+//        String expResult = "12-31-2021";
+        // Depends on what the system time format is set to in the environment.properties.
+//        String expResult = "2021-12-31T00:00:00";
+        // Note this could fail depending on the config date in the environment.properties file.
+        // There are three notable date formats:
+        // * SQL timestamp: yyyy-MM-dd HH:mm:ss
+        // * PAPI timestamp: yyyy-MM-dd'T'HH:mm:ss
+        // * Standard date:  yyyy-MM-dd
+        // * ANSI date: yyyyMMdd
+        expResult = "2000-02-29 00:00:00";
         try
         {
             System.out.println("ANSIToConfigDate: " + DateComparer.ANSIToConfigDate(ANSIDate));
