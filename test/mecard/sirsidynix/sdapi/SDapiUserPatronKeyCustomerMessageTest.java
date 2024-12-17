@@ -2,6 +2,7 @@
 package mecard.sirsidynix.sdapi;
 
 
+import mecard.config.SDapiUserFields;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -12,10 +13,23 @@ import org.junit.Test;
  */
 public class SDapiUserPatronKeyCustomerMessageTest 
 {
-    private final String jsonString;
+    private final String jsonSuccess;
+    private final String jsonFail;
+    
     public SDapiUserPatronKeyCustomerMessageTest() 
     {
-        jsonString = """
+        jsonFail = """
+                   {
+                        "messageList": [
+                            {
+                                "code": "recordNotFound",
+                                "message": "Could not find a(n) /user/patron record with the key 3015800."
+                            }
+                        ]
+                   }
+                   """;
+        
+        jsonSuccess = """
                      {
                         "resource": "/user/patron",
                         "key": "301585",
@@ -177,10 +191,11 @@ public class SDapiUserPatronKeyCustomerMessageTest
      * Test of succeeded method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
-    public void testSucceeded() {
+    public void testSucceeded() 
+    {
         System.out.println("succeeded");
         SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonString);
+                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonSuccess);
         boolean expResult = true;
         boolean result = instance.succeeded();
         assertEquals(expResult, result);
@@ -190,42 +205,44 @@ public class SDapiUserPatronKeyCustomerMessageTest
      * Test of errorMessage method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
-    public void testErrorMessage() {
-        System.out.println("errorMessage");
-        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
-        String expResult = "";
+    public void testErrorMessage() 
+    {
+        System.out.println("==errorMessage==");
+        SDapiUserPatronKeyCustomerMessage instance = 
+                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonFail);
+        String expResult = "recordNotFound";
         String result = instance.errorMessage();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of parseJson method, of class SDapiUserPatronKeyCustomerMessage.
-     */
-    @Test
-    public void testParseJson() {
-        System.out.println("parseJson");
-        String jsonString = "";
-        SDapiResponse expResult = null;
-        SDapiResponse result = SDapiUserPatronKeyCustomerMessage.parseJson(jsonString);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getFields method, of class SDapiUserPatronKeyCustomerMessage.
      */
     @Test
-    public void testGetFields() {
-        System.out.println("getFields");
-        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
-        SDapiUserPatronKeyCustomerMessage.PatronFields expResult = null;
-        SDapiUserPatronKeyCustomerMessage.PatronFields result = instance.getFields();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetField() 
+    {
+        System.out.println("==getField==");
+//        SDapiUserPatronSearchCustomerMessage instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
+        SDapiUserPatronKeyCustomerMessage instance = 
+                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonSuccess);
+        String result = instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
+        assertEquals("", result);
+        assertEquals("301585", instance.getField(SDapiUserFields.USER_KEY.toString()));
+        assertEquals("BILLY", instance.getField(SDapiUserFields.USER_LAST_NAME.toString()));
+        assertEquals("Balzac", instance.getField(SDapiUserFields.USER_FIRST_NAME.toString()));
+        assertEquals("EPL_ADULT", instance.getField(SDapiUserFields.PROFILE.toString()));
+        assertEquals("ilsadmins@epl.ca", instance.getField(SDapiUserFields.EMAIL.toString()));
+        assertEquals("780-496-4058", instance.getField(SDapiUserFields.PHONE.toString()));
+        assertEquals("2000-02-29T00:00:00", instance.getField(SDapiUserFields.USER_BIRTHDATE.toString()));
+        assertEquals("", instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
+        assertEquals("T5J-2V4", instance.getField(SDapiUserFields.POSTALCODE.toString()));
+        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_PROV.toString()));
+        assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
+        
+        instance = (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonFail);
+        assertEquals("", result);
+        assertEquals("", instance.getField(SDapiUserFields.USER_KEY.toString()));
     }
 
     /**
@@ -236,10 +253,110 @@ public class SDapiUserPatronKeyCustomerMessageTest
     {
         System.out.println("==getUserKey==");
         SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonString);
+                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
         String expResult = "301585";
         String result = instance.getUserKey();
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getAlternateId method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testGetAlternateId() {
+        System.out.println("getAlternateId");
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        String expResult = "";
+        String result = instance.getAlternateId();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getCustomerProfile method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testGetCustomerProfile() {
+        System.out.println("getCustomerProfile");
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        String expResult = "";
+        String result = instance.getCustomerProfile();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getDateField method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testGetDateField() {
+        System.out.println("getDateField");
+        String fieldName = "";
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        String expResult = "";
+        String result = instance.getDateField(fieldName);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of isEmpty method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testIsEmpty() {
+        System.out.println("isEmpty");
+        String fieldName = "";
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        boolean expResult = false;
+        boolean result = instance.isEmpty(fieldName);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getStanding method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testGetStanding() {
+        System.out.println("getStanding");
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        String expResult = "";
+        String result = instance.getStanding();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of cardReportedLost method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testCardReportedLost() {
+        System.out.println("cardReportedLost");
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        boolean expResult = false;
+        boolean result = instance.cardReportedLost();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of isInGoodStanding method, of class SDapiUserPatronKeyCustomerMessage.
+     */
+    @Test
+    public void testIsInGoodStanding() {
+        System.out.println("isInGoodStanding");
+        SDapiUserPatronKeyCustomerMessage instance = new SDapiUserPatronKeyCustomerMessage();
+        boolean expResult = false;
+        boolean result = instance.isInGoodStanding();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
     
 }

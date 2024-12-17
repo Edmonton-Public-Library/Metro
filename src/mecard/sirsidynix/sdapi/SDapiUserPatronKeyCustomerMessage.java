@@ -1,4 +1,23 @@
-
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2024  Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either httpVersion 2 of the License, or
+ * (at your option) any later httpVersion.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 
 package mecard.sirsidynix.sdapi;
 
@@ -7,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import mecard.config.FlatUserFieldTypes;
+import mecard.config.SDapiUserFields;
 /**
  *
  * @author anisbet
@@ -15,8 +35,13 @@ public class SDapiUserPatronKeyCustomerMessage
         extends SDapiResponse
         implements CustomerMessage
 {
-//    @SerializedName("resource")
-//    private String resource;
+    @SerializedName("alternateID")
+    private String alternateId;
+    
+    public String getAlternateId()
+    {
+        return this.alternateId;
+    }
 
     @SerializedName("key")
     private String userKey;
@@ -27,22 +52,116 @@ public class SDapiUserPatronKeyCustomerMessage
     @Override
     public boolean succeeded() 
     {
-        return getFields().barcode != null && ! getFields().barcode.isBlank();
+        return (this.messageList == null);
+    }
+
+    //Failed response
+    //    {
+    //    "messageList": [
+    //        {
+    //            "code": "recordNotFound",
+    //            "message": "Could not find a(n) /user/patron record with the key 3015800."
+    //        }
+    //    ]
+    //    }
+    @SerializedName("messageList")
+    private List<MessageList> messageList;
+    
+    private class MessageList
+    {
+        @SerializedName("code")
+        private String code;
+        
+        private String getMessageListCode()
+        {
+            return this.code != null ? this.code : "";
+        }
+    }
+    
+    @Override
+    public String errorMessage() 
+    {
+        if (! this.succeeded())
+        {
+            try
+            {
+                StringBuilder sbout = new StringBuilder();
+                for (MessageList list: messageList)
+                {
+                    sbout.append(list.getMessageListCode());
+                }
+                return sbout.toString();
+            }
+            catch (NullPointerException ne)
+            {
+                System.out.println("""
+                                   **error, the request for customer info was made
+                                   but failed to return either a success or 
+                                   failed response.
+                                   """);
+                return "Account not found.";
+            }
+        }
+        return "";
     }
 
     @Override
-    public String errorMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String getCustomerProfile() 
+    {
+        try
+        {
+            return this.fields.getProfileKey();
+        }
+        catch (NullPointerException ne)
+        {
+            return "";
+        }
     }
 
     @Override
-    public String getCustomerProfile() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getField(String fieldName) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String getField(String fieldName) 
+    {
+        try
+        {
+            if (fieldName.equals(SDapiUserFields.USER_KEY.toString()))
+                return getUserKey();
+            if (fieldName.equals(SDapiUserFields.USER_FIRST_NAME.toString()))
+                return this.fields.getFirstName();
+            if (fieldName.equals(SDapiUserFields.USER_LAST_NAME.toString()))
+                return this.fields.getLastName();
+            if (fieldName.equals(SDapiUserFields.USER_ID.toString()))
+                return this.fields.getBarcode();
+            if (fieldName.equals(SDapiUserFields.USER_ALTERNATE_ID.toString()))
+                return this.getAlternateId();
+            if (fieldName.equals(SDapiUserFields.EMAIL.toString()))
+                return this.fields.getEmail();
+            if (fieldName.equals(SDapiUserFields.PROFILE.toString()))
+                return this.fields.getProfileKey();
+            if (fieldName.equals(SDapiUserFields.PHONE.toString()))
+                return this.fields.getPhone();
+            if (fieldName.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
+                return this.getDateField(fieldName);
+            if (fieldName.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
+                return this.getDateField(fieldName);
+            if (fieldName.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
+                // returns city Edmonton not the CITY/STATE value of 'Edmonton, Alberta'.
+                return this.fields.getCity();
+            if (fieldName.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
+                // returns city Edmonton not the CITY/STATE value of 'Edmonton, Alberta'.
+                return this.fields.getCity();
+            if (fieldName.equals(SDapiUserFields.STREET.toString()))
+                return this.fields.getStreet();
+            if (fieldName.equals(SDapiUserFields.POSTALCODE.toString()))
+                return this.fields.getPostalCode();
+            if (fieldName.equals(SDapiUserFields.PROV.toString()))
+                return this.fields.getProvince();
+        }
+        catch (NullPointerException | IndexOutOfBoundsException ne)
+        {
+            return "";
+        }
+        
+        return "";
     }
 
     @Override
@@ -51,8 +170,16 @@ public class SDapiUserPatronKeyCustomerMessage
     }
 
     @Override
-    public boolean isEmpty(String fieldName) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean isEmpty(String fieldName) 
+    {
+        try
+        {
+            return this.getField(fieldName).isBlank();
+        }
+        catch (NullPointerException ne)
+        {
+            return true;
+        }
     }
 
     @Override
@@ -145,10 +272,14 @@ public class SDapiUserPatronKeyCustomerMessage
         @SerializedName("address1")
         private List<AddressEntry> address1;
 
+        private String getProvince() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
         // Nested static class for policy resources
         private static class PolicyResource {
-            @SerializedName("resource")
-            private String resource;
+//            @SerializedName("resource")
+//            private String resource;
 
             @SerializedName("key")
             private String key;
@@ -231,7 +362,7 @@ public class SDapiUserPatronKeyCustomerMessage
     }
 
     // Getter for userKey
-    protected String getUserKey() 
+    public String getUserKey() 
     {
         return userKey;
     }
