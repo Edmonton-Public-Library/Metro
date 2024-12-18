@@ -50,7 +50,7 @@ To use it there is a new `sdapi.properties` file as seen below.
   <entry key="client-id">MY_APP_ID</entry>
   <entry key="env-file-path">.env</entry>
   <entry key="base-url">https://ws.sirsidynix.net</entry>
-  <entry key="port">443</entry> <!-- optional, default 443 -->
+  <!-- <entry key="port">443</entry> optional, default 443 -->
   <entry key="x-sirs-clientId">ilsws</entry>
   <entry key="sd-originating-app-id">MeCard</entry>
   <entry key="web-service-version">6.4.0</entry>
