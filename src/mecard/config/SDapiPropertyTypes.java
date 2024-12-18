@@ -28,7 +28,8 @@ public enum SDapiPropertyTypes
 {
     CLIENT_ID("client-id"),
     ENV("env-file-path"), 
-    BASE_URL("base-url"), 
+    BASE_URL("base-url"),
+//    PORT("port"), Optional in sdapi.properties. Including it here will throw an exception if not set.
     WEB_APP("x-sirs-clientId"),
     SD_ORIGINATING_APP_ID("sd-originating-app-id"),
     SESSION_TOKEN_EXPIRY_TIME("session-token-expire-time"),

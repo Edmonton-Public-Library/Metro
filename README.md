@@ -50,6 +50,7 @@ To use it there is a new `sdapi.properties` file as seen below.
   <entry key="client-id">MY_APP_ID</entry>
   <entry key="env-file-path">.env</entry>
   <entry key="base-url">https://ws.sirsidynix.net</entry>
+  <entry key="port">443</entry> <!-- optional, default 443 -->
   <entry key="x-sirs-clientId">ilsws</entry>
   <entry key="sd-originating-app-id">MeCard</entry>
   <entry key="web-service-version">6.4.0</entry>
@@ -577,10 +578,18 @@ sudo systemctl restart firewalld
 ```
 
 # Known Issues
+
 * The `<entry key="date-format"></entry>` entry in `environment.properties` file must be attended to carefully. It refers to the way time is managed by the underlying system that handles dates such as DOB and expiry. Depending on the service protocol used to update and create users the service will be expecting time in a specific format. Here are some examples.
   * SQL (Polaris) requires `yyyy-MM-dd HH:mm:ss` format.
   * PAPI timestamp: `yyyy-MM-dd'T'HH:mm:ss`.
   * Symphony systems (such as EPL, CPL):  `yyyy-MM-dd`, which sounds like it should be `yyyyMMdd` but may be converted in the MeCard subsystem.
+```bash
+---   today>2024-00-17 12:00:00
+
+---  expiry>2025-00-17 12:00:00
+
+java.lang.IllegalArgumentException: Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
+``` 
 * Google has flagged the `setup.exe` as malware. The development team has asked for a review of the application, but until that time the exe may have to be sent by other means. February 9, 2022.
 ## Windows
 * The `-c c:\path\to\configs` switch doesn't seem to work as expected. I have experimented with several different ways of passing the parameters in prunmgr, but none have panned out. To fix just copy your config properties file into the c:\Metro directory. The MeCard server looks there for properties files by default.

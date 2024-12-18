@@ -24,8 +24,8 @@ import mecard.customer.Customer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
- * Formats the {@link mecard.customer.Customer} into the Polaris web service (PAPI)
- * consumable form which, as of version 7.0 (and perhaps earlier) is XML only.
+ * Formats the {@link mecard.customer.Customer} into the Symphony web service 
+ * consumable form.
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
@@ -33,13 +33,15 @@ public class SDapiToMeCardCustomer implements NativeFormatToMeCardCustomer
 {
 
     @Override
-    public Customer getCustomer(List<String> list) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Customer getCustomer(List<String> list) 
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Customer getCustomer(String s) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Customer getCustomer(String s) 
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

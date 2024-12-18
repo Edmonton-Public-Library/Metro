@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import mecard.ResponseTypes;
+import mecard.exception.ConfigurationException;
 
 /**
  * 
@@ -50,6 +51,8 @@ public class SDWebServiceCommand implements Command
         POST,
         PUT
     }
+    
+    public final static int DEFAULT_PORT = 443;
     
     private static URI uri;
     private static HttpVerb httpMethod;
@@ -72,6 +75,7 @@ public class SDWebServiceCommand implements Command
         private String staffClientId;
         private String webApp;
         private String baseUrl;
+        private int port;
         private URI uri;
         private String originAppId;
         private String sessionToken;
@@ -98,8 +102,24 @@ public class SDWebServiceCommand implements Command
                     "**error, " + httpMethod + " not supported.");
             }
             
-             
             
+            // Port (optional in SDapiPropertyTypes).
+            try
+            {
+                // Using 'port' instead of value a value set in SDapiPropertyTypes
+                // because it is an optional setting.
+                String sPort = this.webServiceProperties.getProperty("port", "443");
+                this.port = Integer.parseInt(sPort);
+            }
+            catch (NumberFormatException | ConfigurationException e)
+            {
+                System.out.println("""
+                                *warn: invalid port number set in sdapi.properties 
+                                value must be an integer between 0 and 65,535 (though
+                                0 - 1023 are reserved). Using default HTTPS port 443.
+                                   """);
+                this.port = DEFAULT_PORT;
+            }
             
             String version = this.webServiceProperties.getProperty(SDapiPropertyTypes.HTTP_VERSION.toString(), "2.0");
             switch(version)
@@ -130,7 +150,8 @@ public class SDWebServiceCommand implements Command
             {
                 System.out.println("""
                     *warn: invalid connection timeout set in sdapi.properties 
-                    value must be an integer. Defaulting to 10 seconds.""");
+                    value must be an integer. Defaulting to 10 seconds.
+                                   """);
                 this.connectionTimeout = 10;
             }
             
@@ -169,7 +190,7 @@ public class SDWebServiceCommand implements Command
         /**
          * Allows setting a web service endpoint. The end point is everything 
          * after the base URL and web app name, such as '/user/staff/login'.
-         * @param endpoint
+         * @param endpoint Remember to include a leading '/' in your the endpoint argument.
          * @return Builder object.
          */
         public Builder endpoint(String endpoint)
@@ -177,11 +198,23 @@ public class SDWebServiceCommand implements Command
             // Add this together into : https://{{HOST}}/{{WEBAPP}}/user/staff/login
             // or in our case https://sdmtlws01.sirsidynix.net/edpltest_ilsws
             StringBuilder urlString = new StringBuilder();
-            urlString.append(this.baseUrl)
-                    .append("/")
-                    .append(this.webApp)
-                    // remember to include the '/' for the endpoint!
-                    .append(endpoint);
+            if (this.port != DEFAULT_PORT || this.debug == true)
+            {
+                urlString.append(this.baseUrl)
+                        .append(":").append(this.port)
+                        .append("/")
+                        .append(this.webApp)
+                        // remember to include the '/' in your the endpoint arg!
+                        .append(endpoint);
+            }
+            else
+            {
+                urlString.append(this.baseUrl)
+                        .append("/")
+                        .append(this.webApp)
+                        // remember to include the '/' in your the endpoint arg!
+                        .append(endpoint);
+            }
             this.uri = URI.create(urlString.toString());
             return this;
         }

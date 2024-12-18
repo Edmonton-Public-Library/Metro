@@ -68,7 +68,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @SuppressWarnings("FieldMayBeFinal")
     private long tokenExpiry;
     /**
-     * Creates the Sirsi Dynix request builder.
+     * Creates the Sirsi Dynix Web Service request builder.
      */
     public SDapiRequestBuilder()
     {
