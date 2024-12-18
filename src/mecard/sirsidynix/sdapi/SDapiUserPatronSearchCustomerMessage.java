@@ -143,7 +143,7 @@ public class SDapiUserPatronSearchCustomerMessage
         {
             return "";
         }
-        if (! date.isBlank())
+        if (date != null && ! date.isBlank())
             return date + time;
         return "";
     }

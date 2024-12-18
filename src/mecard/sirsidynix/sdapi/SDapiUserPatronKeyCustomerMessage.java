@@ -35,12 +35,18 @@ public class SDapiUserPatronKeyCustomerMessage
         extends SDapiResponse
         implements CustomerMessage
 {
-    @SerializedName("alternateID")
-    private String alternateId;
+    
     
     public String getAlternateId()
     {
-        return this.alternateId;
+        try
+        {
+            return this.fields.alternateId;
+        }
+        catch (NullPointerException ne)
+        {
+            return "";
+        }
     }
 
     @SerializedName("key")
@@ -124,7 +130,7 @@ public class SDapiUserPatronKeyCustomerMessage
         try
         {
             if (fieldName.equals(SDapiUserFields.USER_KEY.toString()))
-                return getUserKey();
+                return this.userKey;
             if (fieldName.equals(SDapiUserFields.USER_FIRST_NAME.toString()))
                 return this.fields.getFirstName();
             if (fieldName.equals(SDapiUserFields.USER_LAST_NAME.toString()))
@@ -165,8 +171,25 @@ public class SDapiUserPatronKeyCustomerMessage
     }
 
     @Override
-    public String getDateField(String fieldName) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String getDateField(String fieldName) 
+    {
+        String time = "T00:00:00";
+        String date = "";
+        try
+        {
+            // Returns any USER dates converted to ANSI.
+            if (fieldName.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
+                date = this.fields.getBirthDate();
+            if (fieldName.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
+                date = this.fields.getPrivilegeExpires();
+        }
+        catch (NullPointerException ne)
+        {
+            return "";
+        }
+        if (date != null && ! date.isBlank())
+            return date + time;
+        return "";
     }
 
     @Override
@@ -183,22 +206,36 @@ public class SDapiUserPatronKeyCustomerMessage
     }
 
     @Override
-    public String getStanding() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String getStanding()
+    {
+        try
+        {
+            return this.fields.standing.getKey();
+        }
+        catch (NullPointerException ne)
+        {
+            return "";
+        }
     }
 
     @Override
-    public boolean cardReportedLost() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean cardReportedLost() 
+    {
+        return this.getCustomerProfile().equals("LOST") || this.getCustomerProfile().equals("LOSTCARD");
     }
 
     @Override
-    public boolean isInGoodStanding() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean isInGoodStanding() 
+    {
+        return "OK".equals(this.getStanding());
     }
 
     // Inner class to represent all fields
-    public static class PatronFields {
+    public static class PatronFields 
+    {
+        @SerializedName("alternateID")
+        private String alternateId;
+        
         @SerializedName("displayName")
         private String displayName;
 
@@ -257,8 +294,8 @@ public class SDapiUserPatronKeyCustomerMessage
         @SerializedName("profile")
         private PolicyResource profile;
 
-//        @SerializedName("standing")
-//        private PolicyResource standing;
+        @SerializedName("standing")
+        private PolicyResource standing;
 //
 //        @SerializedName("category02")
 //        private PolicyResource category02;
@@ -268,13 +305,17 @@ public class SDapiUserPatronKeyCustomerMessage
 //
 //        @SerializedName("category05")
 //        private PolicyResource category05;
+        
+        @SerializedName("privilegeExpiresDate")
+        private String expiry;
+        
+        private String getPrivilegeExpires()
+        {
+            return expiry;
+        }
 
         @SerializedName("address1")
         private List<AddressEntry> address1;
-
-        private String getProvince() {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
 
         // Nested static class for policy resources
         private static class PolicyResource {
@@ -340,12 +381,40 @@ public class SDapiUserPatronKeyCustomerMessage
         }
 
         // Convenience methods to get specific addresses
-        protected String getEmail() { return findAddressByCode(FlatUserFieldTypes.EMAIL.toString()); }
-        protected String getPostalCode() { return findAddressByCode(FlatUserFieldTypes.POSTALCODE.toString()); }
-        protected String getPhone() { return findAddressByCode(FlatUserFieldTypes.PHONE.toString()); }
-        protected String getStreet() { return findAddressByCode(FlatUserFieldTypes.STREET.toString()); }
+        protected String getEmail() { return findAddressByCode(SDapiUserFields.EMAIL.toString()); }
+        protected String getPostalCode() { return findAddressByCode(SDapiUserFields.POSTALCODE.toString()); }
+        protected String getPhone() { return findAddressByCode(SDapiUserFields.PHONE.toString()); }
+        protected String getStreet() { return findAddressByCode(SDapiUserFields.STREET.toString()); }
         // This may need to be done over for Symphony systems that use CITY/PROV etc.
-        protected String getCity() { return findAddressByCode(FlatUserFieldTypes.CITY_SLASH_STATE.toString()); }
+        protected String getCity() 
+        {
+            try
+            {
+                String[] words = 
+                        findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
+                                .replaceAll("[^a-zA-Z ]", "").split("\\s+");
+                return words[0];
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                return "";
+            }
+        }
+        
+        protected String getProvince()
+        {
+            try
+            {
+                String[] words = 
+                        findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
+                                .replaceAll("[^a-zA-Z ]", "").split("\\s+");
+                return words[1];
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                return "";
+            }
+        }
     }
 
     // Static method to parse JSON
@@ -355,15 +424,16 @@ public class SDapiUserPatronKeyCustomerMessage
         return gson.fromJson(jsonString, SDapiUserPatronKeyCustomerMessage.class);
     }
 
-    // Getter for fields
-    protected PatronFields getFields() 
-    {
-        return fields;
-    }
-
     // Getter for userKey
     public String getUserKey() 
     {
-        return userKey;
+        try
+        {
+            return this.userKey;
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return "";
+        }
     }
 }
