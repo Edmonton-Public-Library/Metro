@@ -56,7 +56,7 @@ public class SDapiUserPatronLoginResponse extends SDapiResponse
     private String message;
     
     @SerializedName("patronKey")
-    private String customerKey;
+    private String userKey;
 
     @SerializedName("customerName")
     private String customerName;
@@ -99,11 +99,11 @@ public class SDapiUserPatronLoginResponse extends SDapiResponse
         return sessionToken;
     }
     
-    public String getCustomerKey() 
+    public String getUserKey() 
     {
-        if (customerKey == null)
+        if (userKey == null)
             return "";
-        return customerKey;
+        return userKey;
     }
     
     public String getCustomerName() 

@@ -97,7 +97,7 @@ public class SDapiUserPatronLoginResponseTest {
         SDapiUserPatronLoginResponse testResponse = 
                 (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(jsonString);
         String expResult = "301585";
-        String result = testResponse.getCustomerKey();
+        String result = testResponse.getUserKey();
         assertEquals(expResult, result);
     }
 

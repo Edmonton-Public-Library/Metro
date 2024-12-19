@@ -18,63 +18,60 @@
  * MA 02110-1301, USA.
  *
  */
+
 package mecard.sirsidynix.sdapi;
 
-import java.util.List;
-import java.util.Properties;
-import mecard.config.ConfigFileTypes;
-import mecard.config.PropertyReader;
-import mecard.config.SDapiPropertyTypes;
-import mecard.config.SDapiUserFields;
-import mecard.customer.Customer;
-import mecard.customer.MeCardCustomerToNativeFormat;
+import java.util.Set;
 import mecard.customer.MeCardDataToNativeData;
 
 /**
- * The class is used just before the customer is loaded so a library can add
- * additional data before customer creation. Some libraries like to add analytic
- * data before customer load, others rename fields to suit the local requirements.
- * This object takes customer data and converts it into SirsiDynix REST API.
- * 
- * @author Andrew Nisbet <andrew at dev-ils.com>
+ *
+ * @author anisbet
  */
-public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
+public class MeCardDataToSDapiData implements MeCardDataToNativeData
 {
-    private MeCardDataToNativeData customerTable;
-    
-    public MeCardCustomerToSDapi(Customer customer, MeCardDataToSDapiData.QueryType type)
+
+    private final boolean debug;
+    public enum QueryType
     {
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.PAPI);
-        customerTable = MeCardDataToSDapiData.getInstanceOf(type);
-        // Fill in the default required fields for v1 of SD api web service API.
-        customerTable.setValue(SDapiUserFields.USER_ID.toString(), 
-            props.getProperty(SDapiPropertyTypes.CLIENT_ID.toString()));
-        
-        // TODO Continue this... See MeCardCustomerToPapi.java
+        CREATE,
+        UPDATE;
     }
     
+    private final QueryType queryType;
+//    private final EnumMap<PapiElementOrder, String> columns;
+//    public static PapiElementOrder TABLE_NAME;
+    
+    /**
+     * Specifies the formatting {@link PAPIFormattedTable.ContentType} and defaults
+     * to a create user query.
+     * @param type
+     * @return create query formatted as per argument.
+     */
+    public static MeCardDataToSDapiData getInstanceOf(QueryType type)
+    {
+        return new MeCardDataToSDapiData(type, false);
+    }
+
+    private MeCardDataToSDapiData(QueryType type, boolean debug) 
+    {
+        this.queryType  = type;
+        this.debug      = debug;
+        // TODO Finish me.
+    }
+
     @Override
-    public List<String> getFormattedCustomer() {
+    public String getData() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public List<String> getFormattedHeader() {
+    public String getHeader() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public boolean setValue(String key, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public boolean insertValue(String tableName, String key, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public boolean containsKey(String key) {
+    public String getName() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -84,18 +81,22 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
     }
 
     @Override
-    public void insertTable(MeCardDataToNativeData formattedTable, int index) {
+    public boolean setValue(String key, String value) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public boolean renameField(String tableName, String originalFieldName, String newFieldName) {
+    public boolean renameKey(String originalkey, String replacementKey) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public boolean removeField(String tableName, String fieldName) {
+    public Set<String> getKeys() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
+
+    @Override
+    public boolean deleteValue(String key) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

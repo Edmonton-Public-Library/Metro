@@ -23,10 +23,12 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
+import api.DummyCommand;
 import api.HttpCommandStatus;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import mecard.QueryTypes;
 import static mecard.QueryTypes.CREATE_CUSTOMER;
@@ -36,20 +38,29 @@ import static mecard.QueryTypes.UPDATE_CUSTOMER;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SDapiPropertyTypes;
+import mecard.config.SDapiUserFields;
 import mecard.customer.Customer;
+import mecard.customer.DumpUser;
+import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import mecard.exception.ConfigurationException;
+import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
+import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
 import mecard.sirsidynix.sdapi.SDWebServiceCommand;
 import mecard.sirsidynix.sdapi.SDapiAuthenticationData;
+import mecard.sirsidynix.sdapi.SDapiResponse;
 import mecard.sirsidynix.sdapi.SDapiUserPatronLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiUserPatronSearchCustomerMessage;
 import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
+import mecard.sirsidynix.sdapi.WebServiceDummyCommand;
+import org.apache.http.HttpStatus;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -137,9 +148,9 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             {
                 // Check response for any errors.
                 SDapiUserStaffLoginResponse authResponse; 
-                authResponse = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(status.getStdout());
                 try
                 {
+                    authResponse = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(status.getStdout());
                     if (authResponse.succeeded())
                     {
                         if (this.debug)
@@ -203,13 +214,93 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getCustomerCommand(String userId, String userPin, Response response) 
     {
-        //  Start with the user key  https://{{HOST}}/{{WEBAPP}}/user/patron/search?rw=1&q=ID:21221012345678
-        SDWebServiceCommand getCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-            // The circRecordList{*} gives expiry and profile.
-            .endpoint("/user/patron/search?rw=1&q=ID:" + userId + "?includeFields=*,circRecordList{*},address1{*}")
+        //  Start with the user logging in to prove they are legit customer.
+        SDapiAuthenticationData authData = new SDapiAuthenticationData();
+        String loginBodyText = authData.getPatronAuthentication(userId, userId);
+        SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+            .endpoint("/user/patron/login")
+            .bodyText(loginBodyText)
             .build();
         
-        return getCustomerCommand;
+        // Execute and if successful create a request for customer info by 
+        // search by user key.
+        HttpCommandStatus status = command.execute();
+        // Search for customer info with the user key later.
+        String userKey = "";
+        if (! status.okay())
+        {
+            return getFailedWebServiceCommand(response, status);
+        }
+            // Check response for any errors.
+        SDapiUserPatronLoginResponse authResponse; 
+        try
+        {
+            authResponse = (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(status.getStdout());
+            if (authResponse.succeeded())
+            {
+                if (this.debug)
+                {
+                    System.out.println(new Date() + " " + userId + " authenticated successfully.");
+                }
+                response.setCode(ResponseTypes.SUCCESS);
+                response.setResponse("");
+                userKey = authResponse.getUserKey();
+            }
+            else
+            {
+                if (this.debug)
+                {
+                    System.out.println(new Date() + " customer " + userId + " FAILED to authenticate.");
+                }
+                response.setCode(ResponseTypes.USER_PIN_INVALID);
+                response.setResponse(authResponse.errorMessage());
+                return new WebServiceDummyCommand.Builder()
+                    .setStatus(status.getHttpStatusCode())
+                    .setStderr(response.getMessage())
+                    .setStdout(response.getMessage())
+                    .build();
+            }
+        }
+        catch (NullPointerException ne)
+        {
+            response.setResponse(messageProperties.getProperty(
+            MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+            return new WebServiceDummyCommand.Builder()
+                .setStatus(status.getHttpStatusCode())
+                .setStderr(response.getMessage())
+                .setStdout(response.getMessage())
+                .build();
+        }
+               
+        // Get customer info by user key.
+        command = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+            .endpoint("/user/patron/key/" + userKey + "?includeFields=*,circRecordList{*},address1{*}")
+            .sessionToken(this.getSessionToken(response))
+            .build();
+        return command;
+    }
+    
+    private WebServiceDummyCommand getFailedWebServiceCommand(Response response, HttpCommandStatus status)
+    {
+        System.out.println("**error web service: "
+                + status.getHttpStatusCode() + " : " + status.toString());
+        response.setCode(status.getStatus());
+        switch (status.getStatus())
+        {
+            case UNAUTHORIZED -> 
+                    response.setResponse(messageProperties.getProperty(
+                        MessagesTypes.USERID_PIN_MISMATCH.toString()));
+            case CONFIG_ERROR, BUSY, UNAVAILABLE, UNKNOWN -> 
+                    response.setResponse(messageProperties.getProperty(
+                    MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+            default -> response.setResponse(messageProperties.getProperty(
+                    MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+        }
+        return new WebServiceDummyCommand.Builder()
+            .setStatus(status.getHttpStatusCode())
+            .setStderr(response.getMessage())
+            .setStdout(response.getMessage())
+            .build();
     }
 
     @Override
@@ -222,8 +313,83 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
     {
-        //  Start with the user key  https://{{HOST}}/{{WEBAPP}}/user/patron/search?rw=1&q=ID:21221012345678
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // first get the customer's key.
+        String barcode = customer.get(CustomerFieldTypes.ID);
+        
+        SDWebServiceCommand searchPatron = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+                .endpoint("/user/patron/search?rw=1&q=ID:"+barcode)
+                .sessionToken(this.getSessionToken(response))
+                .build();
+        // Execute and if successful create a request for customer info by 
+        // search by user key.
+        HttpCommandStatus status = searchPatron.execute();
+        if (! status.okay())
+        {
+            return getFailedWebServiceCommand(response, status);
+        }
+        // Search for customer info with the user key later.
+        String userKey = "";
+        
+        SDapiUserPatronSearchCustomerMessage searchResponse; 
+        try
+        {
+            searchResponse = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(status.getStdout());
+            if (searchResponse.succeeded())
+            {
+                if (this.debug)
+                {
+                    System.out.println(new Date() + " " + barcode + " authenticated successfully.");
+                }
+                response.setCode(ResponseTypes.SUCCESS);
+                response.setResponse("");
+                userKey = searchResponse.getField(SDapiUserFields.USER_KEY.toString());
+            }
+            else
+            {
+                if (this.debug)
+                {
+                    System.out.println(new Date() + " customer " + barcode + " FAILED to authenticate.");
+                }
+                response.setCode(ResponseTypes.USER_PIN_INVALID);
+                response.setResponse(searchResponse.errorMessage());
+                return new WebServiceDummyCommand.Builder()
+                    .setStatus(status.getHttpStatusCode())
+                    .setStderr(response.getMessage())
+                    .setStdout(response.getMessage())
+                    .build();
+            }
+        }
+        catch (NullPointerException ne)
+        {
+            response.setResponse(messageProperties.getProperty(
+            MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+            return new WebServiceDummyCommand.Builder()
+                .setStatus(status.getHttpStatusCode())
+                .setStderr(response.getMessage())
+                .setStdout(response.getMessage())
+                .build();
+        }
+        
+        // Now use the customer data as the update command body.
+        MeCardCustomerToNativeFormat createCustomer = new MeCardCustomerToSDapi(customer, QueryType.CREATE);
+        // apply library centric normalization to the customer account.
+        normalizer.finalize(customer, createCustomer, response);
+        // Output the customer's data as a receipt in case they come back with questions.
+        List<String> customerReceipt = createCustomer.getFormattedCustomer();
+        if (this.debug)
+        {
+            System.out.println("CREATE XML body: " + createCustomer.toString());
+        }
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
+            .set(customerReceipt)
+            .build();
+        // /user/patron/key/2139681
+        SDWebServiceCommand createCustomer = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+                .endpoint("/user/patron/key/" + userKey)
+                .bodyText(createCustomer.toString())
+                .sessionToken(getSessionToken(response))
+                .build();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -331,10 +497,63 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         switch (commandType)
         {
             case GET_STATUS -> {
+                // uses staff authentication command.
+                SDapiResponse staffAuthenticates;
+                try
+                {
+                    staffAuthenticates =                
+                        (SDapiUserPatronSearchCustomerMessage) 
+                            SDapiUserStaffLoginResponse.parseJson(status.getStdout());
+                }
+                catch (NullPointerException e)
+                {
+                    System.out.println("*error, " + e.getMessage() + nullResponseMessage);
+                    response.setCode(ResponseTypes.TOO_MANY_TRIES);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
+                    return false;
+                }
+                if (staffAuthenticates.succeeded())
+                {
+                    response.setCode(ResponseTypes.SUCCESS);
+                    if (debug) System.out.println("Status succeeded.");
+                    return true;
+                }
+                // Otherwise the response was a failure.
+                response.setCode(ResponseTypes.UNAVAILABLE);
+                response.setResponse(messageProperties.getProperty(
+                        MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                System.out.println("**get status failed: "
+                        + staffAuthenticates.errorMessage());
                 return false;
             }
             case GET_CUSTOMER -> {
-                SDapiUserPatronLoginResponse testCustomerAuthenticates;
+                // Search request with user barcode.
+                SDapiResponse testGetCustomer;
+                try
+                {
+                    testGetCustomer =                
+                        (SDapiUserPatronSearchCustomerMessage) 
+                            SDapiUserPatronSearchCustomerMessage.parseJson(status.getStdout());
+                }
+                catch (NullPointerException e)
+                {
+                    System.out.println("*error, " + e.getMessage() + nullResponseMessage);
+                    response.setCode(ResponseTypes.TOO_MANY_TRIES);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
+                    return false;
+                }
+                if (testGetCustomer.succeeded())
+                {
+                    response.setCode(ResponseTypes.SUCCESS);
+                    if (debug) System.out.println("Customer login succeeded.");
+                    return true;
+                }
+                // Otherwise the response was a failure.
+                response.setCode(ResponseTypes.USER_NOT_FOUND);
+                response.setResponse(messageProperties.getProperty(
+                        MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                System.out.println("**get customer account info failed: "
+                        + testGetCustomer.errorMessage());
                 return false;
             }
             case UPDATE_CUSTOMER -> {
@@ -345,10 +564,11 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 return false;
             }
             case TEST_CUSTOMER -> {
+                // This is a user login request.
                 // DummyCommand puts a '1' in stdout.
                 // Authentication failures return status error authentication error, or an empty JSON document.
                 // The response has to match the request, which in the above is 'patron login'
-                SDapiUserPatronLoginResponse testCustomerAuthenticates;
+                SDapiResponse testCustomerAuthenticates;
                 try
                 {
                     testCustomerAuthenticates = 
@@ -369,10 +589,10 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                     return true;
                 }
                 // Otherwise the response was a failure.
-                response.setCode(ResponseTypes.USER_NOT_FOUND);
+                response.setCode(ResponseTypes.USER_PIN_INVALID);
                 response.setResponse(messageProperties.getProperty(
-                        MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                System.out.println("**customer login failed: "
+                        MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                System.out.println("**customer login failed, are the pin and id correct? "
                         + testCustomerAuthenticates.errorMessage());
                 return false;
             }
