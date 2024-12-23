@@ -59,6 +59,9 @@ public enum SDapiUserFields
     //    "key": "EPLMNA"
     USER_LIBRARY("library"),
     //"middleName": "",
+    // This for create and or update.
+    // TODO: check correct JSON name in create or update.
+    USER_PASSWORD("password"),
     USER_MIDDLE_NAME("middleName"),
     //"preferredName": "",
     PREFERRED_NAME("preferredName"),

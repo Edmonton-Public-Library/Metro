@@ -23,7 +23,6 @@ package mecard.requestbuilder;
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
-import api.DummyCommand;
 import api.HttpCommandStatus;
 import java.io.IOException;
 import java.time.Duration;
@@ -52,6 +51,7 @@ import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
 import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
+import mecard.sirsidynix.sdapi.MeCardDataToSDapiData;
 import mecard.sirsidynix.sdapi.SDWebServiceCommand;
 import mecard.sirsidynix.sdapi.SDapiAuthenticationData;
 import mecard.sirsidynix.sdapi.SDapiResponse;
@@ -60,7 +60,6 @@ import mecard.sirsidynix.sdapi.SDapiUserPatronSearchCustomerMessage;
 import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
 import mecard.sirsidynix.sdapi.WebServiceDummyCommand;
-import org.apache.http.HttpStatus;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -371,25 +370,27 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         }
         
         // Now use the customer data as the update command body.
-        MeCardCustomerToNativeFormat createCustomer = new MeCardCustomerToSDapi(customer, QueryType.CREATE);
+        MeCardCustomerToNativeFormat createCustomer = 
+                new MeCardCustomerToSDapi(customer, MeCardDataToSDapiData.QueryType.UPDATE);
         // apply library centric normalization to the customer account.
         normalizer.finalize(customer, createCustomer, response);
         // Output the customer's data as a receipt in case they come back with questions.
         List<String> customerReceipt = createCustomer.getFormattedCustomer();
         if (this.debug)
         {
-            System.out.println("CREATE XML body: " + createCustomer.toString());
+            System.out.println("CREATE JSON body: " + createCustomer.toString());
         }
         new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
             .set(customerReceipt)
             .build();
         // /user/patron/key/2139681
-        SDWebServiceCommand createCustomer = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+        SDWebServiceCommand createCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
                 .endpoint("/user/patron/key/" + userKey)
+                // TODO check this is right?!
                 .bodyText(createCustomer.toString())
                 .sessionToken(getSessionToken(response))
                 .build();
-        throw new UnsupportedOperationException("Not supported yet.");
+        return createCustomerCommand;
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ public interface MeCardDataToNativeData
     String getValue(String key);
 
     /**
-     * Adds or changes an a key in the table entry. If the key exists then the
+     * Adds or changes a key in the table entry. If the key exists then the
      * value for that key is updated and the return result is true. If the key
      * didn't exist, the key value pair are added, but the return value is false.
      * The return value is false if either the key of value is null, and no

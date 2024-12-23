@@ -58,6 +58,13 @@ To use it there is a new `sdapi.properties` file as seen below.
   <entry key="http-version">2.0</entry>
   <entry key="session-token-expire-time">60</entry>
   <entry key="debug">true</entry>
+  <entry key="USER_LIBRARY">EPLMNA</entry>
+  <entry key="USER_PROFILE">EPL-METRO</entry>
+  <entry key="USER_PREF_LANG">ENGLISH</entry>
+  <entry key="USER_CHG_HIST_RULE">ALLCHARGES</entry>
+  <entry key="USER_ACCESS">PUBLIC</entry>
+  <entry key="USER_ENVIRONMENT">PUBLIC</entry>
+  <entry key="USER_CATEGORY2">ADULT</entry>
 </properties>
 ```
 
