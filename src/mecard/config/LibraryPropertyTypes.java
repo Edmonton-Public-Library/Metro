@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ public enum LibraryPropertyTypes
     LOST_CARD_SENTINEL("lost-card-sentinel"); // Profile or other indicator that use to
     // determine if the customer's card is a lost card.
     
-    private String type;
+    private final String type;
     private LibraryPropertyTypes(String s)
     {
         this.type = s;
