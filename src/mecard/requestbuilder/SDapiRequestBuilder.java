@@ -47,7 +47,6 @@ import mecard.customer.DumpUser;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import mecard.exception.ConfigurationException;
-import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
 import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
@@ -79,12 +78,13 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     private long tokenExpiry;
     /**
      * Creates the Sirsi Dynix Web Service request builder.
+     * @param debug
      */
-    public SDapiRequestBuilder()
+    public SDapiRequestBuilder(boolean debug)
     {
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
-        this.debug = Boolean.parseBoolean(sdapiProperties.getProperty(SDapiPropertyTypes.DEBUG.toString(),"false"));
+        this.debug = debug;
         
         // Get the SDapi properties file and set up a token manager.
         this.tokenManager = new TokenManager();
