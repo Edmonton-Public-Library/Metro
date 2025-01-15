@@ -20,8 +20,6 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.MeCardDataToPapiData;
-import mecard.polaris.papi.PapiElementOrder;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -125,6 +123,7 @@ public class MeCardDataToPapiDataTest
         papiTable.setValue(PapiElementOrder.STREET_TWO.name(), "2");
         papiTable.setValue(PapiElementOrder.STREET_ONE.name(), "1");
         papiTable.setValue(PapiElementOrder.POSTAL_CODE.name(), "");
+        papiTable.setValue(PapiElementOrder.STATE.name(), "AB");
         
         System.out.println("get KEYS:");
         int i = 1;
@@ -132,6 +131,7 @@ public class MeCardDataToPapiDataTest
         {
             System.out.println("KEY:" + key);
         }
+        System.out.println("See here>>" + papiTable.getUpdateXml());
     }
 
     /**
@@ -209,5 +209,5 @@ public class MeCardDataToPapiDataTest
         String result = instance.toString();
         assertEquals(expResult, result);
     }
-    
+
 }

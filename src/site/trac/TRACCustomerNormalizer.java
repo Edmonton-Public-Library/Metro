@@ -34,6 +34,7 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
 import mecard.customer.MeCardCustomerToNativeFormat;
+import mecard.polaris.papi.PapiElementOrder;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -139,6 +140,11 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
                     expiry);
             }
         }
+        // If you need to change something at TRAC this is an example of how to do that.
+//        else
+//        {
+//            formattedCustomer.setValue(PapiElementOrder.STATE.name(), customer.get(CustomerFieldTypes.PROVINCE));
+//        }
     }
     
     @Override
