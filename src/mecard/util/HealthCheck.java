@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import mecard.config.PropertyReader;
 
@@ -46,6 +50,8 @@ import mecard.config.PropertyReader;
  */
 public class HealthCheck
 {
+
+    private static final int MAX_EXCEPTIONS = 10;
     /**
      * Get the server up time. Does its best to work with Unix, Mac, and Windows.
      * @return up time in hours.
@@ -59,7 +65,6 @@ public class HealthCheck
             String line;
             if (os.contains("win")) 
             {
-                long value = 0;
                 Process uptimeProc = Runtime.getRuntime().exec("net stats srv");
                 BufferedReader in = new BufferedReader(new InputStreamReader(uptimeProc.getInputStream()));
                 while ((line = in.readLine()) != null) 
@@ -150,9 +155,101 @@ public class HealthCheck
                 usableSpace / (1024 * 1024 * 1024));
     }
     
+    /**
+     * 
+     * @return 
+     */
+    public static String getProtocolSettings()
+    {
+        return PropertyFileReader.getCustomerProtocols("environment.properties");
+    }
+
+    /**
+     * Lists the exceptions in a file. 
+     * @param errFilePath
+     * @return 
+     */
+    private static String getExceptions(String filePath, int limit)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> exceptions;
+        try
+        {
+            try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+                exceptions = stream.filter(line -> line.toLowerCase().contains("exception"))
+                               .collect(Collectors.toList());
+            }
+
+            int totalExceptions = exceptions.size();
+            stringBuilder.append("Total number of exception events: ")
+                    .append(totalExceptions)
+                    .append(System.lineSeparator());
+            for (int i = 0; i < Math.min(limit, totalExceptions); i++) 
+            {
+                stringBuilder.append(exceptions.get(i)).append(System.lineSeparator());
+            }
+
+            if (totalExceptions > 2 * limit) 
+            {
+                stringBuilder.append("...").append(System.lineSeparator());
+            }
+
+            for (int i = Math.max(0, totalExceptions - limit); i < totalExceptions; i++) 
+            {
+                stringBuilder.append(exceptions.get(i)).append(System.lineSeparator());
+            }
+        }
+        catch (IOException e)
+        {
+            
+        }
+
+        return stringBuilder.toString();
+    }
+    
+    /** 
+     * Reads and gets diagnostic information from the properties files.
+     */
+    private class PropertyFileReader 
+    {
+        private static Map<String, String> readProtocolProperties(String filePath) 
+        {
+            Map<String, String> protocols = new HashMap<>();
+            try {
+                Properties props = new Properties();
+                props.loadFromXML(new FileInputStream(filePath));
+
+                for (String key : props.stringPropertyNames()) 
+                {
+                    if (key.endsWith("-protocol")) 
+                    {
+                        protocols.put(key, props.getProperty(key));
+                    }
+                }
+            } 
+            catch (IOException e) 
+            { 
+                System.out.println("**error while reading " + filePath);
+            }
+            return protocols;
+        }
+        
+        private static String getCustomerProtocols(String whichPropertyFile) 
+        {
+            Map<String, String> protocols = readProtocolProperties(whichPropertyFile);
+            StringBuilder sout = new StringBuilder();
+            protocols.forEach((key, value) -> sout.append(key)
+                    .append(": ")
+                    .append(value)
+                    .append(", "));
+            return sout.append(System.lineSeparator())
+                    .toString();
+        }
+    }
+    
     protected static class LogFinder 
     {
-        private String startDirectory;
+        private final String startDirectory;
         private String logFilePath;
         private String errFilePath;
 
@@ -163,7 +260,7 @@ public class HealthCheck
 
         public String findLogPath() 
         {
-           return searchDirectory(new File(startDirectory));
+           return searchDirectory(new File(this.startDirectory));
         }
 
         private String searchDirectory(File directory) 
@@ -180,12 +277,14 @@ public class HealthCheck
                         {
                             this.logFilePath = file.getAbsolutePath();
                             this.errFilePath = file.getParent() + File.separator + "metro.err";
+                            System.out.println("log: " + this.logFilePath + " err: " + this.errFilePath);
                             return file.getParent();
                         }
-                        else if (fileName.equals("stdout.txt"))
+                        else if (fileName.equals("metro-stdout.txt"))
                         {
                             this.logFilePath = file.getAbsolutePath();
-                            this.errFilePath = file.getParent() + File.separator + "stderr.txt";
+                            this.errFilePath = file.getParent() + File.separator + "metro-stderr.txt";
+                            System.out.println("log: " + this.logFilePath + " err: " + this.errFilePath);
                             return file.getParent();
                         }
                     } 
@@ -199,6 +298,7 @@ public class HealthCheck
                     }
                 }
             }
+            
             return null;
         }
         
@@ -230,16 +330,7 @@ public class HealthCheck
         StringBuilder outStr = new StringBuilder();
         try 
         {
-            String os = System.getProperty("os.name").toLowerCase();
-            outStr.append(System.getProperty("os.name"));
-            outStr.append(" version: ").append(System.getProperty("os.version"));
-            outStr.append(" arch:").append(System.clearProperty("os.arch")).append(", ");
-            outStr.append("Java: ").append(System.getProperty("java.runtime.version")).append(", ");
-            outStr.append("MeCard version: ").append(PropertyReader.getVersion()).append(", ");
-            outStr.append("User: ").append(System.getProperty("user.name")).append(", ");
-            outStr.append("Up time: ").append(getServerUptime()).append(" hours").append(", ");
-            
-            System.out.println(">>>" + System.getenv("LOG_OUT") + "<<<");
+//            System.out.println(">>>" + System.getenv("LOG_OUT") + "<<<");
             String homeDir = System.getProperty("user.home");
             LogFinder finder = new LogFinder(homeDir);
             String logPath = finder.findLogPath();
@@ -248,18 +339,40 @@ public class HealthCheck
             {
                 String logFilePath = finder.getLogFile();
                 String errFilePath = finder.getErrFile();
+                outStr.append(getProtocolSettings());
+                outStr.append("Host disk: ").append(getHostDiskSpace(logPath))
+                    .append(System.lineSeparator()); 
+                outStr.append("Log size: ").append(getLogFileSize(logFilePath)).append(" KB").append(System.lineSeparator());
+                long stdoutSize = getLogFileSize(logFilePath);
                 LocalDateTime lastActivity = getLastActivityDateTime(logFilePath);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                outStr.append("Last active: ").append(lastActivity.format(formatter)).append(", ");
-                outStr.append("Log size: ").append(getLogFileSize(logFilePath)).append(" KB").append(", ");
-                outStr.append("Transactions: ").append(countLogTransactions(logFilePath)).append(", ");
-                outStr.append("Err size: ").append(getLogFileSize(errFilePath)).append(" KB").append(", ");
-                outStr.append("Host disk: ").append(getHostDiskSpace(logPath));
+                outStr.append("Last logging event: ").append(lastActivity.format(formatter)).append(System.lineSeparator());
+                outStr.append("Transactions: ").append(countLogTransactions(logFilePath)).append(System.lineSeparator());
+                if (stdoutSize > 1000L)
+                {
+                    outStr.append(getExceptions(logFilePath, MAX_EXCEPTIONS));
+                }
+                long errorSize = getLogFileSize(errFilePath);
+                outStr.append("Err size: ").append(errorSize).append(" KB").append(System.lineSeparator());
+                if (errorSize > 1000L)
+                {
+                    outStr.append(getExceptions(errFilePath, MAX_EXCEPTIONS));
+                }
             }
             else
             {
                 outStr.append("log file not found. Some tests cannot be completed.");
             }
+            outStr.append(System.getProperty("os.name")).append(", ");
+            outStr.append(" version: ").append(System.getProperty("os.version"));
+            outStr.append(" arch:").append(System.clearProperty("os.arch")).append(System.lineSeparator());
+            outStr.append("User: ").append(System.getProperty("user.name")).append(", ");
+            outStr.append("Up time: ")
+                    .append(getServerUptime())
+                    .append(" hours")
+                    .append(System.lineSeparator());
+            outStr.append("Java: ").append(System.getProperty("java.runtime.version")).append(", ");
+            outStr.append("MeCard version: ").append(PropertyReader.getVersion()).append(System.lineSeparator());
         } catch (IOException e) {
             outStr.append("***error (IO exception) while checking server health!")
                   .append(" Is the log file missing?");
