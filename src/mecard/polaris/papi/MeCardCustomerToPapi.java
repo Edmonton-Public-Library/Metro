@@ -183,8 +183,12 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         // And set the preferred branch for picking up holds to the customer's assigned branch.
         // This is not strictly necessary, and can be removed safely if the default customer
         // branch for ME card customers is a non-holdable branch.
-        customerTable.setValue(PapiElementOrder.REQUEST_PICKUP_BRANCH_ID.name(), 
-                props.getProperty(PapiPropertyTypes.PATRON_BRANCH_ID.toString()));
+        // TRAC has a problem with this, because I think the PATRON BRANCH ID is
+        // a non-holdable location so I have removed it. This affects all Polaris libraries
+        // so do not uncomment!! Instead change it in the library's CustomerNormalizer.
+        // See TRACCustomerNormalizer.java for an example.
+//        customerTable.setValue(PapiElementOrder.REQUEST_PICKUP_BRANCH_ID.name(), 
+//                props.getProperty(PapiPropertyTypes.PATRON_BRANCH_ID.toString()));
         // The patron code AKA patron code ID or just patron ID is similar to SD's profile.
         customerTable.setValue(PapiElementOrder.PATRON_CODE.name(),
                 props.getProperty(PapiPropertyTypes.PATRON_CODE_ID.toString()));
