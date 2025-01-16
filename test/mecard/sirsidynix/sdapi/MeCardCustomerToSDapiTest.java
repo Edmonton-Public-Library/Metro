@@ -21,9 +21,13 @@
 package mecard.sirsidynix.sdapi;
 
 
+import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import json.RequestDeserializer;
+import mecard.Request;
+import mecard.customer.Customer;
 import mecard.customer.MeCardDataToNativeData;
 import org.junit.Test;
 
@@ -33,7 +37,19 @@ import org.junit.Test;
  */
 public class MeCardCustomerToSDapiTest {
     
-    public MeCardCustomerToSDapiTest() {
+    private final Customer customer;
+    private final Customer createCustomer;
+    public MeCardCustomerToSDapiTest()
+    {
+        String custReq =
+                "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
+        RequestDeserializer deserializer = new RequestDeserializer();
+        Request request = deserializer.getDeserializedRequest(custReq);
+        customer = request.getCustomer();
+        custReq =
+                "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346000\",\"pin\":\"Pl3as3!LeTM3regist3r\",\"customer\":\"{\\\"ID\\\":\\\"21221012346000\\\",\\\"PIN\\\":\\\"Pl3as3!LeTM3regist3r\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"90210\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsadmins@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230822\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Williams\\\"}\"}";
+        request = deserializer.getDeserializedRequest(custReq);
+        createCustomer = request.getCustomer();
     }
 
     /**
@@ -54,10 +70,91 @@ public class MeCardCustomerToSDapiTest {
      * Test of getFormattedHeader method, of class MeCardCustomerToSDapi.
      */
     @Test
-    public void testGetFormattedHeader() {
+    public void testGetFormattedHeader() 
+    {
         System.out.println("getFormattedHeader");
-        MeCardCustomerToSDapi instance = null;
-        List<String> expResult = null;
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(customer, MeCardDataToSDapiData.QueryType.CREATE);
+        List<String> expResult = new ArrayList<>();
+        //        {
+        //  "resource": "/user/patron",
+        //  "key": "654321",
+        //  "fields": {
+        //    "barcode": "21221012345678",
+        //    "lastName": "Balzac",
+        //    "firstName": "Billy",
+        //    "privilegeExpiresDate": "2026-08-22",
+        //    "birthDate": "2001-08-22",
+        //    "alternateID": "",
+        //    "library": {
+        //      "resource": "/policy/library",
+        //      "key": "EPL_MNA"
+        //    },
+        //    "profile": {
+        //      "resource": "/policy/userProfile",
+        //      "key": "EPL_ADULT"
+        //    },
+        //    "address1": [
+        //      {
+        //        "@resource": "/user/patron/address1",
+        //        "@key": "6",
+        //        "code": {
+        //          "@resource": "/policy/patronAddress1",
+        //          "@key": "EMAIL"
+        //        },
+        //        "data": "ilsadmins@epl.ca"
+        //      },
+        //      {
+        //        "@resource": "/user/patron/address1",
+        //        "@key": "2",
+        //        "code": {
+        //          "@resource": "/policy/patronAddress1",
+        //          "@key": "PHONE"
+        //        },
+        //        "data": "780-555-1234"
+        //      },
+        //      {
+        //        "@resource": "/user/patron/address1",
+        //        "@key": "1",
+        //        "code": {
+        //          "@resource": "/policy/patronAddress1",
+        //          "@key": "CITY/STATE"
+        //        },
+        //        "data": "Edmonton, AB"
+        //      },
+        //      {
+        //        "@resource": "/user/patron/address1",
+        //        "@key": "1",
+        //        "code": {
+        //          "@resource": "/policy/patronAddress1",
+        //          "@key": "CITY/STATE"
+        //        },
+        //        "data": "Calgary, AB"
+        //      },
+        //      {
+        //        "@resource": "/user/patron/address1",
+        //        "@key": "4",
+        //        "code": {
+        //          "@resource": "/policy/patronAddress1",
+        //          "@key": "STREET"
+        //        },
+        //        "data": "7 Sir Winston Churchill Square"
+        //      },
+        //      {
+        //        "@resource": "/user/patron/address1",
+        //        "@key": "5",
+        //        "code": {
+        //          "@resource": "/policy/patronAddress1",
+        //          "@key": "POSTALCODE"
+        //        },
+        //        "data": "L6H 2T2"
+        //      }
+        //    ]
+        //  }
+        //}
+
+        expResult.add("""
+                      {"resource":"/user/patron","key":"654321","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-555-1234"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Calgary, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"L6H 2T2"}]}}"""
+        );
         List<String> result = instance.getFormattedHeader();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.

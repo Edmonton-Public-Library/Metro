@@ -61,7 +61,7 @@ public class MeCardDataToSDapiDataTest
         
         System.out.println("TO JSON():" + userTable);
         var data = """
-            {"debug":false,"columns":["firstName","lastName","key","barcode","library","alternateID","EMAIL","profile","PHONE","birthDate","privilegeExpiresDate","CITY/PROV","CITY/STATE","STREET","POSTALCODE"],"resource":"/user/patron","key":"654321","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-555-1234"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Calgary, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"L6H 2T2"}]}}""";
+            {"resource":"/user/patron","key":"654321","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-555-1234"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Calgary, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"L6H 2T2"}]}}""";
         assertEquals(userTable.toString(), data);
     }
 
@@ -75,7 +75,7 @@ public class MeCardDataToSDapiDataTest
         MeCardDataToSDapiData userTable = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.CREATE);
         assertNotNull(userTable);
         assertTrue(userTable.setValue(SDapiUserFields.USER_ID.toString(), "21221012345678"));
-        String testJSON = "{\"debug\":false,\"columns\":[\"barcode\"],\"resource\":\"/user/patron\",\"fields\":{\"barcode\":\"21221012345678\"}}";
+        String testJSON = "{\"resource\":\"/user/patron\",\"fields\":{\"barcode\":\"21221012345678\"}}";
         System.out.println("GET DATA(): " + userTable);
         assertTrue(userTable.getData().compareTo(testJSON) == 0);
     }
@@ -161,27 +161,27 @@ public class MeCardDataToSDapiDataTest
         assertEquals(expResult, result);
     }
 
-    /**
-     * Test of getKeys method, of class MeCardDataToSDapiData.
-     */
-    @Test
-    public void testGetKeys() 
-    {
-        System.out.println("==getKeys==");
-        MeCardDataToSDapiData userTable = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.CREATE);
-        userTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
-        userTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
-        System.out.println("GET KEYS() " + userTable);
-        System.out.println("GET KEYS() " + userTable.getKeys());
-        List<String> columns = new ArrayList<>();
-        columns.add("firstName");
-        columns.add("lastName");
-//        System.out.println("  " + columns.toString());
-//        System.out.println("  " + userTable.getKeys().toString());
-        var sTable = userTable.getKeys();
-        var sTest  = columns.toString();
-        assertEquals(sTable.toString(), sTest);
-    }
+//    /**
+//     * Test of getKeys method, of class MeCardDataToSDapiData.
+//     */
+//    @Test
+//    public void testGetKeys() 
+//    {
+//        System.out.println("==getKeys==");
+//        MeCardDataToSDapiData userTable = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.CREATE);
+//        userTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
+//        userTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
+//        System.out.println("GET KEYS() " + userTable);
+//        System.out.println("GET KEYS() " + userTable.getKeys());
+//        List<String> columns = new ArrayList<>();
+//        columns.add("firstName");
+//        columns.add("lastName");
+////        System.out.println("  " + columns.toString());
+////        System.out.println("  " + userTable.getKeys().toString());
+//        var sTable = userTable.getKeys();
+//        var sTest  = columns.toString();
+//        assertEquals(sTable.toString(), sTest);
+//    }
 
     /**
      * Test of deleteValue method, of class MeCardDataToSDapiData.

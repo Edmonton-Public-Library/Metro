@@ -36,14 +36,11 @@ import mecard.config.SDapiUserFields;
  */
 public class MeCardDataToSDapiData implements MeCardDataToNativeData
 {
-    private final boolean debug;
     public enum QueryType
     {
         CREATE,
         UPDATE;
     }
-    
-    private final List<String> columns;
     
     /**
      * Specifies the formatting {@link PAPIFormattedTable.ContentType} and defaults
@@ -57,10 +54,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
 
     private MeCardDataToSDapiData(QueryType type, boolean debug) 
-    {
-        this.columns   = new ArrayList<>();
-        this.debug     = debug;
-    }
+    {   }
 
     // {
     //    "resource": "/user/patron",
@@ -196,9 +190,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             return this.getPostalCode() != null ? this.getPostalCode() : "";
         else
         {
-            if (this.debug)
-                System.out.println("*warning, request to get " + key + 
-                    " but MeCardDataToSDapiData does not support it.");
+            System.out.println("*warning, request to get " + key + 
+                " but MeCardDataToSDapiData does not support it.");
             return "";
         }
     }
@@ -218,7 +211,6 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     @Override
     public boolean setValue(String key, String value) 
     {
-        this.columns.add(key);
         // this is only used on updates.
         if (key.equals(SDapiUserFields.USER_KEY.toString()))
             this.setUserKey(value);
@@ -252,10 +244,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setPostalCode(value);
         else
         {
-            this.columns.remove(key);
-            if (this.debug)
-                System.out.println("*warning, request to set '" + key + "' with '"
-                    + value + "' but MeCardDataToSDapiData doesn't know what that is.");
+            System.out.println("*warning, request to set '" + key + "' with '"
+                + value + "' but MeCardDataToSDapiData doesn't know what that is.");
             return false;
         }
         return true;
@@ -279,7 +269,6 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             if (this.setValue(replacementKey, value))
             {
                 boolean result = this.deleteValue(originalKey);
-                this.columns.remove(originalKey);
                 return result;
             }
             else
@@ -299,9 +288,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     @Override
     public Set<String> getKeys() 
     {
-        @SuppressWarnings("unchecked")
-        Set<String> s = new LinkedHashSet(this.columns);
-        return s;
+        throw new UnsupportedOperationException("Set of keys not available.");
     }
 
     /**
@@ -348,12 +335,10 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setPostalCode(null);
         else
         {
-            if (this.debug)
-                System.out.println("*warning, request to delete unsupported key: '" 
-                    + key + "'.");
+            System.out.println("*warning, request to delete unsupported key: '" 
+                + key + "'.");
             return false;
         }
-        this.columns.remove(key);
         return true;
     }
     
