@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022 - 2024  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -341,10 +341,11 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                         case STREET_THREE:
                         case CITY:
                         case COUNTY:
+                        case STATE:
+                        case COUNTRY:
+                        case COUNTRY_ID:
                         case POSTAL_CODE:
                         case ZIP_PLUS_FOUR:
-                        case COUNTRY_ID:
-                        case COUNTRY:
                         case ADDRESS_TYPE_ID:
                             addressElement.appendChild(papiElement);
                             break;
