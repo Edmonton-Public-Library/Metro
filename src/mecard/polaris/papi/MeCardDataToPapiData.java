@@ -121,12 +121,13 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
     {
         switch (this.queryType)
         {
-            case CREATE:
+            case CREATE -> {
                 return this.getCreateXml();
-            case UPDATE:
+            }
+            case UPDATE -> {
                 return this.getUpdateXml();
-            default:
-                throw new UnsupportedOperationException(
+            }
+            default -> throw new UnsupportedOperationException(
                     "The query type " + this.queryType + " has not been defined\n"
                     + "in " + MeCardDataToPapiData.class.getName()
                 );
