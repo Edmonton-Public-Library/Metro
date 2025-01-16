@@ -46,7 +46,7 @@ test/mecard/MetroClient.class_old
 unix/loaduser_SG.sh
 *.fail
 *.lost
-
+dist/MeCard.jar
 # Not implemented in production but if 
 # this is to be incorporated, remove these
 # and add them to the project.
