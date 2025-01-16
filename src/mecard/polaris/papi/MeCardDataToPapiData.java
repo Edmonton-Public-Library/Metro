@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import mecard.config.PapiElementOrder;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -334,41 +335,25 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                     papiElement.appendChild(doc.createTextNode(this.columns.get(key)));
                     switch (key)
                     {
-                        case ADDRESS_ID:
-                        case FREE_TEXT_LABEL:
-                        case STREET_ONE:
-                        case STREET_TWO:
-                        case STREET_THREE:
-                        case CITY:
-                        case COUNTY:
-                        case STATE:
-                        case COUNTRY:
-                        case COUNTRY_ID:
-                        case POSTAL_CODE:
-                        case ZIP_PLUS_FOUR:
-                        case ADDRESS_TYPE_ID:
-                            addressElement.appendChild(papiElement);
-                            break;
-                        // These are required
-                        case LOGON_BRANCH_ID:
-                        case LOGON_USER_ID:
-                        case LOGON_WORKSTATION_ID:
-                        // Note that PAPI can only update email, PhoneVoice1, Password
-                        // ExpirationDate, and any address value, so filter out 
-                        // any others, as they _may_ throw an error if included.
-                        case EMAIL_ADDRESS:
-                        // PhoneNumber is only returned by Patron Basic Data Get requests.
-                        case PHONE_VOICE_1:
-                        case PHONE_VOICE_2:
-                        case PHONE_VOICE_3:
-                        case PASSWORD:
-                        case EXPIRATION_DATE:
-                            rootElement.appendChild(papiElement);
-                            break;
-                        default: // No other elements accepted for update.
-                            break;
+                        case ADDRESS_ID, FREE_TEXT_LABEL, STREET_ONE, 
+                                STREET_TWO, STREET_THREE, CITY, COUNTY, 
+                                STATE, COUNTRY, COUNTRY_ID, POSTAL_CODE, 
+                                ZIP_PLUS_FOUR, ADDRESS_TYPE_ID -> addressElement.appendChild(papiElement);
+                        case LOGON_BRANCH_ID, LOGON_USER_ID, 
+                                LOGON_WORKSTATION_ID, EMAIL_ADDRESS, 
+                                PHONE_VOICE_1, PHONE_VOICE_2, 
+                                PHONE_VOICE_3, PASSWORD, 
+                                EXPIRATION_DATE -> rootElement.appendChild(papiElement);
+                        default -> {
+                        }
                     }
-                }            
+                    // These are required
+                    // Note that PAPI can only update email, PhoneVoice1, Password
+                    // ExpirationDate, and any address value, so filter out
+                    // any others, as they _may_ throw an error if included.
+                    // PhoneNumber is only returned by Patron Basic Data Get requests.
+                    // No other elements accepted for update.
+                                    }            
             }
             // Now append the patron address element at the end.
             // NOTE:  <RequestPickupBranchID>
