@@ -36,7 +36,6 @@ import mecard.config.SDapiUserFields;
  */
 public class MeCardDataToSDapiData implements MeCardDataToNativeData
 {
-
     private final boolean debug;
     public enum QueryType
     {
@@ -44,9 +43,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         UPDATE;
     }
     
-    private final QueryType queryType;
     private final List<String> columns;
-//    public static PapiElementOrder TABLE_NAME;
     
     /**
      * Specifies the formatting {@link PAPIFormattedTable.ContentType} and defaults
@@ -61,9 +58,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
 
     private MeCardDataToSDapiData(QueryType type, boolean debug) 
     {
-        this.queryType = type;
-        this.debug     = debug;
         this.columns   = new ArrayList<>();
+        this.debug     = debug;
     }
 
     // {
@@ -162,44 +158,46 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     /**
      * Returns the value associated with this key.
      * @param key
-     * @return the value associated with this key, or an empty string if the key is not present.
+     * @return the value associated with this key, or an empty string if the 
+     * key is not present.
      */
     @Override
     public String getValue(String key) 
     {
         if (key.equals(SDapiUserFields.USER_KEY.toString()))
-                return this.getUserKey();
+            return this.getUserKey() != null ? this.getUserKey() : "";
         else if (key.equals(SDapiUserFields.USER_FIRST_NAME.toString()))
-                return this.getFirstName();
+            return this.getFirstName() != null ? this.getFirstName() : "";
         else if (key.equals(SDapiUserFields.USER_LAST_NAME.toString()))
-                return this.getLastName();
+            return this.getLastName() != null ? this.getLastName() : "";
         else if (key.equals(SDapiUserFields.USER_ID.toString()))
-                return this.getUserId();
+            return this.getUserId() != null ? this.getUserId() : "";
         else if (key.equals(SDapiUserFields.USER_LIBRARY.toString()))
-                return this.getLibraryKey();
+            return this.getLibraryKey() != null ? this.getLibraryKey() : "";
         else if (key.equals(SDapiUserFields.USER_ALTERNATE_ID.toString()))
-                return this.getAlternateId();
+            return this.getAlternateId() != null ? this.getAlternateId() : "";
         else if (key.equals(SDapiUserFields.EMAIL.toString()))
-                return this.getEmail();
+            return this.getEmail() != null ? this.getEmail() : "";
         else if (key.equals(SDapiUserFields.PROFILE.toString()))
-                return this.getProfileKey();
+            return this.getProfileKey() != null ? this.getProfileKey() : "";
         else if (key.equals(SDapiUserFields.PHONE.toString()))
-                return this.getPhone();
+            return this.getPhone() != null ? this.getPhone() : "";
         else if (key.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
-                return this.getBirthDate();
+            return this.getBirthDate() != null ? this.getBirthDate() : "";
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
-                return this.getExpiry();
+            return this.getExpiry() != null ? this.getExpiry() : "";
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-                return this.getProvince();
+            return this.getProvince() != null ? this.getProvince() : "";
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
-                return this.getCity();
+            return this.getCity() != null ? this.getCity() : "";
         else if (key.equals(SDapiUserFields.STREET.toString()))
-                return this.getStreet();
+            return this.getStreet() != null ? this.getStreet() : "";
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
-                return this.getPostalCode();
+            return this.getPostalCode() != null ? this.getPostalCode() : "";
         else
         {
-            System.out.println("*warning, request to get " + key + 
+            if (this.debug)
+                System.out.println("*warning, request to get " + key + 
                     " but MeCardDataToSDapiData does not support it.");
             return "";
         }
@@ -223,40 +221,41 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         this.columns.add(key);
         // this is only used on updates.
         if (key.equals(SDapiUserFields.USER_KEY.toString()))
-                this.setUserKey(value);
+            this.setUserKey(value);
         else if (key.equals(SDapiUserFields.USER_FIRST_NAME.toString()))
-                this.setFirstName(value);
+            this.setFirstName(value);
         else if (key.equals(SDapiUserFields.USER_LAST_NAME.toString()))
-                this.setLastName(value);
+            this.setLastName(value);
         else if (key.equals(SDapiUserFields.USER_ID.toString()))
-                this.setUserId(value);
+            this.setUserId(value);
         else if (key.equals(SDapiUserFields.USER_LIBRARY.toString()))
-                this.setLibrary(value);
+            this.setLibrary(value);
         else if (key.equals(SDapiUserFields.USER_ALTERNATE_ID.toString()))
-                this.setAlternateId(value);
+            this.setAlternateId(value);
         else if (key.equals(SDapiUserFields.EMAIL.toString()))
-                this.setEmail(value);
+            this.setEmail(value);
         else if (key.equals(SDapiUserFields.PROFILE.toString()))
-                this.setProfile(value);
+            this.setProfile(value);
         else if (key.equals(SDapiUserFields.PHONE.toString()))
-                this.setPhone(value);
+            this.setPhone(value);
         else if (key.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
-                this.setBirthDate(value);
+            this.setBirthDate(value);
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
-                this.setExpiry(value);
+            this.setExpiry(value);
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-                this.setCityState(value);
+            this.setCityState(value);
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
-                this.setCityState(value);
+            this.setCityState(value);
         else if (key.equals(SDapiUserFields.STREET.toString()))
-                this.setStreet(value);
+            this.setStreet(value);
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
-                this.setPostalCode(value);
+            this.setPostalCode(value);
         else
         {
             this.columns.remove(key);
-            System.out.println("*warning, request to set " + key + " with "
-            + value + " but MeCardDataToSDapiData does not support it.");
+            if (this.debug)
+                System.out.println("*warning, request to set '" + key + "' with '"
+                    + value + "' but MeCardDataToSDapiData doesn't know what that is.");
             return false;
         }
         return true;
@@ -265,15 +264,32 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     /**
      * Renames a key in the preserving the original stored value. It is not 
      * permissible to add the replacement key if the original key is not found.
-     * @param originalkey the original key name
+     * @param originalKey the original key name
      * @param replacementKey the new name for the key
      * @return true if the key could be renamed and false if there was no 
      * key found matching originalKey name. A false leaves the table unaltered.
      */
     @Override
-    public boolean renameKey(String originalkey, String replacementKey) 
+    public boolean renameKey(String originalKey, String replacementKey) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String value = this.getValue(originalKey);
+        // this is only used on updates.
+        if (value != null)
+        {
+            if (this.setValue(replacementKey, value))
+            {
+                boolean result = this.deleteValue(originalKey);
+                this.columns.remove(originalKey);
+                return result;
+            }
+            else
+            {
+                System.out.println("*warning, no such key " 
+                        + originalKey + ". No changes made.");
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
@@ -301,41 +317,43 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     {
         // this is only used on updates.
         if (key.equals(SDapiUserFields.USER_KEY.toString()))
-                this.setUserKey(null);
+            this.setUserKey(null);
         else if (key.equals(SDapiUserFields.USER_FIRST_NAME.toString()))
-                this.setFirstName(null);
+            this.setFirstName(null);
         else if (key.equals(SDapiUserFields.USER_LAST_NAME.toString()))
-                this.setLastName(null);
+            this.setLastName(null);
         else if (key.equals(SDapiUserFields.USER_ID.toString()))
-                this.setUserId(null);
+            this.setUserId(null);
         else if (key.equals(SDapiUserFields.USER_LIBRARY.toString()))
-                this.setLibrary(null);
+            this.setLibrary(null);
         else if (key.equals(SDapiUserFields.USER_ALTERNATE_ID.toString()))
-                this.setAlternateId(null);
+            this.setAlternateId(null);
         else if (key.equals(SDapiUserFields.EMAIL.toString()))
-                this.setEmail(null);
+            this.setEmail(null);
         else if (key.equals(SDapiUserFields.PROFILE.toString()))
-                this.setProfile(null);
+            this.setProfile(null);
         else if (key.equals(SDapiUserFields.PHONE.toString()))
-                this.setPhone(null);
+            this.setPhone(null);
         else if (key.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
-                this.setBirthDate(null);
+            this.setBirthDate(null);
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
-                this.setExpiry(null);
+            this.setExpiry(null);
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-                this.setCityState(null);
+            this.setCityState(null);
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
-                this.setCityState(null);
+            this.setCityState(null);
         else if (key.equals(SDapiUserFields.STREET.toString()))
-                this.setStreet(null);
+            this.setStreet(null);
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
-                this.setPostalCode(null);
+            this.setPostalCode(null);
         else
         {
-            this.columns.remove(key);
-            System.out.println("*warning, request to delete unsupported key: " + key);
+            if (this.debug)
+                System.out.println("*warning, request to delete unsupported key: '" 
+                    + key + "'.");
             return false;
         }
+        this.columns.remove(key);
         return true;
     }
     
@@ -404,16 +422,6 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         return this.fields.expiry;
     }
 
-    private String getLibrary()
-    {
-        return this.getLibraryKey();
-    }
-
-    private String getProfile()
-    {
-        return this.getProfileKey();
-    }
-
     private String getUserId()
     {
         return this.fields.barcode;
@@ -431,6 +439,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     
     private void setCityState(String cityState)
     {
+        if (this.fields.address1 == null)
+            this.fields.address1 = new ArrayList<>();
         // Add city/state
         this.fields.address1.add(new Address(
             "/user/patron/address1",
@@ -442,6 +452,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     
     private void setPostalCode(String postalCode)
     {
+        if (this.fields.address1 == null)
+            this.fields.address1 = new ArrayList<>();
         // Add postal code
         this.fields.address1.add(new Address(
             "/user/patron/address1",
@@ -453,6 +465,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     
     private void setPhone(String phone)
     {
+        if (this.fields.address1 == null)
+            this.fields.address1 = new ArrayList<>();
         // Add phone
         this.fields.address1.add(new Address(
             "/user/patron/address1",
@@ -465,7 +479,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     // Add email
     private void setEmail(String email)
     {
-    
+        if (this.fields.address1 == null)
+            this.fields.address1 = new ArrayList<>();
         this.fields.address1.add(new Address(
             "/user/patron/address1",
             "6",
@@ -476,6 +491,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     
     private void setStreet(String street)
     {
+        if (this.fields.address1 == null)
+            this.fields.address1 = new ArrayList<>();
         this.fields.address1.add(new Address(
             "/user/patron/address1",
             "4",
@@ -499,7 +516,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
                 }
             }
         }
-        return null;
+        return "";
     }
 
     // Convenience methods to get specific addresses
@@ -539,14 +556,14 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
     
     @SerializedName("resource")
-    private String resource = "/user/patron";
+    private final String resource = "/user/patron";
     
     // Used when data type is UPDATE.
     @SerializedName("key")
     private String userKey;
 
     @SerializedName("fields")
-    private Fields fields = new Fields();
+    private final Fields fields = new Fields();
 
     private static class Fields 
     {
@@ -581,10 +598,10 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     private static class PolicyResource 
     {
         @SerializedName("resource")
-        private String resource;
+        private final String resource;
 
         @SerializedName("key")
-        private String key;
+        private final String key;
         
         private String getKey()
         {
@@ -601,16 +618,16 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     private static class Address 
     {
         @SerializedName("@resource")
-        private String resource;
+        private final String resource;
 
         @SerializedName("@key")
-        private String key;
+        private final String key;
 
         @SerializedName("code")
         private AddressCode code;
 
         @SerializedName("data")
-        private String data;
+        private final String data;
         
         private String getData()
         {
@@ -629,10 +646,10 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     private static class AddressCode 
     {
         @SerializedName("@resource")
-        private String resource;
+        private final String resource;
 
         @SerializedName("@key")
-        private String key;
+        private final String key;
         
         private String getKey()
         {
@@ -644,5 +661,11 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.resource = resource;
             this.key = key;
         }
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.toJson();
     }
 }
