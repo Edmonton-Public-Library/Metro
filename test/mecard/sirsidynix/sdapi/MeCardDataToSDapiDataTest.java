@@ -161,27 +161,27 @@ public class MeCardDataToSDapiDataTest
         assertEquals(expResult, result);
     }
 
-//    /**
-//     * Test of getKeys method, of class MeCardDataToSDapiData.
-//     */
-//    @Test
-//    public void testGetKeys() 
-//    {
-//        System.out.println("==getKeys==");
-//        MeCardDataToSDapiData userTable = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.CREATE);
-//        userTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
-//        userTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
-//        System.out.println("GET KEYS() " + userTable);
-//        System.out.println("GET KEYS() " + userTable.getKeys());
-//        List<String> columns = new ArrayList<>();
-//        columns.add("firstName");
-//        columns.add("lastName");
-////        System.out.println("  " + columns.toString());
-////        System.out.println("  " + userTable.getKeys().toString());
-//        var sTable = userTable.getKeys();
-//        var sTest  = columns.toString();
-//        assertEquals(sTable.toString(), sTest);
-//    }
+    /**
+     * Test of getKeys method, of class MeCardDataToSDapiData.
+     */
+    @Test
+    public void testGetKeys() 
+    {
+        System.out.println("==getKeys==");
+        MeCardDataToSDapiData userTable = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.CREATE);
+        userTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
+        userTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
+        System.out.println("GET KEYS() " + userTable);
+        System.out.println("GET KEYS() " + userTable.getKeys());
+        List<String> columns = new ArrayList<>();
+        columns.add("firstName");
+        columns.add("lastName");
+//        System.out.println("  " + columns.toString());
+//        System.out.println("  " + userTable.getKeys().toString());
+        var sTable = userTable.getKeys();
+        var sTest  = columns.toString();
+        assertEquals(sTable.toString(), sTest);
+    }
 
     /**
      * Test of deleteValue method, of class MeCardDataToSDapiData.

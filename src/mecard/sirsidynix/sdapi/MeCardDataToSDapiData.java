@@ -288,7 +288,40 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     @Override
     public Set<String> getKeys() 
     {
-        throw new UnsupportedOperationException("Set of keys not available.");
+        List<String> columns = new ArrayList<>();
+        if (this.getUserKey() != null)
+            columns.add(SDapiUserFields.USER_KEY.toString());
+        if (this.getFirstName() != null)
+            columns.add(SDapiUserFields.USER_FIRST_NAME.toString());
+        if (this.getLastName() != null)
+            columns.add(SDapiUserFields.USER_LAST_NAME.toString());
+        if (this.getUserId() != null)
+            columns.add(SDapiUserFields.USER_ID.toString());
+        if (this.getLibraryKey() != null)
+            columns.add(SDapiUserFields.USER_LIBRARY.toString());
+        if (this.getAlternateId() != null)
+            columns.add(SDapiUserFields.USER_ALTERNATE_ID.toString());
+        if (this.getEmail() != null)
+            columns.add(SDapiUserFields.EMAIL.toString());
+        if (this.getProfileKey() != null)
+            columns.add(SDapiUserFields.PROFILE.toString());
+        if (this.getPhone() != null)
+            columns.add(SDapiUserFields.PHONE.toString());
+        if (this.getBirthDate() != null)
+            columns.add(SDapiUserFields.USER_BIRTHDATE.toString());
+        if (this.getExpiry() != null)
+            columns.add(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
+        if (this.getCity() != null)
+            columns.add(SDapiUserFields.CITY_SLASH_STATE.toString());
+        if (this.getProvince() != null)
+            columns.add(SDapiUserFields.CITY_SLASH_PROV.toString());
+        if (this.getStreet() != null)
+            columns.add(SDapiUserFields.STREET.toString());
+        if (this.getPostalCode() != null)
+            columns.add(SDapiUserFields.POSTALCODE.toString());
+        @SuppressWarnings("unchecked")
+        Set<String> s = new LinkedHashSet(columns);
+        return s;
     }
 
     /**
@@ -501,7 +534,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
                 }
             }
         }
-        return "";
+        return null;
     }
 
     // Convenience methods to get specific addresses
@@ -509,7 +542,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     private String getPostalCode() { return findAddressByCode(SDapiUserFields.POSTALCODE.toString()); }
     private String getPhone() { return findAddressByCode(SDapiUserFields.PHONE.toString()); }
     private String getStreet() { return findAddressByCode(SDapiUserFields.STREET.toString()); }
-//    public String getCitySlashState() { return findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString()); }
+//    private String getCitySlashState() { return findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString()); }
     private String getCity() 
     {
         try
@@ -519,9 +552,9 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
                             .replaceAll("[^a-zA-Z ]", "").split("\\s+");
             return words[0];
         }
-        catch (IndexOutOfBoundsException e)
+        catch (IndexOutOfBoundsException | NullPointerException e)
         {
-            return "";
+            return null;
         }
     }
 
@@ -534,9 +567,9 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
                             .replaceAll("[^a-zA-Z ]", "").split("\\s+");
             return words[1];
         }
-        catch (IndexOutOfBoundsException e)
+        catch (IndexOutOfBoundsException | NullPointerException e)
         {
-            return "";
+            return null;
         }
     }
     
