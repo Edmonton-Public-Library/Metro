@@ -42,27 +42,51 @@ public class MeCardDataToSDapiDataTest
     public void testToJson() 
     {
         System.out.println("==toJson==");
-        MeCardDataToSDapiData userTable = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.UPDATE);
-        userTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
-        userTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
-        userTable.setValue(SDapiUserFields.USER_KEY.toString(), "654321");
-        userTable.setValue(SDapiUserFields.USER_ID.toString(), "21221012345678");
-        userTable.setValue(SDapiUserFields.USER_LIBRARY.toString(), "EPL_MNA");
-        userTable.setValue(SDapiUserFields.USER_ALTERNATE_ID.toString(), "");
-        userTable.setValue(SDapiUserFields.EMAIL.toString(), "ilsadmins@epl.ca");
-        userTable.setValue(SDapiUserFields.PROFILE.toString(), "EPL_ADULT");
-        userTable.setValue(SDapiUserFields.PHONE.toString(), "780-555-1234");
-        userTable.setValue(SDapiUserFields.USER_BIRTHDATE.toString(), "2001-08-22");
-        userTable.setValue(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString(), "2026-08-22");
-        userTable.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), "Edmonton, AB");
-        userTable.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), "Calgary, AB");
-        userTable.setValue(SDapiUserFields.STREET.toString(), "7 Sir Winston Churchill Square");
-        userTable.setValue(SDapiUserFields.POSTALCODE.toString(), "L6H 2T2");
+        MeCardDataToSDapiData updateUser = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.UPDATE);
+        updateUser.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
+        updateUser.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
+        updateUser.setValue(SDapiUserFields.USER_KEY.toString(), "654321");
+        updateUser.setValue(SDapiUserFields.USER_ID.toString(), "21221012345678");
+        updateUser.setValue(SDapiUserFields.USER_LIBRARY.toString(), "EPL_MNA");
+        updateUser.setValue(SDapiUserFields.USER_ALTERNATE_ID.toString(), "");
+        updateUser.setValue(SDapiUserFields.EMAIL.toString(), "ilsadmins@epl.ca");
+        updateUser.setValue(SDapiUserFields.PROFILE.toString(), "EPL_ADULT");
+        updateUser.setValue(SDapiUserFields.PHONE.toString(), "780-555-1234");
+        updateUser.setValue(SDapiUserFields.USER_BIRTHDATE.toString(), "2001-08-22");
+        updateUser.setValue(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString(), "2026-08-22");
+        updateUser.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), "Edmonton, AB");
+        updateUser.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), "Calgary, AB");
+        updateUser.setValue(SDapiUserFields.STREET.toString(), "7 Sir Winston Churchill Square");
+        updateUser.setValue(SDapiUserFields.POSTALCODE.toString(), "L6H 2T2");
+        updateUser.setValue(SDapiUserFields.CATEGORY05.toString(), "ECONSENT");
         
-        System.out.println("TO JSON():" + userTable);
+        System.out.println("TO JSON():" + updateUser);
         var data = """
-            {"resource":"/user/patron","key":"654321","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-555-1234"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Calgary, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"L6H 2T2"}]}}""";
-        assertEquals(userTable.toString(), data);
+            {"resource":"/user/patron","key":"654321","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"category05":{"resource":"/policy/patronCategory05","key":"ECONSENT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-555-1234"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Calgary, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"L6H 2T2"}]}}""";
+        assertEquals(updateUser.toString(), data);
+        
+        MeCardDataToSDapiData createUser = MeCardDataToSDapiData.getInstanceOf(MeCardDataToSDapiData.QueryType.CREATE);
+        createUser.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), "Billy");
+        createUser.setValue(SDapiUserFields.USER_LAST_NAME.toString(), "Balzac");
+
+        createUser.setValue(SDapiUserFields.USER_ID.toString(), "21221012345678");
+        createUser.setValue(SDapiUserFields.USER_LIBRARY.toString(), "EPL_MNA");
+        createUser.setValue(SDapiUserFields.USER_ALTERNATE_ID.toString(), "");
+        createUser.setValue(SDapiUserFields.EMAIL.toString(), "ilsadmins@epl.ca");
+        createUser.setValue(SDapiUserFields.PROFILE.toString(), "EPL_ADULT");
+        createUser.setValue(SDapiUserFields.PHONE.toString(), "780-555-1234");
+        createUser.setValue(SDapiUserFields.USER_BIRTHDATE.toString(), "2001-08-22");
+        createUser.setValue(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString(), "2026-08-22");
+        createUser.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), "Edmonton, AB");
+        createUser.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), "Calgary, AB");
+        createUser.setValue(SDapiUserFields.STREET.toString(), "7 Sir Winston Churchill Square");
+        createUser.setValue(SDapiUserFields.POSTALCODE.toString(), "L6H 2T2");
+        createUser.setValue(SDapiUserFields.CATEGORY05.toString(), "ECONSENT");
+        
+        System.out.println("TO JSON():" + createUser);
+        data = """
+            {"resource":"/user/patron","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"category05":{"resource":"/policy/patronCategory05","key":"ECONSENT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-555-1234"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Calgary, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"L6H 2T2"}]}}""";
+        assertEquals(createUser.toString(), data);
     }
 
     /**
@@ -177,7 +201,7 @@ public class MeCardDataToSDapiDataTest
         columns.add("firstName");
         columns.add("lastName");
 //        System.out.println("  " + columns.toString());
-//        System.out.println("  " + userTable.getKeys().toString());
+//        System.out.println("  " + updateUser.getKeys().toString());
         var sTable = userTable.getKeys();
         var sTest  = columns.toString();
         assertEquals(sTable.toString(), sTest);

@@ -37,7 +37,32 @@ TODO: In the future all operational parameters may be set in the `.env` file, no
 ----------
 ## Version 3.00.00
 Added SirsiDynix web services for Symphony and Horizon libraries.
-To use it there is a new `sdapi.properties` file as seen below.
+To use it there is a new `sdapi.properties` file as seen below which configures the important settings for web services. **Note**: You will also require your original `symphony.properties` file which contains the default values required for registering a customer in Symphony.
+
+**NOTE: SirsiDynix web services DTD states that the maximum password length is 25, so `environment.properties` must include at least `password-max-length` entry, however the other two password settings remain optional**.
+```xml
+<!-- Required: 25. -->
+<entry key="password-max-length">25</entry>
+<!-- Optional, the default is 4. -->
+<!-- <entry key="password-min-length">4</entry> -->
+<!-- Optional, the default includes most of the ASCII char set. -->
+<!-- <entry key="allowed-password-characters">abcd...7890</entry> -->
+```**
+
+You can access Symphony and Horizon web services by modifying the `environment.properties` files, changing the `*-protocol` entries to `sirsidynix-api`.
+
+A new `.env` file is also required to store the staff ID & password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below.
+```bash
+# Environment file for MeCard server. 
+# This file is used for SDapi to store the 'staffPassword' 
+# however it could be extended to the papi security class 
+# as well.
+
+# Application settings
+STAFF_ID="STAFF_MEMBER"
+STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
+```
+
 **Note**: the entry `sd-originating-app-id` as far as I know, can be any string and is used as a transaction ID in the logs. The `x-sirs-clientId` is a web service ID that has permission to register customers.
 
 ```xml
@@ -58,25 +83,7 @@ To use it there is a new `sdapi.properties` file as seen below.
   <entry key="http-version">2.0</entry>
   <entry key="session-token-expire-time">60</entry>
   <entry key="debug">true</entry>
-  <entry key="USER_LIBRARY">EPLMNA</entry>
-  <entry key="USER_PROFILE">EPL-METRO</entry>
-  <entry key="USER_PREF_LANG">ENGLISH</entry>
-  <entry key="USER_CHG_HIST_RULE">ALLCHARGES</entry>
-  <entry key="USER_ACCESS">PUBLIC</entry>
-  <entry key="USER_ENVIRONMENT">PUBLIC</entry>
-  <entry key="USER_CATEGORY2">ADULT</entry>
 </properties>
-```
-
-The staff ID and password are kept in a `.env` file in the `${METRO_HOME}` directory. See example below.
-```bash
-# Environment file for MeCard server. 
-# This file is used for SDapi to store the 'STAFF_PASSWORD' 
-# and 'STAFF_ID'.
-
-# Application settings
-STAFF_ID="some_staff_id"
-STAFF_PASSWORD="supersecretpassword!"
 ```
 
 

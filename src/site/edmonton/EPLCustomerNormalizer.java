@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2024  Edmonton Public Library
+*    Copyright (C) 2013 - 2025  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ import mecard.Response;
 import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
 import mecard.customer.Customer;
-import site.SymphonyNormalizer;
 import mecard.customer.MeCardCustomerToNativeFormat;
+import site.SymphonyNormalizer;
 
 /**
  * Normalizes the customer's data before loading into the local library's ILS.
@@ -55,10 +55,23 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
      * @param response the value of response
      */
     @Override
-    public void finalize(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
+    public void finalize(
+            Customer unformattedCustomer, 
+            MeCardCustomerToNativeFormat formattedCustomer, 
+            Response response
+    )
     {
+
+        /*
+        ** Note that the two methods insertValue() and removeField() work 
+        ** whether you use a GSON or FLAT formatted customer because the GSON
+        ** object ignores the table name.
+        */
+        
+        
         // No matter what ME customer give implied consent to contact via email when they join.
         // Which at EPL, is USER_CATEGORY5.
+        // TODO this has to be reworked for use with SDapiCutomerNormalizer.
         formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
                     FlatUserFieldTypes.USER_CATEGORY5.toString(), 
                     "ECONSENT");
@@ -66,6 +79,9 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
         formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
             FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
         );
+        
         this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
+        // Do this last to ensure that any new pasword is emailed to the customer.
+        this.testSiteRestrictedPassword(unformattedCustomer, formattedCustomer, response);
     }
 }

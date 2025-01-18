@@ -188,6 +188,42 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             return this.getStreet() != null ? this.getStreet() : "";
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
             return this.getPostalCode() != null ? this.getPostalCode() : "";
+        else if (key.equals(SDapiUserFields.USER_PASSWORD.toString()))
+            return this.getPassword() != null ? this.getPassword() : "";
+        else if (key.equals(SDapiUserFields.USER_ACCESS.toString()))
+            return this.getAccessKey() != null ? this.getAccessKey() : "";
+        else if (key.equals(SDapiUserFields.LANGUAGE.toString()))
+            return this.getLanguageKey() != null ? this.getLanguageKey() : "";
+        else if (key.equals(SDapiUserFields.STANDING.toString()))
+            return this.getStandingKey() != null ? this.getStandingKey() : "";
+        else if (key.equals(SDapiUserFields.ENVIRONMENT.toString()))
+            return this.getEnvironmentKey()!= null ? this.getEnvironmentKey() : "";
+        else if (key.equals(SDapiUserFields.KEEP_CIRC_HISTORY.toString()))
+            return this.getKeepCircHistory()!= null ? this.getKeepCircHistory() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY01.toString()))
+            return this.getCategory01Key() != null ? this.getCategory01Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY02.toString()))
+            return this.getCategory02Key() != null ? this.getCategory02Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY03.toString()))
+            return this.getCategory03Key() != null ? this.getCategory03Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY04.toString()))
+            return this.getCategory04Key() != null ? this.getCategory04Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY05.toString()))
+            return this.getCategory05Key() != null ? this.getCategory05Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY06.toString()))
+            return this.getCategory06Key() != null ? this.getCategory06Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY07.toString()))
+            return this.getCategory07Key() != null ? this.getCategory07Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY08.toString()))
+            return this.getCategory08Key() != null ? this.getCategory08Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY09.toString()))
+            return this.getCategory09Key() != null ? this.getCategory09Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY10.toString()))
+            return this.getCategory10Key() != null ? this.getCategory10Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY11.toString()))
+            return this.getCategory11Key() != null ? this.getCategory11Key() : "";
+        else if (key.equals(SDapiUserFields.CATEGORY12.toString()))
+            return this.getCategory12Key() != null ? this.getCategory12Key() : "";
         else
         {
             System.out.println("*warning, request to get " + key + 
@@ -242,6 +278,42 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setStreet(value);
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
             this.setPostalCode(value);
+        else if (key.equals(SDapiUserFields.USER_PASSWORD.toString()))
+            this.setPassword(value);
+        else if (key.equals(SDapiUserFields.USER_ACCESS.toString()))
+            this.setAccess(value);
+        else if (key.equals(SDapiUserFields.LANGUAGE.toString()))
+            this.setLanguage(value);
+        else if (key.equals(SDapiUserFields.STANDING.toString()))
+            this.setStanding(value);
+        else if (key.equals(SDapiUserFields.ENVIRONMENT.toString()))
+            this.setEnvironment(value);
+        else if (key.equals(SDapiUserFields.KEEP_CIRC_HISTORY.toString()))
+            this.setKeepCircHistory(value);
+        else if (key.equals(SDapiUserFields.CATEGORY01.toString()))
+            this.setCategory01(value);
+        else if (key.equals(SDapiUserFields.CATEGORY02.toString()))
+            this.setCategory02(value);
+        else if (key.equals(SDapiUserFields.CATEGORY03.toString()))
+            this.setCategory03(value);
+        else if (key.equals(SDapiUserFields.CATEGORY04.toString()))
+            this.setCategory04(value);
+        else if (key.equals(SDapiUserFields.CATEGORY05.toString()))
+            this.setCategory05(value);
+        else if (key.equals(SDapiUserFields.CATEGORY06.toString()))
+            this.setCategory06(value);
+        else if (key.equals(SDapiUserFields.CATEGORY07.toString()))
+            this.setCategory07(value);
+        else if (key.equals(SDapiUserFields.CATEGORY08.toString()))
+            this.setCategory08(value);
+        else if (key.equals(SDapiUserFields.CATEGORY09.toString()))
+            this.setCategory09(value);
+        else if (key.equals(SDapiUserFields.CATEGORY10.toString()))
+            this.setCategory10(value);
+        else if (key.equals(SDapiUserFields.CATEGORY11.toString()))
+            this.setCategory11(value);
+        else if (key.equals(SDapiUserFields.CATEGORY12.toString()))
+            this.setCategory12(value);
         else
         {
             System.out.println("*warning, request to set '" + key + "' with '"
@@ -319,6 +391,40 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             columns.add(SDapiUserFields.STREET.toString());
         if (this.getPostalCode() != null)
             columns.add(SDapiUserFields.POSTALCODE.toString());
+        if (this.getPassword() != null)
+            columns.add(SDapiUserFields.USER_PASSWORD.toString());
+        if (this.getAccessKey() != null)
+            columns.add(SDapiUserFields.USER_ACCESS.toString());
+        if (this.getLanguageKey() != null)
+            columns.add(SDapiUserFields.LANGUAGE.toString());
+        if (this.getEnvironmentKey() != null)
+            columns.add(SDapiUserFields.ENVIRONMENT.toString());
+        if (this.getKeepCircHistory() != null)
+            columns.add(SDapiUserFields.KEEP_CIRC_HISTORY.toString());
+        if (this.getCategory01Key() != null)
+            columns.add(SDapiUserFields.CATEGORY01.toString());
+        if (this.getCategory02Key() != null)
+            columns.add(SDapiUserFields.CATEGORY02.toString());
+        if (this.getCategory03Key() != null)
+            columns.add(SDapiUserFields.CATEGORY03.toString());
+        if (this.getCategory04Key() != null)
+            columns.add(SDapiUserFields.CATEGORY04.toString());
+        if (this.getCategory05Key() != null)
+            columns.add(SDapiUserFields.CATEGORY05.toString());
+        if (this.getCategory06Key() != null)
+            columns.add(SDapiUserFields.CATEGORY06.toString());
+        if (this.getCategory07Key() != null)
+            columns.add(SDapiUserFields.CATEGORY07.toString());
+        if (this.getCategory08Key() != null)
+            columns.add(SDapiUserFields.CATEGORY08.toString());
+        if (this.getCategory09Key() != null)
+            columns.add(SDapiUserFields.CATEGORY09.toString());
+        if (this.getCategory10Key() != null)
+            columns.add(SDapiUserFields.CATEGORY10.toString());
+        if (this.getCategory11Key() != null)
+            columns.add(SDapiUserFields.CATEGORY11.toString());
+        if (this.getCategory12Key() != null)
+            columns.add(SDapiUserFields.CATEGORY12.toString());
         @SuppressWarnings("unchecked")
         Set<String> s = new LinkedHashSet(columns);
         return s;
@@ -366,6 +472,42 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setStreet(null);
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
             this.setPostalCode(null);
+        else if (key.equals(SDapiUserFields.USER_PASSWORD.toString()))
+            this.setPassword(null);
+        else if (key.equals(SDapiUserFields.USER_ACCESS.toString()))
+            this.setAccess(null);
+        else if (key.equals(SDapiUserFields.LANGUAGE.toString()))
+            this.setLanguage(null);
+        else if (key.equals(SDapiUserFields.STANDING.toString()))
+            this.setStanding(null);
+        else if (key.equals(SDapiUserFields.ENVIRONMENT.toString()))
+            this.setStanding(null);
+        else if (key.equals(SDapiUserFields.KEEP_CIRC_HISTORY.toString()))
+            this.setKeepCircHistory(null);
+        else if (key.equals(SDapiUserFields.CATEGORY01.toString()))
+            this.setCategory01(null);
+        else if (key.equals(SDapiUserFields.CATEGORY02.toString()))
+            this.setCategory02(null);
+        else if (key.equals(SDapiUserFields.CATEGORY03.toString()))
+            this.setCategory03(null);
+        else if (key.equals(SDapiUserFields.CATEGORY04.toString()))
+            this.setCategory04(null);
+        else if (key.equals(SDapiUserFields.CATEGORY05.toString()))
+            this.setCategory05(null);
+        else if (key.equals(SDapiUserFields.CATEGORY06.toString()))
+            this.setCategory06(null);
+        else if (key.equals(SDapiUserFields.CATEGORY07.toString()))
+            this.setCategory07(null);
+        else if (key.equals(SDapiUserFields.CATEGORY08.toString()))
+            this.setCategory08(null);
+        else if (key.equals(SDapiUserFields.CATEGORY09.toString()))
+            this.setCategory09(null);
+        else if (key.equals(SDapiUserFields.CATEGORY10.toString()))
+            this.setCategory10(null);
+        else if (key.equals(SDapiUserFields.CATEGORY11.toString()))
+            this.setCategory11(null);
+        else if (key.equals(SDapiUserFields.CATEGORY12.toString()))
+            this.setCategory12(null);
         else
         {
             System.out.println("*warning, request to delete unsupported key: '" 
@@ -410,6 +552,86 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         this.fields.profile = new PolicyResource("/policy/userProfile", profile);
     }
     
+    private void setAccess(String access)
+    {
+        this.fields.access = new PolicyResource("/policy/userAccess", access);
+    }
+    
+    private void setLanguage(String language)
+    {
+        this.fields.language = new PolicyResource("/policy/language", language);
+    }
+    
+    private void setStanding(String standing)
+    {
+        this.fields.standing = new PolicyResource("/policy/patronStanding", standing);
+    }
+    
+    private void setEnvironment(String environment)
+    {
+        this.fields.environment = new PolicyResource("/policy/environment", environment);
+    }
+    
+    private void setCategory01(String cat01)
+    {
+        this.fields.category01 = new PolicyResource("/policy/patronCategory01", cat01);
+    }
+    
+    private void setCategory02(String cat02)
+    {
+        this.fields.category02 = new PolicyResource("/policy/patronCategory02", cat02);
+    }
+    
+    private void setCategory03(String cat03)
+    {
+        this.fields.category03 = new PolicyResource("/policy/patronCategory03", cat03);
+    }
+    
+    private void setCategory04(String cat04)
+    {
+        this.fields.category04 = new PolicyResource("/policy/patronCategory04", cat04);
+    }
+    
+    private void setCategory05(String cat05)
+    {
+        this.fields.category05 = new PolicyResource("/policy/patronCategory05", cat05);
+    }
+    
+    private void setCategory06(String cat06)
+    {
+        this.fields.category06 = new PolicyResource("/policy/patronCategory06", cat06);
+    }
+    
+    private void setCategory07(String cat07)
+    {
+        this.fields.category07 = new PolicyResource("/policy/patronCategory07", cat07);
+    }
+    
+    private void setCategory08(String cat08)
+    {
+        this.fields.category08 = new PolicyResource("/policy/patronCategory08", cat08);
+    }
+    
+    private void setCategory09(String cat09)
+    {
+        this.fields.category09 = new PolicyResource("/policy/patronCategory09", cat09);
+    }
+    
+    private void setCategory10(String cat10)
+    {
+        this.fields.category10 = new PolicyResource("/policy/patronCategory10", cat10);
+    }
+    
+    private void setCategory11(String cat11)
+    {
+        this.fields.category11 = new PolicyResource("/policy/patronCategory11", cat11);
+    }
+    
+    private void setCategory12(String cat12)
+    {
+        this.fields.category12 = new PolicyResource("/policy/patronCategory12", cat12);
+    }
+    
     private void setUserId(String barcode)
     {
         this.fields.barcode = barcode;
@@ -423,6 +645,26 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     private void setLastName(String lastName)
     {
         this.fields.lastName = lastName;
+    }
+    
+    private void setPassword(String pin)
+    {
+        this.fields.password = pin;
+    }
+    
+    private void setKeepCircHistory(String circHistory)
+    {
+        this.fields.keepCircHistory = circHistory;
+    }
+    
+    private String getPassword()
+    {
+        return this.fields.password;
+    }
+    
+    private String getKeepCircHistory()
+    {
+        return this.fields.keepCircHistory;
     }
     
     private String getAlternateId()
@@ -521,6 +763,22 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     
     private String getLibraryKey() { return this.fields.library != null ? this.fields.library.getKey() : null; }
     private String getProfileKey() { return this.fields.profile != null ? this.fields.profile.getKey() : null; }
+    private String getAccessKey() { return this.fields.access != null ? this.fields.access.getKey() : null; }
+    private String getLanguageKey() { return this.fields.language != null ? this.fields.language.getKey() : null; }
+    private String getStandingKey() { return this.fields.standing != null ? this.fields.standing.getKey() : null; }
+    private String getEnvironmentKey() { return this.fields.environment != null ? this.fields.environment.getKey() : null; }
+    private String getCategory01Key() { return this.fields.category01 != null ? this.fields.category01.getKey() : null; }
+    private String getCategory02Key() { return this.fields.category02 != null ? this.fields.category02.getKey() : null; }
+    private String getCategory03Key() { return this.fields.category03 != null ? this.fields.category03.getKey() : null; }
+    private String getCategory04Key() { return this.fields.category04 != null ? this.fields.category04.getKey() : null; }
+    private String getCategory05Key() { return this.fields.category05 != null ? this.fields.category05.getKey() : null; }
+    private String getCategory06Key() { return this.fields.category06 != null ? this.fields.category06.getKey() : null; }
+    private String getCategory07Key() { return this.fields.category07 != null ? this.fields.category07.getKey() : null; }
+    private String getCategory08Key() { return this.fields.category08 != null ? this.fields.category08.getKey() : null; }
+    private String getCategory09Key() { return this.fields.category09 != null ? this.fields.category09.getKey() : null; }
+    private String getCategory10Key() { return this.fields.category10 != null ? this.fields.category10.getKey() : null; }
+    private String getCategory11Key() { return this.fields.category11 != null ? this.fields.category11.getKey() : null; }
+    private String getCategory12Key() { return this.fields.category12 != null ? this.fields.category12.getKey() : null; }
 
     // Method to find specific address by code
     private String findAddressByCode(String addressCode) 
@@ -602,13 +860,80 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         
         @SerializedName("alternateID")
         private String altId;
+        
+        //{
+        //   "name": "pin",
+        //   "type": "string",
+        //   "required": false,
+        //   "nullable": true,
+        //   "editable": true,
+        //   "includedInDefault": false,
+        //   "min": 0,
+        //   "max": 25,
+        //   "returnable": true,
+        //   "sendable": true
+        //},
+
+        @SerializedName("pin")
+        private String password;
+        
+        @SerializedName("keepCircHistory")
+        private String keepCircHistory;
 
         @SerializedName("library")
         private PolicyResource library;
 
         @SerializedName("profile")
         private PolicyResource profile;
-
+        
+        @SerializedName("access")
+        private PolicyResource access;
+        
+        @SerializedName("language")
+        private PolicyResource language;
+        
+        @SerializedName("standing")
+        private PolicyResource standing;
+        
+        @SerializedName("environment")
+        private PolicyResource environment;
+        
+        @SerializedName("category01")
+        private PolicyResource category01;
+        
+        @SerializedName("category02")
+        private PolicyResource category02;
+        
+        @SerializedName("category03")
+        private PolicyResource category03;
+        
+        @SerializedName("category04")
+        private PolicyResource category04;
+        
+        @SerializedName("category05")
+        private PolicyResource category05;
+        
+        @SerializedName("category06")
+        private PolicyResource category06;
+        
+        @SerializedName("category07")
+        private PolicyResource category07;
+        
+        @SerializedName("category08")
+        private PolicyResource category08;
+        
+        @SerializedName("category09")
+        private PolicyResource category09;
+        
+        @SerializedName("category10")
+        private PolicyResource category10;
+        
+        @SerializedName("category11")
+        private PolicyResource category11;
+        
+        @SerializedName("category12")
+        private PolicyResource category12;
+        
         @SerializedName("address1")
         private List<Address> address1;
     }

@@ -73,6 +73,11 @@ public abstract class SymphonyNormalizer extends CustomerLoadNormalizer
         }
     }
     
+    
+    // Subclasses don't usually need to implement these so don't throw an error
+    // if they didn't implement them. But finalize() is used by almost everyone
+    // so we don't specify it and if the subclass doesn't implement it an error
+    // is thrown, telling the developer to check into that.
     @Override
     public void normalizeOnCreate(Customer customer, Response response)
     {

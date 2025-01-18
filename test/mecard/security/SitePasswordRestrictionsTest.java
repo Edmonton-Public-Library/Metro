@@ -126,4 +126,44 @@ public class SitePasswordRestrictionsTest
             System.out.println("password allowed");
         }
     }
+
+    /**
+     * Test of getMaxLength method, of class SitePasswordRestrictions.
+     */
+    @Test
+    public void testGetMaxLength() 
+    {
+        System.out.println("==getMaxLength==");
+        SitePasswordRestrictions instance = new SitePasswordRestrictions();
+        int expResult = 10;
+        int result = instance.getMaxLength();
+        assertEquals(expResult, result);
+//        comment out either above for testing default or below for the environment.properties value set.
+//        int expResult = 256;
+//        int result = instance.getMaxLength();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getMinLength method, of class SitePasswordRestrictions.
+     */
+    @Test
+    public void testGetMinLength() 
+    {
+        System.out.println("==getMinLength==");
+        SitePasswordRestrictions instance = new SitePasswordRestrictions();
+        int expResult = 3;
+        int result = instance.getMinLength();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getAllowedCharacters method, of class SitePasswordRestrictions.
+     */
+    @Test
+    public void testGetAllowedCharacters() {
+        System.out.println("==getAllowedCharacters==");
+        SitePasswordRestrictions instance = new SitePasswordRestrictions();
+        System.out.println("The allowed password characters are:" + instance.getAllowedCharacters());
+    }
 }
