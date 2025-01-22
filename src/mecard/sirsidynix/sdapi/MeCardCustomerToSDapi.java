@@ -28,8 +28,8 @@ import mecard.Policies;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PropertyReader;
-import mecard.config.SDapiPropertyTypes;
 import mecard.config.SDapiUserFields;
+import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.MeCardDataToNativeData;
@@ -51,7 +51,8 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
     
     public MeCardCustomerToSDapi(Customer customer, MeCardDataToSDapiData.QueryType type)
     {
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.PAPI);
+        // Read the Symphony specific properties from the symphony.properties file.
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
         customerTable = MeCardDataToSDapiData.getInstanceOf(type);
         // Fill in the default required fields for v1 of SD api web service API.
         customerTable.setValue(SDapiUserFields.USER_ID.toString(), 
@@ -60,19 +61,22 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
             customer.get(CustomerFieldTypes.FIRSTNAME));
         customerTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), 
             customer.get(CustomerFieldTypes.LASTNAME));
-        customerTable.setValue(SDapiUserFields.USER_ALTERNATE_ID.toString(), 
-            customer.get(CustomerFieldTypes.ALTERNATE_ID));
+        String altId = customer.get(CustomerFieldTypes.ALTERNATE_ID);
+        if (Text.isSet(altId))
+            customerTable.setValue(SDapiUserFields.USER_ALTERNATE_ID.toString(), 
+                customer.get(CustomerFieldTypes.ALTERNATE_ID));
         customerTable.setValue(SDapiUserFields.EMAIL.toString(), 
             customer.get(CustomerFieldTypes.EMAIL));
         customerTable.setValue(SDapiUserFields.STREET.toString(), 
             customer.get(CustomerFieldTypes.STREET));
-        // TODO Check this does what you are expecting.
-        customerTable.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), 
-            customer.get(CustomerFieldTypes.CITY));
+        // Note: If your ILS needs CITY_SLASH_PROV this will have to be 
+        // modified using [Library]CustomerNormalizer.java for that.
+        String citySlashState = customer.get(CustomerFieldTypes.CITY)
+                + ", " + customer.get(CustomerFieldTypes.PROVINCE);
+        customerTable.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), 
+            citySlashState);
         customerTable.setValue(SDapiUserFields.POSTALCODE.toString(), 
             PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
-        customerTable.setValue(SDapiUserFields.PROV.toString(), 
-            customer.get(CustomerFieldTypes.PROVINCE));
 
         String birthday = customer.get(CustomerFieldTypes.DOB);
         if (Text.isSet(birthday))
@@ -117,11 +121,12 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
                         + " expiry: '" + expiry + "'");
             }
         }
-        customerTable.setValue(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.name(), expiry);
-        if (customer.isEmpty(CustomerFieldTypes.PHONE) == false)
+        customerTable.setValue(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString(), expiry);
+        String phoneNumber = customer.get(CustomerFieldTypes.PHONE);
+        if (Text.isSet(phoneNumber))
         {
             customerTable.setValue(SDapiUserFields.PHONE.toString(), 
-                customer.get(CustomerFieldTypes.PHONE));
+                Text.formatPhoneNumber(phoneNumber));
         }
 //         Is there a preferred name to add, also pin to handle??
         customerTable.setValue(SDapiUserFields.USER_PASSWORD.toString(), 
@@ -129,22 +134,22 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
         // Set Defaults.
         //        <entry key="USER_LIBRARY">EPLMNA</entry>
         customerTable.setValue(SDapiUserFields.USER_LIBRARY.toString(), 
-                props.getProperty(SDapiPropertyTypes.USER_LIBRARY.toString()));
+                props.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString()));
         //        <entry key="USER_PROFILE">EPL-METRO</entry>
         customerTable.setValue(SDapiUserFields.PROFILE.toString(), 
-                props.getProperty(SDapiPropertyTypes.USER_PROFILE.toString()));
+                props.getProperty(SymphonyPropertyTypes.USER_PROFILE.toString()));
         //        <entry key="USER_PREF_LANG">ENGLISH</entry>
         customerTable.setValue(SDapiUserFields.LANGUAGE.toString(), 
-                props.getProperty(SDapiPropertyTypes.USER_PREFERED_LANGUAGE.toString()));
+                props.getProperty(SymphonyPropertyTypes.USER_PREFERED_LANGUAGE.toString()));
         //        <entry key="USER_CHG_HIST_RULE">ALLCHARGES</entry>
         customerTable.setValue(SDapiUserFields.KEEP_CIRC_HISTORY.toString(), 
-                props.getProperty(SDapiPropertyTypes.USER_CHARGE_HISTORY_RULE.toString()));
+                props.getProperty(SymphonyPropertyTypes.USER_CHARGE_HISTORY_RULE.toString()));
         //        <entry key="USER_ACCESS">PUBLIC</entry>
         customerTable.setValue(SDapiUserFields.USER_ACCESS.toString(), 
-                props.getProperty(SDapiPropertyTypes.USER_ACCESS.toString()));
+                props.getProperty(SymphonyPropertyTypes.USER_ACCESS.toString()));
         //        <entry key="USER_ENVIRONMENT">PUBLIC</entry>
         customerTable.setValue(SDapiUserFields.ENVIRONMENT.toString(), 
-                props.getProperty(SDapiPropertyTypes.USER_ENVIRONMENT.toString()));
+                props.getProperty(SymphonyPropertyTypes.USER_ENVIRONMENT.toString()));
     }
     
     @Override
@@ -202,10 +207,20 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
         }
     }
 
+    /**
+     * Renames a field.If the original field is not found no changes are made. For example renameField(firstName, lastName) would replace the firstName key
+ to the lastName key without changing the values stored in the original field. 
+ Therefore if the contents of firstName was 'Tom' and the contents of lastName 
+ was 'Cruise', then after the renameKey() is run, the contents of 
+ lastName == 'Tom', and the content 'Cruise' is lost.
+     * @param oldFieldName the original, or target field.
+     * @param newFieldName the new field name.
+     * @return true if the key was renamed and false if there was no original key.
+     */
     @Override
-    public boolean renameField(String tableName, String originalFieldName, String newFieldName) 
+    public boolean renameField(String tableName, String oldFieldName, String newFieldName) 
     {
-        return this.customerTable.renameKey(originalFieldName, newFieldName);
+        return this.customerTable.renameKey(newFieldName, oldFieldName);
     }
 
     @Override

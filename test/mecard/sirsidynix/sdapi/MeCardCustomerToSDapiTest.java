@@ -27,8 +27,9 @@ import static org.junit.Assert.*;
 import java.util.List;
 import json.RequestDeserializer;
 import mecard.Request;
+import mecard.config.SDapiUserFields;
 import mecard.customer.Customer;
-import mecard.customer.MeCardDataToNativeData;
+import mecard.customer.MeCardCustomerToNativeFormat;
 import org.junit.Test;
 
 /**
@@ -39,44 +40,39 @@ public class MeCardCustomerToSDapiTest {
     
     private final Customer updateCustomer;
     private final Customer createCustomer;
+    List<String> expResult = null;
+    
     public MeCardCustomerToSDapiTest()
     {
-        String custReq =
-                "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012345678\",\"pin\":\"64058\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"7 Sir Winston Churchill Square\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"20010822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20260822\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Billy\\\",\\\"LASTNAME\\\":\\\"Balzac\\\"}\"}";
+        String custCreateReq = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\","
+                + "\"userId\":\"21221012345678\","
+                + "\"alternateId\":\"21221012345677\","
+                + "\"pin\":\"64058\","
+                + "\"customer\":\"{"
+                + "\\\"ID\\\":\\\"21221012345678\\\","
+                + "\\\"PIN\\\":\\\"64058\\\","
+                + "\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\","
+                + "\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\","
+                + "\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
+                + "\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
+                + "\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\","
+                + "\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\","
+                + "\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\","
+                + "\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\","
+                + "\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\","
+                + "\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\","
+                + "\\\"FIRSTNAME\\\":\\\"Billy\\\",\\\"LASTNAME\\\":\\\"Balzac\\\"}"
+                + "\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
-        Request request = deserializer.getDeserializedRequest(custReq);
+        Request request = deserializer.getDeserializedRequest(custCreateReq);
         updateCustomer = request.getCustomer();
-        custReq =
-                "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346000\",\"pin\":\"Pl3as3!LeTM3regist3r\",\"customer\":\"{\\\"ID\\\":\\\"21221012346000\\\",\\\"PIN\\\":\\\"Pl3as3!LeTM3regist3r\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"90210\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsadmins@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230822\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Williams\\\"}\"}";
-        request = deserializer.getDeserializedRequest(custReq);
+                
+        String custUpdateReq = """
+        {"code":"UPDATE_CUSTOMER","authorityToken":"12345678","userId":"21221012345666","pin":"64058","customer":"{\\"ID\\":\\"21221012345666\\",\\"PIN\\":\\"64058\\",\\"PREFEREDNAME\\":\\"Billy, Balzac\\",\\"STREET\\":\\"7 Sir Winston Churchill Square\\",\\"CITY\\":\\"Edmonton\\",\\"PROVINCE\\":\\"Alberta\\",\\"POSTALCODE\\":\\"H0H0H0\\",\\"SEX\\":\\"M\\",\\"EMAIL\\":\\"ilsteam@epl.ca\\",\\"PHONE\\":\\"7804964058\\",\\"DOB\\":\\"20010822\\",\\"PRIVILEGE_EXPIRES\\":\\"20260822\\",\\"RESERVED\\":\\"X\\",\\"ALTERNATE_ID\\":\\"X\\",\\"ISVALID\\":\\"Y\\",\\"ISMINAGE\\":\\"Y\\",\\"ISRECIPROCAL\\":\\"N\\",\\"ISRESIDENT\\":\\"Y\\",\\"ISGOODSTANDING\\":\\"Y\\",\\"ISLOSTCARD\\":\\"N\\",\\"FIRSTNAME\\":\\"Billy\\",\\"LASTNAME\\":\\"Balzac\\"}"}""";
+        request = deserializer.getDeserializedRequest(custUpdateReq);
         createCustomer = request.getCustomer();
-    }
-
-    /**
-     * Test of getFormattedCustomer method, of class MeCardCustomerToSDapi.
-     */
-    @Test
-    public void testGetFormattedCustomer() 
-    {
-        System.out.println("getFormattedCustomer");
-        MeCardCustomerToSDapi instance = null;
-        List<String> expResult = null;
-        List<String> result = instance.getFormattedCustomer();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getFormattedHeader method, of class MeCardCustomerToSDapi.
-     */
-    @Test
-    public void testGetFormattedHeader() 
-    {
-        System.out.println("getFormattedHeader");
-        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(createCustomer, MeCardDataToSDapiData.QueryType.CREATE);
-        List<String> expResult = new ArrayList<>();
-        //        {
+        
+                //        {
         //  "resource": "/user/patron",
         //  "key": "654321",
         //  "fields": {
@@ -152,13 +148,39 @@ public class MeCardCustomerToSDapiTest {
         //    ]
         //  }
         //}
-
+        expResult = new ArrayList<>();
         expResult.add("""
-                      {"resource":"/user/patron","key":"654321","fields":{"barcode":"21221012345678","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","alternateID":"","library":{"resource":"/policy/library","key":"EPL_MNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsadmins@epl.ca"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"}]}}"""
-        );
+        {"resource":"/user/patron","fields":{"barcode":"21221012345666","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","pin":"64058","keepCircHistory":"ALLCHARGES","library":{"resource":"/policy/library","key":"EPLMNA"},"profile":{"resource":"/policy/userProfile","key":"EPL-METRO"},"access":{"resource":"/policy/userAccess","key":"PUBLIC"},"language":{"resource":"/policy/language","key":"ENGLISH"},"environment":{"resource":"/policy/environment","key":"PUBLIC"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsteam@epl.ca"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, Alberta"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"}]}}""");
+    }
+
+    /**
+     * Test of getFormattedCustomer method, of class MeCardCustomerToSDapi.
+     */
+    @Test
+    public void testGetFormattedCustomer() 
+    {
+        System.out.println("==getFormattedCustomer==");
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(createCustomer, MeCardDataToSDapiData.QueryType.CREATE);
+        
+        List<String> result = instance.getFormattedCustomer();
+        System.out.println("GET_CUSTOMER JSON:"+result);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getFormattedHeader method, of class MeCardCustomerToSDapi.
+     */
+    @Test
+    public void testGetFormattedHeader() 
+    {
+        System.out.println("==getFormattedHeader==");
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(createCustomer, MeCardDataToSDapiData.QueryType.CREATE);
         List<String> result = instance.getFormattedHeader();
         for (String s : result)
-            System.out.println(">>>" + s);
+        {
+            System.out.println(">>>"+s+"<<< (should be empty)");
+            assertTrue(s.isEmpty());
+        }
     }
 
     /**
@@ -167,109 +189,117 @@ public class MeCardCustomerToSDapiTest {
     @Test
     public void testSetValue() 
     {
-        System.out.println("setValue");
-        String key = "";
-        String value = "";
-        MeCardCustomerToSDapi instance = null;
-        boolean expResult = false;
-        boolean result = instance.setValue(key, value);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("==setValue==");
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
+        String key = SDapiUserFields.USER_FIRST_NAME.toString();
+        String value = "Some Stupid Value";
+        assertEquals(true, instance.setValue(key, value));
+        System.out.println("New first name '" + instance.getValue(SDapiUserFields.USER_FIRST_NAME.toString())+"'");
+        key = SDapiUserFields.CATEGORY05.toString();
+        value = "ENOCONSENT";
+        assertEquals(true, instance.setValue(key, value));
+        System.out.println("Should be ECONSENT in Cat05: " + instance.getValue(SDapiUserFields.CATEGORY05.toString()));
+        System.out.println(">>" + instance.getFormattedCustomer());
+        instance.removeField("", SDapiUserFields.CATEGORY05.toString());
+        System.out.println(">>" + instance.getFormattedCustomer());
     }
 
     /**
      * Test of insertValue method, of class MeCardCustomerToSDapi.
      */
     @Test
-    public void testInsertValue() {
-        System.out.println("insertValue");
-        String tableName = "";
-        String key = "";
-        String value = "";
-        MeCardCustomerToSDapi instance = null;
-        boolean expResult = false;
-        boolean result = instance.insertValue(tableName, key, value);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testInsertValue() 
+    {
+        System.out.println("==insertValue==");
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
+        String key = SDapiUserFields.USER_FIRST_NAME.toString();
+        String value = "Some Stupid Value";
+        assertEquals(true, instance.insertValue(null, key, value));
+        System.out.println("New first name '" + instance.getValue(SDapiUserFields.USER_FIRST_NAME.toString())+"'");
+        value = "William";
+        assertEquals(true, instance.insertValue(null, key, value));
+        System.out.println(">>" + instance.getFormattedCustomer());
+        value = "21221087654321";
+        assertEquals(true, instance.insertValue(null, SDapiUserFields.USER_ALTERNATE_ID.toString(), value));
+        System.out.println(">>" + instance.getFormattedCustomer());
     }
 
     /**
      * Test of containsKey method, of class MeCardCustomerToSDapi.
      */
     @Test
-    public void testContainsKey() {
-        System.out.println("containsKey");
-        String key = "";
-        MeCardCustomerToSDapi instance = null;
-        boolean expResult = false;
-        boolean result = instance.containsKey(key);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testContainsKey() 
+    {
+        System.out.println("==containsKey==");
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
+        assertEquals(true, instance.containsKey(SDapiUserFields.USER_FIRST_NAME.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.USER_ID.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.POSTALCODE.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.USER_ACCESS.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.USER_BIRTHDATE.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.USER_LIBRARY.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.PHONE.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.USER_PASSWORD.toString()));
+        assertEquals(true, instance.containsKey(SDapiUserFields.LANGUAGE.toString()));
+        assertEquals(false, instance.containsKey(SDapiUserFields.USER_ALTERNATE_ID.toString()));
+        
     }
 
     /**
      * Test of getValue method, of class MeCardCustomerToSDapi.
      */
     @Test
-    public void testGetValue() {
-        System.out.println("getValue");
-        String key = "";
-        MeCardCustomerToSDapi instance = null;
-        String expResult = "";
-        String result = instance.getValue(key);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetValue() 
+    {
+        System.out.println("==getValue==");
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
+        assertEquals("Billy", instance.getValue(SDapiUserFields.USER_FIRST_NAME.toString()));
+        assertEquals("Balzac", instance.getValue(SDapiUserFields.USER_LAST_NAME.toString()));
+        assertEquals("21221012345678", instance.getValue(SDapiUserFields.USER_ID.toString()));
+        assertEquals("H0H 0H0", instance.getValue(SDapiUserFields.POSTALCODE.toString()));
+        assertEquals("PUBLIC", instance.getValue(SDapiUserFields.USER_ACCESS.toString()));
+        assertEquals("1975-08-22", instance.getValue(SDapiUserFields.USER_BIRTHDATE.toString()));
+        assertEquals("EPLMNA", instance.getValue(SDapiUserFields.USER_LIBRARY.toString()));
+        assertEquals("780-496-4058", instance.getValue(SDapiUserFields.PHONE.toString()));
+        assertEquals("64058", instance.getValue(SDapiUserFields.USER_PASSWORD.toString()));
+        assertEquals("ENGLISH", instance.getValue(SDapiUserFields.LANGUAGE.toString()));
+        assertEquals("", instance.getValue(SDapiUserFields.USER_ALTERNATE_ID.toString()));
     }
 
-    /**
-     * Test of insertTable method, of class MeCardCustomerToSDapi.
-     */
-    @Test
-    public void testInsertTable() {
-        System.out.println("insertTable");
-        MeCardDataToNativeData formattedTable = null;
-        int index = 0;
-        MeCardCustomerToSDapi instance = null;
-        instance.insertTable(formattedTable, index);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of renameField method, of class MeCardCustomerToSDapi.
      */
     @Test
-    public void testRenameField() {
-        System.out.println("renameField");
+    public void testRenameField() 
+    {
+        System.out.println("==renameField==");
         String tableName = "";
-        String originalFieldName = "";
-        String newFieldName = "";
-        MeCardCustomerToSDapi instance = null;
-        boolean expResult = false;
-        boolean result = instance.renameField(tableName, originalFieldName, newFieldName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        MeCardCustomerToNativeFormat instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
+        System.out.println(SDapiUserFields.USER_FIRST_NAME.toString() + " before>>>" + instance.getValue(SDapiUserFields.USER_FIRST_NAME.toString()));
+        System.out.println(SDapiUserFields.USER_LAST_NAME.toString() + " before>>>" + instance.getValue(SDapiUserFields.USER_LAST_NAME.toString()));
+        System.out.println(" we're going to replace old field '" + SDapiUserFields.USER_FIRST_NAME.toString() + "'"
+                + " with new field '" + SDapiUserFields.USER_LAST_NAME.toString() + "'");
+        boolean result = instance.renameField(
+                tableName, 
+                SDapiUserFields.USER_FIRST_NAME.toString(), // original field name
+                SDapiUserFields.USER_LAST_NAME.toString()); // new field name
+        assertEquals(true, result);
+        System.out.println(SDapiUserFields.USER_FIRST_NAME.toString() + " after>>>" + instance.getValue(SDapiUserFields.USER_FIRST_NAME.toString()));
+        System.out.println(SDapiUserFields.USER_LAST_NAME.toString() + " after>>>" + instance.getValue(SDapiUserFields.USER_LAST_NAME.toString()));
     }
 
     /**
      * Test of removeField method, of class MeCardCustomerToSDapi.
      */
     @Test
-    public void testRemoveField() {
-        System.out.println("removeField");
-        String tableName = "";
-        String fieldName = "";
-        MeCardCustomerToSDapi instance = null;
-        boolean expResult = false;
-        boolean result = instance.removeField(tableName, fieldName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testRemoveField() 
+    {
+        System.out.println("==removeField==");
+        MeCardCustomerToNativeFormat instance = new MeCardCustomerToSDapi(createCustomer, MeCardDataToSDapiData.QueryType.CREATE);
+        assertEquals("PUBLIC", instance.getValue(SDapiUserFields.USER_ACCESS.toString()));
+        instance.removeField("", SDapiUserFields.USER_ACCESS.toString());
+        assertEquals("", instance.getValue(SDapiUserFields.USER_ACCESS.toString()));
     }
     
 }

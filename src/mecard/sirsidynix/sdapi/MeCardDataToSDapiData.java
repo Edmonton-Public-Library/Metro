@@ -150,10 +150,10 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
 
     /**
-     * Returns the value associated with this key.
+     * Returns the originalValue associated with this key.
      * @param key
-     * @return the value associated with this key, or an empty string if the 
-     * key is not present.
+     * @return the originalValue associated with this key, or an empty string if the 
+ key is not present.
      */
     @Override
     public String getValue(String key) 
@@ -233,16 +233,16 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
 
     /**
-     * Adds or changes a key in the table entry. If the key exists then the
-     * value for that key is updated and the return result is true. If the key
-     * didn't exist, the key value pair are added, but the return value is false.
-     * The return value is false if either the key of value is null, and no
-     * changes are made to the table.
+     * Adds or changes a key in the table entry.If the key exists then the
+ value for that key is updated and the return result is true. If the key
+ didn't exist, the key value pair are added, but the return value is false.
+ The return value is false if either the key of value is null, and no
+ changes are made to the table.
      * @param key
      * @param value
-     * @return true if a key was found and updated and false if the key or value
-     * could not be added because they were null, or the key and value pair did
-     * not exist when they were added.
+     * @return true if a key was found and updated and false if the key or originalValue
+ could not be added because they were null, or the key and originalValue pair did
+ not exist when they were added.
      */
     @Override
     public boolean setValue(String key, String value) 
@@ -271,6 +271,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
             this.setExpiry(value);
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
+            this.setCityState(value);
+        else if (key.equals(SDapiUserFields.PROV.toString()))
             this.setCityState(value);
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
             this.setCityState(value);
@@ -324,29 +326,27 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
     
     /**
-     * Renames a key in the preserving the original stored value. It is not 
-     * permissible to add the replacement key if the original key is not found.
-     * @param originalKey the original key name
-     * @param replacementKey the new name for the key
-     * @return true if the key could be renamed and false if there was no 
-     * key found matching originalKey name. A false leaves the table unaltered.
+     * Gives an old key a new name. If the old key doesn't exist no change is made.
+     * @param oldKeyName the original key name.
+     * @param newKeyName the new name for the key
+     * @return true if the key was renamed and false if there was no 
+     * original key.
      */
     @Override
-    public boolean renameKey(String originalKey, String replacementKey) 
+    public boolean renameKey(String oldKeyName, String newKeyName) 
     {
-        String value = this.getValue(originalKey);
+        String originalValue = this.getValue(oldKeyName);
         // this is only used on updates.
-        if (value != null)
+        if (originalValue != null)
         {
-            if (this.setValue(replacementKey, value))
+            if (this.setValue(newKeyName, originalValue))
             {
-                boolean result = this.deleteValue(originalKey);
-                return result;
+                return this.deleteValue(oldKeyName);
             }
             else
             {
                 System.out.println("*warning, no such key " 
-                        + originalKey + ". No changes made.");
+                        + oldKeyName + ". No changes made.");
                 return false;
             }
         }
@@ -387,6 +387,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             columns.add(SDapiUserFields.CITY_SLASH_STATE.toString());
         if (this.getProvince() != null)
             columns.add(SDapiUserFields.CITY_SLASH_PROV.toString());
+//        if (this.getProvince() != null)
+//            columns.add(SDapiUserFields.PROV.toString());
         if (this.getStreet() != null)
             columns.add(SDapiUserFields.STREET.toString());
         if (this.getPostalCode() != null)
@@ -431,12 +433,12 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
 
     /**
-     * Removes an entry from the user table. Specially used for libraries that 
-     * don't use USER_PREFERED_NAME and the like. This method stops the key and 
-     * value from being written in the table by removing them.
+     * Removes an entry from the user table.Specially used for libraries that 
+ don't use USER_PREFERED_NAME and the like. This method stops the key and 
+ value from being written in the table by removing them.
      * @param key
-     * @return true if the key was found, and false otherwise. Any value stored 
-     * at the key will be deleted from the table.
+     * @return true if the key was found, and false otherwise. Any originalValue stored 
+ at the key will be deleted from the table.
      */
     @Override
     public boolean deleteValue(String key) 
@@ -466,6 +468,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setExpiry(null);
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
             this.setCityState(null);
+       else if (key.equals(SDapiUserFields.PROV.toString()))
+            this.setCityState(null);
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
             this.setCityState(null);
         else if (key.equals(SDapiUserFields.STREET.toString()))
@@ -475,7 +479,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         else if (key.equals(SDapiUserFields.USER_PASSWORD.toString()))
             this.setPassword(null);
         else if (key.equals(SDapiUserFields.USER_ACCESS.toString()))
-            this.setAccess(null);
+            this.fields.access = null;
         else if (key.equals(SDapiUserFields.LANGUAGE.toString()))
             this.setLanguage(null);
         else if (key.equals(SDapiUserFields.STANDING.toString()))
@@ -544,92 +548,146 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     
     private void setLibrary(String branch)
     {
-        this.fields.library = new PolicyResource("/policy/library", branch);
+        if (branch == null || branch.isBlank())
+            this.fields.profile = null;
+        else
+            this.fields.library = new PolicyResource("/policy/library", branch);
     }
     
     private void setProfile(String profile)
     {
-        this.fields.profile = new PolicyResource("/policy/userProfile", profile);
+        if (profile == null || profile.isBlank())
+            this.fields.profile = null;
+        else
+            this.fields.profile = new PolicyResource("/policy/userProfile", profile);
     }
     
     private void setAccess(String access)
     {
-        this.fields.access = new PolicyResource("/policy/userAccess", access);
+        if (access == null || access.isBlank())
+            this.fields.access = null;
+        else
+            this.fields.access = new PolicyResource("/policy/userAccess", access);
     }
     
     private void setLanguage(String language)
     {
-        this.fields.language = new PolicyResource("/policy/language", language);
+        if (language == null || language.isBlank())
+            this.fields.language = null;
+        else
+            this.fields.language = new PolicyResource("/policy/language", language);
     }
     
     private void setStanding(String standing)
     {
-        this.fields.standing = new PolicyResource("/policy/patronStanding", standing);
+        if (standing == null || standing.isBlank())
+            this.fields.standing = null;
+        else
+            this.fields.standing = new PolicyResource("/policy/patronStanding", standing);
     }
     
     private void setEnvironment(String environment)
     {
-        this.fields.environment = new PolicyResource("/policy/environment", environment);
+        if (environment == null || environment.isBlank())
+            this.fields.environment = null;
+        else
+            this.fields.environment = new PolicyResource("/policy/environment", environment);
     }
     
     private void setCategory01(String cat01)
     {
-        this.fields.category01 = new PolicyResource("/policy/patronCategory01", cat01);
+        if (cat01 == null || cat01.isBlank())
+            this.fields.category01 = null;
+        else
+            this.fields.category01 = new PolicyResource("/policy/patronCategory01", cat01);
     }
     
     private void setCategory02(String cat02)
     {
-        this.fields.category02 = new PolicyResource("/policy/patronCategory02", cat02);
+        if (cat02 == null || cat02.isBlank())
+            this.fields.category02 = null;
+        else
+            this.fields.category02 = new PolicyResource("/policy/patronCategory02", cat02);
     }
     
     private void setCategory03(String cat03)
     {
-        this.fields.category03 = new PolicyResource("/policy/patronCategory03", cat03);
+        if (cat03 == null || cat03.isBlank())
+            this.fields.category03 = null;
+        else
+            this.fields.category03 = new PolicyResource("/policy/patronCategory03", cat03);
     }
     
     private void setCategory04(String cat04)
     {
-        this.fields.category04 = new PolicyResource("/policy/patronCategory04", cat04);
+        if (cat04 == null || cat04.isBlank())
+            this.fields.category04 = null;
+        else
+            this.fields.category04 = new PolicyResource("/policy/patronCategory04", cat04);
     }
     
     private void setCategory05(String cat05)
     {
-        this.fields.category05 = new PolicyResource("/policy/patronCategory05", cat05);
+        if (cat05 == null || cat05.isBlank())
+            this.fields.category05 = null;
+        else
+            this.fields.category05 = new PolicyResource("/policy/patronCategory05", cat05);
     }
     
     private void setCategory06(String cat06)
     {
-        this.fields.category06 = new PolicyResource("/policy/patronCategory06", cat06);
+        if (cat06 == null || cat06.isBlank())
+            this.fields.category06 = null;
+        else
+            this.fields.category06 = new PolicyResource("/policy/patronCategory06", cat06);
     }
     
     private void setCategory07(String cat07)
     {
-        this.fields.category07 = new PolicyResource("/policy/patronCategory07", cat07);
+        if (cat07 == null || cat07.isBlank())
+            this.fields.category07 = null;
+        else
+            this.fields.category07 = new PolicyResource("/policy/patronCategory07", cat07);
     }
     
     private void setCategory08(String cat08)
     {
-        this.fields.category08 = new PolicyResource("/policy/patronCategory08", cat08);
+        if (cat08 == null || cat08.isBlank())
+            this.fields.category08 = null;
+        else
+            this.fields.category08 = new PolicyResource("/policy/patronCategory08", cat08);
     }
     
     private void setCategory09(String cat09)
     {
-        this.fields.category09 = new PolicyResource("/policy/patronCategory09", cat09);
+        if (cat09 == null || cat09.isBlank())
+            this.fields.category09 = null;
+        else
+            this.fields.category09 = new PolicyResource("/policy/patronCategory09", cat09);
     }
     
     private void setCategory10(String cat10)
     {
-        this.fields.category10 = new PolicyResource("/policy/patronCategory10", cat10);
+        if (cat10 == null || cat10.isBlank())
+            this.fields.category10 = null;
+        else
+            this.fields.category10 = new PolicyResource("/policy/patronCategory10", cat10);
     }
     
     private void setCategory11(String cat11)
     {
-        this.fields.category11 = new PolicyResource("/policy/patronCategory11", cat11);
+        if (cat11 == null || cat11.isBlank())
+            this.fields.category11 = null;
+        else
+            this.fields.category11 = new PolicyResource("/policy/patronCategory11", cat11);
     }
     
     private void setCategory12(String cat12)
     {
-        this.fields.category12 = new PolicyResource("/policy/patronCategory12", cat12);
+        if (cat12 == null || cat12.isBlank())
+            this.fields.category12 = null;
+        else
+            this.fields.category12 = new PolicyResource("/policy/patronCategory12", cat12);
     }
     
     private void setUserId(String barcode)

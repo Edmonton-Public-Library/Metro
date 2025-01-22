@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2021 - 2024  Edmonton Public Library
+ *    Copyright (C) 2021 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -355,5 +355,26 @@ public final class Text
     public static boolean isSet(String str)
     {
         return ! Text.isUnset(str);
+    }
+    
+    /**
+     * Formats a North American phone number into xxx-xxx-xxxx format.
+     * @param phoneNumber
+     * @return formatted phone number
+     */
+    public static String formatPhoneNumber(String phoneNumber) 
+    {
+        // Validate input
+        if (phoneNumber == null || phoneNumber.length() != 10) 
+        {
+            throw new IllegalArgumentException("Phone number must be exactly 10 digits");
+        }
+        
+        // Using StringBuilder for efficient string manipulation
+        StringBuilder formatted = new StringBuilder(phoneNumber);
+        formatted.insert(3, '-');
+        formatted.insert(7, '-');
+        
+        return formatted.toString();
     }
 }

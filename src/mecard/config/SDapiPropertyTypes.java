@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,20 +29,18 @@ public enum SDapiPropertyTypes
     CLIENT_ID("client-id"),
     ENV("env-file-path"), 
     BASE_URL("base-url"),
-//    PORT("port"), Optional in sdapi.properties. Including it here will throw an exception if not set.
+    // DO NOT uncomment the following unless you intend to make it a required field.
+    // PORT("port"), Optional in sdapi.properties. Including it here will throw an exception if not set.
+    // These are necessary so web services knows to populate the policy/cityState
+    // or cityProvince fields. The default is cityState.
+    // USE_CITY_SLASH_PROVINCE("use-city-province"), // TODO Implement. 
     WEB_APP("x-sirs-clientId"),
     SD_ORIGINATING_APP_ID("sd-originating-app-id"),
     SESSION_TOKEN_EXPIRY_TIME("session-token-expire-time"),
     WEB_SERVICE_VERSION("web-service-version"),
     CONNECTION_TIMEOUT("connection-timeout"),
     HTTP_VERSION("http-version"),
-    DEBUG("debug"),
-    USER_LIBRARY("USER_LIBRARY"),
-    USER_PROFILE("USER_PROFILE"),
-    USER_PREFERED_LANGUAGE("USER_PREF_LANG"),
-    USER_CHARGE_HISTORY_RULE("USER_CHG_HIST_RULE"),
-    USER_ACCESS("USER_ACCESS"),
-    USER_ENVIRONMENT("USER_ENVIRONMENT");
+    DEBUG("debug");
     
     private final String type;
 
