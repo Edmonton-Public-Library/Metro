@@ -69,12 +69,23 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
             customer.get(CustomerFieldTypes.EMAIL));
         customerTable.setValue(SDapiUserFields.STREET.toString(), 
             customer.get(CustomerFieldTypes.STREET));
-        // Note: If your ILS needs CITY_SLASH_PROV this will have to be 
-        // modified using [Library]CustomerNormalizer.java for that.
-        String citySlashState = customer.get(CustomerFieldTypes.CITY)
-                + ", " + customer.get(CustomerFieldTypes.PROVINCE);
-        customerTable.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), 
-            citySlashState);
+        // Compute city and province
+        String citySlashProvince = customer.get(CustomerFieldTypes.CITY)
+                    + ", " + customer.get(CustomerFieldTypes.PROVINCE);
+        String useCityProvinceSetting = props.getProperty("use-city-province", "false");
+        System.out.println(">= useCityProvince set to " + useCityProvinceSetting );
+        if (useCityProvinceSetting.equalsIgnoreCase("true"))
+        {
+            System.out.println("Using CITY_SLASH_PROV");
+            customerTable.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), 
+                citySlashProvince);
+        }
+        else
+        {
+            System.out.println("Using CITY_SLASH_STATE");
+            customerTable.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), 
+                citySlashProvince);
+        }
         customerTable.setValue(SDapiUserFields.POSTALCODE.toString(), 
             PostalCode.formatPostalCode(customer.get(CustomerFieldTypes.POSTALCODE)));
 

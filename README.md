@@ -86,6 +86,19 @@ STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
 </properties>
 ```
 
+New optional field for `symphony.properties`. Web services has to be configured to allow the CITY/PROVINCE field in customer data. By default the field is called CITY/STATE so changing it requires the following.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>Default creation policies Symphony</comment>
+    <entry key="load-dir">.</entry>
+    <!-- ... other lines omitted for clarity -->
+    <!--  optional, false or absent to use CITY/STATE field -->
+    <entry key="use-city-province">true</entry>
+<properties>
+```
+
 
 ## Java Upgrade
 Java 11 is now end of life, to be replaced by Java 17. If you upgrade please ask for a new version of the MeCard.jar compiled to version 17. To update your system's version of Java do the following.

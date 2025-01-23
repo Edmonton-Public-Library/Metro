@@ -271,7 +271,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
             this.setExpiry(value);
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-            this.setCityState(value);
+            this.setCityProvince(value);
         else if (key.equals(SDapiUserFields.PROV.toString()))
             this.setCityState(value);
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
@@ -467,7 +467,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
             this.setExpiry(null);
         else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-            this.setCityState(null);
+            this.setCityProvince(null);
        else if (key.equals(SDapiUserFields.PROV.toString()))
             this.setCityState(null);
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
@@ -479,7 +479,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         else if (key.equals(SDapiUserFields.USER_PASSWORD.toString()))
             this.setPassword(null);
         else if (key.equals(SDapiUserFields.USER_ACCESS.toString()))
-            this.fields.access = null;
+            this.setAccess(null);
         else if (key.equals(SDapiUserFields.LANGUAGE.toString()))
             this.setLanguage(null);
         else if (key.equals(SDapiUserFields.STANDING.toString()))
@@ -765,6 +765,19 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             "1",
             new AddressCode("/policy/patronAddress1", "CITY/STATE"),
             cityState
+        ));
+    }
+    
+    private void setCityProvince(String cityProvince)
+    {
+        if (this.fields.address1 == null)
+            this.fields.address1 = new ArrayList<>();
+        // Add city/state
+        this.fields.address1.add(new Address(
+            "/user/patron/address1",
+            "1",  // Is this correct as the same as CITY/STATE?
+            new AddressCode("/policy/patronAddress1", "CITY/PROV"),
+            cityProvince
         ));
     }
     
