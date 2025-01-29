@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ public class PapiXmlRequestPatronValidateResponse extends PapiXmlResponse
         {
             this.expirationDate     = root.getElementsByTagName("ExpirationDate").item(0).getTextContent();
             this.barcode            = root.getElementsByTagName("Barcode").item(0).getTextContent();
-            this.validPatron        = Boolean.valueOf(root.getElementsByTagName("ValidPatron").item(0).getTextContent());
+            this.validPatron        = Boolean.parseBoolean(root.getElementsByTagName("ValidPatron").item(0).getTextContent());
         }
         // This can happen if the response is not a valid customer and there is not 'Barcode' or 'ValidPatron'.
         catch (NullPointerException ex)

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,8 +121,8 @@ public class PapiCommand implements Command
             catch (NumberFormatException e)
             {
                 System.out.println("""
-                    *warn: invalid connection timeout set in papi.properties value must be an integer.
-                    Defaulting to 10 seconds.""");
+                                   *warn: invalid connection timeout set in papi.properties value must be an integer.
+                                   Defaulting to 10 seconds.""");
                 this.connectionTimeout = 10;
             }
             String d = this.webServiceProperties.getProperty(PapiPropertyTypes.DEBUG.toString(), "false");
@@ -153,13 +153,13 @@ public class PapiCommand implements Command
             catch (NumberFormatException e)
             {
                 System.out.println("""
-                    *warn: invalid timezone difference setting
-                    The 'timezone-difference' must be a in of
-                    the difference between the timezone where the PapiCommand is
-                    run with respect to the timezone of the PAPI web services.
-                    For example, if the web server is in MDT, but the
-                    MeCard server is in EDT, the value should be set to 2.
-                    Defaulting to 0.0.""");
+                                   *warn: invalid timezone difference setting
+                                   The 'timezone-difference' must be a in of
+                                   the difference between the timezone where the PapiCommand is
+                                   run with respect to the timezone of the PAPI web services.
+                                   For example, if the web server is in MDT, but the
+                                   MeCard server is in EDT, the value should be set to 2.
+                                   Defaulting to 0.0.""");
                 this.timezoneDelta = 0;
             }
             this.useStaffMode = false;

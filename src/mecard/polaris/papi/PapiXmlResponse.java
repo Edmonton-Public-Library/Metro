@@ -139,12 +139,13 @@ public class PapiXmlResponse
             if (this.failedResponse == true)
             {
                 this.papiErrorCode  = "-1";
-                System.out.println("PapiResult: got a null response which may mean\n"
-                        + "an authentication error, web service timeout.");
+                System.out.println("""
+                                   PapiResult: got a null response which may mean
+                                   an authentication error, web service timeout.""");
                 // Get the authentication error message from the messages.properties file.
-                String defaultMessage = "Authentication failure. The user's ID "
-                        + "or password are incorrect\nbut this type of error also "
-                        + "happens if the service is too busy or down.";
+                String defaultMessage = """
+                                        Authentication failure. The user's ID or password are incorrect
+                                        but this type of error also happens if the service is too busy or down.""";
                 throw new PapiException(messageProperties.getProperty(
                         MessagesTypes.USERID_PIN_MISMATCH.toString(), 
                         defaultMessage));
@@ -166,8 +167,10 @@ public class PapiXmlResponse
         }
         catch (NumberFormatException e)
         {
-            System.out.println("api.PapiXmlMessage.errorCode()\n"
-                    + "Expected a signed integer.\n" 
+            System.out.println("""
+                               api.PapiXmlMessage.errorCode()
+                               Expected a signed integer.
+                               """ 
                     + e.getMessage());
             return -1;
         }

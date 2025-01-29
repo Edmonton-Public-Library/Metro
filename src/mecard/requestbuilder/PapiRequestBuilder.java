@@ -281,21 +281,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(status.getStatus());
                 switch (status.getStatus())
                 {
-                    case UNAUTHORIZED:
-                        response.setResponse(messageProperties.getProperty(
+                    case UNAUTHORIZED -> response.setResponse(messageProperties.getProperty(
                                 MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                        break;
-                    case CONFIG_ERROR:
-                    case BUSY:
-                    case UNAVAILABLE:
-                    case UNKNOWN:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.UNAVAILABLE_SERVICE.toString()));
-                        break;
-                    default:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                        break;
+                    case CONFIG_ERROR, BUSY, UNAVAILABLE, UNKNOWN -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    default -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 }
             }
         }
@@ -467,12 +458,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println("""
-                    **error, the PAPI web service version your library
-                     currently uses is older than the version
-                    specified in the papi.properties file.
-                    Please check the ''minimum-web-service-compliance-version'
-                    value. The ILS's PAPI version is """ + papiStatus.getPAPIVersion()
-                    + " and the configured value is " + WEB_SERVICE_VERSION
+                                   **error, the PAPI web service version your library
+                                    currently uses is older than the version
+                                   specified in the papi.properties file.
+                                   Please check the ''minimum-web-service-compliance-version'
+                                   value. The ILS's PAPI version is """ + papiStatus.getPAPIVersion()
+                        + " and the configured value is " + WEB_SERVICE_VERSION
                 );
                 return false;
             }
@@ -604,8 +595,23 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 }
                 else
                 {
-                    response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
+                    /*
+                    Customers are not being found in a search for customer with a given barcode, but then 
+                    failing the create user because of a duplicate name error (-3528 or -3529). This happens
+                    when a user does a lost card at their home library, and tries to update their account 
+                    at a Polaris library when duplicate name checking is used. On those systems the 
+                    first name, last name, and birthdate are checked.
+                    */
+                    if (papiCreateCustomer.errorCode() == -3528 || papiCreateCustomer.errorCode() == -3529)
+                    {
+                        response.setCode(ResponseTypes.LOST_CARD);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString()));
+                    }
+                    else
+                    {
+                        response.setCode(ResponseTypes.FAIL);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
+                    }
                     System.out.println("**error create: "
                             + papiCreateCustomer.errorMessage());
                     return false;

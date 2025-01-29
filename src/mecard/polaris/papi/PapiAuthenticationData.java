@@ -61,7 +61,7 @@ public class PapiAuthenticationData implements AuthenticationData
      * Creates a string version of a PAPI Patron authentication data document as
      * of version 7.0 at least.
      * 
-     * @param domain String domain of permissions for staff login.
+     * @param domain Internal domain within the PAPI web service.
      * @param userId String of the customer's user ID, barcode, 
      * or library card number.
      * @param password String of the customer's password.
