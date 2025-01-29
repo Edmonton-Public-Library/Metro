@@ -20,8 +20,6 @@
  */
 package mecard.polaris.papi;
 
-import mecard.exception.PapiException;
-
 /**
  * Parses the https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/api
  * web service call, and provides accessors to valuable information about the version
@@ -53,9 +51,10 @@ public class PapiXmlStatusResponse extends PapiXmlResponse
         }
         catch (NumberFormatException e)
         {
-            System.out.println("api.PapiXmlStatusMessage.<init>().\n"
-                    + "A returned value is invalid, has the API changed\n"
-                    + "or is this the correct response for the job?");
+            System.out.println("""
+                               api.PapiXmlStatusMessage.<init>().
+                               A returned value is invalid, has the API changed
+                               or is this the correct response for the job?""");
         }
     }
     

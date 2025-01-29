@@ -279,21 +279,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(status.getStatus());
                 switch (status.getStatus())
                 {
-                    case UNAUTHORIZED:
-                        response.setResponse(messageProperties.getProperty(
+                    case UNAUTHORIZED -> response.setResponse(messageProperties.getProperty(
                                 MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                        break;
-                    case CONFIG_ERROR:
-                    case BUSY:
-                    case UNAVAILABLE:
-                    case UNKNOWN:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.UNAVAILABLE_SERVICE.toString()));
-                        break;
-                    default:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                        break;
+                    case CONFIG_ERROR, BUSY, UNAVAILABLE, UNKNOWN -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    default -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 }
             }
         }
@@ -443,7 +434,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         String nullResponseMessage = " timeout because of too many tries?";
         switch (commandType)
         {
-            case GET_STATUS:
+            case GET_STATUS -> {
                 PapiXmlStatusResponse papiStatus;
                 try
                 {
@@ -464,16 +455,18 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 }
                 response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
-                System.out.println("**error, the PAPI web service version your"
-                        + " library\n currently uses is older than the version\n"
-                        + "specified in the papi.properties file.\n"
-                        + "Please check the ''minimum-web-service-compliance-version'\n"
-                        + "value. The ILS's PAPI version is " + papiStatus.getPAPIVersion()
+                System.out.println("""
+                                   **error, the PAPI web service version your library
+                                    currently uses is older than the version
+                                   specified in the papi.properties file.
+                                   Please check the ''minimum-web-service-compliance-version'
+                                   value. The ILS's PAPI version is """ + papiStatus.getPAPIVersion()
                         + " and the configured value is " + WEB_SERVICE_VERSION
                 );
                 return false;
+            }
                 
-            case TEST_CUSTOMER:
+            case TEST_CUSTOMER -> {
                 // but see ILSRequestBuilder for how to implement in future.
                 // DummyCommand puts a '1' in stdout.
                 // Authentication failures return status error authentication error, and an empty xml document.
@@ -498,11 +491,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.USER_NOT_FOUND);
                 response.setResponse(messageProperties.getProperty(
                         MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                System.out.println("**failed to find customer with message: " 
-                            + papiTestCustomer.errorMessage());
+                System.out.println("**failed to find customer with message: "
+                        + papiTestCustomer.errorMessage());
                 return false;
+            }
                 
-            case GET_CUSTOMER:
+            case GET_CUSTOMER -> {
                 PapiXmlPatronBasicDataResponse papiGetCustomer;
                 try
                 {
@@ -537,11 +531,12 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                                 MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                         break;
                 }
-                System.out.println("**error getting customer: " 
-                            + papiGetCustomer.errorMessage());
+                System.out.println("**error getting customer: "
+                        + papiGetCustomer.errorMessage());
                 return false;
+            }
                 
-            case UPDATE_CUSTOMER:
+            case UPDATE_CUSTOMER -> {
                 // DummyCommand puts a '1' in stdout.
                 PapiXmlResponse papiUpdateCustomer;
                 try
@@ -565,25 +560,19 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.FAIL);
                 switch (status.getStatus())
                 {
-                    case UNAUTHORIZED:
-                    case USER_PIN_INVALID:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                        break;
-                    case USER_NOT_FOUND:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                        break;
-                    default:
-                        response.setResponse(messageProperties.getProperty(
-                                MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
-                        break;
+                    case UNAUTHORIZED, USER_PIN_INVALID -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                    case USER_NOT_FOUND -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    default -> response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
                 }
-                System.out.println("**error update: " 
-                            + papiUpdateCustomer.errorMessage());
+                System.out.println("**error update: "
+                        + papiUpdateCustomer.errorMessage());
                 return false;
+            }
 
-            case CREATE_CUSTOMER:
+            case CREATE_CUSTOMER -> {
                 PapiXmlResponse papiCreateCustomer;
                 try
                 {
@@ -604,18 +593,35 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 }
                 else
                 {
-                    response.setCode(ResponseTypes.FAIL);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
-                    System.out.println("**error create: " 
-                        + papiCreateCustomer.errorMessage());
+                    /*
+                    Customers are not being found in a search for customer with a given barcode, but then 
+                    failing the create user because of a duplicate name error (-3528 or -3529). This happens
+                    when a user does a lost card at their home library, and tries to update their account 
+                    at a Polaris library when duplicate name checking is used. On those systems the 
+                    first name, last name, and birthdate are checked.
+                    */
+                    if (papiCreateCustomer.errorCode() == -3528 || papiCreateCustomer.errorCode() == -3529)
+                    {
+                        response.setCode(ResponseTypes.LOST_CARD);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString()));
+                    }
+                    else
+                    {
+                        response.setCode(ResponseTypes.FAIL);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
+                    }
+                    System.out.println("**error create: "
+                            + papiCreateCustomer.errorMessage());
                     return false;
                 }
-            default:
+            }
+            default -> {
                 response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println("**error, the requested command " 
                         + commandType.name() + " has no test for success.");
                 return false;
+            }
         }
     }
 

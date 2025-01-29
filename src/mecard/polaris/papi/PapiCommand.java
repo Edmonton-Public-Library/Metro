@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,6 @@ public class PapiCommand implements Command
         private int timezoneDelta;
         private boolean useStaffMode;
         private String staffPassword;
-        private boolean runAsStaff;
         private String patronAccessToken;
 
         /**
@@ -121,13 +120,13 @@ public class PapiCommand implements Command
             }
             catch (NumberFormatException e)
             {
-                System.out.println("*warn: invalid connection timeout set in "
-                        + "papi.properties value must be an integer.\n"
-                        + "Defaulting to 10 seconds.");
+                System.out.println("""
+                                   *warn: invalid connection timeout set in papi.properties value must be an integer.
+                                   Defaulting to 10 seconds.""");
                 this.connectionTimeout = 10;
             }
             String d = this.webServiceProperties.getProperty(PapiPropertyTypes.DEBUG.toString(), "false");
-            this.debug = Boolean.valueOf(d);
+            this.debug = Boolean.parseBoolean(d);
             switch(httpMethod)
             {
                 case "GET":
@@ -153,13 +152,14 @@ public class PapiCommand implements Command
             }
             catch (NumberFormatException e)
             {
-                System.out.println("*warn: invalid timezone difference setting\n"
-                    + "The 'timezone-difference' must be a in of\n"
-                    + "the difference between the timezone where the PapiCommand is\n"
-                    + "run with respect to the timezone of the PAPI web services.\n"
-                    + "For example, if the web server is in MDT, but the\n"
-                    + "MeCard server is in EDT, the value should be set to 2.\n"
-                    + "Defaulting to 0.0.");
+                System.out.println("""
+                                   *warn: invalid timezone difference setting
+                                   The 'timezone-difference' must be a in of
+                                   the difference between the timezone where the PapiCommand is
+                                   run with respect to the timezone of the PAPI web services.
+                                   For example, if the web server is in MDT, but the
+                                   MeCard server is in EDT, the value should be set to 2.
+                                   Defaulting to 0.0.""");
                 this.timezoneDelta = 0;
             }
             this.useStaffMode = false;
@@ -316,81 +316,81 @@ public class PapiCommand implements Command
             HttpResponse<String> response;
             switch(PapiCommand.httpMethod)
             {
-                case GET:
+                case GET -> {
                     if (PapiCommand.useStaffMode)
                     {
                         request = HttpRequest.newBuilder()
-                        .GET()
-                        .uri(PapiCommand.uri)
-                        .setHeader("accept", "application/xml")
-                        .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
-                        .setHeader("Authorization", computeAuthorizationToken())
-                        .setHeader("PolarisDate", getPolarisDate())
-                        .build();
+                                .GET()
+                                .uri(PapiCommand.uri)
+                                .setHeader("accept", "application/xml")
+                                .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
+                                .setHeader("Authorization", computeAuthorizationToken())
+                                .setHeader("PolarisDate", getPolarisDate())
+                                .build();
                     }
                     else
                     {
                         request = HttpRequest.newBuilder()
-                        .GET()
-                        .uri(PapiCommand.uri)
-                        .setHeader("accept", "application/xml")
-                        .setHeader("Authorization", computeAuthorizationToken())
-                        .setHeader("PolarisDate", getPolarisDate())
-                        .build();
+                                .GET()
+                                .uri(PapiCommand.uri)
+                                .setHeader("accept", "application/xml")
+                                .setHeader("Authorization", computeAuthorizationToken())
+                                .setHeader("PolarisDate", getPolarisDate())
+                                .build();
                     }
-                    break;
-                case POST:
+                }
+                case POST -> {
                     if (PapiCommand.useStaffMode)
                     {
                         request = HttpRequest.newBuilder()
-                        .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-                        .uri(PapiCommand.uri)
-                        .setHeader("accept", "application/xml")
-                        .setHeader("Content-Type", "application/xml")
-                        .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
-                        .setHeader("Authorization", computeAuthorizationToken())
-                        .setHeader("PolarisDate", getPolarisDate())
-                        .build();
+                                .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                                .uri(PapiCommand.uri)
+                                .setHeader("accept", "application/xml")
+                                .setHeader("Content-Type", "application/xml")
+                                .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
+                                .setHeader("Authorization", computeAuthorizationToken())
+                                .setHeader("PolarisDate", getPolarisDate())
+                                .build();
                     }
                     else
                     {
                         request = HttpRequest.newBuilder()
-                        .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-                        .uri(PapiCommand.uri)
-                        .setHeader("accept", "application/xml")
-                        .setHeader("Content-Type", "application/xml")
-                        .setHeader("Authorization", computeAuthorizationToken())
-                        .setHeader("PolarisDate", getPolarisDate())
-                        .build();
+                                .POST(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                                .uri(PapiCommand.uri)
+                                .setHeader("accept", "application/xml")
+                                .setHeader("Content-Type", "application/xml")
+                                .setHeader("Authorization", computeAuthorizationToken())
+                                .setHeader("PolarisDate", getPolarisDate())
+                                .build();
                     }
-                    break;
-                case PUT:
+                }
+                case PUT -> {
                     if (PapiCommand.useStaffMode)
                     {
                         request = HttpRequest.newBuilder()
-                        .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-                        .uri(PapiCommand.uri)
-                        .setHeader("accept", "application/xml")
-                        .setHeader("Content-Type", "application/xml")
-                        .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
-                        .setHeader("Authorization", computeAuthorizationToken())
-                        .setHeader("PolarisDate", getPolarisDate())
-                        .build();
+                                .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                                .uri(PapiCommand.uri)
+                                .setHeader("accept", "application/xml")
+                                .setHeader("Content-Type", "application/xml")
+                                .setHeader("X-PAPI-AccessToken", PapiCommand.staffPassword)
+                                .setHeader("Authorization", computeAuthorizationToken())
+                                .setHeader("PolarisDate", getPolarisDate())
+                                .build();
                     }
                     else
                     {
                         request = HttpRequest.newBuilder()
-                        .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
-                        .uri(PapiCommand.uri)
-                        .setHeader("accept", "application/xml")
-                        .setHeader("Content-Type", "application/xml")
-                        .setHeader("Authorization", computeAuthorizationToken())
-                        .setHeader("PolarisDate", getPolarisDate())
-                        .build();
+                                .PUT(BodyPublishers.ofString(PapiCommand.xmlBodyText))
+                                .uri(PapiCommand.uri)
+                                .setHeader("accept", "application/xml")
+                                .setHeader("Content-Type", "application/xml")
+                                .setHeader("Authorization", computeAuthorizationToken())
+                                .setHeader("PolarisDate", getPolarisDate())
+                                .build();
                     }
-                    break;
-                default:
-                    break;
+                }
+                default -> {
+                }
             }
             
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -463,7 +463,7 @@ public class PapiCommand implements Command
         // documentation and found that the REST call is public, and 
         // so I assume that the notes from page 9 of the PAPI Reference 
         // Guide (Polaris 4.1 Doc rev. 8) apply. 
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
         data.append(PapiCommand.httpMethod.name())
             .append(PapiCommand.uri.toASCIIString())
             .append(getPolarisDate())
