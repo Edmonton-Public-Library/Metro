@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013 - 2025 Edmonton Public Library
+ *    Copyright (C) 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,20 +22,13 @@
 package mecard.exception;
 
 /**
- *
- * @author metro
+ * An exception used if there was an unexpected problem creating a customer.
+ * @author Andrew Nisbet andrew (at) dev-ils.com
  */
-public class ConfigurationException extends UnsupportedCommandException 
+public class CustomerCreationException extends CustomerException
 {
-    private final static String INIT_MESSAGE = "The guest library system is having problems and cannot complete your request. ";
-    
-    public ConfigurationException()
+    public CustomerCreationException(String details)
     {
-        super(INIT_MESSAGE);
-    }
-    
-    public ConfigurationException(String msg)
-    {
-        super(INIT_MESSAGE + msg);
+        super(details);
     }
 }

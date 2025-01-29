@@ -602,8 +602,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                     */
                     if (papiCreateCustomer.errorCode() == -3528 || papiCreateCustomer.errorCode() == -3529)
                     {
-                        response.setCode(ResponseTypes.LOST_CARD);
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString()));
+                        response.setCode(ResponseTypes.DUPLICATE_USER);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.DUPLICATE_USER.toString()));
                     }
                     else
                     {

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013 - 2025 Edmonton Public Library
+ *    Copyright (C) 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,24 +18,26 @@
  * MA 02110-1301, USA.
  *
  */
-
 package mecard.exception;
 
 /**
  *
- * @author metro
+ * @author anisbet
  */
-public class ConfigurationException extends UnsupportedCommandException 
+public class CustomerException extends RuntimeException
 {
-    private final static String INIT_MESSAGE = "The guest library system is having problems and cannot complete your request. ";
-    
-    public ConfigurationException()
+    protected final static String MESSAGE_PREAMBLE = """
+        Oops!
+                                                     """;
+    protected final static String MESSAGE_POSTAMBLE = """
+        please contact this library for more information about your registration.""";
+    public CustomerException()
     {
-        super(INIT_MESSAGE);
+        super(MESSAGE_PREAMBLE + MESSAGE_POSTAMBLE);
     }
     
-    public ConfigurationException(String msg)
+    public CustomerException(String details)
     {
-        super(INIT_MESSAGE + msg);
+        super(MESSAGE_PREAMBLE + details);
     }
 }

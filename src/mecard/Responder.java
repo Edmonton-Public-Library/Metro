@@ -1,7 +1,7 @@
 /*
  * Metro allows customers from any affiliate library to join any other 
  * member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ import mecard.exception.BusyException;
 import site.CustomerLoadNormalizer;
 import site.MeCardPolicy;
 import mecard.customer.NativeFormatToMeCardCustomer;
+import mecard.exception.CustomerCreationException;
+import mecard.exception.CustomerUpdateException;
 import mecard.util.HealthCheck;
 
 /**
@@ -363,7 +365,7 @@ public class Responder
                 .set(customer) // explicitly outputs user data.
                 .build();
             System.out.println(new Date() + " CRAT_FAIL:"+customer.get(CustomerFieldTypes.ID));
-            throw new ConfigurationException();
+            throw new CustomerCreationException(response.getMessage());
         }
         requestBuilder.tidy();
     }
@@ -454,7 +456,7 @@ public class Responder
                 .set(customer) // explicitly outputs user data.
                 .build();
             System.out.println(new Date() + " UPDT_FAIL:"+customer.get(CustomerFieldTypes.ID));
-            throw new ConfigurationException();
+            throw new CustomerUpdateException(response.getMessage());
         }
         requestBuilder.tidy();
     }
