@@ -576,6 +576,23 @@ public class PapiRequestBuilder extends ILSRequestBuilder
 
             case CREATE_CUSTOMER -> {
                 PapiXmlResponse papiCreateCustomer;
+                /*
+                Customers are not being found in a search for customer with a given barcode, but then 
+                failing the create user because of a duplicate name error (-3528 or -3529). This happens
+                when a user does a lost card at their home library, and tries to update their account 
+                at a Polaris library when duplicate name checking is used. On those systems the 
+                first name, last name, and birthdate are checked.
+
+                Since any error throws a PapiException we have to search for this case 
+                before we let the PapiXmlResponse parse the results.
+                */
+                if (status.getStdout().contains(String.valueOf("-3528")) ||
+                    status.getStdout().contains(String.valueOf("-3529")))
+                {
+                    response.setCode(ResponseTypes.DUPLICATE_USER);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.DUPLICATE_USER.toString()));
+                    return false;
+                }
                 try
                 {
                     papiCreateCustomer = new PapiXmlResponse(status.getStdout());
@@ -595,23 +612,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 }
                 else
                 {
-                    /*
-                    Customers are not being found in a search for customer with a given barcode, but then 
-                    failing the create user because of a duplicate name error (-3528 or -3529). This happens
-                    when a user does a lost card at their home library, and tries to update their account 
-                    at a Polaris library when duplicate name checking is used. On those systems the 
-                    first name, last name, and birthdate are checked.
-                    */
-                    if (papiCreateCustomer.errorCode() == -3528 || papiCreateCustomer.errorCode() == -3529)
-                    {
-                        response.setCode(ResponseTypes.LOST_CARD);
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_LOSTCARD_TEST.toString()));
-                    }
-                    else
-                    {
-                        response.setCode(ResponseTypes.FAIL);
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
-                    }
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
                     System.out.println("**error create: "
                             + papiCreateCustomer.errorMessage());
                     return false;

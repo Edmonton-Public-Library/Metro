@@ -140,6 +140,12 @@ When root starts the process it doesn't seem to have access to `readlink` so I e
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ```
 
+## Version 2.04.02a
+* This version requires a new entry in the `message.properties` file that addresses what to send to a customer if they are discovered to be a duplicate account at the guest library.
+```xml
+<entry key="duplicate-user">Hmm, this looks like a duplicate account, please call the Library at 780-459-1530 for assistance</entry>
+```
+
 ## Version 2.04.01f
 * Includes a health check function that augments the `GET_STATUS` command. To use it open a `telnet` session on the ME Libraries web server, and enter the following.
 ```bash

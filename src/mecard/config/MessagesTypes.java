@@ -43,6 +43,7 @@ public enum MessagesTypes
     FAIL_LOSTCARD_TEST("fail-lostcard"),
     FAIL_EMAIL_TEST("fail-email"),
     FAIL_EXPIRY_TEST("fail-expiry"),
+    DUPLICATE_USER("duplicate-user"),
     FAIL_COMPLETENESS_TEST("fail-incomplete-information");
     
     private final String type;
