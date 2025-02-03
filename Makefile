@@ -3,7 +3,7 @@
 # distribution to each participating library.
 ########################################################################
 
-VERSION=2.01.00
+VERSION=2.01.01
 ARCHIVE=Metro_${VERSION}
 CONFIGS=config_templates/*.properties
 UNIX_DIR=unix/*
@@ -11,6 +11,9 @@ DIST_FILES=dist/MeCard.jar dist/README.TXT dist/lib/*.jar
 WIN_READMES=windows/README.txt dist/README.TXT README.md
 UNIX_READMES=dist/README.TXT README.md
 
+move2Shared:
+	-sudo rm ../Shared/MeCard.jar
+	sudo cp dist/MeCard.jar ../Shared/
 update_windows:
 	-rm ${ARCHIVE}_update.zip
 	zip ${ARCHIVE}_update.zip ${DIST_FILES} windows/prunmgr.exe windows/prunsrv.exe ${WIN_READMES}
