@@ -22,6 +22,7 @@ package mecard.exception;
 
 import java.util.Properties;
 import mecard.config.ConfigFileTypes;
+import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
