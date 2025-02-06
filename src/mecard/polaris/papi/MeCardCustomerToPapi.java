@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2023 - 2024  Edmonton Public Library
+ *    Copyright (C) 2023 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mecard.Policies;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PapiPropertyTypes;
@@ -39,6 +38,7 @@ import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import mecard.util.DateComparer;
 import mecard.util.PostalCode;
 import mecard.util.Text;
+import site.MeCardPolicy;
 
 /**
  * The class is used just before the customer is loaded so a library can add
@@ -106,10 +106,10 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         // Privilege expiry logic. Use the customer's expiry and if one isn't 
         // set set it to expire in a year.
         String expiry = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
-        String addressCheckDate = DateComparer.getFutureDate(Policies.maximumAddressCheckDays());
+        String addressCheckDate = DateComparer.getFutureDate(MeCardPolicy.maximumAddressCheckDays());
         if (Text.isUnset(expiry))
         {
-            expiry = DateComparer.getFutureDate(Policies.maximumExpiryDays());
+            expiry = DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
             try
             {
                 expiry = DateComparer.ANSIToConfigDate(expiry);

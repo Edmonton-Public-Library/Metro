@@ -31,7 +31,7 @@ import mecard.customer.NativeFormatToMeCardCustomer;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class PapiToMeCardCustomer implements NativeFormatToMeCardCustomer
+public class PapiToMeCardCustomer extends NativeFormatToMeCardCustomer
 {
     // The following is the response from a Patron Basic Data Get request.
     // https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/patron/21221012345678/basicdata?addresses=true

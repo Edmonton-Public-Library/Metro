@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import mecard.customer.Customer;
 import mecard.polaris.papi.PapiElementOrder;
 import mecard.util.DateComparer;
 import site.CustomerGetNormalizer;
-import mecard.Policies;
+import site.MeCardPolicy;
 
 /**
  *
@@ -70,7 +70,7 @@ public class WBRLCustomerGetNormalizer extends CustomerGetNormalizer
             // Test if the customer is minimum age.
             try
             {
-                if (DateComparer.getYearsOld(ansiBirthday) >= Policies.minimumAge())
+                if (DateComparer.getYearsOld(ansiBirthday) >= MeCardPolicy.minimumAge())
                 {
                     customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
                 }
@@ -92,15 +92,10 @@ public class WBRLCustomerGetNormalizer extends CustomerGetNormalizer
         String gender = message.getField(PapiElementOrder.GENDER.toString());
         switch (gender)
         {
-            case "M":
-                customer.set(CustomerFieldTypes.SEX, "M");
-                break;
-            case "F":
-                customer.set(CustomerFieldTypes.SEX, "F");
-                break;
-            default: // anything else is just not specified.
+            case "M" -> customer.set(CustomerFieldTypes.SEX, "M");
+            case "F" -> customer.set(CustomerFieldTypes.SEX, "F");
+            default -> // anything else is just not specified.
                 customer.set(CustomerFieldTypes.SEX, "X");
-                break;
         }
         
         // Some of these may appear in note fields, but until we talk to WBRL

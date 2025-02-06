@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
 import mecard.util.DateComparer;
 import mecard.config.PropertyReader;
+import mecard.util.PostalCode;
 import mecard.util.Text;
 
 
@@ -48,9 +49,11 @@ import mecard.util.Text;
 public class MeCardPolicy
 {
 
-    public final static int MINIMUM_YEARS_OF_AGE = 18;
-    public final static int MINIMUM_EXPIRY_DAYS = 1;
-    public final static int MAXIMUM_EXPIRY_DAYS = 365;
+    public final static int MINIMUM_YEARS_OF_AGE   = 18;
+    public final static int MINIMUM_EXPIRY_DAYS    = 1;
+    public final static int MAXIMUM_EXPIRY_DAYS    = 365;
+//    public final static int MAX_EXPIRY_DAYS        = 365;
+    public final static int MAX_CHECK_ADDRESS_DAYS = 365;
     protected static String failMinAgeTest;
     protected static String failLostCardTest;
     protected static String failGoodstandingTest;
@@ -111,6 +114,36 @@ public class MeCardPolicy
     }
     
     /**
+     * Gets the minimum age for any customer to be able to use ME Libraries.
+     * 
+     * @return integer of the minimum age for me customers.
+     */
+    public final static int minimumAge()
+    {
+        return MINIMUM_YEARS_OF_AGE;
+    }
+    
+    /**
+     * Gets the maximum number of days before account expires.
+     * @return integer of maximum days an account can be active before it
+     * expires.
+     */
+    public final static int maximumExpiryDays()
+    {
+        return MAXIMUM_EXPIRY_DAYS;
+    }
+    
+    /**
+     * Gets the maximum number of days before account expires.
+     * @return integer of maximum days an account can be active before it
+     * expires.
+     */
+    public final static int maximumAddressCheckDays()
+    {
+        return MAX_CHECK_ADDRESS_DAYS;
+    }
+    
+    /**
      * Standardizes the field data for transmission to other libraries. This 
      * ensures that all libraries get proper case information.
      * @param customer 
@@ -127,8 +160,8 @@ public class MeCardPolicy
         customer.set(CustomerFieldTypes.LASTNAME, customerData);
         customerData = Text.toDisplayCase(customer.get(CustomerFieldTypes.STREET));
         customer.set(CustomerFieldTypes.STREET, customerData);
-        customerData = customer.get(CustomerFieldTypes.POSTALCODE).toUpperCase();
-        customer.set(CustomerFieldTypes.POSTALCODE, customerData);
+        PostalCode pCode = new PostalCode(customer.get(CustomerFieldTypes.POSTALCODE));
+        customer.set(CustomerFieldTypes.POSTALCODE, pCode.toString());
     }
 
     /**
@@ -436,6 +469,15 @@ public class MeCardPolicy
                 if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
                         +" failed address: postal code requirement.");
                 sBuff.append(":postal code");
+                returnValue = false;
+            }
+            // Birthdate must be valid because the customer must be of a minimum
+            // age to join ME Libraries.
+            if (! customer.hasValidBirthDate())
+            {
+                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
+                        +" failed birthdate which is required to test for minimum age.");
+                sBuff.append(":birthdate");
                 returnValue = false;
             }
         }

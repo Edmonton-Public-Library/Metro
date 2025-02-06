@@ -33,10 +33,10 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mecard.Protocol;
-import mecard.Policies;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
+import site.MeCardPolicy;
 
 /**
  * Utility class used to help with date conversions. Several classes use these
@@ -329,9 +329,9 @@ public class DateComparer
             // see if this date is more than the max expiry days.
             try
             {
-                if (DateComparer.getDaysUntilExpiry(ansiCustomerDate) > Policies.maximumExpiryDays())
+                if (DateComparer.getDaysUntilExpiry(ansiCustomerDate) > MeCardPolicy.maximumExpiryDays())
                 {
-                    return DateComparer.getFutureDate(Policies.maximumExpiryDays());
+                    return DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
                 }
                 // else it is less, return the home library's preferred expiry.
                 return ansiCustomerDate;
@@ -340,11 +340,11 @@ public class DateComparer
             {
                 // Sometimes Symphony will return 'NEVER' which won't parse 
                 // so just send back the max days.
-                return DateComparer.getFutureDate(Policies.maximumExpiryDays());
+                return DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
             }
         }
         
-        return DateComparer.getFutureDate(Policies.maximumExpiryDays());
+        return DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
     }
     
     /**

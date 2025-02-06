@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,12 @@
  */
 package mecard.customer;
 
+import java.text.ParseException;
 import mecard.config.CustomerFieldTypes;
 import mecard.Protocol;
 import java.util.EnumMap;
+import mecard.util.DateComparer;
+import site.MeCardPolicy;
 
 /**
  * Convenience class for managing customer data in a standardized way.
@@ -83,13 +86,10 @@ public class Customer
      */
     public void set(CustomerFieldTypes fieldType, String value)
     {
-        if (fieldType.equals(CustomerFieldTypes.PREFEREDNAME))
-        {
-            this.setName(value);
-        }
-        else
-        {
-            this.customerFields.put(fieldType, value);
+        switch (fieldType) {
+            case PREFEREDNAME -> this.setName(value);
+            case DOB -> this.setDob(value);
+            default -> this.customerFields.put(fieldType, value);
         }
     }
 
@@ -194,6 +194,75 @@ public class Customer
     {
         String flagValue = this.get(flag);
         return flagValue.compareTo(Protocol.DEFAULT_FIELD_VALUE) != 0;
+    }
+    
+    /**
+     * Sets the date of birth for a customer. The argument date is tested and
+     * set only if found to be a valid date. 
+     * @param dob date of birth.
+     * @return true if the dob was a valid date is greater than or equal to at
+     * least Policies.minimumAge()
+     */
+    public boolean setDob(String dob)
+    {
+        if (dob == null || dob.isBlank())
+        {
+            this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
+            return false;
+        }
+        // The DateComparer is leinent on what it considers a date, so test for ANSI now.
+        if (! dob.matches("\\d{8}"))
+        {
+            this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
+            return false;
+        }
+        try 
+        {
+            if (DateComparer.getYearsOld(dob) >= MeCardPolicy.minimumAge())
+            {
+                this.customerFields.put(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
+                this.customerFields.put(CustomerFieldTypes.DOB, dob);
+                return true;
+            }
+        } 
+        catch (ParseException ex) 
+        {
+            this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
+            this.customerFields.put(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+            return false;
+        }
+        this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
+        return false;
+    }
+    
+    /**
+     * Tests if the birthday set is valid or even set at all.
+     * @return true if DOB is set and valid and false otherwise.
+     */
+    public boolean hasValidBirthDate()
+    {
+        String dob = this.get(CustomerFieldTypes.DOB);
+        if (dob == null || dob.isBlank() || dob.equals(Protocol.DEFAULT_FIELD_VALUE))
+        {
+            return false;
+        }
+        // The DateComparer is leinent on what it considers a date, so test for ANSI now.
+        if (! dob.matches("\\d{8}"))
+        {
+            return false;
+        }
+        try 
+        {
+            if (DateComparer.getYearsOld(dob) >= MeCardPolicy.minimumAge())
+            {
+                return true;
+            }
+        } 
+        catch (ParseException ex) 
+        {
+            return false;
+        }
+        return false;
     }
     
     /**
