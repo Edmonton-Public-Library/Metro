@@ -24,7 +24,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import mecard.Policies;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PropertyReader;
@@ -36,6 +35,7 @@ import mecard.customer.MeCardDataToNativeData;
 import mecard.util.DateComparer;
 import mecard.util.PostalCode;
 import mecard.util.Text;
+import site.MeCardPolicy;
 
 /**
  * The class is used just before the customer is loaded so a library can add
@@ -107,7 +107,7 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
         String expiry = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
         if (Text.isUnset(expiry))
         {
-            expiry = DateComparer.getFutureDate(Policies.maximumExpiryDays());
+            expiry = DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
             try
             {
                 expiry = DateComparer.ANSIToConfigDate(expiry);

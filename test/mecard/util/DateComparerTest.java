@@ -25,9 +25,9 @@ package mecard.util;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Date;
-import mecard.Policies;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import site.MeCardPolicy;
 
 /**
  *
@@ -494,7 +494,7 @@ public class DateComparerTest
         String result = DateComparer.computeExpiryDate(ansiCustomerDate);
         assertEquals(expResult, result);
         ansiCustomerDate = "20500101";
-        expResult = DateComparer.getFutureDate(Policies.maximumExpiryDays());
+        expResult = DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
         result = DateComparer.computeExpiryDate(ansiCustomerDate);
         assertEquals(expResult, result);
         ansiCustomerDate = "18980101";
@@ -502,7 +502,7 @@ public class DateComparerTest
         result = DateComparer.computeExpiryDate(ansiCustomerDate);
         assertEquals(expResult, result);
         ansiCustomerDate = "NEVER";
-        expResult = DateComparer.getFutureDate(Policies.maximumExpiryDays());
+        expResult = DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
         result = DateComparer.computeExpiryDate(ansiCustomerDate);
         assertEquals(expResult, result);
     }

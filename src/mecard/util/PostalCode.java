@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 
 package mecard.util;
 
+import mecard.Protocol;
+
 /**
  * PostalCode is meant as a postal code validator.
  *
@@ -28,104 +30,50 @@ package mecard.util;
  */
 public class PostalCode
 {
-    public static int LENGTH = 6;
-    private String content;
-    private final boolean isValid;
-    
-    /**
-     * Tests and sets the customer's postal code.
-     *
-     * @param postalCode the customer's postal code.
-     */
-    public PostalCode(String postalCode)
+    private String postalCode;
+
+    public PostalCode(String code)
     {
-        this.isValid = this.setContent(postalCode);
-    }
-    
-    /** 
-     * Removes white space from postal codes "CDC DCD" from "CDCDCD".
-     * @param postalCode
-     * @return formatted postal code.
-     */
-    public static String cleanPostalCode(String postalCode)
-    {
-        return postalCode.replaceAll("\\s+", " ");
-    }
-    
-    /** 
-     * Formats a given postal code to "CDC DCD" from "CDCDCD".
-     * @param postalCode
-     * @return formatted postal code.
-     */
-    public static String formatPostalCode(String postalCode)
-    {
-        StringBuilder sb = new StringBuilder(postalCode);
-        if (sb.length() > 3)
-        {
-            sb.insert(3, ' ');
+        if (isValid(code)) {
+            this.postalCode = formatPostalCode(code);
+        } else {
+            this.postalCode = Protocol.DEFAULT_FIELD_VALUE;
         }
-        return PostalCode.cleanPostalCode(sb.toString());
     }
 
-    /**
-     * Cleans extra characters from the pCode number string and tests the
-     * remainder.
-     *
-     * @param enteredPostalCode
-     * @return true if the result it a valid number and false otherwise.
-     */
-    protected boolean setContent(String enteredPostalCode)
+    public static boolean isValid(String code) 
     {
-        if (enteredPostalCode == null || enteredPostalCode.length() == 0)
-        {
-            return false;
-        }
-        StringBuilder pCode = new StringBuilder();
-        for (int i = 0; i < enteredPostalCode.length(); i++)
-        {
-            Character c = enteredPostalCode.charAt(i);
+        if (code == null) return false;
 
-            if (Character.isDigit(c) || Character.isLetter(c))
-            {
-                pCode.append(c);
-            }
-        }
+        // Remove spaces and convert to uppercase
+        code = code.replaceAll("-", "");
+        code = code.replaceAll("\\s", "").toUpperCase();
 
-        // Now if everything is ok with the pCode then save it and return true.
-        if (pCode.length() == PostalCode.LENGTH)
-        {
-            for (int i = 0; i < pCode.length(); i++)
-            {
-                Character c = pCode.charAt(i);
-                if (i == 0 || i == 2 || i == 4)
-                {
-                    if (Character.isLetter(c) == false)
-                    {
-                        return false;
-                    }
-                }
-                if (i == 1 || i == 3 || i == 5)
-                {
-                    if (Character.isDigit(c) == false)
-                    {
-                        return false;
-                    }
-                }
-            }
-            this.content = pCode.toString().toUpperCase();
-            return true;
-        }
-        return false;
+        // Check pattern: A1A1A1 where A is letter, 1 is digit
+        return code.matches("[A-Z]\\d[A-Z]\\d[A-Z]\\d");
     }
-    
+
+    public static String formatPostalCode(String code) 
+    {
+        code = code.replaceAll("-", "");
+        // Strip spaces, convert to uppercase
+        code = code.replaceAll("\\s", "").toUpperCase();
+
+        // Insert space after 3rd character
+        code = code.substring(0, 3) + " " + code.substring(3);
+        try
+        {
+             return code.substring(0, 7);
+        }
+        catch (StringIndexOutOfBoundsException e)
+        {
+            return Protocol.DEFAULT_FIELD_VALUE;
+        }
+    }
+
     @Override
-    public String toString()
+    public String toString() 
     {
-        return this.content;
-    }
-    
-    public boolean isValid()
-    {
-        return this.isValid;
+        return postalCode;
     }
 }

@@ -65,16 +65,15 @@ public class MeCardPolicyTest
                 "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"21221012345678\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Billy\\\"}\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
         Request request = deserializer.getDeserializedRequest(custReq);
-        Customer c = request.getCustomer();
+        Customer localCustomer = request.getCustomer();
         System.out.println("==isGoodStanding==");
         StringBuilder sb = new StringBuilder();
         MeCardPolicy policy = MeCardPolicy.getInstanceOf(false);
 //        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AY1AZB304";
-        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AFPatron has blocks.|AY1AZB304";
+//        String msg = "64              00020131119    150500000000000000000000000000AOalap|AA21000005874370|AEME card, testone|AQalap|BZ0249|CA0001|CB0200|BLY|BHCAD|CC10.|BD123 Somewhere St, Lacombe, AB, T4L 1G1|BEtest@prl.ab.ca|DHtestone|DJME card|PCsus|PE20141113    235900|PS20141113    235900|ZYsus|AFPatron has blocks.|AY1AZB304";
+        String msg = "64              00120230617    114847000000000000000000000000AO203|AA21221002741228|AEColli, Flynn|BZ0025|CA0010|CB0040|BLY|CQY|BHCAD|BV0.00|CC10.00|BD11308 173 Avenue, Edmonton, AB T5X 5Y4|BEflynnfab@hotmail.com|BF780-235-1064|BC|PA25|PEMELIB|PS|U1Not in the List|U2|U3|U4(none)|U5(none)|PZT5X 5Y4|PX20240615    235959|PYN|FA0.00|PC805370|PB21221002741228|AFPatron status is ok.|AGPatron status is ok.|AY1AZ8E02";
         CustomerMessage customerMessage = new SIPCustomerMessage(msg);
-        boolean result = policy.isInGoodStanding(c, customerMessage, sb);
-        boolean expected= false;
-        assertTrue(expected == result);
+        assertFalse(policy.isInGoodStanding(localCustomer, customerMessage, sb));
     }
     
     /**

@@ -39,6 +39,7 @@ public enum ResponseTypes
     LOST_CARD,
     UNAVAILABLE,
     FAIL,
+    INVALID_BIRTHDATE,
     CONFIG_ERROR,
     UNAUTHORIZED,
     USER_NOT_FOUND,

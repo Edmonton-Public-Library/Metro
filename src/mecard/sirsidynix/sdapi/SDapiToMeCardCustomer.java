@@ -29,7 +29,7 @@ import mecard.customer.NativeFormatToMeCardCustomer;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class SDapiToMeCardCustomer implements NativeFormatToMeCardCustomer
+public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
 {
 
     @Override

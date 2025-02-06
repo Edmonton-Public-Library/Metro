@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2023  Edmonton Public Library
+ *    Copyright (C) 2023 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,23 +23,9 @@ package mecard.sip;
 import api.CustomerMessage;
 import mecard.config.CustomerFieldTypes;
 import java.util.List;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
-import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.util.Address3;
 import mecard.util.Phone;
-import site.CustomerGetNormalizer;
-import site.calgary.CPLCustomerGetNormalizer;
-import site.chinook.CARCustomerGetNormalizer;
-import site.edmonton.EPLCustomerGetNormalizer;
-import site.woodbuffalo.WBRLCustomerGetNormalizer;
-import site.parklands.PRLCustomerGetNormalizer;
-import site.reddeer.RDPLCustomerGetNormalizer;
-import site.shortgrass.SLSCustomerGetNormalizer;
-import site.stalbert.SAPLCustomerGetNormalizer;
-import site.strathcona.STRCustomerGetNormalizer;
-import site.trac.TRACCustomerGetNormalizer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 
 /**
@@ -48,50 +34,12 @@ import mecard.customer.NativeFormatToMeCardCustomer;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class SIPToMeCardCustomer implements NativeFormatToMeCardCustomer 
+public class SIPToMeCardCustomer extends NativeFormatToMeCardCustomer 
 {
-    protected CustomerGetNormalizer customMessageInterpreter = null;
     
     public SIPToMeCardCustomer()
     {
-        String libCode = PropertyReader.
-            getProperties(ConfigFileTypes.ENVIRONMENT).
-            getProperty(LibraryPropertyTypes.LIBRARY_CODE.toString());
-        switch (libCode)
-        {
-            case "EPL":
-                this.customMessageInterpreter = new EPLCustomerGetNormalizer();
-                break;
-            case "SLS":
-                this.customMessageInterpreter = new SLSCustomerGetNormalizer();
-                break;
-            case "CAR":
-                this.customMessageInterpreter = new CARCustomerGetNormalizer();
-                break;
-            case "STR":
-                this.customMessageInterpreter = new STRCustomerGetNormalizer();
-                break;
-            case "TRAC":
-                this.customMessageInterpreter = new TRACCustomerGetNormalizer();
-                break;
-            case "STA":
-                this.customMessageInterpreter = new SAPLCustomerGetNormalizer();
-                break;
-            case "CPL":
-                this.customMessageInterpreter = new CPLCustomerGetNormalizer();
-                break;
-            case "PRL":
-                this.customMessageInterpreter = new PRLCustomerGetNormalizer();
-                break;
-            case "WBRL":
-                this.customMessageInterpreter = new WBRLCustomerGetNormalizer();
-                break;
-            case "RDPL":
-                this.customMessageInterpreter = new RDPLCustomerGetNormalizer();
-                break;
-            default:
-                this.customMessageInterpreter = new CustomerGetNormalizer();
-        }
+        super();
     }
 
     @Override

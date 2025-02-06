@@ -593,6 +593,16 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                     response.setResponse(messageProperties.getProperty(MessagesTypes.DUPLICATE_USER.toString()));
                     return false;
                 }
+                /*
+                Also invalid birthdates are getting in from other libraries.
+                The error in those cases is -3540
+                */
+                if (status.getStdout().contains(String.valueOf("-3540")))
+                {
+                    response.setCode(ResponseTypes.INVALID_BIRTHDATE);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.FAIL_MIN_AGE_TEST.toString()));
+                    return false;
+                }
                 try
                 {
                     papiCreateCustomer = new PapiXmlResponse(status.getStdout());
