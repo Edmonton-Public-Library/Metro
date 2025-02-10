@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import mecard.config.SDapiUserFields;
 
-public class SDapiUserPatronSearchCustomerMessage 
+public class SDapiUserPatronSearchCustomerResponse 
         extends SDapiResponse
         implements CustomerMessage
 {
@@ -333,7 +333,7 @@ public class SDapiUserPatronSearchCustomerMessage
     // Static method to parse JSON
     public static SDapiResponse parseJson(String jsonString) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiUserPatronSearchCustomerMessage.class);
+        return gson.fromJson(jsonString, SDapiUserPatronSearchCustomerResponse.class);
     }
 
     // Getter to easily access the first result

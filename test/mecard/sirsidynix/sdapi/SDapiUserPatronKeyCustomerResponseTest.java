@@ -11,13 +11,13 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class SDapiUserPatronKeyCustomerMessageTest 
+public class SDapiUserPatronKeyCustomerResponseTest 
 {
     private final String jsonSuccess;
     private final String jsonSuccess2;
     private final String jsonFail;
     
-    public SDapiUserPatronKeyCustomerMessageTest() 
+    public SDapiUserPatronKeyCustomerResponseTest() 
     {
         jsonFail = """
                    {
@@ -347,43 +347,43 @@ public class SDapiUserPatronKeyCustomerMessageTest
     }
 
     /**
-     * Test of succeeded method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of succeeded method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testSucceeded() 
     {
         System.out.println("==succeeded==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(jsonSuccess);
         boolean expResult = true;
         boolean result = instance.succeeded();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of errorMessage method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of errorMessage method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testErrorMessage() 
     {
         System.out.println("==errorMessage==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonFail);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(jsonFail);
         String expResult = "recordNotFound";
         String result = instance.errorMessage();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getFields method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of getFields method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testGetField() 
     {
         System.out.println("==getField==");
 //        SDapiUserPatronSearchCustomerMessage instance = (SDapiUserPatronSearchCustomerMessage) SDapiUserPatronSearchCustomerMessage.parseJson(userPatronSearchFullInfo);
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(jsonSuccess);
         String result = instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
         assertEquals("", result);
         assertEquals("301585", instance.getField(SDapiUserFields.USER_KEY.toString()));
@@ -399,158 +399,158 @@ public class SDapiUserPatronKeyCustomerMessageTest
         assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_PROV.toString()));
         assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
         
-        instance = (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(jsonSuccess2);
+        instance = (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(jsonSuccess2);
         assertEquals("21221087654321", instance.getField(SDapiUserFields.USER_ALTERNATE_ID.toString()));
         assertEquals("301585", instance.getField(SDapiUserFields.USER_KEY.toString()));
     }
 
     /**
-     * Test of getUserKey method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of getUserKey method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testGetUserKey() 
     {
         System.out.println("==getUserKey==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         String expResult = "301585";
         String result = instance.getUserKey();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getAlternateId method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of getAlternateId method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testGetAlternateId() 
     {
         System.out.println("==getAlternateId==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess2);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess2);
         String expResult = "21221087654321";
         String result = instance.getAlternateId();
         assertEquals(expResult, result);
         
         instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         expResult = "";
         result = instance.getAlternateId();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getCustomerProfile method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of getCustomerProfile method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testGetCustomerProfile() 
     {
         System.out.println("==getCustomerProfile==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         String expResult = "EPL_ADULT";
         String result = instance.getCustomerProfile();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getDateField method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of getDateField method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testGetDateField()
     {
         System.out.println("==getDateField==");
         String fieldName = SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString();
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         String expResult = "";
         String result = instance.getDateField(fieldName);
         assertEquals(expResult, result);
         
         fieldName = SDapiUserFields.USER_BIRTHDATE.toString();
         instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess2);
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess2);
         expResult = "2000-02-29T00:00:00";
         result = instance.getDateField(fieldName);
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of isEmpty method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of isEmpty method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testIsEmpty() 
     {
         System.out.println("==isEmpty==");
         String fieldName = SDapiUserFields.CATEGORY07.toString();
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         boolean expResult = true;
         boolean result = instance.isEmpty(fieldName);
         assertEquals(expResult, result);
         
         fieldName = SDapiUserFields.USER_FIRST_NAME.toString();
         instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         expResult = false;
         result = instance.isEmpty(fieldName);
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getStanding method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of getStanding method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testGetStanding() 
     {
         System.out.println("==getStanding==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         String expResult = "OK";
         String result = instance.getStanding();
         assertEquals(expResult, result);
         
         instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess2);
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess2);
         expResult = "BARRED";
         result = instance.getStanding();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of cardReportedLost method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of cardReportedLost method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testCardReportedLost() 
     {
         System.out.println("==cardReportedLost==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         boolean expResult = false;
         boolean result = instance.cardReportedLost();
         assertEquals(expResult, result);
         
         instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess2);
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess2);
         expResult = true;
         result = instance.cardReportedLost();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of isInGoodStanding method, of class SDapiUserPatronKeyCustomerMessage.
+     * Test of isInGoodStanding method, of class SDapiUserPatronKeyCustomerResponse.
      */
     @Test
     public void testIsInGoodStanding() 
     {
         System.out.println("==isInGoodStanding==");
-        SDapiUserPatronKeyCustomerMessage instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess);
+        SDapiUserPatronKeyCustomerResponse instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
         boolean expResult = true;
         boolean result = instance.isInGoodStanding();
         assertEquals(expResult, result);
         
         instance = 
-                (SDapiUserPatronKeyCustomerMessage) SDapiUserPatronKeyCustomerMessage.parseJson(this.jsonSuccess2);
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess2);
         expResult = false;
         result = instance.isInGoodStanding();
         assertEquals(expResult, result);

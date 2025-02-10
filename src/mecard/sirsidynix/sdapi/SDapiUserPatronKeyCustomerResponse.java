@@ -31,7 +31,7 @@ import mecard.config.SDapiUserFields;
  *
  * @author anisbet
  */
-public class SDapiUserPatronKeyCustomerMessage 
+public class SDapiUserPatronKeyCustomerResponse 
         extends SDapiResponse
         implements CustomerMessage
 {
@@ -421,7 +421,7 @@ public class SDapiUserPatronKeyCustomerMessage
     public static SDapiResponse parseJson(String jsonString) 
     {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiUserPatronKeyCustomerMessage.class);
+        return gson.fromJson(jsonString, SDapiUserPatronKeyCustomerResponse.class);
     }
 
     // Getter for userKey
