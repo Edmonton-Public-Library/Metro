@@ -35,6 +35,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.time.Duration;
+import mecard.Response;
 import mecard.exception.ConfigurationException;
 import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
@@ -125,6 +126,20 @@ public class SDWebServiceCommandTest
         assertNotNull(result);
         assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
         assertFalse(tokenManager.isTokenExpired(50L));
+        
+        // Test getting customer data
+        String userKey = "301585";
+        SDWebServiceCommand getCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+            .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
+            .sessionToken(tokenManager.getToken())
+            .build();
+        HttpCommandStatus getCustomerResult = getCustomerCommand.execute();
+        
+        SDapiResponse testGetCustomerData =                
+            (SDapiUserPatronKeyCustomerResponse) 
+                SDapiUserPatronKeyCustomerResponse.parseJson(getCustomerResult.getStdout());
+        
+        System.out.println("GET_CUSTOMER data: " + testGetCustomerData.toString());
         
     }
 

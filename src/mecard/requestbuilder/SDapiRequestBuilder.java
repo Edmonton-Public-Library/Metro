@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
 import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
 import mecard.sirsidynix.sdapi.MeCardDataToSDapiData;
-import mecard.sirsidynix.sdapi.MeCardDataToSDapiData.QueryType;
 import mecard.sirsidynix.sdapi.SDWebServiceCommand;
 import mecard.sirsidynix.sdapi.SDapiAuthenticationData;
 import mecard.sirsidynix.sdapi.SDapiCustomerCreateResponse;
@@ -61,6 +60,7 @@ import mecard.sirsidynix.sdapi.SDapiUserPatronLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiUserPatronSearchCustomerResponse;
 import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
+import mecard.sirsidynix.sdapi.SDapiUserPatronKeyCustomerResponse;
 import mecard.sirsidynix.sdapi.WebServiceDummyCommand;
 import site.CustomerLoadNormalizer;
 
@@ -224,68 +224,44 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     {
         //  Start with the user logging in to prove they are legit customer.
         SDapiAuthenticationData authData = new SDapiAuthenticationData();
-        String loginBodyText = authData.getPatronAuthentication(userId, userId);
-        SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+        String loginBodyText = authData.getPatronAuthentication(userId, userPin);
+        if (this.debug)
+            System.out.println("loginBodyText: " + loginBodyText);
+        SDWebServiceCommand loginCustomer = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
             .endpoint("/user/patron/login")
             .bodyText(loginBodyText)
             .build();
         
-        // Execute and if successful create a request for customer info by 
-        // search by user key.
-        HttpCommandStatus status = command.execute();
-        // Search for customer info with the user key later.
-        String userKey = "";
-        if (! status.okay())
+        HttpCommandStatus status = loginCustomer.execute();
+        SDapiResponse loginResponse = 
+                        (SDapiUserPatronLoginResponse) 
+                            SDapiUserPatronLoginResponse.parseJson(status.getStdout());
+        if (this.debug)
+            System.out.println("GET_CUSTOMER key:" + loginResponse);
+        if (loginResponse.succeeded())
         {
-            return getFailedWebServiceCommand(response, status);
+            // Get customer info by user key.
+            String userKey = loginResponse.toString();
+            // String params  = "includeFields=*,address1{*},circRecordList{*}";
+            return new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+                .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
+                .sessionToken(this.getSessionToken(response))
+                .build();
         }
-            // Check response for any errors.
-        SDapiUserPatronLoginResponse authResponse; 
-        try
+        else
         {
-            authResponse = (SDapiUserPatronLoginResponse) SDapiUserPatronLoginResponse.parseJson(status.getStdout());
-            if (authResponse.succeeded())
+            if (this.debug)
             {
-                if (this.debug)
-                {
-                    System.out.println(new Date() + " " + userId + " authenticated successfully.");
-                }
-                response.setCode(ResponseTypes.SUCCESS);
-                response.setResponse("");
-                userKey = authResponse.getUserKey();
+                System.out.println(new Date() + " customer " + userId + " FAILED to authenticate.");
             }
-            else
-            {
-                if (this.debug)
-                {
-                    System.out.println(new Date() + " customer " + userId + " FAILED to authenticate.");
-                }
-                response.setCode(ResponseTypes.USER_PIN_INVALID);
-                response.setResponse(authResponse.errorMessage());
-                return new WebServiceDummyCommand.Builder()
-                    .setStatus(status.getHttpStatusCode())
-                    .setStderr(response.getMessage())
-                    .setStdout(response.getMessage())
-                    .build();
-            }
-        }
-        catch (NullPointerException ne)
-        {
-            response.setResponse(messageProperties.getProperty(
-            MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+            response.setCode(ResponseTypes.USER_PIN_INVALID);
+            response.setResponse(loginResponse.errorMessage());
             return new WebServiceDummyCommand.Builder()
                 .setStatus(status.getHttpStatusCode())
                 .setStderr(response.getMessage())
                 .setStdout(response.getMessage())
                 .build();
         }
-               
-        // Get customer info by user key.
-        command = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-            .endpoint("/user/patron/key/" + userKey + "?includeFields=*,circRecordList{*},address1{*}")
-            .sessionToken(this.getSessionToken(response))
-            .build();
-        return command;
     }
     
     /**
@@ -340,11 +316,11 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             .build();
         
         SDWebServiceCommand createCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
-                .endpoint("/user/patron/")
-                // TODO check this is right?!
-                .bodyText(jsonNativeCustomer.toString())
-                .sessionToken(getSessionToken(response))
-                .build();
+            .endpoint("/user/patron/")
+            // TODO check this is right?!
+            .bodyText(jsonNativeCustomer.toString())
+            .sessionToken(getSessionToken(response))
+            .build();
         return createCustomerCommand;
     }
 
@@ -491,15 +467,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         if the customer can login with their ID and PIN it can only be the one 
         account.
         */
-        SDapiAuthenticationData authData = new SDapiAuthenticationData();
-        String authenticationJSONData = authData.getPatronAuthentication(userId, userPin);
-        
-        Command customerLoginCommand = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
-            .endpoint("/user/patron/login")
-            .bodyText(authenticationJSONData)
-            .build();
-        
-        return customerLoginCommand;
+        return this.getCustomerCommand(userId, userPin, response);
     }
 
     @Override
@@ -514,7 +482,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 try
                 {
                     staffAuthenticates =                
-                        (SDapiUserPatronSearchCustomerResponse) 
+                        (SDapiUserStaffLoginResponse) 
                             SDapiUserStaffLoginResponse.parseJson(status.getStdout());
                 }
                 catch (NullPointerException e)
@@ -538,14 +506,14 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                         + staffAuthenticates.errorMessage());
                 return false;
             }
-            case GET_CUSTOMER -> {
-                // Search request with user barcode.
-                SDapiResponse testGetCustomer;
+            case TEST_CUSTOMER, GET_CUSTOMER -> {
+                // Let the customer loging and see if they are legit.
+                SDapiResponse testGetCustomerData;
                 try
                 {
-                    testGetCustomer =                
-                        (SDapiUserPatronSearchCustomerResponse) 
-                            SDapiUserPatronSearchCustomerResponse.parseJson(status.getStdout());
+                    testGetCustomerData =                
+                        (SDapiUserPatronKeyCustomerResponse) 
+                            SDapiUserPatronKeyCustomerResponse.parseJson(status.getStdout());
                 }
                 catch (NullPointerException e)
                 {
@@ -554,10 +522,11 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
                 }
-                if (testGetCustomer.succeeded())
+                if (testGetCustomerData.succeeded())
                 {
                     response.setCode(ResponseTypes.SUCCESS);
-                    if (debug) System.out.println("Customer login succeeded.");
+                    if (debug) 
+                        System.out.println("GET CUSTOMER succeeded.");
                     return true;
                 }
                 // Otherwise the response was a failure.
@@ -565,7 +534,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 response.setResponse(messageProperties.getProperty(
                         MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                 System.out.println("**get customer account info failed: "
-                        + testGetCustomer.errorMessage());
+                        + testGetCustomerData.errorMessage());
                 return false;
             }
             case UPDATE_CUSTOMER -> {
@@ -624,39 +593,6 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                         MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println("**get status failed: "
                         + customerCreated.errorMessage());
-                return false;
-            }
-            case TEST_CUSTOMER -> {
-                // This is a user login request.
-                // DummyCommand puts a '1' in stdout.
-                // Authentication failures return status error authentication error, or an empty JSON document.
-                // The response has to match the request, which in the above is 'patron login'
-                SDapiResponse testCustomerAuthenticates;
-                try
-                {
-                    testCustomerAuthenticates = 
-                            (SDapiUserPatronLoginResponse) 
-                            SDapiUserPatronLoginResponse.parseJson(status.getStdout());
-                }
-                catch (NullPointerException se)
-                {
-                    System.out.println("*error, " + se.getMessage() + nullResponseMessage);
-                    response.setCode(ResponseTypes.TOO_MANY_TRIES);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
-                    return false;
-                }     
-                if (testCustomerAuthenticates.succeeded())
-                {
-                    response.setCode(ResponseTypes.SUCCESS);
-                    if (debug) System.out.println("Customer login succeeded.");
-                    return true;
-                }
-                // Otherwise the response was a failure.
-                response.setCode(ResponseTypes.USER_PIN_INVALID);
-                response.setResponse(messageProperties.getProperty(
-                        MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                System.out.println("**customer login failed, are the pin and id correct? "
-                        + testCustomerAuthenticates.errorMessage());
                 return false;
             }
             default -> {

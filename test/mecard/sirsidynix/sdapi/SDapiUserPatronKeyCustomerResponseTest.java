@@ -16,6 +16,7 @@ public class SDapiUserPatronKeyCustomerResponseTest
     private final String jsonSuccess;
     private final String jsonSuccess2;
     private final String jsonFail;
+    private final String BBJson;
     
     public SDapiUserPatronKeyCustomerResponseTest() 
     {
@@ -344,6 +345,10 @@ public class SDapiUserPatronKeyCustomerResponseTest
                                 }
                              }
                              """;
+        
+        this.BBJson = """
+                      {"resource":"/user/patron","key":"301585","fields":{"displayName":"BILLY, Balzac","access":{"resource":"/policy/userAccess","key":"PUBLIC"},"alternateID":"","barcode":"21221012345678","birthDate":"2000-02-29","checkoutLocation":{"resource":"/policy/location","key":"CHECKEDOUT"},"createdDate":"2003-11-24","department":"PROD","environment":{"resource":"/policy/environment","key":"PUBLIC"},"firstName":"Balzac","language":{"resource":"/policy/language","key":"ENGLISH"},"lastName":"BILLY","library":{"resource":"/policy/library","key":"EPLMNA"},"middleName":"","preferredName":"BILLY, BALZAC","privilegeExpiresDate":null,"profile":{"resource":"/policy/userProfile","key":"EPL_ADULT"},"suffix":"","title":"","usePreferredName":false,"webAuthID":"","category01":null,"category02":{"resource":"/policy/patronCategory02","key":"F"},"category03":null,"category04":{"resource":"/policy/patronCategory04","key":"NNELS"},"category05":{"resource":"/policy/patronCategory05","key":"ECONSENT"},"category06":null,"category07":null,"category08":null,"category09":null,"category10":null,"category11":null,"category12":null,"claimsReturnedCount":1,"standing":{"resource":"/policy/patronStanding","key":"OK"},"groupId":"BALZAC","address1":[{"resource":"/user/patron/address1","key":"77","fields":{"code":{"resource":"/policy/patronAddress1","key":"EMAIL"},"data":"ilsadmins@epl.ca"}},{"resource":"/user/patron/address1","key":"78","fields":{"code":{"resource":"/policy/patronAddress1","key":"POSTALCODE"},"data":"T5J 2V4"}},{"resource":"/user/patron/address1","key":"79","fields":{"code":{"resource":"/policy/patronAddress1","key":"PHONE"},"data":"780-496-4058"}},{"resource":"/user/patron/address1","key":"82","fields":{"code":{"resource":"/policy/patronAddress1","key":"CARE/OF"},"data":null}},{"resource":"/user/patron/address1","key":"80","fields":{"code":{"resource":"/policy/patronAddress1","key":"STREET"},"data":"7 Sir Winston Churchill Square"}},{"resource":"/user/patron/address1","key":"81","fields":{"code":{"resource":"/policy/patronAddress1","key":"CITY/STATE"},"data":"Edmonton, AB"}}],"circRecordCount":0,"circRecordList":[],"keepCircHistory":"ALLCHARGES"}}
+                      """;
     }
 
     /**
@@ -545,15 +550,17 @@ public class SDapiUserPatronKeyCustomerResponseTest
         System.out.println("==isInGoodStanding==");
         SDapiUserPatronKeyCustomerResponse instance = 
                 (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess);
-        boolean expResult = true;
-        boolean result = instance.isInGoodStanding();
-        assertEquals(expResult, result);
+        assertEquals(true, instance.isInGoodStanding());
         
         instance = 
                 (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.jsonSuccess2);
-        expResult = false;
-        result = instance.isInGoodStanding();
-        assertEquals(expResult, result);
+        assertEquals(false, instance.isInGoodStanding());
+        
+        instance = 
+                (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(this.BBJson);
+        assertEquals(true, instance.isInGoodStanding());
+        System.out.println(">>>>"+ instance.getStanding());
+        assertEquals(true, "OK".equals(instance.getStanding()));
     }
     
 }

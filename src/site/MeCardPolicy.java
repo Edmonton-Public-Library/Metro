@@ -62,7 +62,7 @@ public class MeCardPolicy
     protected static String failEmailTest;
     protected static String failExpiryTest;
     protected static String failCompletenessTest;
-    protected static boolean DEBUG;
+    protected static boolean debug;
     
     protected List<String> nonResidentTypes;
     protected List<String> reciprocalTypes;
@@ -109,7 +109,7 @@ public class MeCardPolicy
         {
             mePolicy = new MeCardPolicy();
         }
-        DEBUG = debug;
+        MeCardPolicy.debug = debug;
         return mePolicy;
     }
     
@@ -178,10 +178,12 @@ public class MeCardPolicy
     
     public boolean isResident(Customer customer, CustomerMessage message, StringBuilder s)
     {
-        String customerType = message.getCustomerProfile();
-        for (String str: nonResidentTypes)
+        String customerProfile = message.getCustomerProfile();
+        for (String nonResidentType : nonResidentTypes)
         {
-            if (customerType.compareTo(str) == 0) // if we match on a non resident bType we aren't a resident.
+            if (debug)
+                System.out.println("TESTING: '" + nonResidentType + "' against customer residency:'"+customerProfile+"'");
+            if (customerProfile.contains(nonResidentType)) // if we match on a non resident bType we aren't a resident.
             {
                 customer.set(CustomerFieldTypes.ISRESIDENT, Protocol.FALSE);
                 s.append(failResidencyTest);
@@ -206,9 +208,11 @@ public class MeCardPolicy
     public boolean isReciprocal(Customer customer, CustomerMessage meta, StringBuilder s)
     {
         String profileType = meta.getCustomerProfile();
-        for (String reciprocalProfileName: reciprocalTypes)
+        for (String reciprocalType: reciprocalTypes)
         {
-            if (profileType.compareTo(reciprocalProfileName) == 0) // if we match on a non resident bType we aren't a resident.
+            if (debug)
+                System.out.println("TESTING: '" + reciprocalType + "' against customer profile:'"+profileType+"'");
+            if (profileType.contains(reciprocalType)) // if we match on a reciprocal customerProfile we aren't a resident.
             {
                 customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.TRUE);
                 s.append(failReciprocalTest);
@@ -233,21 +237,22 @@ public class MeCardPolicy
     {
         // test if an explict value is available. This may shortcut testing below
         // so that any value in the environment.properties file will have no effect.
-        if (message.isInGoodStanding() == false)
-        {
-            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
-            s.append(failGoodstandingTest);
-            return false;
-        }
+//        if (message.isInGoodStanding() == false)
+//        {
+//            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
+//            s.append(failGoodstandingTest);
+//            return false;
+//        }
         // But the above test is not reliable; many libraries use the status message
         // as the means to signal customers are not in good standing.
         // because EPL uses SIP to get customer information we can assume that
         // meta will contain BARRED if the customer is not in good standing.
-        String standingMessage = message.getStanding();
+        String customerStanding = message.getStanding();
         for (String notGoodStandingType: notInGoodStandingStandingSentinal)
         {
-            System.out.println("TESTING: '" + notGoodStandingType + "' against '"+standingMessage+"'");
-            if (standingMessage.contains(notGoodStandingType))
+            if (debug)
+                System.out.println("TESTING: '" + notGoodStandingType + "' against customer standing:'"+customerStanding+"'");
+            if (customerStanding.contains(notGoodStandingType))
             {
                 customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
                 s.append(failGoodstandingTest);
@@ -276,20 +281,22 @@ public class MeCardPolicy
      */
     public boolean isMinimumAge(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        // run through all the juv profile types and if one matches then
+        // run through all the juv customerProfile types and if one matches then
         // no can do.
         // Fail if the account matches listed bTypes.
-        String customerType = meta.getCustomerProfile();
-        for (String profile: juvenileTypes)
+        String customerAgeCategory = meta.getCustomerProfile();
+        for (String customerProfile : juvenileTypes)
         {
-            if (customerType.compareTo(profile) == 0) // if we match on a non resident bType we aren't a resident.
+            if (debug)
+                System.out.println("TESTING: '" + customerProfile + "' against customer profile:'"+customerAgeCategory+"'");
+            if (customerAgeCategory.contains(customerProfile)) // if we match on a non resident bType we aren't a resident.
             {
                 customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
                 s.append(failMinAgeTest);
                 return false;
             }
         }
-        // So didn't match profile of a Juv, but that just means that doesn't 
+        // So didn't match customerProfile of a Juv, but that just means that doesn't 
         // prove that they are min age, so let's check that.
         // If there is a DOB for the customer check that the computed date is
         // greater than the min age.
@@ -304,9 +311,9 @@ public class MeCardPolicy
             }
         }
         // All else can pass through, so in summary:
-        // If they didn't match a Juv profile AND their computed date is less 
+        // If they didn't match a Juv customerProfile AND their computed date is less 
         // than the min age they will get rejected. The bad part is if they don't 
-        // have a birthday and aren't explicitly a juv profile they're good.
+        // have a birthday and aren't explicitly a juv customerProfile they're good.
         customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
         return true;
     }
@@ -328,11 +335,8 @@ public class MeCardPolicy
     {
         if (customer.isEmpty(CustomerFieldTypes.DOB))
         {
-            if (DEBUG)
-            {
-                System.out.println("customer " + customer.get(CustomerFieldTypes.ID)
-                        + " failed minimum age requirement.");
-            }
+            if (debug)
+                System.out.println("customer " + customer.get(CustomerFieldTypes.ID) + " failed minimum age requirement.");
             s.append("date of birth not set.");
             return false;
         }
@@ -347,11 +351,8 @@ public class MeCardPolicy
             }
         } catch (ParseException ex)
         {
-            if (DEBUG)
-            {
-                System.out.println("customer " + customer.get(CustomerFieldTypes.ID)
-                        + " tested but failed parse DOB.");
-            }
+            if (debug)
+                System.out.println("customer " + customer.get(CustomerFieldTypes.ID)+ " tested but failed parse DOB.");
             s.append("invalid birth date.");
             return false; // no longer an issue to not have a date. Some libraries don't collect them.
         }
@@ -373,11 +374,8 @@ public class MeCardPolicy
     {
         if (! Text.isValidEmail(customer.get(CustomerFieldTypes.EMAIL)))
         {
-            if (DEBUG)
-            {
-                System.out.println("customer " + customer.get(CustomerFieldTypes.ID)
-                        + " failed email requirement.");
-            }
+            if (debug)
+                System.out.println("customer " + customer.get(CustomerFieldTypes.ID)+ " failed email requirement.");
             s.append(failEmailTest);
             return false;
         }
@@ -404,70 +402,71 @@ public class MeCardPolicy
             // Test customer fields that they are somewhat valid.
             if (customer.isEmpty(CustomerFieldTypes.ID))
             {
-                if (DEBUG) System.out.println("customer failed barcode requirement.");
+                if (debug) 
+                    System.out.println("customer failed barcode requirement.");
                 sBuff.append(":id");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.PIN))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed pin requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed pin requirement.");
                 sBuff.append(":pin");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.EMAIL))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed email requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed email requirement.");
                 sBuff.append(":email");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.LASTNAME))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed last name requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed last name requirement.");
                 sBuff.append(":last name");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.FIRSTNAME))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed first name requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed first name requirement.");
                 sBuff.append(":first name");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed expiry requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed expiry requirement.");
                 sBuff.append(":privilege expiry");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.STREET))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed address: street requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed address: street requirement.");
                 sBuff.append(":street");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.CITY))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed address: city requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed address: city requirement.");
                 sBuff.append(":city");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.PROVINCE))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed address: province requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed address: province requirement.");
                 sBuff.append(":province");
                 returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.POSTALCODE))
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed address: postal code requirement.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed address: postal code requirement.");
                 sBuff.append(":postal code");
                 returnValue = false;
             }
@@ -475,8 +474,8 @@ public class MeCardPolicy
             // age to join ME Libraries.
             if (! customer.hasValidBirthDate())
             {
-                if (DEBUG) System.out.println("customer "+customer.get(CustomerFieldTypes.ID)
-                        +" failed birthdate which is required to test for minimum age.");
+                if (debug) 
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed birthdate which is required to test for minimum age.");
                 sBuff.append(":birthdate");
                 returnValue = false;
             }
@@ -527,8 +526,8 @@ public class MeCardPolicy
         try
         {
             int expiryDays = DateComparer.getDaysUntilExpiry(expiryDate);
-            if (DEBUG) System.out.println("Customer privilege date:"
-                    + expiryDate + ", computed days: " + expiryDays);
+            if (debug) 
+                System.out.println("Customer privilege date:"+ expiryDate + ", computed days: " + expiryDays);
             if (expiryDays >= MeCardPolicy.MINIMUM_EXPIRY_DAYS)
             {
                 if (expiryDays > MeCardPolicy.MAXIMUM_EXPIRY_DAYS)
@@ -538,7 +537,8 @@ public class MeCardPolicy
                     customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, newExpiryOneYearFromNow);
                     System.out.println("customer expiry throttled to: '" + newExpiryOneYearFromNow + "'");
                 }
-                if (DEBUG) System.out.println("Customer passed privilege date.");
+                if (debug) 
+                    System.out.println("Customer passed privilege date.");
                 return true;
             }
         } 
@@ -555,13 +555,13 @@ public class MeCardPolicy
     
     /**
      * When a customer reports a lost card, the home library should set this flag
-     * on the customer's account. The MeCard web site can also tell if a previously
-     * registered customer is returning to register a lost card. If so, the customer's
-     * lost card flag should be set and it is upto the library what they do with it.
+     * on the customer's account.The MeCard web site can also tell if a previously
+ registered customer is returning to register a lost card. If so, the customer's
+ lost card flag should be set and it is upto the library what they do with it.
      *
      * @param customer The customer information as will be inserted into the guest ILS.
      * @param customerMessage additional information from the ILS that is not sent to the guest
-     * library, stuff like their profile and number of holds etc.
+ library, stuff like their customerProfile and number of holds etc.
      * @param s the return message if the customer failed this test.
      * @return true if this account is a lost card.
      * @see mecard.customer.Customer
@@ -572,11 +572,13 @@ public class MeCardPolicy
         if (customerMessage.cardReportedLost())
         {
             customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.TRUE);
-            if (DEBUG) System.out.println("card is a lost card");
+            if (debug) 
+                System.out.println("card is a lost card");
             s.append(failLostCardTest);
             return true;
         }
-        if (DEBUG) System.out.println("card passes lost card test.");
+        if (debug) 
+            System.out.println("card passes lost card test.");
         customer.set(CustomerFieldTypes.ISLOSTCARD, Protocol.FALSE);
         return false;
     }

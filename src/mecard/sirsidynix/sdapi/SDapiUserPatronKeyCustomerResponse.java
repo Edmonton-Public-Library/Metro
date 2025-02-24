@@ -25,10 +25,11 @@ import api.CustomerMessage;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
-import mecard.config.FlatUserFieldTypes;
 import mecard.config.SDapiUserFields;
+
 /**
- *
+ * Response from a request to URL
+ * "/user/patron/key/" + userKey + "?includeFields=*,circRecordList{*},address1{*}"
  * @author anisbet
  */
 public class SDapiUserPatronKeyCustomerResponse 
@@ -297,14 +298,14 @@ public class SDapiUserPatronKeyCustomerResponse
         @SerializedName("standing")
         private PolicyResource standing;
 //
-//        @SerializedName("category02")
-//        private PolicyResource category02;
-//
-//        @SerializedName("category04")
-//        private PolicyResource category04;
-//
-//        @SerializedName("category05")
-//        private PolicyResource category05;
+        @SerializedName("category02")
+        private PolicyResource category02;
+
+        @SerializedName("category04")
+        private PolicyResource category04;
+
+        @SerializedName("category05")
+        private PolicyResource category05;
         
         @SerializedName("privilegeExpiresDate")
         private String expiry;

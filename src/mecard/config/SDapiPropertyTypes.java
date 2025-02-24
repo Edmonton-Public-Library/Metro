@@ -27,7 +27,8 @@ package mecard.config;
 public enum SDapiPropertyTypes 
 {
     CLIENT_ID("client-id"),
-    ENV("env-file-path"), 
+    ENV("env-file-path"),
+    CACHE_PATH("cache-path"),
     BASE_URL("base-url"),
     // DO NOT uncomment the following unless you intend to make it a required field.
     // PORT("port"), Optional in sdapi.properties. Including it here will throw an exception if not set.

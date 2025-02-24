@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ public class SDapiUserPatronLoginResponse extends SDapiResponse
     @Override
     public boolean succeeded() 
     {
-        return customerName != null;
+        return ! this.userKey.isEmpty();
     }
     
     @Override
@@ -133,5 +133,18 @@ public class SDapiUserPatronLoginResponse extends SDapiResponse
             }
         }
         return sout.toString();
+    }
+    
+    @Override
+    public String toString()
+    {
+        try
+        {
+            return this.userKey;
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return "";
+        }
     }
 }

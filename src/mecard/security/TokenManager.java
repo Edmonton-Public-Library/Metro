@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SDapiPropertyTypes;
 
 /**
  * Manages session tokens. Can save, retrieve, and test expiry of web
@@ -32,9 +36,19 @@ import java.time.format.DateTimeFormatter;
  */
 public class TokenManager 
 {
-    public static final String CACHE_PATH = ".sd_token.cache";
+    private Properties sdApiEnv = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+    private final String cachePath = sdApiEnv.getProperty(SDapiPropertyTypes.CACHE_PATH.toString(), "./.token.cache");
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
+    /**
+     * Used during testing for cleanup.
+     * @return String to the cache's path.
+     */
+    public String getCachePath()
+    {
+        return this.cachePath;
+    }
+    
     /** 
      * Writes the token and expiration time to file.
      * @param token 
@@ -47,7 +61,7 @@ public class TokenManager
         
         try 
         {
-            Files.write(Paths.get(CACHE_PATH), data.getBytes());
+            Files.write(Paths.get(cachePath), data.getBytes());
         } 
         catch (IOException e) 
         {
@@ -75,7 +89,7 @@ public class TokenManager
     {
         try 
         {
-            String token = Files.readAllLines(Paths.get(CACHE_PATH)).get(0);
+            String token = Files.readAllLines(Paths.get(cachePath)).get(0);
             return token;
         } 
         catch (IOException | IndexOutOfBoundsException e) 
@@ -111,7 +125,7 @@ public class TokenManager
     {
         try 
         {
-            String expirationTimeStr = Files.readAllLines(Paths.get(CACHE_PATH)).get(1);
+            String expirationTimeStr = Files.readAllLines(Paths.get(cachePath)).get(1);
             LocalDateTime expirationTime = LocalDateTime.parse(expirationTimeStr, FORMATTER);
             return Duration.between(expirationTime, LocalDateTime.now()).toMinutes() >= minutes;
         } 

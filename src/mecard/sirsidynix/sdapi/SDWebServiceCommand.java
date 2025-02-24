@@ -198,13 +198,13 @@ public class SDWebServiceCommand implements Command
             // Add this together into : https://{{HOST}}/{{WEBAPP}}/user/staff/login
             // or in our case https://sdmtlws01.sirsidynix.net/edpltest_ilsws
             StringBuilder urlString = new StringBuilder();
-            if (this.port != DEFAULT_PORT || this.debug == true)
+            if (this.port != DEFAULT_PORT)
             {
                 urlString.append(this.baseUrl)
                         .append(":").append(this.port)
                         .append("/")
                         .append(this.webApp)
-                        // remember to include the '/' in your the endpoint arg!
+                        // remember to include the leading '/' in your the endpoint arg!
                         .append(endpoint);
             }
             else
@@ -212,9 +212,11 @@ public class SDWebServiceCommand implements Command
                 urlString.append(this.baseUrl)
                         .append("/")
                         .append(this.webApp)
-                        // remember to include the '/' in your the endpoint arg!
+                        // remember to include the leading '/' in your the endpoint arg!
                         .append(endpoint);
             }
+            if (this.debug)
+                System.out.println("SD Web Service URL string: '" + urlString.toString() + "'");
             this.uri = URI.create(urlString.toString());
             return this;
         }
@@ -257,6 +259,8 @@ public class SDWebServiceCommand implements Command
             .version(builder.httpVersion)
             .connectTimeout(Duration.ofSeconds(builder.connectionTimeout))
             .build();
+        if (SDWebServiceCommand.debug)
+            System.out.println("SDWebService toString: " + SDWebServiceCommand.httpClient.toString());
     }
     
     

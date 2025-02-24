@@ -141,7 +141,7 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
         }
 //        else
 //        {
-////            formattedCustomer.setValue(PapiElementOrder.STATE.name(), customer.get(CustomerFieldTypes.PROVINCE));
+//            formattedCustomer.setValue(PapiElementOrder.STATE.name(), customer.get(CustomerFieldTypes.PROVINCE));
 //            formattedCustomer.setValue(PapiElementOrder.REQUEST_PICKUP_BRANCH_ID.name(), "172");
 //        }
     }

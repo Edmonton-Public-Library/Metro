@@ -22,8 +22,8 @@
 package mecard.sirsidynix.sdapi;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import java.util.List;
+import java.util.Date;
 
 /**
  * A authentication response object.
@@ -35,20 +35,235 @@ public class SDapiCustomerCreateResponse extends SDapiResponse
     @Override
     public boolean succeeded() 
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return ! this.hasErrors();
     }
 
     @Override
     public String errorMessage() 
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (this.hasErrors())
+        {
+            StringBuilder sb = new StringBuilder();
+            for (Message m : this.messageList)
+            {
+                sb.append(m.getMessage());
+            }
+            return sb.toString();
+        }
+        return "";
     }
     
     // Parsing method
     public static SDapiResponse parseJson(String jsonString) 
     {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiUserPatronLoginResponse.class);
+        return gson.fromJson(jsonString, SDapiCustomerCreateResponse.class);
     }
     
+    private String resource;
+    private String key;
+    private Fields fields;
+
+    public static class Fields 
+    {
+        private String displayName;
+        private PolicyReference access;
+        private String alternateID;
+        private String barcode;
+        private Date birthDate;
+        private PolicyReference checkoutLocation;
+        private String createdDate;
+        private String department;
+        private PolicyReference environment;
+        private String firstName;
+        private PolicyReference language;
+        private String lastName;
+        private PolicyReference library;
+        private String middleName;
+        private String preferredName;
+        private Date privilegeExpiresDate;
+        private PolicyReference profile;
+        private String suffix;
+        private String title;
+        private boolean usePreferredName;
+        private String webAuthID;
+        private String category01;
+        private String category02;
+        private String category03;
+        private String category04;
+        private String category05;
+        private String category06;
+        private String category07;
+        private String category08;
+        private String category09;
+        private String category10;
+        private String category11;
+        private String category12;
+        private int claimsReturnedCount;
+        private PolicyReference standing;
+        private String groupId;
+        private int circRecordCount;
+        private String keepCircHistory;
+
+        // Getters and Setters
+        public String getDisplayName() { return displayName; }
+        public void setDisplayName(String displayName) { this.displayName = displayName; }
+        
+        public PolicyReference getAccess() { return access; }
+        public void setAccess(PolicyReference access) { this.access = access; }
+        
+        public String getAlternateID() { return alternateID; }
+        public void setAlternateID(String alternateID) { this.alternateID = alternateID; }
+        
+        public String getBarcode() { return barcode; }
+        public void setBarcode(String barcode) { this.barcode = barcode; }
+        
+        public Date getBirthDate() { return birthDate; }
+        public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+        
+        public PolicyReference getCheckoutLocation() { return checkoutLocation; }
+        public void setCheckoutLocation(PolicyReference checkoutLocation) { this.checkoutLocation = checkoutLocation; }
+        
+        public String getCreatedDate() { return createdDate; }
+        public void setCreatedDate(String createdDate) { this.createdDate = createdDate; }
+        
+        public String getDepartment() { return department; }
+        public void setDepartment(String department) { this.department = department; }
+        
+        public PolicyReference getEnvironment() { return environment; }
+        public void setEnvironment(PolicyReference environment) { this.environment = environment; }
+        
+        public String getFirstName() { return firstName; }
+        public void setFirstName(String firstName) { this.firstName = firstName; }
+        
+        public PolicyReference getLanguage() { return language; }
+        public void setLanguage(PolicyReference language) { this.language = language; }
+        
+        public String getLastName() { return lastName; }
+        public void setLastName(String lastName) { this.lastName = lastName; }
+        
+        public PolicyReference getLibrary() { return library; }
+        public void setLibrary(PolicyReference library) { this.library = library; }
+        
+        public String getMiddleName() { return middleName; }
+        public void setMiddleName(String middleName) { this.middleName = middleName; }
+        
+        public String getPreferredName() { return preferredName; }
+        public void setPreferredName(String preferredName) { this.preferredName = preferredName; }
+        
+        public Date getPrivilegeExpiresDate() { return privilegeExpiresDate; }
+        public void setPrivilegeExpiresDate(Date privilegeExpiresDate) { this.privilegeExpiresDate = privilegeExpiresDate; }
+        
+        public PolicyReference getProfile() { return profile; }
+        public void setProfile(PolicyReference profile) { this.profile = profile; }
+        
+        public String getSuffix() { return suffix; }
+        public void setSuffix(String suffix) { this.suffix = suffix; }
+        
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+        
+        public boolean isUsePreferredName() { return usePreferredName; }
+        public void setUsePreferredName(boolean usePreferredName) { this.usePreferredName = usePreferredName; }
+        
+        public String getWebAuthID() { return webAuthID; }
+        public void setWebAuthID(String webAuthID) { this.webAuthID = webAuthID; }
+        
+        public String getCategory01() { return category01; }
+        public void setCategory01(String category01) { this.category01 = category01; }
+        
+        public String getCategory02() { return category02; }
+        public void setCategory02(String category02) { this.category02 = category02; }
+        
+        public String getCategory03() { return category03; }
+        public void setCategory03(String category03) { this.category03 = category03; }
+        
+        public String getCategory04() { return category04; }
+        public void setCategory04(String category04) { this.category04 = category04; }
+        
+        public String getCategory05() { return category05; }
+        public void setCategory05(String category05) { this.category05 = category05; }
+        
+        public String getCategory06() { return category06; }
+        public void setCategory06(String category06) { this.category06 = category06; }
+        
+        public String getCategory07() { return category07; }
+        public void setCategory07(String category07) { this.category07 = category07; }
+        
+        public String getCategory08() { return category08; }
+        public void setCategory08(String category08) { this.category08 = category08; }
+        
+        public String getCategory09() { return category09; }
+        public void setCategory09(String category09) { this.category09 = category09; }
+        
+        public String getCategory10() { return category10; }
+        public void setCategory10(String category10) { this.category10 = category10; }
+        
+        public String getCategory11() { return category11; }
+        public void setCategory11(String category11) { this.category11 = category11; }
+        
+        public String getCategory12() { return category12; }
+        public void setCategory12(String category12) { this.category12 = category12; }
+        
+        public int getClaimsReturnedCount() { return claimsReturnedCount; }
+        public void setClaimsReturnedCount(int claimsReturnedCount) { this.claimsReturnedCount = claimsReturnedCount; }
+        
+        public PolicyReference getStanding() { return standing; }
+        public void setStanding(PolicyReference standing) { this.standing = standing; }
+        
+        public String getGroupId() { return groupId; }
+        public void setGroupId(String groupId) { this.groupId = groupId; }
+        
+        public int getCircRecordCount() { return circRecordCount; }
+        public void setCircRecordCount(int circRecordCount) { this.circRecordCount = circRecordCount; }
+        
+        public String getKeepCircHistory() { return keepCircHistory; }
+        public void setKeepCircHistory(String keepCircHistory) { this.keepCircHistory = keepCircHistory; }
+    }
+
+    public static class PolicyReference 
+    {
+        private String resource;
+        private String key;
+
+        public String getResource() { return resource; }
+        public void setResource(String resource) { this.resource = resource; }
+        
+        public String getKey() { return key; }
+        public void setKey(String key) { this.key = key; }
+    }
+
+    // Getters and Setters for main class
+    public String getResource() { return resource; }
+    public void setResource(String resource) { this.resource = resource; }
+    
+    public String getKey() { return key; }
+    public void setKey(String key) { this.key = key; }
+    
+    public Fields getFields() { return fields; }
+    public void setFields(Fields fields) { this.fields = fields; }
+    
+    // And if there were errors
+    private List<Message> messageList;
+
+    public static class Message 
+    {
+        private String code;
+        private String message;
+
+        public String getCode() { return code; }
+        public void setCode(String code) { this.code = code; }
+
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+    }
+    
+    public List<Message> getMessageList() { return messageList; }
+    public void setMessageList(List<Message> messageList) { this.messageList = messageList; }
+
+    // Helper method to check if the response contains errors
+    public boolean hasErrors() 
+    {
+        return messageList != null && !messageList.isEmpty();
+    }
 }

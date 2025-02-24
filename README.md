@@ -47,11 +47,12 @@ To use it there is a new `sdapi.properties` file as seen below which configures 
 <!-- <entry key="password-min-length">4</entry> -->
 <!-- Optional, the default includes most of the ASCII char set. -->
 <!-- <entry key="allowed-password-characters">abcd...7890</entry> -->
-```**
+```
 
 You can access Symphony and Horizon web services by modifying the `environment.properties` files, changing the `*-protocol` entries to `sirsidynix-api`.
 
-A new `.env` file is also required to store the staff ID & password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below.
+A new `.env` file is also required to store the staff ID and password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below.
+
 ```bash
 # Environment file for MeCard server. 
 # This file is used for SDapi to store the 'staffPassword' 
@@ -73,7 +74,8 @@ STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
     SirsiDynix Web Service settings.
 </comment>
   <entry key="client-id">MY_APP_ID</entry>
-  <entry key="env-file-path">.env</entry>
+  <entry key="env-file-path">/home/metro/.env</entry>
+  <entry key="cache-path">/home/metro/.sd_api.cache</entry>
   <entry key="base-url">https://ws.sirsidynix.net</entry>
   <!-- <entry key="port">443</entry> optional, default 443 -->
   <entry key="x-sirs-clientId">ilsws</entry>

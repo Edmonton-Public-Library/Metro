@@ -58,8 +58,9 @@ public class TokenManagerTest
     public void testGetToken() 
     {
         System.out.println("==getToken==");
-        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
+        
         TokenManager tokenManager = new TokenManager();
+        TokenManagerTest.deleteFile(tokenManager.getCachePath());
         String expResult = "";
         String result = tokenManager.getToken();
         assertEquals(expResult, result);
@@ -77,9 +78,9 @@ public class TokenManagerTest
     public void testIsTokenExpired() 
     {
         System.out.println("==isTokenExpired==");
-        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
-        long minutes = 0L;
         TokenManager tokenManager = new TokenManager();
+        TokenManagerTest.deleteFile(tokenManager.getCachePath());
+        long minutes = 0L;
         boolean expResult = true;
         boolean result = tokenManager.isTokenExpired(minutes);
         assertEquals(expResult, result);
@@ -95,9 +96,10 @@ public class TokenManagerTest
     public void testWriteToken() 
     {
         System.out.println("==writeToken==");
-        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
+
         String token = "ffffffff-ffff-ffff-ffff-ffffffffffff";
         TokenManager tokenManager = new TokenManager();
+        TokenManagerTest.deleteFile(tokenManager.getCachePath());
         tokenManager.writeToken(token, Duration.ofMinutes(10));
         assertFalse(tokenManager.isTokenExpired(5));
     }
@@ -109,9 +111,10 @@ public class TokenManagerTest
     public void testGetToken_boolean() {
         System.out.println("==getToken explain error==");
         // Delete any cache file if there is one.
-        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
+
         boolean isDebug = true;
         TokenManager instance = new TokenManager();
+        TokenManagerTest.deleteFile(instance.getCachePath());
         String expResult = "";
         String result = instance.getToken(isDebug);
         assertEquals(expResult, result);
@@ -123,9 +126,10 @@ public class TokenManagerTest
     @Test
     public void testIsTokenExpired_long() {
         System.out.println("==isTokenExpired==");
-        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
+        
         long minutes = 0L;
         TokenManager tokenManager = new TokenManager();
+        TokenManagerTest.deleteFile(tokenManager.getCachePath());
         boolean result = tokenManager.isTokenExpired(minutes);
         assertTrue(result);
     }
@@ -136,11 +140,11 @@ public class TokenManagerTest
     @Test
     public void testIsTokenExpired_long_boolean() {
         System.out.println("==isTokenExpired explain error==");
-        // Delete any cache file if there is one.
-        TokenManagerTest.deleteFile(TokenManager.CACHE_PATH);
+        // Delete any cache file if there is one
         long minutes = 10L;
         boolean isDebug = true;
         TokenManager tokenManager = new TokenManager();
+        TokenManagerTest.deleteFile(tokenManager.getCachePath());
         boolean result = tokenManager.isTokenExpired(minutes, isDebug);
         assertTrue(result);
         String token = "ffffffff-ffff-ffff-ffff-ffffffffffff";
