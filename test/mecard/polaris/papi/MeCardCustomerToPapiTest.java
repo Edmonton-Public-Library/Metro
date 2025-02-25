@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,6 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.MeCardDataToPapiData;
-import mecard.polaris.papi.PapiElementOrder;
-import mecard.polaris.papi.MeCardCustomerToPapi;
 import java.util.ArrayList;
 import java.util.List;
 import json.RequestDeserializer;
@@ -43,6 +40,8 @@ public class MeCardCustomerToPapiTest
 {
     private final Customer customer;
     private final Customer createCustomer;
+    private final Customer updateCustomer;
+    
     public MeCardCustomerToPapiTest()
     {
         String custReq =
@@ -54,6 +53,10 @@ public class MeCardCustomerToPapiTest
                 "{\"code\":\"GET_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21221012346000\",\"pin\":\"Pl3as3!LeTM3regist3r\",\"customer\":\"{\\\"ID\\\":\\\"21221012346000\\\",\\\"PIN\\\":\\\"Pl3as3!LeTM3regist3r\\\",\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"90210\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsadmins@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20230822\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Balzac\\\",\\\"LASTNAME\\\":\\\"Williams\\\"}\"}";
         request = deserializer.getDeserializedRequest(custReq);
         createCustomer = request.getCustomer();
+        
+        custReq = "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"21817010469601\",\"pin\":\"2257\",\"customer\":\"{\\\"ID\\\":\\\"21817010469601\\\",\\\"PIN\\\":\\\"2257\\\",\\\"PREFEREDNAME\\\":\\\"HOFER, RACHEL J.\\\",\\\"STREET\\\":\\\"Box 1587\\\",\\\"CITY\\\":\\\"Vulcan\\\",\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"T0L 2B0\\\",\\\"SEX\\\":\\\"F\\\",\\\"EMAIL\\\":\\\"manshop22@yahoo.ca\\\",\\\"PHONE\\\":\\\"4033933270\\\",\\\"DOB\\\":\\\"19711005\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20260212\\\",\\\"RESERVED\\\":\\\"OK\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Rachel J.\\\",\\\"LASTNAME\\\":\\\"Hofer\\\"}\"}";
+        request = deserializer.getDeserializedRequest(custReq);
+        updateCustomer = request.getCustomer();
     }
 
     /**
@@ -237,6 +240,9 @@ public class MeCardCustomerToPapiTest
         System.out.println("CREATE==>>"+xmlCustomer.toString());
         xmlCustomer = new MeCardCustomerToPapi(customer, QueryType.UPDATE);
         System.out.println("UPDATE==>>"+xmlCustomer.toString());
+        
+        xmlCustomer = new MeCardCustomerToPapi(updateCustomer, QueryType.UPDATE);
+        System.out.println("**UPDATE==>>"+xmlCustomer.toString());
     }
     
 }

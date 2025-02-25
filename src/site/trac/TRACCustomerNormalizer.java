@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2023 - 2024  Edmonton Public Library
+*    Copyright (C) 2023 - 2025  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@ package site.trac;
 
 import java.text.ParseException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
@@ -35,6 +33,7 @@ import mecard.customer.Customer;
 import mecard.util.DateComparer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.polaris.papi.PapiElementOrder;
+import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -132,7 +131,10 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
                 } 
                 catch (ParseException ex)
                 {
-                    Logger.getLogger(TRACCustomerNormalizer.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("**error while parsing customer's expiry " 
+                            + customer.get(CustomerFieldTypes.ID) 
+                            + " DOB: '" + customer.get(CustomerFieldTypes.ID)
+                            + "' (in TRAC Customer Normalizer)");
                 }
                 formattedCustomer.insertValue(
                     PolarisTable.PATRON_REGISTRATION,
@@ -140,11 +142,30 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
                     expiry);
             }
         }
-//        else
-//        {
-////            formattedCustomer.setValue(PapiElementOrder.STATE.name(), customer.get(CustomerFieldTypes.PROVINCE));
-//            formattedCustomer.setValue(PapiElementOrder.REQUEST_PICKUP_BRANCH_ID.name(), "172");
-//        }
+        
+        /*
+        'polaris-api' usage for the UPDATE_SERVICE can include a birth date at TRAC.
+        */
+        if (envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
+        {
+            // In previous versions of PAPI the birthdate was not update-able, 
+            // but maybe now it is?? Waiting for confirmation, but in the meantime...
+            String dob = customer.get(CustomerFieldTypes.DOB);
+            if (Text.isSet(dob))
+            {
+                try
+                {
+                    dob = DateComparer.ANSIToConfigDate(dob);
+                    formattedCustomer.setValue(PapiElementOrder.BIRTHDATE.name(), dob);
+                } 
+                catch (ParseException ex)
+                {
+                    System.out.println("**error while parsing customer " 
+                            + customer.get(CustomerFieldTypes.ID) 
+                            + " DOB: '" + dob + "' (in TRAC Customer Normalizer)");
+                }
+            }
+        }
     }
     
     @Override

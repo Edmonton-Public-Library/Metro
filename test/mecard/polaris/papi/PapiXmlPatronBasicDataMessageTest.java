@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.PapiXmlPatronBasicDataResponse;
+import java.text.ParseException;
+import mecard.util.DateComparer;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -33,38 +34,71 @@ public class PapiXmlPatronBasicDataMessageTest
 {
 
     private final String xml;
+    private final String dobXml;
     
     public PapiXmlPatronBasicDataMessageTest()
     {
-        xml = "<PatronBasicDataGetResult xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-            "<PAPIErrorCode>0</PAPIErrorCode>\n" +
-            "<ErrorMessage>\n" +
-            "</ErrorMessage>\n" +
-            "<PatronBasicData>\n" +
-            "  <Barcode>21221012345678</Barcode>\n" +
-            "  <NameFirst>Billy</NameFirst>\n" +
-            "  <NameLast>Balzac</NameLast>\n" +
-            "  <NameMiddle i:nil=\"true\" />\n" +
-            "  <PhoneNumber>555-1212</PhoneNumber>\n" +
-            "  <EmailAddress>dude@hotmail.com</EmailAddress>\n" +
-            "  <BirthDate i:nil=\"true\" />\n" +
-            "  <PatronAddresses>\n" +
-            "    <PatronAddress>\n" +
-            "      <AddressID>339329</AddressID>\n" +
-            "      <FreeTextLabel>Home</FreeTextLabel>\n" +
-            "      <StreetOne>11811 74 Ave.</StreetOne>\n" +
-            "      <City>Edmonton</City>\n" +
-            "      <State>AB</State>\n" +
-            "      <PostalCode>90210</PostalCode>\n" +
-            "      <Country>USA</Country>\n" +
-            "      <AddressTypeID>2</AddressTypeID>\n" +
-            "    </PatronAddress>\n" +
-            "  </PatronAddresses>\n" +
-            "  <ExpirationDate>2022-07-30T19:38:30</ExpirationDate>\n" +
-            "  <PatronNotes i:nil=\"true\" />\n" +
-            "  <PatronSystemBlocks />\n" +
-            "</PatronBasicData>\n" +
-            "</PatronBasicDataGetResult>";
+        xml = """
+              <PatronBasicDataGetResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+              <PAPIErrorCode>0</PAPIErrorCode>
+              <ErrorMessage>
+              </ErrorMessage>
+              <PatronBasicData>
+                <Barcode>21221012345678</Barcode>
+                <NameFirst>Billy</NameFirst>
+                <NameLast>Balzac</NameLast>
+                <NameMiddle i:nil="true" />
+                <PhoneNumber>555-1212</PhoneNumber>
+                <EmailAddress>dude@hotmail.com</EmailAddress>
+                <BirthDate i:nil="true" />
+                <PatronAddresses>
+                  <PatronAddress>
+                    <AddressID>339329</AddressID>
+                    <FreeTextLabel>Home</FreeTextLabel>
+                    <StreetOne>11811 74 Ave.</StreetOne>
+                    <City>Edmonton</City>
+                    <State>AB</State>
+                    <PostalCode>90210</PostalCode>
+                    <Country>USA</Country>
+                    <AddressTypeID>2</AddressTypeID>
+                  </PatronAddress>
+                </PatronAddresses>
+                <ExpirationDate>2022-07-30T19:38:30</ExpirationDate>
+                <PatronNotes i:nil="true" />
+                <PatronSystemBlocks />
+              </PatronBasicData>
+              </PatronBasicDataGetResult>""";
+        
+        dobXml = """
+              <PatronBasicDataGetResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+              <PAPIErrorCode>0</PAPIErrorCode>
+              <ErrorMessage>
+              </ErrorMessage>
+              <PatronBasicData>
+                <Barcode>21221012345678</Barcode>
+                <NameFirst>Billy</NameFirst>
+                <NameLast>Balzac</NameLast>
+                <NameMiddle i:nil="true" />
+                <PhoneNumber>555-1212</PhoneNumber>
+                <EmailAddress>dude@hotmail.com</EmailAddress>
+                <BirthDate>2001-08-22T19:38:30</BirthDate>
+                <PatronAddresses>
+                  <PatronAddress>
+                    <AddressID>339329</AddressID>
+                    <FreeTextLabel>Home</FreeTextLabel>
+                    <StreetOne>11811 74 Ave.</StreetOne>
+                    <City>Edmonton</City>
+                    <State>AB</State>
+                    <PostalCode>90210</PostalCode>
+                    <Country>USA</Country>
+                    <AddressTypeID>2</AddressTypeID>
+                  </PatronAddress>
+                </PatronAddresses>
+                <ExpirationDate>2022-07-30T19:38:30</ExpirationDate>
+                <PatronNotes i:nil="true" />
+                <PatronSystemBlocks />
+              </PatronBasicData>
+              </PatronBasicDataGetResult>""";
     }
 
     /**
@@ -203,11 +237,25 @@ public class PapiXmlPatronBasicDataMessageTest
     @Test
     public void testGetBirthDate()
     {
-        System.out.println("getBirthDate");
+        System.out.println("==getBirthDate==");
         PapiXmlPatronBasicDataResponse instance = new PapiXmlPatronBasicDataResponse(xml);
         String expResult = "";
         String result = instance.getBirthDate();
         assertEquals(expResult, result);
+        
+        instance = new PapiXmlPatronBasicDataResponse(dobXml);
+        assertEquals("2001-08-22T19:38:30", instance.getBirthDate());
+        String dob = instance.getBirthDate();
+        System.out.println(">>> ANSI DOB:" + DateComparer.getANSIDate(dob));
+        String ansiDOB = DateComparer.getANSIDate(dob);
+        try
+        {
+            System.out.println(">>> System DOB:" + DateComparer.ANSIToConfigDate(ansiDOB));
+        }
+        catch (ParseException e)
+        {
+            System.out.println(">>> System DOB: threw a parse exception. " + e.getLocalizedMessage());
+        }
     }
 
     /**

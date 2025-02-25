@@ -24,8 +24,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PapiPropertyTypes;
@@ -117,7 +115,9 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
             } 
             catch (ParseException ex)
             {
-                Logger.getLogger(MeCardCustomerToPapi.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("**error while parsing customer " 
+                        + customer.get(CustomerFieldTypes.ID) 
+                        + " expiry: '" + expiry + "'");
             }
         }
         else
@@ -129,7 +129,9 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
             } 
             catch (ParseException ex)
             {
-                Logger.getLogger(MeCardCustomerToPapi.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("**error while parsing customer " 
+                        + customer.get(CustomerFieldTypes.ID) 
+                        + " expiry: '" + expiry + "'");
             }
         }
         customerTable.setValue(PapiElementOrder.EXPIRATION_DATE.name(), expiry);
@@ -145,7 +147,9 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
             } 
             catch (ParseException ex)
             {
-                Logger.getLogger(MeCardCustomerToPapi.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("**error while parsing customer " 
+                        + customer.get(CustomerFieldTypes.ID) 
+                        + " DOB: '" + birthday + "'");
             }
         }
         

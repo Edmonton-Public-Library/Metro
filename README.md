@@ -244,7 +244,7 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
   to be 'outage'. For example, you can change the get-protocol from 'sip2' 
   to 'outage', as shown below, if you know your sip2 service is going to be unavailable.
   ```xml
-  <entry key="get-protocol">outage|sip2|symphony-api|polaris-api</entry>
+  <entry key="get-protocol">outage|sip2|symphony-api|polaris-api|polaris-sql</entry>
   ```
 
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).

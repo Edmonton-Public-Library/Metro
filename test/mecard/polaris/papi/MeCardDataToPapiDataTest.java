@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,7 +126,6 @@ public class MeCardDataToPapiDataTest
         papiTable.setValue(PapiElementOrder.STATE.name(), "AB");
         
         System.out.println("get KEYS:");
-        int i = 1;
         for (String key: papiTable.getKeys())
         {
             System.out.println("KEY:" + key);
