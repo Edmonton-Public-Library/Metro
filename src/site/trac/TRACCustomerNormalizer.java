@@ -146,26 +146,26 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
         /*
         'polaris-api' usage for the UPDATE_SERVICE can include a birth date at TRAC.
         */
-        if (envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
-        {
-            // In previous versions of PAPI the birthdate was not update-able, 
-            // but maybe now it is?? Waiting for confirmation, but in the meantime...
-            String dob = customer.get(CustomerFieldTypes.DOB);
-            if (Text.isSet(dob))
-            {
-                try
-                {
-                    dob = DateComparer.ANSIToConfigDate(dob);
-                    formattedCustomer.setValue(PapiElementOrder.BIRTHDATE.name(), dob);
-                } 
-                catch (ParseException ex)
-                {
-                    System.out.println("**error while parsing customer " 
-                            + customer.get(CustomerFieldTypes.ID) 
-                            + " DOB: '" + dob + "' (in TRAC Customer Normalizer)");
-                }
-            }
-        }
+//        if (envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
+//        {
+//            // In previous versions of PAPI the birthdate was not update-able, 
+//            // but maybe now it is?? Waiting for confirmation, but in the meantime...
+//            String dob = customer.get(CustomerFieldTypes.DOB);
+//            if (Text.isSet(dob))
+//            {
+//                try
+//                {
+//                    dob = DateComparer.ANSIToConfigDate(dob);
+//                    formattedCustomer.setValue(PapiElementOrder.BIRTHDATE.name(), dob);
+//                } 
+//                catch (ParseException ex)
+//                {
+//                    System.out.println("**error while parsing customer " 
+//                            + customer.get(CustomerFieldTypes.ID) 
+//                            + " DOB: '" + dob + "' (in TRAC Customer Normalizer)");
+//                }
+//            }
+//        }
     }
     
     @Override

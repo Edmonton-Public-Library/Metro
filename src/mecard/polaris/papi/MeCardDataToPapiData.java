@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.customer.MeCardDataToNativeData;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,6 +37,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PapiPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.util.VersionComparator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -120,12 +123,13 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
     {
         switch (this.queryType)
         {
-            case CREATE:
+            case CREATE -> {
                 return this.getCreateXml();
-            case UPDATE:
+            }
+            case UPDATE -> {
                 return this.getUpdateXml();
-            default:
-                throw new UnsupportedOperationException(
+            }
+            default -> throw new UnsupportedOperationException(
                     "The query type " + this.queryType + " has not been defined\n"
                     + "in " + MeCardDataToPapiData.class.getName()
                 );
@@ -229,11 +233,15 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
         }
         catch (ParserConfigurationException | TransformerConfigurationException ex)
         {
-            Logger.getLogger(MeCardDataToPapiData.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(MeCardDataToPapiData.class.getName() 
+                + "getCreateXml() failed with a parser or transformer configuration exception:"
+                + System.lineSeparator() + ex.getLocalizedMessage());
         } 
         catch (TransformerException ex)
         {
-            Logger.getLogger(MeCardDataToPapiData.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(MeCardDataToPapiData.class.getName() 
+                + "getCreateXml() failed with a transformer exception:"
+                + System.lineSeparator() + ex.getLocalizedMessage());
         }
         
         return xmlString.toString();
@@ -349,6 +357,24 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                         case ADDRESS_TYPE_ID:
                             addressElement.appendChild(papiElement);
                             break;
+                        case BIRTHDATE:
+                            /*
+                            It seems that older version allow only a subset of 
+                            customer attributes to be updated, however, in 7.6 
+                            more attributes can be updated, and at TRAC the update
+                            is actually expecting a birth date, which was previously
+                            not allowed to be updated.
+                            */
+                            Properties papiProperties = PropertyReader.getProperties(ConfigFileTypes.PAPI);
+                            // TODO: Fix this with Papiversion
+                            String version = papiProperties.getProperty(PapiPropertyTypes.PAPI_VERSION.toString());
+                            if (VersionComparator.greaterThanEqualTo(version, "7.6"))
+                            {
+                                if (this.debug)
+                                    System.out.println("getUpdateXml(): adding birthdate to papi update.");
+                                rootElement.appendChild(papiElement);
+                            }
+                            break;
                         // These are required
                         case LOGON_BRANCH_ID:
                         case LOGON_USER_ID:
@@ -366,6 +392,8 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                             rootElement.appendChild(papiElement);
                             break;
                         default: // No other elements accepted for update.
+                            if (this.debug)
+                                System.out.println("getUpdateXml(): ignoring " + key);
                             break;
                     }
                 }            
@@ -401,11 +429,15 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
         }
         catch (ParserConfigurationException | TransformerConfigurationException ex)
         {
-            Logger.getLogger(MeCardDataToPapiData.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(MeCardDataToPapiData.class.getName() 
+                + "getUpdateXml() failed with a parser or transformer configuration exception:"
+                + System.lineSeparator() + ex.getLocalizedMessage());
         } 
         catch (TransformerException ex)
         {
-            Logger.getLogger(MeCardDataToPapiData.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(MeCardDataToPapiData.class.getName() 
+                + "getUpdateXml() failed with a transformer exception:"
+                + System.lineSeparator() + ex.getLocalizedMessage());
         }
         
         return xmlString.toString();
