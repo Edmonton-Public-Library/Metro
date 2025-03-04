@@ -50,13 +50,6 @@ public abstract class SDapiResponse
     public abstract boolean succeeded();
     
     /**
-     * Parses JSON and returns SDapiJsonResponse object.
-     * @param jsonString
-     * @return SDapiJsonResponse
-     */
-//    public static SDapiResponse parseJson(String jsonString);
-    
-    /**
      * Provides the error message if there was one.
      * 
      * @return String of the error message or an empty string.

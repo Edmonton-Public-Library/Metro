@@ -41,7 +41,14 @@ public enum SDapiPropertyTypes
     WEB_SERVICE_VERSION("web-service-version"),
     CONNECTION_TIMEOUT("connection-timeout"),
     HTTP_VERSION("http-version"),
-    DEBUG("debug");
+    DEBUG("debug"),
+    DEFAULT_PROFILE("default-profile"),
+    DEFAULT_LIBRARY("default-library"),
+    DEFAULT_LANGUAGE("default-language"),
+    DEFAULT_STANDING("default-standing"),
+    DEFAULT_KEEP_CIRC_HISTORY("default-keep-circ-history"),
+    DEFAULT_ACCESS("default-access"),
+    DEFAULT_ENVIRONMENT("default-environment");
     
     private final String type;
 

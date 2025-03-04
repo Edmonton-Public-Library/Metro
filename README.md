@@ -53,6 +53,8 @@ You can access Symphony and Horizon web services by modifying the `environment.p
 
 A new `.env` file is also required to store the staff ID and password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below.
 
+The `.env` file contains the staff user ID and password, as well as the staff prompt override code.
+
 ```bash
 # Environment file for MeCard server. 
 # This file is used for SDapi to store the 'staffPassword' 
@@ -62,6 +64,7 @@ A new `.env` file is also required to store the staff ID and password which are 
 # Application settings
 STAFF_ID="STAFF_MEMBER"
 STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
+STAFF_PROMPT_OVERRIDE_CODE="XXXX"
 ```
 
 **Note**: the entry `sd-originating-app-id` as far as I know, can be any string and is used as a transaction ID in the logs. The `x-sirs-clientId` is a web service ID that has permission to register customers.
@@ -85,22 +88,16 @@ STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
   <entry key="http-version">2.0</entry>
   <entry key="session-token-expire-time">60</entry>
   <entry key="debug">true</entry>
+  <entry key="default-profile">EPL_METRO</entry>
+  <entry key="default-library">EPLMNA</entry>
+  <entry key="default-language">ENGLISH</entry>
+  <entry key="default-standing">OK</entry>
+  <entry key="default-keep-circ-history">ALLCHARGES</entry>
+  <entry key="default-access">PUBLIC</entry>
+  <entry key="default-environment">PUBLIC</entry>
+  <entry key="use-city-province">false</entry>
 </properties>
 ```
-
-New optional field for `symphony.properties`. Web services has to be configured to allow the CITY/PROVINCE field in customer data. By default the field is called CITY/STATE so changing it requires the following.
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-    <comment>Default creation policies Symphony</comment>
-    <entry key="load-dir">.</entry>
-    <!-- ... other lines omitted for clarity -->
-    <!--  optional, false or absent to use CITY/STATE field -->
-    <entry key="use-city-province">true</entry>
-<properties>
-```
-
 
 ## Java Upgrade
 Java 11 is now end of life, to be replaced by Java 17. If you upgrade please ask for a new version of the MeCard.jar compiled to version 17. To update your system's version of Java do the following.
@@ -313,7 +310,7 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
   to be 'outage'. For example, you can change the get-protocol from 'sip2' 
   to 'outage', as shown below, if you know your sip2 service is going to be unavailable.
   ```xml
-  <entry key="get-protocol">outage|sip2|symphony-api|polaris-api</entry>
+  <entry key="get-protocol">outage|sip2|symphony-api|polaris-api|polaris-sql|sirsidynix-api|bimport</entry>
   ```
 
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).

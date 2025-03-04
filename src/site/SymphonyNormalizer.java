@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,10 @@ import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.FlatUserTableTypes;
+import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
+import mecard.config.SDapiPropertyTypes;
+import mecard.config.SupportedProtocolTypes;
 import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
@@ -57,20 +60,33 @@ public abstract class SymphonyNormalizer extends CustomerLoadNormalizer
      * be loaded.
      * @param response where to put any messages for the customer.
      */
-    protected void loadDefaultProfileAttributes(Customer unformattedCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
+    protected void loadDefaultProfileAttributes(
+            Customer unformattedCustomer, 
+            MeCardCustomerToNativeFormat formattedCustomer, 
+            Response response
+    )
     {
-        // Here we have to do all the final preparations to loading a customer
-        // Specifically we will be adding default values to the account
-        // like PROFILE etc.
-        Properties defaultProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
-        for (SymphonyPropertyTypes defaultType : SymphonyPropertyTypes.values())
+        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SYMPHONY_API.toString()))
         {
-            // Since all the CURRENT default types are located in the USER section
-            // of the flat file, we don't need to create new FlatFormattedTable objects.
-            String key = defaultType.toString();
-            String value = defaultProps.get(key).toString();
-            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), key, value);
+            // Here we have to do all the final preparations to loading a customer
+            // Specifically we will be adding default values to the account
+            // like PROFILE etc.
+            Properties defaultProps = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
+            for (SymphonyPropertyTypes defaultType : SymphonyPropertyTypes.values())
+            {
+                // Since all the CURRENT default types are located in the USER section
+                // of the flat file, we don't need to create new FlatFormattedTable objects.
+                String key = defaultType.toString();
+                String value = defaultProps.get(key).toString();
+                formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), key, value);
+            }
         }
+        // Removed default values from here since this is a Symphony supporting
+        // class and defaults are applied to a sirsidynix (symphony and horizon)
+        // actions. See SDapiRequestBuilder.
     }
     
     

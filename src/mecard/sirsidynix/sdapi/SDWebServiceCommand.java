@@ -63,6 +63,9 @@ public class SDWebServiceCommand implements Command
     private static String originAppId;
     private static String sessionToken;
     private HttpCommandStatus status;
+    // WorkFlows staff prompt field override code. See SDapiRequestBuilder
+    // and SDapiSecurity.java for more information.
+    private static String overrideCode;
     
     public static class Builder
     {
@@ -79,6 +82,7 @@ public class SDWebServiceCommand implements Command
         private URI uri;
         private String originAppId;
         private String sessionToken;
+        private String overrideCode;
         
         public Builder(
                 Properties wsConfigs, 
@@ -161,6 +165,28 @@ public class SDWebServiceCommand implements Command
         }
         
         /**
+         * 
+         * @param code
+         * @return 
+         */
+        public Builder setOverrideCode(String code)
+        {
+            this.overrideCode = code;
+            return this;
+        }
+        
+        /**
+         * Sets the debug property of the command.
+         * @param debug
+         * @return 
+         */
+        public Builder setDebug(boolean debug)
+        {
+            this.debug = debug;
+            return this;
+        }
+        
+        /**
          * Adds body text, as JSON, to a request.
          * @param bodyText - text for the body of the request.
          * @return Builder object.
@@ -215,8 +241,6 @@ public class SDWebServiceCommand implements Command
                         // remember to include the leading '/' in your the endpoint arg!
                         .append(endpoint);
             }
-            if (this.debug)
-                System.out.println("SD Web Service URL string: '" + urlString.toString() + "'");
             this.uri = URI.create(urlString.toString());
             return this;
         }
@@ -261,6 +285,7 @@ public class SDWebServiceCommand implements Command
             .build();
         if (SDWebServiceCommand.debug)
             System.out.println("SDWebService toString: " + SDWebServiceCommand.httpClient.toString());
+        SDWebServiceCommand.overrideCode  = builder.overrideCode;
     }
     
     
@@ -288,7 +313,7 @@ public class SDWebServiceCommand implements Command
                 }
                 case POST -> {
                     // Used for getting new session sessionToken.
-                    if (SDWebServiceCommand.sessionToken == null || ! SDWebServiceCommand.sessionToken.isBlank())
+                    if (SDWebServiceCommand.sessionToken == null || SDWebServiceCommand.sessionToken.isBlank())
                     {
                         request = HttpRequest.newBuilder()
                             .POST(SDWebServiceCommand.jsonBodyText)
@@ -308,6 +333,7 @@ public class SDWebServiceCommand implements Command
                             .setHeader("x-sirs-sessionToken", SDWebServiceCommand.sessionToken)
                             .setHeader("SD-Originating-App-Id", SDWebServiceCommand.originAppId)
                             .setHeader("x-sirs-clientID", SDWebServiceCommand.staffClientId)
+                            .setHeader("SD-Prompt-Return", SDWebServiceCommand.overrideCode)
                             .setHeader("Content-Type", "application/json")
                             .build();
                     }
@@ -321,12 +347,17 @@ public class SDWebServiceCommand implements Command
                         .setHeader("x-sirs-sessionToken", SDWebServiceCommand.sessionToken)
                         .setHeader("SD-Originating-App-Id", SDWebServiceCommand.originAppId)
                         .setHeader("x-sirs-clientID", SDWebServiceCommand.staffClientId)
-                        .setHeader("Content-Type", "application/vnd.sirsidynix.roa.resource.v2+json")
+                        .setHeader("SD-Prompt-Return", SDWebServiceCommand.overrideCode)
+                        .setHeader("Content-Type", "application/json")
                         .build();
                 }
                 default -> { }
             }
-            
+            if (SDWebServiceCommand.debug)
+            {
+                System.out.println("HEADERS include:" + request.headers());
+                System.out.println("METHOD:" + request.method());
+            }
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             status = new HttpCommandStatus(response);
             

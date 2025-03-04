@@ -35,7 +35,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.time.Duration;
-import mecard.Response;
 import mecard.exception.ConfigurationException;
 import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
@@ -195,7 +194,5 @@ public class SDWebServiceCommandTest
             .build();
         
         System.out.println("toString()>>>\n'" + command.toString() + "'");
-        
     }
-    
 }

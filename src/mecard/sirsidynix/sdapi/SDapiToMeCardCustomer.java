@@ -17,8 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
+
 package mecard.sirsidynix.sdapi;
 
+import com.google.gson.JsonSyntaxException;
 import java.util.List;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.SDapiUserFields;
@@ -51,11 +53,16 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
     public Customer getCustomer(String jsonResponse) 
     {
         Customer customer = new Customer();
-        // SDapiUserPatronSearchCustomerReponse
-//        SDapiUserPatronSearchCustomerResponse customerData = 
-//                (SDapiUserPatronSearchCustomerResponse) SDapiUserPatronSearchCustomerResponse.parseJson(jsonResponse);
-        SDapiUserPatronKeyCustomerResponse customerData = 
+        SDapiUserPatronKeyCustomerResponse customerData;
+        try
+        {
+            customerData = 
                 (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(jsonResponse);
+        }
+        catch (NullPointerException | JsonSyntaxException e)
+        {
+            return customer;
+        }
         // Populate customer data from response.
         customer.set(CustomerFieldTypes.ID, customerData.getField(SDapiUserFields.USER_ID.toString()));
         customer.set(CustomerFieldTypes.FIRSTNAME, customerData.getField(SDapiUserFields.USER_FIRST_NAME.toString()));
@@ -76,7 +83,7 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         }
         customer.set(CustomerFieldTypes.DOB, birthDate);
         String expiry = customerData.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
-        if (expiry.isEmpty())
+        if (expiry == null || expiry.isBlank())
         {
             expiry = DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
         }
@@ -87,7 +94,7 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
         // Is there an alternate ID for this customer if so pass it on.
         String altId = customerData.getField(SDapiUserFields.USER_ALTERNATE_ID.toString());
-        if (! altId.isBlank())
+        if (altId != null && ! altId.isBlank())
         {
             customer.set(CustomerFieldTypes.ALTERNATE_ID, altId);
         }

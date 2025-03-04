@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import java.util.Properties;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.PropertyReader;
+import mecard.config.SDapiPropertyTypes;
 import mecard.config.SDapiUserFields;
-import mecard.config.SymphonyPropertyTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.MeCardDataToNativeData;
@@ -45,26 +45,37 @@ import site.MeCardPolicy;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
+public class MeCardCustomerToSDapi extends MeCardCustomerToNativeFormat
 {
     private MeCardDataToNativeData customerTable;
     
     public MeCardCustomerToSDapi(Customer customer, MeCardDataToSDapiData.QueryType type)
     {
         // Read the Symphony specific properties from the symphony.properties file.
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.SYMPHONY);
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
         customerTable = MeCardDataToSDapiData.getInstanceOf(type);
         // Fill in the default required fields for v1 of SD api web service API.
+        String userKey = customer.get(CustomerFieldTypes.RESERVED);
+        if (Text.isSet(userKey))
+        {
+            customerTable.setValue(SDapiUserFields.USER_KEY.toString(), 
+                customer.get(CustomerFieldTypes.RESERVED));
+        }
         customerTable.setValue(SDapiUserFields.USER_ID.toString(), 
             customer.get(CustomerFieldTypes.ID));
+        customerTable.setValue(SDapiUserFields.USER_PASSWORD.toString(), 
+            customer.get(CustomerFieldTypes.PIN));
         customerTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), 
             customer.get(CustomerFieldTypes.FIRSTNAME));
         customerTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), 
             customer.get(CustomerFieldTypes.LASTNAME));
+        // The user key is kept in the reserved field.
         String altId = customer.get(CustomerFieldTypes.ALTERNATE_ID);
         if (Text.isSet(altId))
+        {
             customerTable.setValue(SDapiUserFields.USER_ALTERNATE_ID.toString(), 
                 customer.get(CustomerFieldTypes.ALTERNATE_ID));
+        }
         customerTable.setValue(SDapiUserFields.EMAIL.toString(), 
             customer.get(CustomerFieldTypes.EMAIL));
         customerTable.setValue(SDapiUserFields.STREET.toString(), 
@@ -73,16 +84,19 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
         String citySlashProvince = customer.get(CustomerFieldTypes.CITY)
                     + ", " + customer.get(CustomerFieldTypes.PROVINCE);
         String useCityProvinceSetting = props.getProperty("use-city-province", "false");
-        System.out.println(">= useCityProvince set to " + useCityProvinceSetting );
+        if (this.debug)
+            System.out.println("useCityProvince set to " + useCityProvinceSetting );
         if (useCityProvinceSetting.equalsIgnoreCase("true"))
         {
-            System.out.println("Using CITY_SLASH_PROV");
+            if (this.debug)
+                System.out.println("Using CITY_SLASH_PROV");
             customerTable.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), 
                 citySlashProvince);
         }
         else
         {
-            System.out.println("Using CITY_SLASH_STATE");
+            if (this.debug)
+                System.out.println("Using CITY_SLASH_STATE");
             customerTable.setValue(SDapiUserFields.CITY_SLASH_STATE.toString(), 
                 citySlashProvince);
         }
@@ -99,7 +113,8 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
             } 
             catch (ParseException ex)
             {
-                System.out.println("**error while parsing customer " 
+                if (this.debug)
+                    System.out.println("**error while parsing customer " 
                         + customer.get(CustomerFieldTypes.ID) 
                         + " DOB: '" + birthday + "'");
             }
@@ -114,7 +129,8 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
             } 
             catch (ParseException ex)
             {
-                System.out.println("**error while parsing customer " 
+                if (this.debug)
+                    System.out.println("**error while parsing customer " 
                         + customer.get(CustomerFieldTypes.ID) 
                         + " expiry: '" + expiry + "'");
             }
@@ -127,15 +143,20 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
             } 
             catch (ParseException ex)
             {
-                System.out.println("**error while parsing customer " 
+                if (this.debug)
+                    System.out.println("**error while parsing customer " 
                         + customer.get(CustomerFieldTypes.ID) 
                         + " expiry: '" + expiry + "'");
             }
         }
         customerTable.setValue(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString(), expiry);
+        if (this.debug)
+            System.out.println("USER_PRIVILEGE: " + expiry);
         String phoneNumber = customer.get(CustomerFieldTypes.PHONE);
         if (Text.isSet(phoneNumber))
         {
+            if (this.debug)
+                System.out.println("PHONE#: " + phoneNumber);
             customerTable.setValue(SDapiUserFields.PHONE.toString(), 
                 Text.formatPhoneNumber(phoneNumber));
         }
@@ -143,24 +164,23 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
         customerTable.setValue(SDapiUserFields.USER_PASSWORD.toString(), 
             customer.get(CustomerFieldTypes.PIN));
         // Set Defaults.
-        //        <entry key="USER_LIBRARY">EPLMNA</entry>
         customerTable.setValue(SDapiUserFields.USER_LIBRARY.toString(), 
-                props.getProperty(SymphonyPropertyTypes.USER_LIBRARY.toString()));
-        //        <entry key="USER_PROFILE">EPL-METRO</entry>
+                props.getProperty(SDapiPropertyTypes.DEFAULT_LIBRARY.toString()));
+        //        <entry key="default-profile">EPL-METRO</entry>
         customerTable.setValue(SDapiUserFields.PROFILE.toString(), 
-                props.getProperty(SymphonyPropertyTypes.USER_PROFILE.toString()));
-        //        <entry key="USER_PREF_LANG">ENGLISH</entry>
+                props.getProperty(SDapiPropertyTypes.DEFAULT_PROFILE.toString()));
+        //        <entry key="default-language">ENGLISH</entry>
         customerTable.setValue(SDapiUserFields.LANGUAGE.toString(), 
-                props.getProperty(SymphonyPropertyTypes.USER_PREFERED_LANGUAGE.toString()));
-        //        <entry key="USER_CHG_HIST_RULE">ALLCHARGES</entry>
+                props.getProperty(SDapiPropertyTypes.DEFAULT_LANGUAGE.toString()));
+        //        <entry key="default-keep-charge-history">ALLCHARGES</entry>
         customerTable.setValue(SDapiUserFields.KEEP_CIRC_HISTORY.toString(), 
-                props.getProperty(SymphonyPropertyTypes.USER_CHARGE_HISTORY_RULE.toString()));
-        //        <entry key="USER_ACCESS">PUBLIC</entry>
+                props.getProperty(SDapiPropertyTypes.DEFAULT_KEEP_CIRC_HISTORY.toString()));
+        //        <entry key="default-access">PUBLIC</entry>
         customerTable.setValue(SDapiUserFields.USER_ACCESS.toString(), 
-                props.getProperty(SymphonyPropertyTypes.USER_ACCESS.toString()));
-        //        <entry key="USER_ENVIRONMENT">PUBLIC</entry>
+                props.getProperty(SDapiPropertyTypes.DEFAULT_ACCESS.toString()));
+        //        <entry key="default-environment">PUBLIC</entry>
         customerTable.setValue(SDapiUserFields.ENVIRONMENT.toString(), 
-                props.getProperty(SymphonyPropertyTypes.USER_ENVIRONMENT.toString()));
+                props.getProperty(SDapiPropertyTypes.DEFAULT_ENVIRONMENT.toString()));
     }
     
     @Override
@@ -240,4 +260,9 @@ public class MeCardCustomerToSDapi implements MeCardCustomerToNativeFormat
         return this.customerTable.deleteValue(fieldName);
     }
     
+    @Override
+    public String toString()
+    {
+        return this.customerTable.toString();
+    }
 }

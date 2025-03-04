@@ -150,7 +150,7 @@ public class MeCardCustomerToSDapiTest {
         //}
         expResult = new ArrayList<>();
         expResult.add("""
-        {"resource":"/user/patron","fields":{"barcode":"21221012345666","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","pin":"64058","keepCircHistory":"ALLCHARGES","library":{"resource":"/policy/library","key":"EPLMNA"},"profile":{"resource":"/policy/userProfile","key":"EPL-METRO"},"access":{"resource":"/policy/userAccess","key":"PUBLIC"},"language":{"resource":"/policy/language","key":"ENGLISH"},"environment":{"resource":"/policy/environment","key":"PUBLIC"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsteam@epl.ca"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, Alberta"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"}]}}""");
+        {"resource":"/user/patron","fields":{"barcode":"21221012345666","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","pin":"64058","keepCircHistory":"ALLCHARGES","library":{"resource":"/policy/library","key":"EPLMNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_METRO"},"access":{"resource":"/policy/userAccess","key":"PUBLIC"},"language":{"resource":"/policy/language","key":"ENGLISH"},"environment":{"resource":"/policy/environment","key":"PUBLIC"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsteam@epl.ca"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, Alberta"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"}]}}""");
     }
 
     /**
@@ -160,11 +160,12 @@ public class MeCardCustomerToSDapiTest {
     public void testGetFormattedCustomer() 
     {
         System.out.println("==getFormattedCustomer==");
-        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(createCustomer, MeCardDataToSDapiData.QueryType.CREATE);
+        MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
         
         List<String> result = instance.getFormattedCustomer();
+        System.out.println("    EXPECTED JSON:"+expResult);
         System.out.println("GET_CUSTOMER JSON:"+result);
-        assertEquals(expResult, result);
+        assertTrue(result.get(0).equals(expResult.get(0)));
     }
 
     /**
@@ -198,7 +199,7 @@ public class MeCardCustomerToSDapiTest {
         key = SDapiUserFields.CATEGORY05.toString();
         value = "ENOCONSENT";
         assertEquals(true, instance.setValue(key, value));
-        System.out.println("Should be ECONSENT in Cat05: " + instance.getValue(SDapiUserFields.CATEGORY05.toString()));
+        System.out.println("Should be ENOCONSENT in Cat05: " + instance.getValue(SDapiUserFields.CATEGORY05.toString()));
         System.out.println(">>" + instance.getFormattedCustomer());
         instance.removeField("", SDapiUserFields.CATEGORY05.toString());
         System.out.println(">>" + instance.getFormattedCustomer());

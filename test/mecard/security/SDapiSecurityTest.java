@@ -56,11 +56,23 @@ public class SDapiSecurityTest
      */
     @Test
     public void testGetStaffId() throws Exception {
-        System.out.println("getStaffId");
+        System.out.println("==getStaffId==");
         SDapiSecurity instance = new SDapiSecurity(envFilePath);
         String expResult = "testStaffId";
         String result = instance.getStaffId();
         assertEquals(expResult, result);
     }
     
+    /**
+     * Test of getStaffId method, of class SDapiSecurity.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testGetStaffOverrideCode() throws Exception {
+        System.out.println("==getStaffOverrideCode==");
+        SDapiSecurity instance = new SDapiSecurity(envFilePath);
+        String expResult = "XXXX";
+        String result = instance.getStaffOverrideCode();
+        assertEquals(expResult, result);
+    }
 }

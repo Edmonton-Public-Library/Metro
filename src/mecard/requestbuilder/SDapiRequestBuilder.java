@@ -18,12 +18,14 @@
  * MA 02110-1301, USA.
  *
  */
+
 package mecard.requestbuilder;
 
 import api.Command;
 import api.CommandStatus;
 import api.CustomerMessage;
 import api.HttpCommandStatus;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
@@ -77,6 +79,28 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     private final Properties messageProperties;
     private final TokenManager tokenManager;
     private final boolean debug;
+    private SDapiSecurity sdApiSecurity;
+    /*
+        From: https://support.sirsidynix.com/kb/162976
+        When attempting to create or modify a user using the ILSWS Resource Oriented 
+        Architecture, get the error "A station user can only change his own PIN"
+
+        SOLUTION:
+        First, be sure you are using a session token that was created by logging in as a user with staff privileges.  
+        In particular the command list for the user access needs to have the Edit User Part B command active.  
+        Also, you need to be using a client ID that is set to be a staff symphony interface in the client IDs 
+        page of the web service administrator. 
+
+        Setting the PIN also requires a user override, this will result in a "user privilege override Required field missing" 
+        message with a promptType of USER_PRIVILEGE_OVRCD.  As described in the Acknowledging a prompt returned by an 
+        ROAFault object page of the WSHS SDK documentation, use the SD-Prompt-Return header to specify this override.  
+        If your override policy is XXXX, the header would look like SD-Prompt-Return:USER_PRIVILEGE_OVRCD/XXXX
+
+        The  user privilege override code is the one that staff use in Workflows to override things like
+        checkouts, and renew dates.
+    */
+    private String staffOverrideCode;
+    
     @SuppressWarnings("FieldMayBeFinal")
     private long tokenExpiry;
     /**
@@ -87,6 +111,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     {
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String envFilePath = this.sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
         this.debug = debug;
         
         // Get the SDapi properties file and set up a token manager.
@@ -104,6 +129,32 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 value must be a long integer type. Defaulting to 60 minutes.""");
             this.tokenExpiry = 60;
         }
+        
+        if (envFilePath == null || envFilePath.isBlank())
+        {
+            throw new ConfigurationException("""
+                **error, the sdapi.properties file does not contain an entry
+                for the environment file (.env). The entry should look like this example:
+                <entry key="env-file-path">/MeCard/path/to/.env</entry>
+                Add entry or check for spelling mistakes.
+                 """);
+        }
+        try 
+        {
+            this.sdApiSecurity = new SDapiSecurity(envFilePath);
+            this.staffOverrideCode = this.sdApiSecurity.getStaffOverrideCode();
+        } 
+        catch (IOException | NullPointerException e) 
+        {
+            throw new ConfigurationException("""
+                **error, expected an .env file but it is missing or can't be found.
+                The .env file should include entries for staff ID and password. For example,
+                STAFF_ID="SomeStaffId"
+                STAFF_PASSWORD="SomeStaffPassword"
+                STAFF_PROMPT_OVERRIDE_CODE="XXXX"
+                """ + e);
+        }
+        
     }
     
     /**
@@ -116,40 +167,14 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     {
         if (tokenManager.isTokenExpired(this.tokenExpiry))
         {
-            String envFilePath = sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
-            String staffId = "";
-            String staffPassword = "";
-            
-            if (envFilePath == null || envFilePath.isBlank())
-            {
-                throw new ConfigurationException("""
-                    **error, the sdapi.properties file does not contain an entry
-                    for the environment file (.env). The entry should look like this example:
-                    <entry key="env-file-path">/MeCard/path/to/.env</entry>
-                    Add entry or check for spelling mistakes.
-                     """);
-            }
-            try 
-            {
-                SDapiSecurity sds = new SDapiSecurity(envFilePath);
-                staffId = sds.getStaffId();
-                staffPassword = sds.getStaffPassword();
-            } 
-            catch (IOException e) 
-            {
-                System.out.println("""
-                    **error, expected an .env file but it is missing or can't be found.
-                    The .env file should include entries for staff ID and password. For example,
-                    STAFF_ID="SomeStaffId"
-                    STAFF_PASSWORD="SomeStaffPassword"
-                    """ + e);
-            }
-            
+            String staffId = sdApiSecurity.getStaffId();
+            String staffPassword = sdApiSecurity.getStaffPassword();
             SDapiAuthenticationData authData = new SDapiAuthenticationData();
             String loginBodyText = authData.getStaffAuthentication("", staffId, staffPassword);
             SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
                 .endpoint("/user/staff/login")
                 .bodyText(loginBodyText)
+                .setDebug(this.debug)
                 .build();
             HttpCommandStatus status = command.execute();
             if (status.okay())
@@ -230,6 +255,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         SDWebServiceCommand loginCustomer = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
             .endpoint("/user/patron/login")
             .bodyText(loginBodyText)
+            .setDebug(this.debug)
             .build();
         
         HttpCommandStatus status = loginCustomer.execute();
@@ -246,6 +272,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             return new SDWebServiceCommand.Builder(sdapiProperties, "GET")
                 .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
                 .sessionToken(this.getSessionToken(response))
+                .setDebug(this.debug)
                 .build();
         }
         else
@@ -299,7 +326,8 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     {
         // Use the create user API
         // POST: https://{{HOST}}/{{WEBAPP}}/user/patron
-       
+        String sessionToken = this.getSessionToken(response);
+        System.out.println("STAFF OVERRIDE CODE: " + this.staffOverrideCode);
         // Now use the customer data as the update command body.
         MeCardCustomerToNativeFormat jsonNativeCustomer = 
                 new MeCardCustomerToSDapi(customer, MeCardDataToSDapiData.QueryType.CREATE);
@@ -319,7 +347,9 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             .endpoint("/user/patron/")
             // TODO check this is right?!
             .bodyText(jsonNativeCustomer.toString())
-            .sessionToken(getSessionToken(response))
+            .sessionToken(sessionToken)
+            .setOverrideCode("USER_PRIVILEGE_OVRCD/" + this.staffOverrideCode)
+            .setDebug(this.debug)
             .build();
         return createCustomerCommand;
     }
@@ -333,6 +363,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         SDWebServiceCommand searchPatron = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
                 .endpoint("/user/patron/search?rw=1&q=ID:"+barcode)
                 .sessionToken(this.getSessionToken(response))
+                .setDebug(this.debug)
                 .build();
         // Execute and if successful create a request for customer info by 
         // search by user key.
@@ -357,6 +388,14 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.SUCCESS);
                 response.setResponse("");
                 userKey = searchResponse.getField(SDapiUserFields.USER_KEY.toString());
+                if (this.debug)
+                {
+                    System.out.println("  USER'S KEY ==>" + userKey);
+                }
+                if (! userKey.isBlank())
+                {
+                    customer.set(CustomerFieldTypes.RESERVED, userKey);
+                }
             }
             else
             {
@@ -393,17 +432,19 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         List<String> customerReceipt = jsonNativeUpdateCustomer.getFormattedCustomer();
         if (this.debug)
         {
-            System.out.println("CREATE JSON body: " + jsonNativeUpdateCustomer.toString());
+            System.out.println("UPDATE JSON body: " + jsonNativeUpdateCustomer.toString());
         }
         new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
             .set(customerReceipt)
             .build();
         // /user/patron/key/2139681
-        SDWebServiceCommand updateCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
+        SDWebServiceCommand updateCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "PUT")
                 .endpoint("/user/patron/key/" + userKey)
                 // TODO check this is right?!
                 .bodyText(jsonNativeUpdateCustomer.toString())
                 .sessionToken(getSessionToken(response))
+                .setOverrideCode("USER_PRIVILEGE_OVRCD/" + this.staffOverrideCode)
+                .setDebug(this.debug)
                 .build();
         return updateCustomerCommand;
     }
@@ -448,6 +489,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
             .endpoint("/user/staff/login")
             .bodyText(authenticationJSONData)
+            .setDebug(this.debug)
             .build();
         
         return command;
@@ -488,8 +530,17 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 catch (NullPointerException e)
                 {
                     System.out.println("*error, " + e.getMessage() + nullResponseMessage);
-                    response.setCode(ResponseTypes.TOO_MANY_TRIES);
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    return false;
+                }
+                catch (JsonSyntaxException e)
+                {
+                    // Otherwise the response was a failure.
+                    response.setCode(ResponseTypes.FAIL);
+                    response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    System.out.println("**error, the status response didn't contain any json.");
                     return false;
                 }
                 if (staffAuthenticates.succeeded())
@@ -499,7 +550,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                     return true;
                 }
                 // Otherwise the response was a failure.
-                response.setCode(ResponseTypes.UNAVAILABLE);
+                response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(
                         MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println("**get status failed: "
@@ -522,6 +573,15 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
                 }
+                catch (JsonSyntaxException e)
+                {
+                    // Otherwise the response was a failure.
+                    response.setCode(ResponseTypes.USER_NOT_FOUND);
+                    response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println("**error, the get (or test) response didn't contain any json.");
+                    return false;
+                }
                 if (testGetCustomerData.succeeded())
                 {
                     response.setCode(ResponseTypes.SUCCESS);
@@ -533,7 +593,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 response.setCode(ResponseTypes.USER_NOT_FOUND);
                 response.setResponse(messageProperties.getProperty(
                         MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                System.out.println("**get customer account info failed: "
+                System.out.println("**get (or test) customer account info failed: "
                         + testGetCustomerData.errorMessage());
                 return false;
             }
@@ -552,17 +612,27 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
                 }
+                catch (JsonSyntaxException e)
+                {
+                    // Otherwise the response was a failure.
+                    response.setCode(ResponseTypes.USER_NOT_FOUND);
+                    response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println("**error, the update response did not contain any json.");
+                    return false;
+                }
                 if (customerUpdated.succeeded())
                 {
                     response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_UPDATE.toString()));
                     if (debug) System.out.println("Customer updated.");
                     return true;
                 }
                 // Otherwise the response was a failure.
-                response.setCode(ResponseTypes.UNAVAILABLE);
+                response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(
-                        MessagesTypes.UNAVAILABLE_SERVICE.toString()));
-                System.out.println("**get status failed: "
+                        MessagesTypes.ACCOUNT_NOT_UPDATED.toString()));
+                System.out.println("**update account failed: "
                         + customerUpdated.errorMessage());
                 return false;
             }
@@ -581,22 +651,32 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                     response.setResponse(messageProperties.getProperty(MessagesTypes.TOO_MANY_TRIES.toString()));
                     return false;
                 }
+                catch (JsonSyntaxException e)
+                {
+                    // Otherwise the response was a failure.
+                    response.setCode(ResponseTypes.UNAVAILABLE);
+                    response.setResponse(messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
+                    System.out.println("**error, the create response did not contain any json.");
+                    return false;
+                }
                 if (customerCreated.succeeded())
                 {
                     response.setCode(ResponseTypes.SUCCESS);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.SUCCESS_JOIN.toString()));
                     if (debug) System.out.println("Customer created.");
                     return true;
                 }
                 // Otherwise the response was a failure.
-                response.setCode(ResponseTypes.UNAVAILABLE);
+                response.setCode(ResponseTypes.FAIL);
                 response.setResponse(messageProperties.getProperty(
-                        MessagesTypes.UNAVAILABLE_SERVICE.toString()));
-                System.out.println("**get status failed: "
+                        MessagesTypes.ACCOUNT_NOT_CREATED.toString()));
+                System.out.println("**create failed: "
                         + customerCreated.errorMessage());
                 return false;
             }
             default -> {
-                response.setCode(ResponseTypes.FAIL);
+                response.setCode(ResponseTypes.CONFIG_ERROR);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 System.out.println("**error, the requested command " 
                         + commandType.name() + " has no test for success.");

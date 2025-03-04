@@ -27,7 +27,7 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
-import mecard.config.SDapiUserFields;
+import mecard.config.SupportedProtocolTypes;
 import mecard.customer.Customer;
 import mecard.util.Address3;
 import mecard.util.DateComparer;
@@ -52,7 +52,8 @@ public class EPLCustomerGetNormalizer extends CustomerGetNormalizer
             CustomerMessage message)
     {
         Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
-        if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString()).equalsIgnoreCase("sip2"))
+        if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIP2.toString()))
         {
                 // parse the string appart.
     //        sent:63                               AO|AA21221012345678|AD64058|AY0AZF374
@@ -133,7 +134,8 @@ public class EPLCustomerGetNormalizer extends CustomerGetNormalizer
                 customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
             }
         }
-        else if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString()).contains("sdapi"))
+        else if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIRSIDYNIX_API.toString()))
         {
 //            String gender = message.getField(SDapiUserFields.CATEGORY02.toString());
 //            // EPL uses either 'M', 'F', 'N', or 'X'.

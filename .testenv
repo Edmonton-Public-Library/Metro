@@ -5,3 +5,4 @@
 # Application settings
 STAFF_ID="testStaffId"
 STAFF_PASSWORD="testStaffPassword"
+STAFF_PROMPT_OVERRIDE_CODE="XXXX"

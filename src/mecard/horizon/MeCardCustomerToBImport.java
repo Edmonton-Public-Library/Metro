@@ -46,7 +46,7 @@ import mecard.security.SitePasswordRestrictions;
  * Instance of a customer formatted for loading.
  * @author Andrew Nisbet andrew@dev-ils.com
  */
-public final class MeCardCustomerToBImport implements MeCardCustomerToNativeFormat
+public final class MeCardCustomerToBImport extends MeCardCustomerToNativeFormat
 {
     private final List<MeCardDataToBImportData> customerAccount;
     private final SitePasswordRestrictions passwordChecker;

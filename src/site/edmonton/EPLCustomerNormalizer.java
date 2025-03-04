@@ -20,9 +20,15 @@
 */
 package site.edmonton;
 
+import java.util.Properties;
 import mecard.Response;
+import mecard.config.ConfigFileTypes;
 import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SDapiUserFields;
+import mecard.config.SupportedProtocolTypes;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import site.SymphonyNormalizer;
@@ -61,27 +67,37 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
             Response response
     )
     {
+        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        if (envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SYMPHONY_API.toString()))
+        {
+            /*
+            ** Note that the two methods insertValue() and removeField() work 
+            ** whether you use a GSON or FLAT formatted customer because the GSON
+            ** object ignores the table name.
+            */
 
-        /*
-        ** Note that the two methods insertValue() and removeField() work 
-        ** whether you use a GSON or FLAT formatted customer because the GSON
-        ** object ignores the table name.
-        */
-        
-        
-        // No matter what ME customer give implied consent to contact via email when they join.
-        // Which at EPL, is USER_CATEGORY5.
-        // TODO this has to be reworked for use with SDapiCutomerNormalizer.
-        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-                    FlatUserFieldTypes.USER_CATEGORY5.toString(), 
-                    "ECONSENT");
-        // Suppress preferred user name.
-        formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
-            FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
-        );
-        
-        this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
-        // Do this last to ensure that any new pasword is emailed to the customer.
-        this.testSiteRestrictedPassword(unformattedCustomer, formattedCustomer, response);
+
+            // No matter what ME customer give implied consent to contact via email when they join.
+            // Which at EPL, is USER_CATEGORY5.
+            // TODO this has to be reworked for use with SDapiCutomerNormalizer.
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
+                        FlatUserFieldTypes.USER_CATEGORY5.toString(), 
+                        "ECONSENT");
+            // Suppress preferred user name.
+            formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
+                FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
+            );
+
+            this.loadDefaultProfileAttributes(unformattedCustomer, formattedCustomer, response);
+            // Do this last to ensure that any new pasword is emailed to the customer.
+            this.testSiteRestrictedPassword(unformattedCustomer, formattedCustomer, response);
+        }
+        else if (envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIRSIDYNIX_API.toString()))
+        {
+            formattedCustomer.insertValue("", SDapiUserFields.CATEGORY05.toString(), "ECONSENT");
+            formattedCustomer.removeField("", SDapiUserFields.USE_PREFERRED_NAME.toString());
+        }
     }
 }

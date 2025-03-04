@@ -37,7 +37,7 @@ import mecard.customer.MeCardDataToNativeData;
  * This class converts a ME customer object into a flat file.
  * @author Andrew Nisbet <andrew.nisbet@epl.ca>
  */
-public class MeCardCustomerToFlat implements MeCardCustomerToNativeFormat
+public class MeCardCustomerToFlat extends MeCardCustomerToNativeFormat
 {
     private final List<MeCardDataToFlatData> customerAccount;
     

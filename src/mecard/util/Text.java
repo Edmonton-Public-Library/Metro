@@ -336,13 +336,9 @@ public final class Text
      */
     public static boolean isUnset(String str)
     {
-        if (str == null 
-                || str.isBlank() 
-                || str.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0)
-        {
-            return true;
-        }
-        return false;
+        return str == null 
+                || str.isBlank()
+                || str.compareTo(Protocol.DEFAULT_FIELD_VALUE) == 0;
     }
     
     /**
@@ -364,6 +360,7 @@ public final class Text
      */
     public static String formatPhoneNumber(String phoneNumber) 
     {
+        phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
         // Validate input
         if (phoneNumber == null || phoneNumber.length() != 10) 
         {

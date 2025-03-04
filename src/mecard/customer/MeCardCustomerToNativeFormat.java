@@ -31,21 +31,28 @@ import java.util.List;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public interface MeCardCustomerToNativeFormat
+public abstract class MeCardCustomerToNativeFormat
 {
+    protected boolean debug;
+    
+    public void setDebug(boolean d)
+    {
+        this.debug = d;
+    }
+    
     /**
      * 
      * @return list of strings that represents the customer in the form that
      * can be loaded by a ILS.
      */
-    public List<String> getFormattedCustomer();
+    public abstract List<String> getFormattedCustomer();
     
     /**
      * 
      * @return list of strings that represents the customer's meta data if any,
      * can be loaded by a ILS.
      */
-    public List<String> getFormattedHeader();
+    public abstract List<String> getFormattedHeader();
     
     /**
      * Sets a value denoted by key to the value passed in the parameter.
@@ -57,7 +64,7 @@ public interface MeCardCustomerToNativeFormat
      * @return true if the value was present and updated and false if the value
      * was not present, but was added.
      */
-    public boolean setValue(String key, String value);
+    public abstract boolean setValue(String key, String value);
     
     /**
      * Inserts a given key value pair into an existing table.
@@ -67,7 +74,7 @@ public interface MeCardCustomerToNativeFormat
      * @return true if the table was found and the key value pair inserted and 
      * false otherwise.
      */
-    public boolean insertValue(String tableName, String key, String value);
+    public abstract boolean insertValue(String tableName, String key, String value);
     
     /**
      * 
@@ -75,21 +82,21 @@ public interface MeCardCustomerToNativeFormat
      * @return true if the key was found in the formatted customer account and
      * false otherwise.
      */
-    public boolean containsKey(String key);
+    public abstract boolean containsKey(String key);
     
     /**
      * Returns the value stored in the entry denoted by the parameter key.
      * @param key
      * @return the value stored by key or an empty string if the key was not found.
      */
-    public String getValue(String key);
+    public abstract String getValue(String key);
    
     /**
      * Inserts a Formatted table into the formatted customer object.
      * @param formattedTable the value of formattedTable
      * @param index the value of index
      */
-    public void insertTable(MeCardDataToNativeData formattedTable, int index);
+    public abstract void insertTable(MeCardDataToNativeData formattedTable, int index);
     
     /**
      * Renames a field in a table. This can be useful when an ILS has customized
@@ -103,7 +110,7 @@ public interface MeCardCustomerToNativeFormat
      * @return true if the specified field in the specified table could be found
      * and it was renamed to newFieldName, and false otherwise.
      */
-    public boolean renameField(String tableName, String originalFieldName, String newFieldName);
+    public abstract boolean renameField(String tableName, String originalFieldName, String newFieldName);
     
     /**
      * Removes unused fields from user data before loading.
@@ -111,5 +118,5 @@ public interface MeCardCustomerToNativeFormat
      * @param fieldName name of the field to user case sensitive.
      * @return true if the field was removed and false if it couldn't be found.
      */
-    public boolean removeField(String tableName, String fieldName);
+    public abstract boolean removeField(String tableName, String fieldName);
 }
