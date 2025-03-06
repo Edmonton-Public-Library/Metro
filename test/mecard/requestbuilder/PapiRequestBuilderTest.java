@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import api.Command;
 import api.CommandStatus;
+import api.HttpCommandStatus;
 import json.RequestDeserializer;
 import mecard.QueryTypes;
 import mecard.Request;
@@ -196,7 +197,7 @@ public class PapiRequestBuilderTest
         // a temporary lockout if more than three authentication attempts are
         // made with a five minute period.
         runStatusTest          = true;
-        runGetCustomerTest     = true; // Use this to get customer data
+        runGetCustomerTest     = false; // Use this to get customer data
         runCreateCustomerTest  = false;
         runUpdateCustomerTest  = true;
         runCustomerExistsTest  = false; // Use this to check if they exist
@@ -236,20 +237,29 @@ public class PapiRequestBuilderTest
     @Test
     public void testGetUpdateUserCommand()
     {
-        System.out.println("getUpdateUserCommand");
+        System.out.println("==getUpdateUserCommand==");
         if (this.runUpdateCustomerTest)
         {
+//            Response response = new Response();
+//            CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
+//            ILSRequestBuilder requestBuilder = new PapiRequestBuilder(true);
+//            Command updateCustomerExistsCommand = requestBuilder.getUpdateUserCommand(
+//                updateCustomer, response, normalizer);
+//            CommandStatus status = updateCustomerExistsCommand.execute();
+//            System.out.println(" update customer STDOUT:'"+status.getStdout()+"'");
+//            System.out.println(" update customer STDERR::'"+status.getStderr()+"'");
+//            System.out.println(" update customer RESPONSE:'"+response.getMessage()+"'");
+//            assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
+//            requestBuilder.tidy();
+            
+        
             Response response = new Response();
             CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
             ILSRequestBuilder requestBuilder = new PapiRequestBuilder(true);
-            Command updateCustomerExistsCommand = requestBuilder.getUpdateUserCommand(
-                updateCustomer, response, normalizer);
-            CommandStatus status = updateCustomerExistsCommand.execute();
-            System.out.println(" update customer STDOUT:'"+status.getStdout()+"'");
-            System.out.println(" update customer STDERR::'"+status.getStderr()+"'");
-            System.out.println(" update customer RESPONSE:'"+response.getMessage()+"'");
+            Command command = requestBuilder.getUpdateUserCommand(updateCustomer, response, normalizer);
+            HttpCommandStatus status = (HttpCommandStatus) command.execute();
+            System.out.println("-------Status:" + status.getStdout());
             assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
-            requestBuilder.tidy();
         }
         else
         {
