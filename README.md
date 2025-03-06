@@ -31,7 +31,7 @@ stored then passes the response on again as another request to the guest library
 The guest then creates a new user record in their ILS. 
 
 The Metro server supports the following strategies to manage customer registrations.
-# Protocol Table
+# Supported Protocols Table
 
 | Stategy | Key Word | Get | Test | Update | Create | Status | Description |
 |----------|----------|:---:|:----:|:------:|:------:|:------:|-------------|
@@ -40,7 +40,7 @@ The Metro server supports the following strategies to manage customer registrati
 | Symphony native | `symphony-api` | N | N | Y | Y | N | Uses SSH. |
 | Polaris API (PAPI) | `polaris-api` | Y | Y | Y | Y | Y | Supports upto version 7.6. |
 | Polaris SQL | `polaris-sql` | Y | Y | Y | Y | Y | Uses raw SQL statements. |
-| SirsiDynix web services | `sirsidynix-api` | Y | Y | Y | Y | N | Symphony & Horizon |
+| SirsiDynix web services | `sirsidynix-api` | Y | Y | Y | Y | Y | Symphony & Horizon |
 | Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
 
 ----------
@@ -48,7 +48,7 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 ## Version 3.00.00
 Added SirsiDynix web services for Symphony and Horizon libraries.
-To use it there is a new `sdapi.properties` file as seen below which configures the important settings for web services. **Note**: You will also require your original `symphony.properties` file which contains the default values required for registering a customer in Symphony.
+To use it there is a new `sdapi.properties` file as seen below which configures the important settings for web services.
 
 **NOTE: SirsiDynix web services DTD states that the maximum password length is 25, so `environment.properties` must include at least `password-max-length` entry, however the other two password settings remain optional**.
 ```xml
@@ -60,9 +60,10 @@ To use it there is a new `sdapi.properties` file as seen below which configures 
 <!-- <entry key="allowed-password-characters">abcd...7890</entry> -->
 ```
 
-You can access Symphony and Horizon web services by modifying the `environment.properties` files, changing the `*-protocol` entries to `sirsidynix-api`.
+You can access Symphony & Horizon web services by modifying the `environment.properties` files, changing the `*-protocol` entries to `sirsidynix-api`. [See here for details](#supported-protocols-table).
 
-A new `.env` file is also required to store the staff ID and password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below.
+### New .env File
+A new `.env` file is also required to store the staff ID and password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below (`sirsidynix-api` only).
 
 The `.env` file contains the staff user ID and password, as well as the staff prompt override code.
 
@@ -77,7 +78,7 @@ STAFF_ID="STAFF_MEMBER"
 STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
 STAFF_PROMPT_OVERRIDE_CODE="XXXX"
 ```
-
+### New sdapi.properties File
 **Note**: the entry `sd-originating-app-id` as far as I know, can be any string and is used as a transaction ID in the logs. The `x-sirs-clientId` is a web service ID that has permission to register customers.
 
 ```xml
@@ -109,6 +110,9 @@ STAFF_PROMPT_OVERRIDE_CODE="XXXX"
   <entry key="use-city-province">false</entry>
 </properties>
 ```
+### New Libraries
+* `commons-daemon-1.4.0.jar` replacement update.
+* `gson-2.10.1.jar` replacement update.
 
 ## Java Upgrade
 Java 11 is now end of life, to be replaced by Java 17. If you upgrade please ask for a new version of the MeCard.jar compiled to version 17. To update your system's version of Java do the following.
