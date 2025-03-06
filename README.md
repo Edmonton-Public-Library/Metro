@@ -10,7 +10,7 @@ Me Card project was created to reduce barriers in accessing the library
 collections and diverse programs of the Metro Federation libraries.
 
 
-# What is the Me Card service?
+# What is the ME Card service?
 ----------------------------
 
 The Me Card is a web-based service that allows customers with a library 
@@ -30,7 +30,18 @@ transaction is a way that ensures that no identifiable customer information is
 stored then passes the response on again as another request to the guest library.
 The guest then creates a new user record in their ILS. 
 
-TODO: In the future all operational parameters may be set in the `.env` file, not the `properties` files.
+The Metro server supports the following strategies to manage customer registrations.
+# Protocol Table
+
+| Stategy | Key Word | Get | Test | Update | Create | Status | Description |
+|----------|----------|:---:|:----:|:------:|:------:|:------:|-------------|
+| SIP2 | `sip2` | Y | Y | N | N | Y | |
+| outage | `outage` | Y | Y | Y | Y | Y | Used for planned outages. |
+| Symphony native | `symphony-api` | N | N | Y | Y | N | Uses SSH. |
+| Polaris API (PAPI) | `polaris-api` | Y | Y | Y | Y | Y | Supports upto version 7.6. |
+| Polaris SQL | `polaris-sql` | Y | Y | Y | Y | Y | Uses raw SQL statements. |
+| SirsiDynix web services | `sirsidynix-api` | Y | Y | Y | Y | N | Symphony & Horizon |
+| Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
 
 ----------
 # What's new
