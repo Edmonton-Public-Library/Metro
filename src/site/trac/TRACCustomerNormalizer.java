@@ -32,8 +32,8 @@ import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.util.DateComparer;
 import mecard.customer.MeCardCustomerToNativeFormat;
-import mecard.polaris.papi.PapiElementOrder;
-import mecard.util.Text;
+//import mecard.polaris.papi.PapiElementOrder;
+//import mecard.util.Text;
 import site.CustomerLoadNormalizer;
 
 /**

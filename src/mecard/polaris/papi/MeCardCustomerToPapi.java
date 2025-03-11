@@ -100,42 +100,26 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         // All PAPI sites use the same date formatting, gender formatting etc.
         // so all this code was moved from site specific [Site]CustomerNormalizer class(es).
         //
-        // Dates need to be formatted to '2022-07-05T18:45:23.162Z' format.
+        // Dates need to be formatted to '2022-07-05T18:45:23.162' format.
         // Privilege expiry logic. Use the customer's expiry and if one isn't 
         // set set it to expire in a year.
         String expiry = customer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES);
-        String addressCheckDate = DateComparer.getFutureDate(MeCardPolicy.maximumAddressCheckDays());
         if (Text.isUnset(expiry))
         {
             expiry = DateComparer.getFutureDate(MeCardPolicy.maximumExpiryDays());
-            try
-            {
-                expiry = DateComparer.ANSIToConfigDate(expiry);
-                addressCheckDate = DateComparer.ANSIToConfigDate(addressCheckDate);
-            } 
-            catch (ParseException ex)
-            {
-                System.out.println("**error while parsing customer " 
-                        + customer.get(CustomerFieldTypes.ID) 
-                        + " expiry: '" + expiry + "'");
-            }
         }
-        else
+        try
         {
-            try
-            {
-                expiry = DateComparer.ANSIToConfigDate(expiry);
-                addressCheckDate = DateComparer.ANSIToConfigDate(addressCheckDate);
-            } 
-            catch (ParseException ex)
-            {
-                System.out.println("**error while parsing customer " 
-                        + customer.get(CustomerFieldTypes.ID) 
-                        + " expiry: '" + expiry + "'");
-            }
+            expiry = DateComparer.ANSIToConfigDate(expiry);
+        } 
+        catch (ParseException ex)
+        {
+            System.out.println("**error while parsing customer expiry: "
+                    + customer.get(CustomerFieldTypes.ID)
+                + System.lineSeparator() + "computed expiry: '" + expiry + "'");
         }
         customerTable.setValue(PapiElementOrder.EXPIRATION_DATE.name(), expiry);
-        customerTable.setValue(PapiElementOrder.ADDRESS_CHECK_DATE.name(), addressCheckDate);
+        
         // Do the same for Birthday, but birthday can be blank
         String birthday = customer.get(CustomerFieldTypes.DOB);
         if (Text.isSet(birthday))
@@ -143,16 +127,29 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
             try
             {
                 birthday = DateComparer.ANSIToConfigDate(birthday);
-                customerTable.setValue(PapiElementOrder.BIRTHDATE.name(), birthday);
             } 
             catch (ParseException ex)
             {
                 System.out.println("**error while parsing customer " 
-                        + customer.get(CustomerFieldTypes.ID) 
-                        + " DOB: '" + birthday + "'");
+                    + customer.get(CustomerFieldTypes.ID) 
+                    + " DOB: '" + birthday + "'");
             }
         }
-        
+        customerTable.setValue(PapiElementOrder.BIRTHDATE.name(), birthday);
+        // Add a address check date which is just some number of days in the future
+        // defined in MeCardPolicy.
+        String addressCheckDate = DateComparer.getFutureDate(MeCardPolicy.maximumAddressCheckDays());
+        try
+        {
+            addressCheckDate = DateComparer.ANSIToConfigDate(addressCheckDate);
+        } 
+        catch (ParseException ex)
+        {
+            System.out.println("**error while parsing address check date "
+                    + customer.get(CustomerFieldTypes.ID)
+                    + "of: '" + addressCheckDate + "'");
+        }
+        customerTable.setValue(PapiElementOrder.ADDRESS_CHECK_DATE.name(), addressCheckDate);
         // Finally make sure the postal code has a space.
         //    postal codes. T9H5C5 != T9H 5C5.
         String postalCode = customer.get(CustomerFieldTypes.POSTALCODE);

@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import json.RequestDeserializer;
@@ -29,6 +30,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
+import mecard.util.DateComparer;
+import site.MeCardPolicy;
 
 /**
  *
@@ -126,10 +129,20 @@ public class MeCardCustomerToPapiTest
     public void testSetValue()
     {
         System.out.println("==setValue==");
-        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToPapi(customer, QueryType.CREATE);
+        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToPapi(customer, QueryType.UPDATE);
         String storedValue = "12345678";
         formattedCustomer.setValue(PapiElementOrder.BARCODE.name(), storedValue);
         assertTrue(formattedCustomer.getValue(PapiElementOrder.BARCODE.name()).compareTo("12345678") == 0);
+        
+        String expiry = "20250228";
+        try
+        {
+            expiry = DateComparer.ANSIToConfigDate(expiry);
+            System.out.println("EXPIRY:==="+expiry);
+        }
+        catch (ParseException e){}
+        formattedCustomer.setValue(PapiElementOrder.EXPIRATION_DATE.name(), expiry);
+        assertTrue(formattedCustomer.getValue(PapiElementOrder.EXPIRATION_DATE.name()).compareTo("2025-02-28T00:00:00") == 0);
     }
 
     /**

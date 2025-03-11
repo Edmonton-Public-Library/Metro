@@ -49,6 +49,7 @@ import mecard.exception.ConfigurationException;
 import mecard.exception.PapiException;
 import mecard.polaris.papi.MeCardCustomerToPapi;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
+import mecard.polaris.papi.PapiElementOrder;
 import mecard.polaris.papi.PapiXmlPatronAuthenticateResponse;
 import mecard.polaris.papi.PapiXmlPatronBasicDataResponse;
 import mecard.polaris.papi.PapiXmlRequestPatronValidateResponse;
@@ -105,22 +106,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         this.internalDomain = papiProperties.getProperty(PapiPropertyTypes.INTERNAL_DOMAIN.toString());
         this.staffPassword  = papiProperties.getProperty(PapiPropertyTypes.STAFF_PASSWORD.toString());
         this.staffAccessId  = papiProperties.getProperty(PapiPropertyTypes.STAFF_ID.toString());
-        if (this.internalDomain.isEmpty())
-        {
-            this.runAsStaff = false;
-        }
-        else if (this.staffAccessId.isEmpty())
-        {
-            this.runAsStaff = false;
-        }
-        else if (this.staffPassword.isEmpty())
-        {
-            this.runAsStaff = false;
-        }
-        else
-        {
-            this.runAsStaff = true;
-        }
+        this.runAsStaff = !(this.internalDomain.isEmpty() || this.staffAccessId.isEmpty() || this.staffPassword.isEmpty());
     }
     
     private String getProtectedBaseUri()
@@ -347,10 +333,17 @@ public class PapiRequestBuilder extends ILSRequestBuilder
             patronToken = this.getPatronAccessToken(userId, password, response);
         }
         
-        // Time to update the customer, so normalize the data.
-        // we have a customer let's convert them to a PolarisSQLFormatted user.
+        // we have a customer let's convert them to a PapiFormatted user.
         MeCardCustomerToNativeFormat papiCustomer = new MeCardCustomerToPapi(customer,QueryType.UPDATE);
         // apply library centric normalization to the customer account.
+        /* DO NOT DEPLOY WITH THIS CODE BELOW */
+        // TEST
+//        System.out.println("Running this TEST");
+        papiCustomer.setValue(PapiElementOrder.BIRTHDATE.name(), "1975-08-22");
+//        papiCustomer.removeField("", PapiElementOrder.BIRTHDATE.name());
+//        System.out.println("customer.toString():"+System.lineSeparator() + papiCustomer.toString());
+        // TEST
+        /* DO NOT DEPLOY WITH THIS CODE ABOVE */
         normalizer.finalize(customer, papiCustomer, response);
         // Output the customer's data as a receipt in case they come back with questions.
         List<String> customerReceipt = papiCustomer.getFormattedCustomer();
