@@ -22,6 +22,7 @@
 package mecard.sirsidynix.sdapi;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Date;
 
@@ -87,18 +88,18 @@ public class SDapiCustomerCreateResponse extends SDapiResponse
         private String title;
         private boolean usePreferredName;
         private String webAuthID;
-        private String category01;
-        private String category02;
-        private String category03;
-        private String category04;
-        private String category05;
-        private String category06;
-        private String category07;
-        private String category08;
-        private String category09;
-        private String category10;
-        private String category11;
-        private String category12;
+        private PolicyReference category01;
+        private PolicyReference category02;
+        private PolicyReference category03;
+        private PolicyReference category04;
+        private PolicyReference category05;
+        private PolicyReference category06;
+        private PolicyReference category07;
+        private PolicyReference category08;
+        private PolicyReference category09;
+        private PolicyReference category10;
+        private PolicyReference category11;
+        private PolicyReference category12;
         private int claimsReturnedCount;
         private PolicyReference standing;
         private String groupId;
@@ -169,41 +170,41 @@ public class SDapiCustomerCreateResponse extends SDapiResponse
         public String getWebAuthID() { return webAuthID; }
         public void setWebAuthID(String webAuthID) { this.webAuthID = webAuthID; }
         
-        public String getCategory01() { return category01; }
-        public void setCategory01(String category01) { this.category01 = category01; }
+        public PolicyReference getCategory01() { return category01; }
+        public void setCategory01(PolicyReference category01) { this.category01 = category01; }
         
-        public String getCategory02() { return category02; }
-        public void setCategory02(String category02) { this.category02 = category02; }
+        public PolicyReference getCategory02() { return category02; }
+        public void setCategory02(PolicyReference category02) { this.category02 = category02; }
         
-        public String getCategory03() { return category03; }
-        public void setCategory03(String category03) { this.category03 = category03; }
+        public PolicyReference getCategory03() { return category03; }
+        public void setCategory03(PolicyReference category03) { this.category03 = category03; }
         
-        public String getCategory04() { return category04; }
-        public void setCategory04(String category04) { this.category04 = category04; }
+        public PolicyReference getCategory04() { return category04; }
+        public void setCategory04(PolicyReference category04) { this.category04 = category04; }
         
-        public String getCategory05() { return category05; }
-        public void setCategory05(String category05) { this.category05 = category05; }
+        public PolicyReference getCategory05() { return category05; }
+        public void setCategory05(PolicyReference category05) { this.category05 = category05; }
         
-        public String getCategory06() { return category06; }
-        public void setCategory06(String category06) { this.category06 = category06; }
+        public PolicyReference getCategory06() { return category06; }
+        public void setCategory06(PolicyReference category06) { this.category06 = category06; }
         
-        public String getCategory07() { return category07; }
-        public void setCategory07(String category07) { this.category07 = category07; }
+        public PolicyReference getCategory07() { return category07; }
+        public void setCategory07(PolicyReference category07) { this.category07 = category07; }
         
-        public String getCategory08() { return category08; }
-        public void setCategory08(String category08) { this.category08 = category08; }
+        public PolicyReference getCategory08() { return category08; }
+        public void setCategory08(PolicyReference category08) { this.category08 = category08; }
         
-        public String getCategory09() { return category09; }
-        public void setCategory09(String category09) { this.category09 = category09; }
+        public PolicyReference getCategory09() { return category09; }
+        public void setCategory09(PolicyReference category09) { this.category09 = category09; }
         
-        public String getCategory10() { return category10; }
-        public void setCategory10(String category10) { this.category10 = category10; }
+        public PolicyReference getCategory10() { return category10; }
+        public void setCategory10(PolicyReference category10) { this.category10 = category10; }
         
-        public String getCategory11() { return category11; }
-        public void setCategory11(String category11) { this.category11 = category11; }
+        public PolicyReference getCategory11() { return category11; }
+        public void setCategory11(PolicyReference category11) { this.category11 = category11; }
         
-        public String getCategory12() { return category12; }
-        public void setCategory12(String category12) { this.category12 = category12; }
+        public PolicyReference getCategory12() { return category12; }
+        public void setCategory12(PolicyReference category12) { this.category12 = category12; }
         
         public int getClaimsReturnedCount() { return claimsReturnedCount; }
         public void setClaimsReturnedCount(int claimsReturnedCount) { this.claimsReturnedCount = claimsReturnedCount; }
@@ -223,9 +224,10 @@ public class SDapiCustomerCreateResponse extends SDapiResponse
 
     public static class PolicyReference 
     {
+        @SerializedName(value = "resource", alternate = {"resource_path"})
         private String resource;
         private String key;
-
+        
         public String getResource() { return resource; }
         public void setResource(String resource) { this.resource = resource; }
         
