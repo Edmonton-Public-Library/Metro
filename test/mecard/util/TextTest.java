@@ -273,6 +273,19 @@ public class TextTest
         String result = Text.toDisplayCase(s);
         assertTrue(expResult.compareTo(result) == 0);
     }
+    
+    /**
+     * Test of toDisplayCase method, of class Text.
+     */
+    @Test
+    public void testFormatPhoneNumber()
+    {
+        System.out.println("==formatPhoneNumber==");
+        String s = "7805551212";
+        String expResult = "780-555-1212";
+        String result = Text.formatPhoneNumber(s);
+        assertTrue(expResult.compareTo(result) == 0);
+    }
 
     /**
      * Test of longestMatch method, of class Text.

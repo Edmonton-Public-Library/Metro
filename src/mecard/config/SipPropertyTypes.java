@@ -37,7 +37,7 @@ public enum SipPropertyTypes
     USER_NOT_FOUND("user-not-found"),
     USER_PIN_INVALID("user-pin-invalid");
     
-    private String type;
+    private final String type;
 
     private SipPropertyTypes(String s)
     {

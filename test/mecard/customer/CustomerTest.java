@@ -19,6 +19,7 @@
  *
  */
 package mecard.customer;
+
 import json.RequestDeserializer;
 import mecard.Request;
 import mecard.config.CustomerFieldTypes;

@@ -65,16 +65,14 @@ public class EPLMeCardPolicyTest
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
                 + "CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|"
                 + "BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|"
-                + "PCEPL-VISITR|"
+                + "PCEPL_VISITR|"
                 + "PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
 //        c = new Customer(custReq);
         p = MeCardPolicy.getInstanceOf(false);
         
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isResident(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isResident(c, customerMessage, sb));
     }
 
     /**
@@ -95,7 +93,7 @@ public class EPLMeCardPolicyTest
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
                 + "CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|"
                 + "BEilsteam@epl.ca|BHUSD|PA20140321    235900|PD20050303|"
-                + "PCEPL-RECIP|"
+                + "PCEPL_RECIP|"
                 + "PFM|DB$0.00|DM$0.00|AFUser BLOCKED|AY0AZACC6";
         
         
@@ -117,9 +115,7 @@ public class EPLMeCardPolicyTest
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         StringBuilder sb = new StringBuilder();
         CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
-        boolean result = p.isInGoodStanding(c, customerMessage, sb);
-        boolean expected= true;
-        assertTrue(expected == result);
+        assertTrue(p.isInGoodStanding(c, customerMessage, sb));
         String modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
                 + "CB0040|BLY|CQY|BV 12.00|BD7 Sir Winston Churchill Square Edmonton, AB T5J 2V4|"
@@ -129,9 +125,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isInGoodStanding(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isInGoodStanding(c, customerMessage, sb));
     }
 
     /**
@@ -145,9 +139,7 @@ public class EPLMeCardPolicyTest
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         StringBuilder sb = new StringBuilder();
         CustomerMessage customerMessage = new SIPCustomerMessage(this.meta);
-        boolean result = p.isMinimumAge(c, customerMessage, sb);
-        boolean expected= true;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         String modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -158,9 +150,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -171,9 +161,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -184,9 +172,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -197,9 +183,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -210,9 +194,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -223,9 +205,7 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
         
         modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
                 + "AA21221012345678|AEBilly, Balzac|AQEPLMNA|BZ0025|CA0041|"
@@ -236,11 +216,6 @@ public class EPLMeCardPolicyTest
         
         p = MeCardPolicy.getInstanceOf(false);
         customerMessage = new SIPCustomerMessage(modeMeta);
-        result = p.isMinimumAge(c, customerMessage, sb);
-        expected= false;
-        assertTrue(expected == result);
-    
+        assertTrue(p.isMinimumAge(c, customerMessage, sb));
     }
-    
-   
 }

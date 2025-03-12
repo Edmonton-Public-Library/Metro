@@ -53,3 +53,5 @@ dist/MeCard.jar
 SSHClient.java
 SSHClientTest.java
 dist/lib/jsch-0.1.55.jar
+.env
+.vscode/

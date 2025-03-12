@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import mecard.config.PapiElementOrder;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import org.junit.Test;
 import static org.junit.Assert.*;

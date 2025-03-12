@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,13 +71,10 @@ public abstract class ILSRequestBuilder
         String serviceType = "";
         switch (queryType)
         {
-            case CREATE_CUSTOMER:
-                serviceType = PropertyReader.
+            case CREATE_CUSTOMER -> serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString());
-                break;
-            case TEST_CUSTOMER:
-                // Entry for environment.properties.
+            case TEST_CUSTOMER -> // Entry for environment.properties.
                 // <entry key="exists-protocol">polaris-api</entry>
                 // If the environment.properties file doesn't contain an
                 // entry then the default of the LibraryPropertyTypes.GET_SERVICE
@@ -86,24 +83,16 @@ public abstract class ILSRequestBuilder
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.EXISTS_SERVICE.toString(),
                         LibraryPropertyTypes.GET_SERVICE.toString());
-                break;
-            case GET_CUSTOMER:
-                serviceType = PropertyReader.
+            case GET_CUSTOMER -> serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.GET_SERVICE.toString());
-                break;
-            case GET_STATUS:
-                serviceType = PropertyReader.
+            case GET_STATUS -> serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.STATUS_SERVICE.toString());
-                break;
-            case UPDATE_CUSTOMER:
-                serviceType = PropertyReader.
+            case UPDATE_CUSTOMER -> serviceType = PropertyReader.
                     getProperties(ConfigFileTypes.ENVIRONMENT).
                     getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString());
-                break;
-            default:
-                throw new UnsupportedCommandException( 
+            default -> throw new UnsupportedCommandException( 
                     " can't respond to request '" + queryType.name() + "'");
         }
         if (debug)
@@ -143,6 +132,11 @@ public abstract class ILSRequestBuilder
         {
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'SYMPHONY_API' ");
             return new SymphonyRequestBuilder(debug);
+        }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIRSIDYNIX_API.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'SIRSIDYNIX_API' ");
+            return new SDapiRequestBuilder(debug);
         }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.DEBUG.toString()))
         {

@@ -20,7 +20,7 @@
  */
 package mecard.polaris.papi;
 
-import mecard.polaris.papi.PatronAuthenticationData;
+import mecard.security.AuthenticationData;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -28,15 +28,12 @@ import org.junit.Test;
  *
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class PatronAuthenticationDataTest
+public class PapiAuthenticationDataTest
 {
-    
-    public PatronAuthenticationDataTest()
-    {
-    }
+
 
     /**
-     * Test of getAuthentication method, of class PatronAuthenticationData.
+     * Test of getPatronAuthentication method, of class PapiAuthenticationData.
      */
     @Test
     public void testGetPatronAuthenticationData()
@@ -49,9 +46,33 @@ public class PatronAuthenticationDataTest
                 + "<Barcode>21221012345678</Barcode>"
                 + "<Password>mYp@sSw0rd!</Password>"
                 + "</PatronAuthenticationData>";
-        String result = PatronAuthenticationData.getAuthentication(userId, password);
+        AuthenticationData authData = (AuthenticationData) new PapiAuthenticationData();
+        String result = authData.getPatronAuthentication(userId, password);
         System.out.println(result);
         assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of getStaffAuthentication method, of class StaffAuthenticationData.
+     */
+    @Test
+    public void testGetStaffAuthentication()
+    {
+        System.out.println("getStaffAuthentication");
+        String domain = "SB-DEWEY";
+        String userId = "SB-DEWEY\\PolarisStaff";
+        String password = "PolarisSandbox01";
+        String expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
+                + "<AuthenticationData>"
+                + "<Domain>SB-DEWEY</Domain>"
+                + "<Username>SB-DEWEY\\PolarisStaff</Username>"
+                + "<Password>PolarisSandbox01</Password>"
+                + "</AuthenticationData>";
+        AuthenticationData authData = (AuthenticationData) new PapiAuthenticationData();
+        var result = authData.getStaffAuthentication(domain, userId, password);
+        System.out.println(result);
+        assertEquals(expResult, result);
+        
     }
     
 }

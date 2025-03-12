@@ -10,7 +10,7 @@ Me Card project was created to reduce barriers in accessing the library
 collections and diverse programs of the Metro Federation libraries.
 
 
-# What is the Me Card service?
+# What is the ME Card service?
 ----------------------------
 
 The Me Card is a web-based service that allows customers with a library 
@@ -30,9 +30,90 @@ transaction is a way that ensures that no identifiable customer information is
 stored then passes the response on again as another request to the guest library.
 The guest then creates a new user record in their ILS. 
 
+The Metro server supports the following strategies to manage customer registrations.
+# Supported Protocols Table
+
+| Stategy | Key Word | Get | Test | Update | Create | Status | Description |
+|----------|----------|:---:|:----:|:------:|:------:|:------:|-------------|
+| SIP2 | `sip2` | Y | Y | N | N | Y | |
+| outage | `outage` | Y | Y | Y | Y | Y | Used for planned outages. |
+| Symphony native | `symphony-api` | N | N | Y | Y | N | Uses SSH. |
+| Polaris API (PAPI) | `polaris-api` | Y | Y | Y | Y | Y | Supports upto version 7.6. |
+| Polaris SQL | `polaris-sql` | Y | Y | Y | Y | Y | Uses raw SQL statements. |
+| SirsiDynix web services | `sirsidynix-api` | Y | Y | Y | Y | Y | Symphony & Horizon |
+| Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
+
 ----------
 # What's new
 ----------
+## Version 3.00.00
+Added SirsiDynix web services for Symphony and Horizon libraries.
+To use it there is a new `sdapi.properties` file as seen below which configures the important settings for web services.
+
+**NOTE: SirsiDynix web services DTD states that the maximum password length is 25, so `environment.properties` must include at least `password-max-length` entry, however the other two password settings remain optional**.
+```xml
+<!-- Required: 25. -->
+<entry key="password-max-length">25</entry>
+<!-- Optional, the default is 4. -->
+<!-- <entry key="password-min-length">4</entry> -->
+<!-- Optional, the default includes most of the ASCII char set. -->
+<!-- <entry key="allowed-password-characters">abcd...7890</entry> -->
+```
+
+You can access Symphony & Horizon web services by modifying the `environment.properties` files, changing the `*-protocol` entries to `sirsidynix-api`. [See here for details](#supported-protocols-table).
+
+### New .env File
+A new `.env` file is also required to store the staff ID and password which are kept in a `.env` file in the `${METRO_HOME}` directory. See example `.env` file below (`sirsidynix-api` only).
+
+The `.env` file contains the staff user ID and password, as well as the staff prompt override code.
+
+```bash
+# Environment file for MeCard server. 
+# This file is used for SDapi to store the 'staffPassword' 
+# however it could be extended to the papi security class 
+# as well.
+
+# Application settings
+STAFF_ID="STAFF_MEMBER"
+STAFF_PASSWORD="SuperS3cr3tP@ssw0rd!"
+STAFF_PROMPT_OVERRIDE_CODE="XXXX"
+```
+### New sdapi.properties File
+**Note**: the entry `sd-originating-app-id` as far as I know, can be any string and is used as a transaction ID in the logs. The `x-sirs-clientId` is a web service ID that has permission to register customers.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>
+    SirsiDynix Web Service settings.
+</comment>
+  <entry key="client-id">MY_APP_ID</entry>
+  <entry key="env-file-path">/home/metro/.env</entry>
+  <entry key="cache-path">/home/metro/.sd_api.cache</entry>
+  <entry key="base-url">https://ws.sirsidynix.net</entry>
+  <!-- <entry key="port">443</entry> optional, default 443 -->
+  <entry key="x-sirs-clientId">ilsws</entry>
+  <entry key="sd-originating-app-id">MeCard</entry>
+  <entry key="web-service-version">6.4.0</entry>
+  <entry key="connection-timeout">10</entry>
+  <entry key="http-version">2.0</entry>
+  <entry key="session-token-expire-time">60</entry>
+  <entry key="debug">true</entry>
+  <entry key="default-profile">EPL_METRO</entry>
+  <entry key="default-library">EPLMNA</entry>
+  <entry key="default-language">ENGLISH</entry>
+  <entry key="default-standing">OK</entry>
+  <entry key="default-keep-circ-history">ALLCHARGES</entry>
+  <entry key="default-access">PUBLIC</entry>
+  <entry key="default-environment">PUBLIC</entry>
+  <entry key="use-city-province">false</entry>
+</properties>
+```
+### New Libraries
+* `commons-daemon-1.4.0.jar` replacement update.
+* `gson-2.10.1.jar` replacement update.
+
 ## Java Upgrade
 Java 11 is now end of life, to be replaced by Java 17. If you upgrade please ask for a new version of the MeCard.jar compiled to version 17. To update your system's version of Java do the following.
 
@@ -244,7 +325,11 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
   to be 'outage'. For example, you can change the get-protocol from 'sip2' 
   to 'outage', as shown below, if you know your sip2 service is going to be unavailable.
   ```xml
+<<<<<<< HEAD
   <entry key="get-protocol">outage|sip2|symphony-api|polaris-api|polaris-sql</entry>
+=======
+  <entry key="get-protocol">outage|sip2|symphony-api|polaris-api|polaris-sql|sirsidynix-api|bimport</entry>
+>>>>>>> master
   ```
 
 * The current MeCard server is built to run in Java 11, and is tested using OpenJDK or (JRE).
@@ -544,10 +629,18 @@ sudo systemctl restart firewalld
 ```
 
 # Known Issues
+
 * The `<entry key="date-format"></entry>` entry in `environment.properties` file must be attended to carefully. It refers to the way time is managed by the underlying system that handles dates such as DOB and expiry. Depending on the service protocol used to update and create users the service will be expecting time in a specific format. Here are some examples.
   * SQL (Polaris) requires `yyyy-MM-dd HH:mm:ss` format.
   * PAPI timestamp: `yyyy-MM-dd'T'HH:mm:ss`.
   * Symphony systems (such as EPL, CPL):  `yyyy-MM-dd`, which sounds like it should be `yyyyMMdd` but may be converted in the MeCard subsystem.
+```bash
+---   today>2024-00-17 12:00:00
+
+---  expiry>2025-00-17 12:00:00
+
+java.lang.IllegalArgumentException: Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
+``` 
 * Google has flagged the `setup.exe` as malware. The development team has asked for a review of the application, but until that time the exe may have to be sent by other means. February 9, 2022.
 ## Windows
 * The `-c c:\path\to\configs` switch doesn't seem to work as expected. I have experimented with several different ways of passing the parameters in prunmgr, but none have panned out. To fix just copy your config properties file into the c:\Metro directory. The MeCard server looks there for properties files by default.

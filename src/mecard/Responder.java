@@ -77,12 +77,9 @@ public class Responder
         this.debug = debugMode;
         this.request = cmd;
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        if (debug)
-        {
-            System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
-            System.out.println("ELE:");
-            System.out.println("  S:" + request.toString()+ ",");
-        }
+        System.out.println("CMD:\n  '"+request.toString()+"' '"+request.getCommandType().name()+"'");
+        System.out.println("ELE:");
+        System.out.println("  S:" + request.toString()+ ",");
     }
     
     /**
@@ -212,8 +209,11 @@ public class Responder
         if (meetsMeCardRequirements(customer, customerMessage, failedTests))
         {
             response.setCode(ResponseTypes.OK);
-            System.out.println(new Date() + " POLICY_OUT:"+status.getStdout());
-            System.out.println(new Date() + " POLICY_ERR:"+status.getStderr());
+            if (this.debug)
+            {
+                System.out.println(new Date() + " POLICY_OUT:"+status.getStdout());
+                System.out.println(new Date() + " POLICY_ERR:"+status.getStderr());
+            }
         }
         else
         {

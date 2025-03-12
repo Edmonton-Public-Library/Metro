@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import mecard.config.PapiElementOrder;
 import api.CustomerMessage;
 import java.util.HashMap;
 import mecard.util.DateComparer;

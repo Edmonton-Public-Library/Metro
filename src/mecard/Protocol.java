@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ public final class Protocol
     public final static String DEFAULT_FIELD_VALUE = "X";
     public final static String TRUE        = "Y";
     public final static String FALSE       = "N";
+    public final static String FEMALE      = "F";
+    public final static String MALE        = "M";
     public final static String TERMINATE   = "XX0";
     public final static String ACKNOWLEDGE = "XK0";
     public final static String ERROR       = "XE0";

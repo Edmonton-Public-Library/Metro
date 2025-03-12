@@ -48,7 +48,7 @@ import mecard.customer.MeCardDataToNativeData;
  * @author Andrew Nisbet andrew at dev-ils.com
  * @since v1.0 2013
  */
-public class MeCardCustomerToPolarisSQL implements MeCardCustomerToNativeFormat
+public class MeCardCustomerToPolarisSQL extends MeCardCustomerToNativeFormat
 {
     private final List<MeCardDataToNativeData> customerAccount;
     private final PolarisVersion version; // 7.1 as of Feb 07, 2023.

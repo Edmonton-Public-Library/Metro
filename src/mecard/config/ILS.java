@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2024  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,11 +75,9 @@ public class ILS
         }
         catch (NullPointerException | IllegalArgumentException ex) 
         {
-            System.err.println(" **Failed to find ILS type '" 
-                + "' in the environment.properties. Try adding "
-                + "'<entry key=\"ils-type\">[ILS_TYPE]</entry>' to the "
-                + "environment.properties file.\nValid values are "
-                + "UNKNOWN, SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.");
+            System.err.println("""
+                                **Failed to find ILS type '' in the environment.properties. Try adding '<entry key="ils-type">[ILS_TYPE]</entry>' to the environment.properties file.
+                               Valid values are UNKNOWN, SYMPHONY, HORIZON, POLARIS and SIRSI_DYNIX.""");
         }
         finally
         {

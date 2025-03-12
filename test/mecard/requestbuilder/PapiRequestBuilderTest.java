@@ -41,7 +41,6 @@ public class PapiRequestBuilderTest
     private final boolean runCreateCustomerTest;
     private final boolean runGetCustomerTest;
     private final boolean runCustomerExistsTest;
-    private final String xmlPatronRegistrationCreateResponse;
     private final boolean runStatusTest;
     private final String nonExistingCustomerId;
     private final String nonExistingCustomerPin;
@@ -71,7 +70,7 @@ public class PapiRequestBuilderTest
 //        + "<UseLegalNameOnNotices>true</UseLegalNameOnNotices>"
 //        + "<LegalFullName>Johnathan Edward Smith</LegalFullName>"
 //        + "</PatronRegistrationCreateData>";
-        xmlPatronRegistrationCreateResponse = """
+        String xmlPatronRegistrationCreateResponse = """
                                               <PatronBasicDataGetResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
                                                 <PAPIErrorCode>0</PAPIErrorCode>
                                                 <ErrorMessage>

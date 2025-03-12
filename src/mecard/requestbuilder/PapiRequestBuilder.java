@@ -36,6 +36,7 @@ import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
+import mecard.config.PapiElementOrder;
 import mecard.config.PapiPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
@@ -49,14 +50,13 @@ import mecard.exception.ConfigurationException;
 import mecard.exception.PapiException;
 import mecard.polaris.papi.MeCardCustomerToPapi;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
-import mecard.polaris.papi.PapiElementOrder;
 import mecard.polaris.papi.PapiXmlPatronAuthenticateResponse;
 import mecard.polaris.papi.PapiXmlPatronBasicDataResponse;
 import mecard.polaris.papi.PapiXmlRequestPatronValidateResponse;
 import mecard.polaris.papi.PapiXmlResponse;
-import mecard.polaris.papi.PatronAuthenticationData;
-import mecard.polaris.papi.StaffAuthenticationData;
+import mecard.polaris.papi.PapiAuthenticationData;
 import mecard.polaris.papi.TokenCache;
+import mecard.security.AuthenticationData;
 
 /**
  * This class supports customer registration commands using the Polaris API 
@@ -154,7 +154,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // will be empty.
         if (tokenCache.getValidToken().isEmpty())
         {
-            String authentication = StaffAuthenticationData.getAuthentication(domain, accessId, password);
+            AuthenticationData authData = (AuthenticationData) new PapiAuthenticationData();
+            String authentication = authData.getStaffAuthentication(domain, accessId, password);
             if (this.debug)
             {
                 System.out.println("AUTHENTICATE XML body: " + authentication);
@@ -220,7 +221,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // will be empty.
         if (tokenCache.getValidToken().isEmpty())
         {
-            String authentication = PatronAuthenticationData.getAuthentication(patronId, password);
+            AuthenticationData authData = (AuthenticationData) new PapiAuthenticationData();
+            String authentication = authData.getPatronAuthentication(patronId, password);
             if (this.debug)
             {
                 System.out.println("AUTHENTICATE XML body: " + authentication);

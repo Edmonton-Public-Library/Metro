@@ -1,0 +1,8 @@
+# Environment file for MeCard server. 
+# This file is used for SDapi to store the 'STAFF_PASSWORD' 
+# and 'STAFF_ID'.
+
+# Application settings
+STAFF_ID="testStaffId"
+STAFF_PASSWORD="testStaffPassword"
+STAFF_PROMPT_OVERRIDE_CODE="XXXX"

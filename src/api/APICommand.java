@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.config.PropertyReader;
 import mecard.config.ConfigFileTypes;
 
@@ -286,7 +284,7 @@ public class APICommand implements Command
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        if (stdinData != null && stdinData.size() > 0)
+        if (stdinData != null && !stdinData.isEmpty())
         {
             sb.append("STDIN=>'");
             for (String s : stdinData)

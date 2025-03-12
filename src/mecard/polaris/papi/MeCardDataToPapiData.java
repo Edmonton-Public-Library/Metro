@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import mecard.config.PapiElementOrder;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -396,7 +397,13 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                                 System.out.println("getUpdateXml(): ignoring " + key);
                             break;
                     }
-                }            
+                    // These are required
+                    // Note that PAPI can only update email, PhoneVoice1, Password
+                    // ExpirationDate, and any address value, so filter out
+                    // any others, as they _may_ throw an error if included.
+                    // PhoneNumber is only returned by Patron Basic Data Get requests.
+                    // No other elements accepted for update.
+                                    }            
             }
             // Now append the patron address element at the end.
             // NOTE:  <RequestPickupBranchID>

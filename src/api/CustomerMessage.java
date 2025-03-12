@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2020  Edmonton Public Library
+*    Copyright (C) 2020 - 2024  Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,4 @@ public interface CustomerMessage
      */
     public boolean isInGoodStanding();
     
-    // TODO: Add this to subclasses.
-//    public boolean customerExists();
 }

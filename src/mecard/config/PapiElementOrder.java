@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.polaris.papi;
+package mecard.config;
 
 /**
  * This is the entire set of create fields accepted by Polaris in WS 4.1.

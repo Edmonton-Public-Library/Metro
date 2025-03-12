@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,10 @@ import mecard.config.ILS;
 public final class SitePasswordRestrictions
 {
     private final Properties properties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+    private final int DEFAULT_MAX_LENGTH = 256;
+    private final int DEFAULT_MIN_LENGTH = 4;
+    private final String DEFAULT_ALLOWED_CHARACTERS = """
+        abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:'\",.<>/?`""";
     private final int passwordMaxLength;
     private final int passwordMinLength;
     private final String allowedCharacters;
@@ -75,7 +79,7 @@ public final class SitePasswordRestrictions
                 System.out.println(new Date() + missingConfigMessage);
             }
             // there are no restrictions so these values are not used.
-            this.passwordMaxLength = 256;
+            this.passwordMaxLength = DEFAULT_MAX_LENGTH;
         }
         else
         {
@@ -87,7 +91,7 @@ public final class SitePasswordRestrictions
         
         if ( passwordMinLengthProperty.isEmpty() )
         {
-            this.passwordMinLength = 4;
+            this.passwordMinLength = DEFAULT_MIN_LENGTH;
         }
         else
         {
@@ -104,9 +108,7 @@ public final class SitePasswordRestrictions
             {
                 System.out.println(new Date() + missingConfigMessage);
             }
-            this.allowedCharacters = "abcdefghijklmnopqrstuvwxyz "
-                + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-                + "!@#$%^&*()-_=+[]{}|;:'\",.<>/?`";
+            this.allowedCharacters = DEFAULT_ALLOWED_CHARACTERS;
         }
         else
         {
@@ -114,6 +116,33 @@ public final class SitePasswordRestrictions
             if (this.debug)
                 System.out.println("DEBUG: env.allowedCharacters = " + this.allowedCharacters);
         }  
+    }
+    
+    /**
+     * Gets the maximum length of password.
+     * @return integer max length of password.
+     */
+    public int getMaxLength()
+    {
+        return this.passwordMaxLength;
+    }
+    
+    /**
+     * Gets the minimum length of password.
+     * @return integer min length of password. 
+     */
+    public int getMinLength()
+    {
+        return this.passwordMinLength;
+    }
+    
+    /**
+     * Gets the string of allowed password characters.
+     * @return String of allowed password characters. 
+     */
+    public String getAllowedCharacters()
+    {
+        return this.allowedCharacters;
     }
     
     /**

@@ -20,6 +20,7 @@
  */
 package mecard.polaris.papi;
 
+import mecard.config.PapiElementOrder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ import site.MeCardPolicy;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
+public class MeCardCustomerToPapi extends MeCardCustomerToNativeFormat
 {
     //    "<PatronRegistrationCreateData>
     //    <LogonBranchID>1</LogonBranchID>
@@ -248,7 +249,8 @@ public class MeCardCustomerToPapi implements MeCardCustomerToNativeFormat
         }
         else
         {
-            System.out.println("** Error insertTable: failed because the argument table was null.");
+            if (this.debug)
+                System.out.println("** Error insertTable: failed because the argument table was null.");
         }
     }
 
