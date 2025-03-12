@@ -121,7 +121,7 @@ public class SDapiRequestBuilderTest
         nonExistingCustomerId  = "21221012346097";
         nonExistingCustomerPin = "12345";
         runCreateCustomerTest  = false;
-        runUpdateCustomerTest  = true;
+        runUpdateCustomerTest  = false;
     }
 
     
@@ -254,11 +254,11 @@ public class SDapiRequestBuilderTest
         NativeFormatToMeCardCustomer customerFormatter = requestBuilder.getFormatter();
         // Use the formatter to convert the returned sdapi info into a ME customer object.
         Customer customer = customerFormatter.getCustomer(status.getStdout());
-//        response.setCustomer(customer);
-//        System.out.println(">>getCustomerCommand Customer: " + System.lineSeparator()
-//            + customer.toString());
+        response.setCustomer(customer);
+        System.out.println(">>getCustomerCommand Customer: " + System.lineSeparator()
+            + customer.toString());
         assertTrue(customer.get(CustomerFieldTypes.ID).compareTo(userId) == 0);
-//        System.out.println("CustomerMessage: " + requestBuilder.getCustomerMessage(status.getStdout()) );
+        System.out.println("CustomerMessage: " + requestBuilder.getCustomerMessage(status.getStdout()) );
     }
     
 }

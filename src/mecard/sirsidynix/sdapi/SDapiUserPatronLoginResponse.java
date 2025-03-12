@@ -89,8 +89,8 @@ public class SDapiUserPatronLoginResponse extends SDapiResponse
     public static SDapiResponse parseJson(String jsonString) 
     {
         Gson gson = new Gson();
-            return gson.fromJson(jsonString, SDapiUserPatronLoginResponse.class);
-        }
+        return gson.fromJson(jsonString, SDapiUserPatronLoginResponse.class);
+    }
 
     public String getSessionToken() 
     {
