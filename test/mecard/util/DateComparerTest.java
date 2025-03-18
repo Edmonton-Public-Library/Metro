@@ -42,6 +42,7 @@ public class DateComparerTest
     
     /**
      * Test of getYearsOld method, of class DateComparer.
+     * @throws java.lang.Exception if the date can't be parsed.
      */
     @Test
     public void testIsDateExpiry() throws Exception
@@ -393,15 +394,15 @@ public class DateComparerTest
     }
 
     /**
-     * Test of getANSIDate method, of class DateComparer.
+     * Test of getANSIDateFromDateTimestamp method, of class DateComparer.
      */
     @Test
-    public void testGetANSIDate()
+    public void testGetANSIDateFromDateTimestamp()
     {
         System.out.println("getANSIDate");
         String date = "2022-07-05T17:01:14.217";
         String expResult = "20220705";
-        String result = DateComparer.getANSIDate(date);
+        String result = DateComparer.getANSIDateFromDateTimestamp(date);
         System.out.println("THIS IS THE RESULT: '" + result + "'");
         assertEquals(expResult, result);
         // Example from actual PAPI response
@@ -409,7 +410,7 @@ public class DateComparerTest
         // 2022-07-30T19:38:30
         date = "2022-07-30T19:38:30";
         expResult = "20220730";
-        result = DateComparer.getANSIDate(date);
+        result = DateComparer.getANSIDateFromDateTimestamp(date);
         System.out.println("THIS IS THE RESULT: '" + result + "'");
         assertEquals(expResult, result);
     }

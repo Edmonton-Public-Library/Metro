@@ -1,10 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
-<<<<<<< HEAD
- *    Copyright (C) 2022 - 2025 Edmonton Public Library
-=======
  *    Copyright (C) 2022 - 2025  Edmonton Public Library
->>>>>>> master
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,13 +199,13 @@ public class PapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         String birthDate = customerData.getField(PapiElementOrder.BIRTHDATE.toString());
         if (Text.isSet(birthDate))
         {
-            birthDate = DateComparer.getANSIDate(birthDate);
+            birthDate = DateComparer.getANSIDateFromDateTimestamp(birthDate);
         }
         customer.set(CustomerFieldTypes.DOB, birthDate);
         String expiry = customerData.getField(PapiElementOrder.EXPIRATION_DATE.toString());
         if (Text.isSet(expiry))
         {
-            expiry = DateComparer.getANSIDate(expiry);
+            expiry = DateComparer.getANSIDateFromDateTimestamp(expiry);
         }
         customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
         return customer;

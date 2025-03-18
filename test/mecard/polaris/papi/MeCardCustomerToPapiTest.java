@@ -33,7 +33,6 @@ import static org.junit.Assert.*;
 import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
 import mecard.util.DateComparer;
-import site.MeCardPolicy;
 
 /**
  *
@@ -73,12 +72,13 @@ public class MeCardCustomerToPapiTest
         System.out.println("getFormattedCustomer");
         MeCardCustomerToNativeFormat formatter = new MeCardCustomerToPapi(createCustomer, QueryType.CREATE);
         List<String> expResult = new ArrayList<>();
+        // The web service I'm testing with uses US postal codes and are converted as Canandian.
         expResult.add("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationCreateData>" +
             "<LogonBranchID>1</LogonBranchID>" +
             "<LogonUserID>1</LogonUserID>" +
             "<LogonWorkstationID>1</LogonWorkstationID>" +
             "<PatronBranchID>3</PatronBranchID>" +
-            "<PostalCode>902 10</PostalCode>" +      // The web service I'm testing with uses US postal codes and are converted as Canandian.
+            "<PostalCode>902 10</PostalCode>" +      
             "<City>Edmonton</City>" +
             "<State>AB</State>" +
             "<StreetOne>12345 123 St.</StreetOne>" +
@@ -113,8 +113,6 @@ public class MeCardCustomerToPapiTest
     {
         System.out.println("==getFormattedHeader==");
         MeCardCustomerToNativeFormat formatter = new MeCardCustomerToPapi(customer, QueryType.CREATE);
-        List<String> expResult = new ArrayList<>();
-        expResult.add("21221012345678");
 
         List<String> result = formatter.getFormattedHeader();
         for (String s: result)
@@ -144,6 +142,7 @@ public class MeCardCustomerToPapiTest
         }
         catch (ParseException e){}
         formattedCustomer.setValue(PapiElementOrder.EXPIRATION_DATE.name(), expiry);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         assertTrue(formattedCustomer.getValue(PapiElementOrder.EXPIRATION_DATE.name()).compareTo("2025-02-28T00:00:00") == 0);
     }
 

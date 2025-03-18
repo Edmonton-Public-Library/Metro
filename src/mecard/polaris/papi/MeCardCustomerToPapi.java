@@ -75,9 +75,11 @@ public class MeCardCustomerToPapi extends MeCardCustomerToNativeFormat
     //    </PatronRegistrationCreateData>"
     private MeCardDataToNativeData customerTable;
     private String serverType;
+    private boolean debug;
     public MeCardCustomerToPapi(Customer customer, QueryType type)
     {
         Properties props = PropertyReader.getProperties(ConfigFileTypes.PAPI);
+        this.debug = Boolean.parseBoolean(props.getProperty(PapiPropertyTypes.DEBUG.toString(),"false"));
         serverType = props.getProperty(PapiPropertyTypes.SERVER_TYPE.toString(), "sandbox");
         customerTable = MeCardDataToPapiData.getInstanceOf(type);
         // Fill in the default required fields for v1 of PAPI web service API.
@@ -116,7 +118,7 @@ public class MeCardCustomerToPapi extends MeCardCustomerToNativeFormat
         catch (ParseException ex)
         {
             System.out.println("**error while parsing customer expiry: "
-                    + customer.get(CustomerFieldTypes.ID)
+                + customer.get(CustomerFieldTypes.ID)
                 + System.lineSeparator() + "computed expiry: '" + expiry + "'");
         }
         customerTable.setValue(PapiElementOrder.EXPIRATION_DATE.name(), expiry);
@@ -194,6 +196,12 @@ public class MeCardCustomerToPapi extends MeCardCustomerToNativeFormat
         // The patron code AKA patron code ID or just patron ID is similar to SD's profile.
         customerTable.setValue(PapiElementOrder.PATRON_CODE.name(),
                 props.getProperty(PapiPropertyTypes.PATRON_CODE_ID.toString()));
+        
+        if (this.debug)
+        {
+            System.out.println("o==o CUSTOMER expiry >>>" + customerTable.getValue(PapiElementOrder.EXPIRATION_DATE.name()));
+            System.out.println("o==o CUSTOMER    dob >>>" + customerTable.getValue(PapiElementOrder.BIRTHDATE.name()));
+        }
     }
     
     

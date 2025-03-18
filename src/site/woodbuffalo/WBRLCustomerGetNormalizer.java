@@ -1,10 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
-<<<<<<< HEAD
- *    Copyright (C) 2022 - 2025  Edmonton Public Library
-=======
  *    Copyright (C) 2022 - 2025 Edmonton Public Library
->>>>>>> master
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,11 +59,11 @@ public class WBRLCustomerGetNormalizer extends CustomerGetNormalizer
         // Now we know that PAPI returns time stamps, let's convert them to 
         // ME Card (ANSI) time.
         String polarisExpiry = message.getDateField(PapiElementOrder.EXPIRATION_DATE.toString());
-        String ansiExpiry = DateComparer.getANSIDate(polarisExpiry);
+        String ansiExpiry = DateComparer.getANSIDateFromDateTimestamp(polarisExpiry);
         customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, DateComparer.computeExpiryDate(ansiExpiry));
         
         String polarisBirthday = message.getDateField(PapiElementOrder.BIRTHDATE.toString());
-        String ansiBirthday = DateComparer.getANSIDate(polarisBirthday);
+        String ansiBirthday = DateComparer.getANSIDateFromDateTimestamp(polarisBirthday);
         customer.set(CustomerFieldTypes.DOB, ansiBirthday);
         if (DateComparer.isAnsiDate(ansiBirthday))
         {

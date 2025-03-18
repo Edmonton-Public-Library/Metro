@@ -200,7 +200,7 @@ public class PapiXmlCustomerResponse
     @Override
     public String getDateField(String fieldName)
     {
-        return DateComparer.getANSIDate(this.fields.getOrDefault(fieldName, ""));
+        return DateComparer.getANSIDateFromDateTimestamp(this.fields.getOrDefault(fieldName, ""));
     }
     
     @Override

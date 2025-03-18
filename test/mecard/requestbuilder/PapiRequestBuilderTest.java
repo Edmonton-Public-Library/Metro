@@ -1,3 +1,23 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 
 package mecard.requestbuilder;
 
@@ -5,7 +25,6 @@ import static org.junit.Assert.*;
 
 import api.Command;
 import api.CommandStatus;
-import api.HttpCommandStatus;
 import json.RequestDeserializer;
 import mecard.QueryTypes;
 import mecard.Request;
@@ -241,28 +260,29 @@ public class PapiRequestBuilderTest
         System.out.println("==getUpdateUserCommand==");
         if (this.runUpdateCustomerTest)
         {
-//            Response response = new Response();
-//            CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
-//            ILSRequestBuilder requestBuilder = new PapiRequestBuilder(true);
-//            Command updateCustomerExistsCommand = requestBuilder.getUpdateUserCommand(
-//                updateCustomer, response, normalizer);
-//            CommandStatus status = updateCustomerExistsCommand.execute();
-//            System.out.println(" update customer STDOUT:'"+status.getStdout()+"'");
-//            System.out.println(" update customer STDERR::'"+status.getStderr()+"'");
-//            System.out.println(" update customer RESPONSE:'"+response.getMessage()+"'");
-//            assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
-//            requestBuilder.tidy();
-            
-        
             Response response = new Response();
             CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
             ILSRequestBuilder requestBuilder = new PapiRequestBuilder(true);
-//            System.out.println("update CUSTOMER's DOB=" + updateCustomer.get(CustomerFieldTypes.DOB));
-//            System.out.println("update CUSTOMER's EXP=" + updateCustomer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
-            Command command = requestBuilder.getUpdateUserCommand(updateCustomer, response, normalizer);
-            CommandStatus status = (HttpCommandStatus) command.execute();
-            System.out.println("-------Status:" + status.getStdout());
+            Command updateCustomerExistsCommand = requestBuilder.getUpdateUserCommand(
+                updateCustomer, response, normalizer);
+            System.out.println(" o==o update customer DOB:'"+updateCustomer.get(CustomerFieldTypes.DOB)+"'");
+            CommandStatus status = updateCustomerExistsCommand.execute();
+            System.out.println(" update customer STDOUT:'"+status.getStdout()+"'");
+            System.out.println(" update customer STDERR::'"+status.getStderr()+"'");
+            System.out.println(" update customer RESPONSE:'"+response.getMessage()+"'");
             assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
+            requestBuilder.tidy();
+            
+        
+//            Response response = new Response();
+//            CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
+//            ILSRequestBuilder requestBuilder = new PapiRequestBuilder(true);
+////            System.out.println("update CUSTOMER's DOB=" + updateCustomer.get(CustomerFieldTypes.DOB));
+////            System.out.println("update CUSTOMER's EXP=" + updateCustomer.get(CustomerFieldTypes.PRIVILEGE_EXPIRES));
+//            Command command = requestBuilder.getUpdateUserCommand(updateCustomer, response, normalizer);
+//            CommandStatus status = (HttpCommandStatus) command.execute();
+//            System.out.println("-------Status:" + status.getStdout());
+//            assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
         }
         else
         {

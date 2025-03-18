@@ -479,8 +479,8 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
         catch (IllegalArgumentException ex)
         {
             System.out.println(MeCardDataToPapiData.class.getName() + 
-                    ".getValue failed: Couldn't use key: '" + papiElementOrderkey + 
-                    " as reference in papi table.");
+                    ".getValue() failed: Couldn't find key: '" + papiElementOrderkey + 
+                    "' in papi table.");
             return "";
         }
         if (value == null)

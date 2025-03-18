@@ -79,7 +79,7 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         String birthDate = customerData.getDateField(SDapiUserFields.USER_BIRTHDATE.toString());
         if (! birthDate.isEmpty())
         {
-            birthDate = DateComparer.getANSIDate(birthDate);
+            birthDate = DateComparer.getANSIDateFromDateTimestamp(birthDate);
         }
         customer.set(CustomerFieldTypes.DOB, birthDate);
         String expiry = customerData.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
@@ -89,7 +89,7 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         }
         else
         {
-            expiry = DateComparer.getANSIDate(expiry);
+            expiry = DateComparer.getANSIDateFromDateTimestamp(expiry);
         }
         customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
         // Is there an alternate ID for this customer if so pass it on.

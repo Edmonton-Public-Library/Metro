@@ -97,7 +97,7 @@ public final class EPLCustomerNormalizer extends SymphonyNormalizer
                 .equalsIgnoreCase(SupportedProtocolTypes.SIRSIDYNIX_API.toString()))
         {
             formattedCustomer.insertValue("", SDapiUserFields.CATEGORY05.toString(), "ECONSENT");
-            formattedCustomer.removeField("", SDapiUserFields.USE_PREFERRED_NAME.toString());
+//            formattedCustomer.removeField("", SDapiUserFields.USE_PREFERRED_NAME.toString());
         }
     }
 }

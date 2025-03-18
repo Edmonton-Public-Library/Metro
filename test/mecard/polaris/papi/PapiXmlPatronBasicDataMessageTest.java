@@ -246,8 +246,8 @@ public class PapiXmlPatronBasicDataMessageTest
         instance = new PapiXmlPatronBasicDataResponse(dobXml);
         assertEquals("2001-08-22T19:38:30", instance.getBirthDate());
         String dob = instance.getBirthDate();
-        System.out.println(">>> ANSI DOB:" + DateComparer.getANSIDate(dob));
-        String ansiDOB = DateComparer.getANSIDate(dob);
+        System.out.println(">>> ANSI DOB:" + DateComparer.getANSIDateFromDateTimestamp(dob));
+        String ansiDOB = DateComparer.getANSIDateFromDateTimestamp(dob);
         try
         {
             System.out.println(">>> System DOB:" + DateComparer.ANSIToConfigDate(ansiDOB));

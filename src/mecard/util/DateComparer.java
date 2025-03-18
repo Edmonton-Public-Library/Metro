@@ -30,8 +30,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
@@ -227,7 +225,7 @@ public class DateComparer
      * @return ANSI format date 'yyyyMMdd', or empty string if there was an error
      * parsing the supplied date.
      */
-    public static String getANSIDate(String timeStampString)
+    public static String getANSIDateFromDateTimestamp(String timeStampString)
     {
         if (Text.isUnset(timeStampString))
         {
@@ -240,7 +238,7 @@ public class DateComparer
             return new SimpleDateFormat("yyyyMMdd").format(date);
         } catch (ParseException ex)
         {
-            Logger.getLogger(DateComparer.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("**error, while parsing timestamp in getANSIDateFromDateTimestamp() -> '" + timeStampString + "'");
         }
         return "";
     }
