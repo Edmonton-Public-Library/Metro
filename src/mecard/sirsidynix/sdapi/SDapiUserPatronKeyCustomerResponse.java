@@ -59,7 +59,7 @@ public class SDapiUserPatronKeyCustomerResponse
     @Override
     public boolean succeeded() 
     {
-        return (this.messageList == null);
+        return (this.userKey != null && ! this.userKey.isBlank());
     }
 
     //Failed response

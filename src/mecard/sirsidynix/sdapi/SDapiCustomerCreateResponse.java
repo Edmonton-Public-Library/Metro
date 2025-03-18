@@ -266,6 +266,6 @@ public class SDapiCustomerCreateResponse extends SDapiResponse
     // Helper method to check if the response contains errors
     public boolean hasErrors() 
     {
-        return messageList != null && !messageList.isEmpty();
+        return messageList != null && ! messageList.isEmpty();
     }
 }
