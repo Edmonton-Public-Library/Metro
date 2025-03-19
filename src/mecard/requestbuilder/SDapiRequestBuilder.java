@@ -26,7 +26,10 @@ import api.CommandStatus;
 import api.CustomerMessage;
 import api.HttpCommandStatus;
 import com.google.gson.JsonSyntaxException;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
@@ -722,6 +725,24 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         SDapiUserPatronSearchCustomerResponse customerResponse = 
                 (SDapiUserPatronSearchCustomerResponse) SDapiUserPatronSearchCustomerResponse.parseJson(stdout);
         return customerResponse;
+    }
+    
+    /**
+     * This method is used for lost cards which get output to the customer load
+     * directory. This directory is located in each ILS property file as a load-dir. 
+     * Because the lost user has no insight into which ILS is being used the ILSBuilder
+     * must be able to signal the failed customer files with the load directory.
+     * 
+     * @return string of cache directory defined in sdapi.properties.
+     */
+    @Override
+    public String getCustomerLoadDirectory()
+    {
+        String cachePath = this.sdapiProperties.getProperty(SDapiPropertyTypes.CACHE_PATH.toString());
+        // Which looks like <entry key="cache-path">/home/anisbet/MeCard.sd_api.cache</entry>
+        // Remove the 'MeCard.sd_api.cache'
+        File file = new File(cachePath);
+        return file.getParent() + File.separator;
     }
     
 }
