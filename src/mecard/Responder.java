@@ -211,8 +211,8 @@ public class Responder
             response.setCode(ResponseTypes.OK);
             if (this.debug)
             {
-                System.out.println(new Date() + " POLICY_OUT:"+status.getStdout());
-                System.out.println(new Date() + " POLICY_ERR:"+status.getStderr());
+                System.out.println(new Date() + " POLICY_OUT: "+(status.getStdout().isBlank() ? "<none>" : status.getStdout()));
+                System.out.println(new Date() + " POLICY_ERR: "+(status.getStderr().isBlank() ? "<none>" : status.getStderr()));
             }
         }
         else
