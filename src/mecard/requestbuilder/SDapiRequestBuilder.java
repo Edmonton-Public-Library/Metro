@@ -28,8 +28,6 @@ import api.HttpCommandStatus;
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
@@ -116,6 +114,10 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         this.sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
         String envFilePath = this.sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
         this.debug = debug;
+        String loadDirProperty = this.sdapiProperties.getProperty(SDapiPropertyTypes.LOAD_DIR.toString());
+        // Which looks like <entry key="load-dir">/home/anisbet/MeCard/logs/Customers</entry>
+        this.loadDir = loadDirProperty + File.separator;
+        
         
         // Get the SDapi properties file and set up a token manager.
         this.tokenManager = new TokenManager();
@@ -351,7 +353,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         {
             System.out.println("CREATE JSON body: " + jsonNativeCustomer.toString());
         }
-        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.json)
             .set(customerReceipt)
             .build();
         
@@ -409,7 +411,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 {
                     System.out.println("UPDATE JSON body: " + jsonNativeUpdateCustomer.toString());
                 }
-                new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.txt)
+                new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.json)
                     .set(customerReceipt)
                     .build();
                 // /user/patron/key/2139681
@@ -738,11 +740,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public String getCustomerLoadDirectory()
     {
-        String cachePath = this.sdapiProperties.getProperty(SDapiPropertyTypes.CACHE_PATH.toString());
-        // Which looks like <entry key="cache-path">/home/anisbet/MeCard.sd_api.cache</entry>
-        // Remove the 'MeCard.sd_api.cache'
-        File file = new File(cachePath);
-        return file.getParent() + File.separator;
+        return this.loadDir;
     }
     
 }

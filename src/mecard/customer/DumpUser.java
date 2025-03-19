@@ -40,7 +40,8 @@ public class DumpUser
         lost,
         flat,
         data,
-        txt;
+        txt,
+        json;
     }
     
     public static class Builder
