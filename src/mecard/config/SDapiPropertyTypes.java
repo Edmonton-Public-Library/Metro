@@ -26,6 +26,7 @@ package mecard.config;
  */
 public enum SDapiPropertyTypes 
 {
+    LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
     CLIENT_ID("client-id"),
     ENV("env-file-path"),
     CACHE_PATH("cache-path"),

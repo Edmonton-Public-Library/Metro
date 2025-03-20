@@ -261,4 +261,17 @@ public class SDapiRequestBuilderTest
         System.out.println("CustomerMessage: " + requestBuilder.getCustomerMessage(status.getStdout()) );
     }
     
+    /**
+     * Test of getCustomerLoadDirectory() method, of class SDapiRequestBuilder.
+     */
+    @Test
+    public void testGetCustomerLoadDirectory() 
+    {
+        System.out.println("==testGetCustomerLoadDirectory==");
+        Response response = new Response();
+        SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(true);
+        System.out.println("LOAD DIR:" + requestBuilder.getCustomerLoadDirectory());
+        assertTrue(requestBuilder.getCustomerLoadDirectory() instanceof String);
+    }
+    
 }

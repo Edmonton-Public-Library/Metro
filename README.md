@@ -88,6 +88,7 @@ STAFF_PROMPT_OVERRIDE_CODE="XXXX"
 <comment>
     SirsiDynix Web Service settings.
 </comment>
+  <entry key="load-dir">/home/anisbet/MeCard/logs/Customers</entry>
   <entry key="client-id">MY_APP_ID</entry>
   <entry key="env-file-path">/home/metro/.env</entry>
   <entry key="cache-path">/home/metro/.sd_api.cache</entry>
