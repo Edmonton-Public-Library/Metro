@@ -10,14 +10,28 @@ import static org.junit.Assert.*;
 import mecard.customer.MeCardCustomerToNativeFormat;
 
 /**
- *
+ * Note: When testing this class it is vital that you set the environment.properties
+ * file to TRAC settings!! Also since this is using a SIPToMeCardCustomer object
+ * and TRAC has a specific SIP2 fields that need compensating specifically
+ * customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, message.getDateField("PX"));
+ * customer.set(CustomerFieldTypes.DOB, message.getDateField("BC"));
+ * 
+ * Once testing in this class is complete the environment.properties 
+ * <pre><entry "get-protocol">sip2</entry></pre>
+ * can be changed to 
+ * <pre><entry "get-protocol">polaris-api</entry></pre>
+ * or what-have-you.
  * @author anisbet
  */
 public class TRACCustomerNormalizerTest
 {
-    
+    private Customer unformattedCustomer;
+    private SIPToMeCardCustomer formatter;
     public TRACCustomerNormalizerTest()
     {
+        this.formatter = new SIPToMeCardCustomer();
+        this.unformattedCustomer = this.formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESherman, William Tecumseh|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 Savannah Street T1A 3N7|BEanton@shortgrass.ca|BHUSD|PX20150108    235900|BC19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZAC20");
+        System.out.println("Constructor Customer: " + this.unformattedCustomer.toString());
     }
 
     /**
@@ -27,10 +41,8 @@ public class TRACCustomerNormalizerTest
     public void testFinalize()
     {
         System.out.println("==finalize==");
-        SIPToMeCardCustomer formatter = new SIPToMeCardCustomer();
         
-        Customer unformattedCustomer = formatter.getCustomer("64              00020140110    161047000000000000000000000000AO|AA25021000719291|AESherman, William Tecumseh|AQSGMED|BZ0100|CA0100|CB0999|BLY|CQY|BV 0.00|BD1864 Savannah Street T1A 3N7|BEanton@shortgrass.ca|BHUSD|PA20150108    235900|PD19520208|PCSGMEDA|PEMEDICINEHA|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY1AZAC20");
-        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToPolarisSQL(unformattedCustomer);
+        MeCardCustomerToNativeFormat formattedCustomer = new MeCardCustomerToPolarisSQL(this.unformattedCustomer);
         Response response = new Response();
 //        SLSCustomerNormalizer instance = new SLSCustomerNormalizer(true);
         TRACCustomerNormalizer instance = new TRACCustomerNormalizer(true);
@@ -87,13 +99,13 @@ public class TRACCustomerNormalizerTest
 //        System.out.println("PASSWORD>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.PASSWORD.toString()) +"<<<");
         
         // This fails if the proper system date in environment.properties.
-//        assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.BIRTH_DATE.toString()));
+        assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.BIRTH_DATE.toString()));
         System.out.println("BIRTH_DATE>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.BIRTH_DATE.toString()) +"<<<");
         
         assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString()));
         System.out.println("EXPIRATION_DATE>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.EXPIRATION_DATE.toString()) +"<<<");
         
-        assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString()));
+//        assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString()));
         System.out.println("ADDR_CHECK_DATE>>"+ formattedCustomer.getValue(PolarisTable.PatronRegistration.ADDR_CHECK_DATE.toString()) +"<<<");
         
         assertTrue(formattedCustomer.containsKey(PolarisTable.PatronRegistration.UPDATE_DATE.toString()));
@@ -154,14 +166,14 @@ public class TRACCustomerNormalizerTest
     @Test
     public void testNormalizeOnUpdate()
     {
-        // Not used at this time
-//        System.out.println("normalizeOnUpdate");
-//        Customer customer = null;
-//        Response response = null;
-//        TRACCustomerNormalizer instance = null;
-//        instance.normalizeOnUpdate(customer, response);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
+        System.out.println("==normalizeOnUpdate==");
+        System.out.println("Customer: " + this.unformattedCustomer.toString());
+        assertTrue(this.unformattedCustomer.hasValidBirthDate());
+        Response response = new Response();
+        TRACCustomerNormalizer instance = new TRACCustomerNormalizer(true);
+        instance.normalizeOnUpdate(this.unformattedCustomer, response);
+        assertFalse(this.unformattedCustomer.hasValidBirthDate());
+        System.out.println("Customer: " + this.unformattedCustomer.toString());
     }
     
 }

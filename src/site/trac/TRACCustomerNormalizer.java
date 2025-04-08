@@ -22,6 +22,7 @@ package site.trac;
 
 import java.text.ParseException;
 import java.util.Properties;
+import mecard.Protocol;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
@@ -45,16 +46,16 @@ import site.CustomerLoadNormalizer;
  */
 public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
 {
-    
+    private Properties envProperties;
     public TRACCustomerNormalizer(boolean debug)
     {
         super(debug);
+        this.envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
     }
 
     @Override
     public void finalize(Customer customer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {   
-        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
         if (envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString()).endsWith("sql"))
         {
             // add User1 - User5 and any other fields.
@@ -167,6 +168,11 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
 //            }
 //            formattedCustomer.setValue(PapiElementOrder.STATE.name(), customer.get(CustomerFieldTypes.PROVINCE));
 //            formattedCustomer.setValue(PapiElementOrder.REQUEST_PICKUP_BRANCH_ID.name(), "172");
+              // Doing this in the finalize method will make this happen on both
+              // create and update and we only want to do this on update.
+              // The problem is the normalizeOnUpdate() method does not take the 
+              // Native format customer object.
+//            formattedCustomer.removeField("This field intentionally not set", PapiElementOrder.BIRTHDATE.toString());
 //        }
     }
     
@@ -179,7 +185,39 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
     @Override
     public void normalizeOnUpdate(Customer customer, Response response)
     {
-        // No special action required at this time.
+        /*
+        For some reason, the birthdate on update throws the following error on 
+        the TRAC ILS (but not on the dev Sandbox):
+        UPDATE XML body: <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <PatronUpdateData>
+        <LogonBranchID>1</LogonBranchID>
+        <LogonUserID>
+        ...
+        <BirthDate>1971-10-05T00:00:00</BirthDate>
+        ...
+        <ExpirationDate>2026-02-12T00:00:00</ExpirationDate>
+        ....
+        </Address>
+        </PatronAddresses>
+        </PatronUpdateData>
+        >>[PUT], [https://catalogue.tracpac.ab.ca/PAPIservice/REST/public/v1/1033/100/1/patron/21817010469601], [Fri, 07 Mar 2025 20:36:16 GMT], []<<
+        HEADERS RETURNED:
+        :status:[200]
+        api-supported-versions:[1.0, 2.0]
+        CONTOUT RETURNED: 
+        <PatronUpdateResult xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+        <PAPIErrorCode>-3540</PAPIErrorCode>
+        <ErrorMessage>Invalid Birthdate</ErrorMessage>
+        </PatronUpdateResult>
+        * Technically, birthdates _should_ never be required to be updated so 
+        * remove it now so it doesn't cause the invalid date format error on 
+        * TRAC's ILS.
+        */
+        // 'polaris-api' for update, but not if they roll back to polaris-sql.
+        if (this.envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
+        {
+            customer.setDob(Protocol.DEFAULT_FIELD_VALUE);
+        }
     }
     
     @Override

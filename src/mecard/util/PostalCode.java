@@ -58,12 +58,11 @@ public class PostalCode
         code = code.replaceAll("-", "");
         // Strip spaces, convert to uppercase
         code = code.replaceAll("\\s", "").toUpperCase();
-
-        // Insert space after 3rd character
-        code = code.substring(0, 3) + " " + code.substring(3);
         try
         {
-             return code.substring(0, 7);
+            // Insert space after 3rd character
+            code = code.substring(0, 3) + " " + code.substring(3);
+            return code.substring(0, 7);
         }
         catch (StringIndexOutOfBoundsException e)
         {
