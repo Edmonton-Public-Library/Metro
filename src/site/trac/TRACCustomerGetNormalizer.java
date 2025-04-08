@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2013  Edmonton Public Library
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,12 @@
 package site.trac;
 
 import api.CustomerMessage;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SupportedProtocolTypes;
 import mecard.customer.Customer;
 import site.CustomerGetNormalizer;
 
@@ -42,13 +47,16 @@ public class TRACCustomerGetNormalizer extends CustomerGetNormalizer
             Customer customer, 
             CustomerMessage message)
     {
-
-        // sent:63                               AO|AA29335002291042|AC2003|AD2003|AY2AZF1F1
-        // recv:64              00120141002    135321000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEstephaniethero@shaw.ca|BF780-962-2003|BC19751002    235959|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY2AZ9694
-        // TRAC doesn't collect sex.
-        // Their expiry is in field 'PX': 'PX20201025    235959'
-        customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, message.getDateField("PX"));
-        customer.set(CustomerFieldTypes.DOB, message.getDateField("BC"));
-
+        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIP2.toString()))
+        {
+            // sent:63                               AO|AA29335002291042|AC2003|AD2003|AY2AZF1F1
+            // recv:64              00120141002    135321000000000000000000000000AO203|AA29335002291042|AEHunting, Will|BZ0025|CA0010|CB0100|BLY|CQY|BHCAD|BV0.00|CC10.00|BD433 King Street, Spruce Grove, AB T7X 3B4|BEstephaniethero@shaw.ca|BF780-962-2003|BC19751002    235959|PA17|PEASGY|PSAdult (18-64)|U4(none)|U5|PZT7X 3B4|PX20201025    235959|PYN|AFPatron status is ok.|AGPatron status is ok.|AY2AZ9694
+            // TRAC doesn't collect sex.
+            // Their expiry is in field 'PX': 'PX20201025    235959'
+            customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, message.getDateField("PX"));
+            customer.set(CustomerFieldTypes.DOB, message.getDateField("BC"));
+        }
     }
 }
