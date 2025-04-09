@@ -214,6 +214,10 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
         * TRAC's ILS.
         */
         // 'polaris-api' for update, but not if they roll back to polaris-sql.
+        // This is done because Polaris API currently does NOT allow updating
+        // a blank (null) birthdate field. Advised that they add a default 
+        // birthdate of '1900-01-01' to all non-juvenile accounts so the UPDATE
+        // web service does work.
         if (this.envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
         {
             customer.setDob(Protocol.DEFAULT_FIELD_VALUE);
