@@ -199,8 +199,8 @@ public class MeCardCustomerToPapi extends MeCardCustomerToNativeFormat
         
         if (this.debug)
         {
-            System.out.println("o==o CUSTOMER expiry >>>" + customerTable.getValue(PapiElementOrder.EXPIRATION_DATE.name()));
-            System.out.println("o==o CUSTOMER    dob >>>" + customerTable.getValue(PapiElementOrder.BIRTHDATE.name()));
+            System.out.println("ME CUSTOMER expiry >>>" + customerTable.getValue(PapiElementOrder.EXPIRATION_DATE.name()));
+            System.out.println("ME CUSTOMER    dob >>>" + customerTable.getValue(PapiElementOrder.BIRTHDATE.name()));
         }
     }
     
