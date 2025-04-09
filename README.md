@@ -23,14 +23,10 @@ library card at any registered library.
 
 Metro is the server that runs on the ILS server and performs
 the function of negotiating and translating communications between different ILSs.
-The design is centered around a few simple requests that are initiated by the 
-customer on a website, then translated and sent to the home (host) library, a 
-response is generated, sent back to the website. The website then confirms the 
-transaction is a way that ensures that no identifiable customer information is 
-stored then passes the response on again as another request to the guest library.
-The guest then creates a new user record in their ILS. 
+The design is centered around a few simple requests that are initiated by the customer on a website, then translated and sent to the home (host) library, a response is generated, sent back to the website. The website then confirms the transaction is a way that ensures that no identifiable customer information is stored then passes the response on again as another request to the guest library. The guest then creates a new user record in their ILS. 
 
 The Metro server supports the following strategies to manage customer registrations.
+
 # Supported Protocols Table
 
 | Stategy | Key Word | Get | Test | Update | Create | Status | Description |
@@ -44,8 +40,12 @@ The Metro server supports the following strategies to manage customer registrati
 | Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
 
 ----------
-# What's new
+# Known Issues
+* The Polaris web service update API cannot modify a birth date field if it is initially empty. As a workaround, consider adding default values (like 1900-01-01) to all adult accounts with empty birth dates.
+
 ----------
+# What's new
+
 ## Version 3.00.00
 Added SirsiDynix web services for Symphony and Horizon libraries.
 To use it there is a new `sdapi.properties` file as seen below which configures the important settings for web services.
@@ -225,29 +225,29 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 	</comment>
 	<entry key="load-dir">c:\metro</entry>
 	<entry key="timezone-difference">0</entry>           
-    <entry key="host">https://search.prl.ab.ca</entry>
-    <entry key="rest-path">/PAPIservice/REST</entry>     
-    <entry key="internal-domain">PRL</entry>
-    <entry key="staff-access-id">MeLibrary</entry>
-    <entry key="staff-password">xxxxxxxxxxxx</entry>
-    <entry key="papi-version">7.1</entry>                
-    <entry key="http-version">2.0</entry>
-    <entry key="api-user-id">MeLibrary</entry>
-    <entry key="api-key">xxxxxxxxxxx-xxxxxxxxxx-xxxx-xxxxxxx</entry>
-    <entry key="version">v1</entry>
-    <entry key="language-id">1033</entry>
-    <entry key="app-id">100</entry>
-    <entry key="org-id">1</entry>
-    <entry key="patron-branch-id">3</entry>
-    <entry key="login-branch-id">73</entry>    
-    <entry key="login-user-id">385</entry>
-    <entry key="login-workstation-id">1</entry>    
-    <entry key="delivery-option-id">2</entry>  
-    <entry key="ereceipt-option-id">2</entry>  
-    <entry key="patron-code-id">7</entry>      
-    <entry key="connection-timeout">10</entry>
-    <entry key="debug">true</entry>
-    <entry key="server-type">production</entry> <!-- default: 'sandbox' -->
+  <entry key="host">https://search.prl.ab.ca</entry>
+  <entry key="rest-path">/PAPIservice/REST</entry>     
+  <entry key="internal-domain">PRL</entry>
+  <entry key="staff-access-id">MeLibrary</entry>
+  <entry key="staff-password">xxxxxxxxxxxx</entry>
+  <entry key="papi-version">7.1</entry>                
+  <entry key="http-version">2.0</entry>
+  <entry key="api-user-id">MeLibrary</entry>
+  <entry key="api-key">xxxxxxxxxxx-xxxxxxxxxx-xxxx-xxxxxxx</entry>
+  <entry key="version">v1</entry>
+  <entry key="language-id">1033</entry>
+  <entry key="app-id">100</entry>
+  <entry key="org-id">1</entry>
+  <entry key="patron-branch-id">3</entry>
+  <entry key="login-branch-id">73</entry>    
+  <entry key="login-user-id">385</entry>
+  <entry key="login-workstation-id">1</entry>    
+  <entry key="delivery-option-id">2</entry>  
+  <entry key="ereceipt-option-id">2</entry>  
+  <entry key="patron-code-id">7</entry>      
+  <entry key="connection-timeout">10</entry>
+  <entry key="debug">true</entry>
+  <entry key="server-type">production</entry> <!-- default: 'sandbox' -->
 </properties>
 ```
 * The **message.properties** file needs to have the following fields.
