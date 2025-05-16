@@ -37,7 +37,7 @@ public enum PapiPropertyTypes
     ME_SERVER_TIME_ZONE_DIFFERENCE("timezone-difference"),
     HOST("host"), // host for PAPI service.
     REST_PATH("rest-path"),
-    VERSION("version"),         // API version
+    API_VERSION("api-version"),
     LANGUAGE_ID("language-id"),
     APP_ID("app-id"), 
     ORG_ID("org-id"),

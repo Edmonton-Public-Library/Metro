@@ -20,8 +20,13 @@
  */
 package mecard.polaris.papi;
 
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
 import mecard.config.PapiElementOrder;
+import mecard.config.PapiPropertyTypes;
+import mecard.config.PropertyReader;
 import mecard.polaris.papi.MeCardDataToPapiData.QueryType;
+import mecard.util.VersionComparator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -33,9 +38,11 @@ import static org.junit.Assert.*;
 
 public class MeCardDataToPapiDataTest
 {
-    
+    private String apiVersion;
     public MeCardDataToPapiDataTest()
     {
+        Properties papiProperties = PropertyReader.getProperties(ConfigFileTypes.PAPI);
+        apiVersion = papiProperties.getProperty(PapiPropertyTypes.API_VERSION.toString());
     }
 
     /**
@@ -48,10 +55,18 @@ public class MeCardDataToPapiDataTest
         MeCardDataToPapiData papiTable = MeCardDataToPapiData.getInstanceOf(MeCardDataToPapiData.QueryType.CREATE);
         assertNotNull(papiTable);
         assertTrue(papiTable.setValue(PapiElementOrder.LOGON_BRANCH_ID.name(), "1"));
-        String testXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationCreateData><LogonBranchID>1</LogonBranchID></PatronRegistrationCreateData>";
+        String expResult;
+        if (VersionComparator.greaterThanEqualTo(apiVersion, "V2"))
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationDataV2><LogonBranchID>1</LogonBranchID><Addresses><PatronRegistrationAddressDataV2/></Addresses></PatronRegistrationDataV2>";
+        }
+        else
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationCreateData><LogonBranchID>1</LogonBranchID></PatronRegistrationCreateData>";
+        }
         papiTable.setValue("LOGON_BRANCH_ID", "1");
         System.out.println("PAPI Table data: " + papiTable.toString());
-        assertTrue(papiTable.getData().compareTo(testXML) == 0);
+        assertTrue(papiTable.getData().compareTo(expResult) == 0);
     }
 
     /**
@@ -78,7 +93,14 @@ public class MeCardDataToPapiDataTest
         System.out.println("==getName==");
         MeCardDataToPapiData papiTable = MeCardDataToPapiData.getInstanceOf(MeCardDataToPapiData.QueryType.UPDATE);
         System.out.println("GET_NAME: '" + papiTable.getName() + "'");
-        assertTrue(papiTable.getName().compareTo("PatronUpdateData") == 0);
+        if (VersionComparator.greaterThanEqualTo(apiVersion, "V2"))
+        {
+            assertTrue(papiTable.getName().compareTo("PatronRegistrationDataV2") == 0);
+        }
+        else
+        {
+            assertTrue(papiTable.getName().compareTo("PatronUpdateData") == 0);
+        }
     }
 
     /**
@@ -169,12 +191,28 @@ public class MeCardDataToPapiDataTest
     {
         System.out.println("getCreateXml");
         MeCardDataToPapiData instance = MeCardDataToPapiData.getInstanceOf(QueryType.CREATE);
-        String expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationCreateData/>";
+        String expResult;
+        System.out.println("api-version : " + apiVersion);
+        if (VersionComparator.greaterThanEqualTo(apiVersion, "V2"))
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationDataV2><Addresses><PatronRegistrationAddressDataV2/></Addresses></PatronRegistrationDataV2>";
+        }
+        else
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationCreateData/>";
+        }
         String result = instance.getCreateXml();
         assertEquals(expResult, result);
         
         instance = MeCardDataToPapiData.getInstanceOf(QueryType.UPDATE);
-        expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronUpdateData/>";
+        if (VersionComparator.greaterThanEqualTo(apiVersion, "V2"))
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationDataV2><Addresses><PatronRegistrationAddressDataV2/></Addresses></PatronRegistrationDataV2>";
+        }
+        else
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronUpdateData/>";
+        }
         result = instance.getCreateXml();
         assertEquals(expResult, result);
     }
@@ -191,7 +229,22 @@ public class MeCardDataToPapiDataTest
         papiTable.setValue(PapiElementOrder.NAME_FIRST.name(), "3");
         papiTable.setValue(PapiElementOrder.STREET_TWO.name(), "2");
         papiTable.setValue(PapiElementOrder.STREET_ONE.name(), "1");
-        String expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronUpdateData><PatronAddresses><Address><StreetOne>1</StreetOne><StreetTwo>2</StreetTwo></Address></PatronAddresses></PatronUpdateData>";
+        String expResult;
+        if (VersionComparator.greaterThanEqualTo(apiVersion, "v2"))
+        {
+            //<PatronRegistrationDataV2>
+            //	<LogonBranchID>0</LogonBranchID>
+            //	<LogonUserID>0</LogonUserID>
+            //	<LogonWorkstationID>0</LogonWorkstationID>
+            //	<PatronBranchID>0</PatronBranchID>
+            //	<Addresses>
+            //		<PatronRegistrationAddressDataV2>
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronRegistrationDataV2><Addresses><PatronRegistrationAddressDataV2><StreetOne>1</StreetOne><StreetTwo>2</StreetTwo></PatronRegistrationAddressDataV2></Addresses></PatronRegistrationDataV2>";
+        }
+        else
+        {
+            expResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><PatronUpdateData><PatronAddresses><Address><StreetOne>1</StreetOne><StreetTwo>2</StreetTwo></Address></PatronAddresses></PatronUpdateData>";
+        }
         String result = papiTable.getUpdateXml();
         System.out.println("UPDATE result:" + result);
         assertEquals(expResult, result);

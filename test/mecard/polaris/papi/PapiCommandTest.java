@@ -47,7 +47,7 @@ public class PapiCommandTest
         uriSB.append(papiProperties.getProperty(PapiPropertyTypes.HOST.toString()))
             .append(papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString()))
             .append("/").append("public")
-            .append("/").append(papiProperties.getProperty(PapiPropertyTypes.VERSION.toString()))
+            .append("/").append(papiProperties.getProperty(PapiPropertyTypes.API_VERSION.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString()))
             .append("/").append(papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString()))

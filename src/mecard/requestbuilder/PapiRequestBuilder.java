@@ -92,7 +92,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         this.loadDir           = papiProperties.getProperty(PapiPropertyTypes.LOAD_DIR.toString());
         this.host              = papiProperties.getProperty(PapiPropertyTypes.HOST.toString());
         this.restPath          = papiProperties.getProperty(PapiPropertyTypes.REST_PATH.toString());
-        this.apiVersion        = papiProperties.getProperty(PapiPropertyTypes.VERSION.toString());
+        this.apiVersion        = papiProperties.getProperty(PapiPropertyTypes.API_VERSION.toString());
         this.languageId        = papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString());
         this.appId             = papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString());
         this.orgId             = papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString());

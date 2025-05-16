@@ -74,6 +74,7 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
     private final QueryType queryType;
     private final EnumMap<PapiElementOrder, String> columns;
     public static PapiElementOrder TABLE_NAME;
+    private final String apiVersion;
     
     /**
      * Specifies the formatting {@link PAPIFormattedTable.ContentType} and defaults
@@ -100,16 +101,36 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
     
     private MeCardDataToPapiData(QueryType qType, boolean debug)
     {
+        Properties papiProperties = PropertyReader.getProperties(ConfigFileTypes.PAPI);
+        this.apiVersion = papiProperties.getProperty(PapiPropertyTypes.API_VERSION.toString());
+        if (debug)
+        {
+            System.out.println("api-version : " + apiVersion);
+        }
         this.columns    = new EnumMap<>(PapiElementOrder.class);
         this.queryType  = qType;
         this.debug      = debug;
         switch (this.queryType)
         {
             case CREATE:
-                MeCardDataToPapiData.TABLE_NAME = PapiElementOrder.TAG_PATRON_REGISTRATION_CREATE;
+                if (VersionComparator.greaterThanEqualTo(apiVersion, "v2"))
+                {
+                    MeCardDataToPapiData.TABLE_NAME = PapiElementOrder.TAG_PATRON_REGISTRATION_DATA_V2;
+                }
+                else
+                {
+                    MeCardDataToPapiData.TABLE_NAME = PapiElementOrder.TAG_PATRON_REGISTRATION_CREATE;
+                }
                 break;
             case UPDATE:
-                MeCardDataToPapiData.TABLE_NAME = PapiElementOrder.TAG_PATRON_UPDATE_DATA;
+                if (VersionComparator.greaterThanEqualTo(apiVersion, "v2"))
+                {
+                    MeCardDataToPapiData.TABLE_NAME = PapiElementOrder.TAG_PATRON_REGISTRATION_DATA_V2;
+                }
+                else
+                {
+                    MeCardDataToPapiData.TABLE_NAME = PapiElementOrder.TAG_PATRON_UPDATE_DATA;
+                }
                 break;
             default:
                 throw new UnsupportedOperationException(
@@ -144,6 +165,18 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
      */
     protected String getCreateXml()
     {
+        if (VersionComparator.greaterThanEqualTo(this.apiVersion, "v2"))
+        {
+            return getV2PatronDataXML();
+        }
+        return getV1CreateXML();
+    }
+
+    private String getV1CreateXML()
+    {
+        /** 
+         * API Version 1
+         */
         // <?xml version="1.0" encoding="UTF-8"?>
         // <PatronRegistrationCreateData>
         //	<LogonBranchID>0</LogonBranchID>
@@ -245,6 +278,75 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                 + System.lineSeparator() + ex.getLocalizedMessage());
         }
         
+        /*
+        * API Version 2
+        */
+        //<?xml version="1.0" encoding="UTF-8"?>
+        //<PatronRegistrationDataV2>
+        //	<LogonBranchID>0</LogonBranchID>
+        //	<LogonUserID>0</LogonUserID>
+        //	<LogonWorkstationID>0</LogonWorkstationID>
+        //	<PatronBranchID>0</PatronBranchID>
+        //	<Addresses>
+        //		<PatronRegistrationAddressDataV2>
+        //			<FreeTextLabel>string</FreeTextLabel>
+        //			<StreetOne>string</StreetOne>
+        //			<StreetTwo>string</StreetTwo>
+        //			<StreetThree>string</StreetThree>
+        //			<City>string</City>
+        //			<State>string</State>
+        //			<County>string</County>
+        //			<Country>string</Country>
+        //			<CountryID>0</CountryID>
+        //			<PostalCode>string</PostalCode>
+        //			<ZipPlusFour>string</ZipPlusFour>
+        //			<AddressTypeID>0</AddressTypeID>
+        //		</PatronRegistrationAddressDataV2>
+        //	</Addresses>
+        //	<NameFirst>string</NameFirst>
+        //	<NameLast>string</NameLast>
+        //	<NameMiddle>string</NameMiddle>
+        //	<User1>string</User1>
+        //	<User2>string</User2>
+        //	<User3>string</User3>
+        //	<User4>string</User4>
+        //	<User5>string</User5>
+        //	<GenderID>string</GenderID>
+        //	<Birthdate>2025-05-14T16:53:14.081Z</Birthdate>
+        //	<PhoneVoice1>string</PhoneVoice1>
+        //	<PhoneVoice2>string</PhoneVoice2>
+        //	<PhoneVoice3>string</PhoneVoice3>
+        //	<Phone1CarrierID>0</Phone1CarrierID>
+        //	<Phone2CarrierID>0</Phone2CarrierID>
+        //	<Phone3CarrierID>0</Phone3CarrierID>
+        //	<EmailAddress>string</EmailAddress>
+        //	<AltEmailAddress>string</AltEmailAddress>
+        //	<LanguageID>0</LanguageID>
+        //	<UserName>string</UserName>
+        //	<Password>string</Password>
+        //	<Password2>string</Password2>
+        //	<DeliveryOptionID>0</DeliveryOptionID>
+        //	<EnableSMS>true</EnableSMS>
+        //	<TxtPhoneNumber>0</TxtPhoneNumber>
+        //	<Barcode>string</Barcode>
+        //	<EReceiptOptionID>0</EReceiptOptionID>
+        //	<PatronCode>0</PatronCode>
+        //	<ExpirationDate>2025-05-14T16:53:14.081Z</ExpirationDate>
+        //	<AddrCheckDate>2025-05-14T16:53:14.081Z</AddrCheckDate>
+        //	<LegalNameFirst>string</LegalNameFirst>
+        //	<LegalNameLast>string</LegalNameLast>
+        //	<LegalNameMiddle>string</LegalNameMiddle>
+        //	<UseLegalNameOnNotices>true</UseLegalNameOnNotices>
+        //	<ReadingListFlag>true</ReadingListFlag>
+        //	<EmailFormat>0</EmailFormat>
+        //	<ExcludeFromAlmostOverdueAutoRenew>true</ExcludeFromAlmostOverdueAutoRenew>
+        //	<ExcludeFromPatronRecExpiration>true</ExcludeFromPatronRecExpiration>
+        //	<ExcludeFromInactivePatron>true</ExcludeFromInactivePatron>
+        //	<FormerID>string</FormerID>
+        //	<RequestPickupBranchID>0</RequestPickupBranchID>
+        //	<StatisticalClassID>0</StatisticalClassID>
+        //	<UseSingleName>true</UseSingleName>
+        //</PatronRegistrationDataV2>
         return xmlString.toString();
     }
 
@@ -265,8 +367,25 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
      */
     protected String getUpdateXml()
     {
+        if (VersionComparator.greaterThanEqualTo(this.apiVersion, "v2"))
+        {
+            return getV2PatronDataXML();
+        }
+        return getV1UpdateXML();
+    }
+    
+    /**
+     * Version 2 of the API now accepts the same XML structure of patron 
+     * information for both create and update.
+     * 
+     * @return String of XML patron data.
+     */
+    private String getV2PatronDataXML()
+    {
         //<?xml version="1.0" encoding="UTF-8"?>
         //<PatronUpdateData>
+        // <!--  suggested change from Polaris Dev team -->
+        //<PatronRegistrationDataV2>
         //        <LogonBranchID>0</LogonBranchID>
         //        <LogonUserID>0</LogonUserID>
         //        <LogonWorkstationID>0</LogonWorkstationID>
@@ -292,8 +411,12 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
         //        <ExcludeFromAlmostOverdueAutoRenew>true</ExcludeFromAlmostOverdueAutoRenew>
         //        <ExcludeFromPatronRecExpiration>true</ExcludeFromPatronRecExpiration>
         //        <ExcludeFromInactivePatron>true</ExcludeFromInactivePatron>
-        //        <PatronAddresses>
+        // <!-- These change values and order -->
+        //        <PatronAddressesV2>
         //                <Address>
+        // <!-- to this -->
+        //        <Addresses>
+        //		<PatronRegistrationAddressDataV2>
         //                        <AddressID>0</AddressID>
         //                        <FreeTextLabel>string</FreeTextLabel>
         //                        <StreetOne>string</StreetOne>
@@ -307,15 +430,183 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
         //                        <Country>string</Country>
         //                        <CountryID>0</CountryID>
         //                        <AddressTypeID>0</AddressTypeID>
+        // <!-- These change values and order -->
         //                </Address>
         //        </PatronAddresses>
+        // <!-- to this -->
+        //            </PatronRegistrationAddressDataV2>
+        //        </Addresses>
         //        <RequestPickupBranchID>0</RequestPickupBranchID>
         //        <User1>string</User1>
         //        <User2>string</User2>
         //        <User3>string</User3>
         //        <User4>string</User4>
         //        <User5>string</User5>
-        //</PatronUpdateData>
+        //</PatronRegistrationDataV2>
+        StringWriter xmlString = new StringWriter();
+        try 
+        {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.newDocument();
+            
+            // root element: <PatronRegistrationCreateData>
+            Element rootElement = doc.createElement(MeCardDataToPapiData.TABLE_NAME.toString());
+            doc.appendChild(rootElement);
+            
+            // Pre-emptively we create a <Addresses> and <PatronRegistrationAddressDataV2>
+            // to be added to the root element later.
+            Element addressesElement = doc.createElement(PapiElementOrder.TAG_ADDRESSES_V2.toString());
+            Element patronRegistrationAddressDataV2 = doc.createElement(PapiElementOrder.TAG_PATRON_REGISTRATION_ADDRESS_DATA_V2.toString());
+            addressesElement.appendChild(patronRegistrationAddressDataV2);
+            // Each element from the PapiElementOrder enum, but in the case
+            // of update there are additional tags that need to be created, 
+            // then placed in order.
+            for (PapiElementOrder key: PapiElementOrder.values())
+            {
+                if (this.columns.get(key) != null)
+                {
+                    Element papiElement = doc.createElement(key.toString());
+                    papiElement.appendChild(doc.createTextNode(this.columns.get(key)));
+                    switch (key)
+                    {
+                        case ADDRESS_ID:
+                        case FREE_TEXT_LABEL:
+                        case STREET_ONE:
+                        case STREET_TWO:
+                        case STREET_THREE:
+                        case CITY:
+                        case COUNTY:
+                        case STATE:
+                        case COUNTRY:
+                        case COUNTRY_ID:
+                        case POSTAL_CODE:
+                        case ZIP_PLUS_FOUR:
+                        case ADDRESS_TYPE_ID:
+                            patronRegistrationAddressDataV2.appendChild(papiElement);
+                            break;
+                        case BIRTHDATE:
+                        // These are required
+                        case LOGON_BRANCH_ID:
+                        case LOGON_USER_ID:
+                        case LOGON_WORKSTATION_ID:
+                        // Note that PAPI can only update email, PhoneVoice1, Password
+                        // ExpirationDate, and any address value, so filter out 
+                        // any others, as they _may_ throw an error if included.
+                        case EMAIL_ADDRESS:
+                        // PhoneNumber is only returned by Patron Basic Data Get requests.
+                        case PHONE_VOICE_1:
+                        case PHONE_VOICE_2:
+                        case PHONE_VOICE_3:
+                        case PASSWORD:
+                        case EXPIRATION_DATE:
+                            rootElement.appendChild(papiElement);
+                            break;
+                        default: // No other elements accepted for update.
+                            if (this.debug)
+                                System.out.println("getUpdateXml(): ignoring " + key);
+                            break;
+                    }
+                }            
+            }
+            rootElement.appendChild(addressesElement);
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(xmlString);
+            transformer.transform(source, result);
+
+            // Output to console for testing
+            if (this.debug)
+            {
+                StreamResult consoleResult = new StreamResult(System.out);
+                transformer.transform(source, consoleResult);
+            }
+        }
+        catch (ParserConfigurationException | TransformerConfigurationException ex)
+        {
+            System.out.println(MeCardDataToPapiData.class.getName() 
+                + "getUpdateXml() failed with a parser or transformer configuration exception:"
+                + System.lineSeparator() + ex.getLocalizedMessage());
+        } 
+        catch (TransformerException ex)
+        {
+            System.out.println(MeCardDataToPapiData.class.getName() 
+                + "getUpdateXml() failed with a transformer exception:"
+                + System.lineSeparator() + ex.getLocalizedMessage());
+        }
+        
+        return xmlString.toString();
+    }
+
+    /**
+     * Version 1 of API update document structure of patron update data.
+     * @return String version of XML.
+     */
+    private String getV1UpdateXML()
+    {
+        //<?xml version="1.0" encoding="UTF-8"?>
+        //<PatronUpdateData>
+        // <!--  suggested change from Polaris Dev team -->
+        //<PatronRegistrationDataV2>
+        //        <LogonBranchID>0</LogonBranchID>
+        //        <LogonUserID>0</LogonUserID>
+        //        <LogonWorkstationID>0</LogonWorkstationID>
+        //        <ReadingListFlag>0</ReadingListFlag>
+        //        <EmailFormat>0</EmailFormat>
+        //        <DeliveryOptionID>0</DeliveryOptionID>
+        //        <DeliveryOption>0</DeliveryOption>
+        //        <EmailAddress>string</EmailAddress>
+        //        <AltEmailAddress>string</AltEmailAddress>
+        //        <EnableSMS>true</EnableSMS>
+        //        <PhoneVoice1>string</PhoneVoice1>
+        //        <PhoneVoice2>string</PhoneVoice2>
+        //        <PhoneVoice3>string</PhoneVoice3>
+        //        <Phone1CarrierID>0</Phone1CarrierID>
+        //        <Phone2CarrierID>0</Phone2CarrierID>
+        //        <Phone3CarrierID>0</Phone3CarrierID>
+        //        <TxtPhoneNumber>0</TxtPhoneNumber>
+        //        <EReceiptOptionID>0</EReceiptOptionID>
+        //        <Password>string</Password>
+        //        <PatronCode>0</PatronCode>
+        //        <ExpirationDate>2022-07-05T19:38:30.611Z</ExpirationDate>
+        //        <AddrCheckDate>2022-07-05T19:38:30.611Z</AddrCheckDate>
+        //        <ExcludeFromAlmostOverdueAutoRenew>true</ExcludeFromAlmostOverdueAutoRenew>
+        //        <ExcludeFromPatronRecExpiration>true</ExcludeFromPatronRecExpiration>
+        //        <ExcludeFromInactivePatron>true</ExcludeFromInactivePatron>
+        // <!-- These change values and order -->
+        //        <PatronAddressesV2>
+        //                <Address>
+        // <!-- to this -->
+        //        <Addresses>
+        //		<PatronRegistrationAddressDataV2>
+        //                        <AddressID>0</AddressID>
+        //                        <FreeTextLabel>string</FreeTextLabel>
+        //                        <StreetOne>string</StreetOne>
+        //                        <StreetTwo>string</StreetTwo>
+        //                        <StreetThree>string</StreetThree>
+        //                        <City>string</City>
+        //                        <State>string</State>
+        //                        <County>string</County>
+        //                        <PostalCode>string</PostalCode>
+        //                        <ZipPlusFour>string</ZipPlusFour>
+        //                        <Country>string</Country>
+        //                        <CountryID>0</CountryID>
+        //                        <AddressTypeID>0</AddressTypeID>
+        // <!-- These change values and order -->
+        //                </Address>
+        //        </PatronAddresses>
+        // <!-- to this -->
+        //            </PatronRegistrationAddressDataV2>
+        //        </Addresses>
+        //        <RequestPickupBranchID>0</RequestPickupBranchID>
+        //        <User1>string</User1>
+        //        <User2>string</User2>
+        //        <User3>string</User3>
+        //        <User4>string</User4>
+        //        <User5>string</User5>
+        //</PatronRegistrationDataV2>
         StringWriter xmlString = new StringWriter();
         try 
         {
@@ -359,23 +650,6 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                             addressElement.appendChild(papiElement);
                             break;
                         case BIRTHDATE:
-                            /*
-                            It seems that older version allow only a subset of 
-                            customer attributes to be updated, however, in 7.6 
-                            more attributes can be updated, and at TRAC the update
-                            is actually expecting a birth date, which was previously
-                            not allowed to be updated.
-                            */
-                            Properties papiProperties = PropertyReader.getProperties(ConfigFileTypes.PAPI);
-                            // TODO: Fix this with Papiversion
-                            String version = papiProperties.getProperty(PapiPropertyTypes.PAPI_VERSION.toString());
-                            if (VersionComparator.greaterThanEqualTo(version, "7.6"))
-                            {
-                                if (this.debug)
-                                    System.out.println("getUpdateXml(): adding birthdate to papi update.");
-                                rootElement.appendChild(papiElement);
-                            }
-                            break;
                         // These are required
                         case LOGON_BRANCH_ID:
                         case LOGON_USER_ID:
@@ -403,7 +677,7 @@ public class MeCardDataToPapiData implements MeCardDataToNativeData
                     // any others, as they _may_ throw an error if included.
                     // PhoneNumber is only returned by Patron Basic Data Get requests.
                     // No other elements accepted for update.
-                                    }            
+                }            
             }
             // Now append the patron address element at the end.
             // NOTE:  <RequestPickupBranchID>

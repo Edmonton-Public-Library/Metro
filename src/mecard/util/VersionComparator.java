@@ -90,6 +90,9 @@ public class VersionComparator
      */
     private static int compareVersions(String version1, String version2) 
     {
+        // Remove 'v' or 'V' prefix if present
+        version1 = removeVersionPrefix(version1);
+        version2 = removeVersionPrefix(version2);
         // Split the version strings by dots
         String[] parts1 = version1.split("\\.");
         String[] parts2 = version2.split("\\.");
@@ -116,6 +119,21 @@ public class VersionComparator
         
         // All components are equal
         return 0;
+    }
+    
+    /**
+     * Removes 'v' or 'V' prefix from a version string if present.
+     * 
+     * @param version The version string that might have a prefix
+     * @return The version string without 'v' or 'V' prefix
+     */
+    private static String removeVersionPrefix(String version) {
+        if (version != null && version.length() > 0) {
+            if (version.charAt(0) == 'v' || version.charAt(0) == 'V') {
+                return version.substring(1);
+            }
+        }
+        return version;
     }
     
 }

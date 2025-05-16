@@ -31,8 +31,13 @@ package mecard.config;
  */
 public enum PapiElementOrder
 {
+    // These next three tags are just for api-verion V2.
+    TAG_PATRON_REGISTRATION_DATA_V2("PatronRegistrationDataV2"),
+    TAG_ADDRESSES_V2("Addresses"),
+    TAG_PATRON_REGISTRATION_ADDRESS_DATA_V2("PatronRegistrationAddressDataV2"),
+    // These are V1
     TAG_PATRON_REGISTRATION_CREATE("PatronRegistrationCreateData"),  // Tag name and place holder. All other entries are ordered starting at 1.
-    TAG_PATRON_UPDATE_DATA("PatronUpdateData"), // TAG NAME
+    TAG_PATRON_UPDATE_DATA("PatronUpdateData"),
     TAG_PATRON_ADDRESSES("PatronAddresses"),
     TAG_ADDRESS("Address"),
     LOGON_BRANCH_ID("LogonBranchID"),

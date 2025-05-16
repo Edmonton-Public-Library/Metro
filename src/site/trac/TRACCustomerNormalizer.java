@@ -218,10 +218,10 @@ public final class TRACCustomerNormalizer extends CustomerLoadNormalizer
         // a blank (null) birthdate field. Advised that they add a default 
         // birthdate of '1900-01-01' to all non-juvenile accounts so the UPDATE
         // web service does work.
-        if (this.envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
-        {
-            customer.setDob(Protocol.DEFAULT_FIELD_VALUE);
-        }
+//        if (this.envProperties.getProperty(LibraryPropertyTypes.UPDATE_SERVICE.toString()).endsWith("api"))
+//        {
+//            customer.setDob(Protocol.DEFAULT_FIELD_VALUE);
+//        }
     }
     
     @Override

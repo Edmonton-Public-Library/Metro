@@ -88,7 +88,18 @@ public class VersionComparatorTest
         System.out.println("==greaterThanEqualTo==");
         assertEquals(true, VersionComparator.greaterThanEqualTo("7.6", "7"));
         assertEquals(true, VersionComparator.greaterThanEqualTo("7.00.001", "7"));
-        assertEquals(false, VersionComparator.greaterThanEqualTo("7.0.9502.0", "6.9"));
+        assertEquals(false, VersionComparator.greaterThanEqualTo("6.9", "7.0.9502.0"));
+         // Test with 'v' or 'V' prefix
+        System.out.println("v1.0 == 1.0: " + VersionComparator.equalTo("v1.0", "1.0"));           // true
+        assertEquals(true, VersionComparator.greaterThanEqualTo("v1.0", "1.0"));
+        System.out.println("V2.1 > v1.9: " + VersionComparator.greaterThan("V2.1", "v1.9"));      // true
+        assertEquals(true, VersionComparator.greaterThanEqualTo("V2.1", "v1.9"));
+        System.out.println("v2.0 < v2.1: " + VersionComparator.lessThan("v2.0", "v2.1"));         // true
+        assertEquals(true, VersionComparator.lessThanEqualTo("v2.0", "v2.1"));
+        System.out.println("v3 >= V3.0: " + VersionComparator.equalTo("v3", "V3.0"));  // true
+        assertEquals(true, VersionComparator.greaterThanEqualTo("v3", "V3.0"));
+        System.out.println("1.5 < V1.5.1: " + VersionComparator.lessThan("1.5", "V1.5.1"));       // true
+        assertEquals(true, VersionComparator.lessThanEqualTo("1.5", "V1.5.1"));
     }
     
 }

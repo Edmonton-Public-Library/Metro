@@ -40,11 +40,15 @@ The Metro server supports the following strategies to manage customer registrati
 | Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
 
 ----------
-# Known Issues
-* The Polaris web service update API cannot modify a birth date field if it is initially empty. As a workaround, consider adding default values (like 1900-01-01) to all adult accounts with empty birth dates.
-
-----------
 # What's new
+
+## Version 3.01.00a
+* Polaris PAPI ILSes need to rename the `version` key in the `papi.properties` file to `api-version`.
+```xml
+<entry key="version">v1</entry>
+<!-- becomes -->
+<entry key="api-version">v1</entry>
+```
 
 ## Version 3.00.00
 Added SirsiDynix web services for Symphony and Horizon libraries.
