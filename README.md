@@ -49,6 +49,10 @@ The Metro server supports the following strategies to manage customer registrati
 <!-- becomes -->
 <entry key="api-version">v1</entry>
 ```
+* Polaris API version `v1` has a known issue where it fails to update an account if the update information includes a birthdate, but the account's birthdate is empty or null. The fix is to use version 2 (`v2`) of the API. To set PAPI to use version 2 change the following in the `papi.properties` file. 
+```xml
+<entry key="api-version">v2</entry>
+```
 
 ## Version 3.00.00
 Added SirsiDynix web services for Symphony and Horizon libraries.
