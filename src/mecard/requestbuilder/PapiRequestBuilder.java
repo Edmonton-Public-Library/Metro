@@ -36,7 +36,6 @@ import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.MessagesTypes;
-import mecard.config.PapiElementOrder;
 import mecard.config.PapiPropertyTypes;
 import mecard.config.PropertyReader;
 import mecard.customer.Customer;
@@ -109,13 +108,13 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         this.runAsStaff = !(this.internalDomain.isEmpty() || this.staffAccessId.isEmpty() || this.staffPassword.isEmpty());
     }
     
-    private String getProtectedBaseUri()
+    private String getProtectedBaseUriDefaultApiVersion()
     {
         StringBuilder uriSB = new StringBuilder();
         uriSB.append(this.host)
             .append(this.restPath)
             .append("/").append("protected")
-            .append("/").append(this.apiVersion)
+            .append("/").append("v1")
             .append("/").append(this.languageId)
             .append("/").append(this.appId)
             .append("/").append(this.orgId)
@@ -123,13 +122,27 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         return uriSB.toString();
     }
     
-    private String getPublicBaseUri()
+    private String getPublicBaseUriDefaultApiVersion()
     {
         StringBuilder uriSB = new StringBuilder();
         uriSB.append(this.host)
             .append(this.restPath)
             .append("/").append("public")
-            .append("/").append(this.apiVersion)
+            .append("/").append("v1")
+            .append("/").append(this.languageId)
+            .append("/").append(this.appId)
+            .append("/").append(this.orgId)
+            .append("/");
+        return uriSB.toString();
+    }
+    
+    private String getPublicBaseUri(String version)
+    {
+        StringBuilder uriSB = new StringBuilder();
+        uriSB.append(this.host)
+            .append(this.restPath)
+            .append("/").append("public")
+            .append("/").append(version)
             .append("/").append(this.languageId)
             .append("/").append(this.appId)
             .append("/").append(this.orgId)
@@ -161,11 +174,11 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 System.out.println("AUTHENTICATE XML body: " + authentication);
             }
             PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
-                .uri(this.getProtectedBaseUri() + "authenticator/staff")
+                .uri(this.getProtectedBaseUriDefaultApiVersion() + "authenticator/staff")
                 .debug(this.debug)
                 .bodyXML(authentication)
                 .build();
-            System.out.println(new Date() + "DEBUG 'POST' auth to URL: " + this.getProtectedBaseUri() + "authenticator/staff");
+            System.out.println(new Date() + "DEBUG 'POST' auth to URL: " + this.getProtectedBaseUriDefaultApiVersion() + "authenticator/staff");
             // HttpCommandStatus has methods for testing if there was HTTP errors
             HttpCommandStatus status = (HttpCommandStatus) command.execute();
             System.out.println(new Date() + "staff authentication response: " + status.toString());
@@ -228,7 +241,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
                 System.out.println("AUTHENTICATE XML body: " + authentication);
             }
             PapiCommand command = new PapiCommand.Builder(papiProperties, "POST")
-                .uri(this.getPublicBaseUri() + "authenticator/patron")
+                .uri(this.getPublicBaseUriDefaultApiVersion() + "authenticator/patron")
                 .bodyXML(authentication)
                 .debug(this.debug)
                 .build();
@@ -301,7 +314,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
             .set(customerReceipt)
             .build();
         return new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.getPublicBaseUri() + "patron")
+            .uri(this.getPublicBaseUri(this.apiVersion) + "patron")
             .debug(this.debug)
             .bodyXML(papiCustomer.toString())
             .staffPassword(staffSecret)
@@ -316,7 +329,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     {
         //
         // Note Patron Update Data request: PUT /public/1/patron/{PatronBarcode}
-        //  https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/patron/21221012345678
+        //  https://dewey.polarislibrary.com/PAPIService//REST/public/{api-version}/{LangID}/{AppID}/{OrgID}/patron/{PatronBarcode}?ignoresa=true
         // with the patrons XML data as body.
         // NOTE: only email, address fields, expiration, phone_voice1,2,3 and password 
         // can be updated. Testing of staff account permission-related changes TBD.
@@ -338,14 +351,6 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // we have a customer let's convert them to a PapiFormatted user.
         MeCardCustomerToNativeFormat papiCustomer = new MeCardCustomerToPapi(customer,QueryType.UPDATE);
         // apply library centric normalization to the customer account.
-        /* DO NOT DEPLOY WITH THIS CODE BELOW */
-        // TEST
-//        System.out.println("Running this TEST");
-        papiCustomer.setValue(PapiElementOrder.BIRTHDATE.name(), "1975-08-22");
-//        papiCustomer.removeField("", PapiElementOrder.BIRTHDATE.name());
-//        System.out.println("customer.toString():"+System.lineSeparator() + papiCustomer.toString());
-        // TEST
-        /* DO NOT DEPLOY WITH THIS CODE ABOVE */
         normalizer.finalize(customer, papiCustomer, response);
         // Output the customer's data as a receipt in case they come back with questions.
         List<String> customerReceipt = papiCustomer.getFormattedCustomer();
@@ -357,7 +362,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
             System.out.println("UPDATE XML body: " + papiCustomer.toString());
         }
         PapiCommand command = new PapiCommand.Builder(papiProperties, "PUT")
-            .uri(this.getPublicBaseUri() + "patron/" + userId)
+            .uri(this.getPublicBaseUri(this.apiVersion) + "patron/" + userId + "?ignoresa=true")
             .debug(this.debug)
             .bodyXML(papiCustomer.toString())
             .staffPassword(staffSecret)
@@ -373,7 +378,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // "https://dewey.polarislibrary.com/PAPIService/REST/public/v1/1033/100/1/api"
         String staffSecret = this.getStaffAccessToken(this.internalDomain, this.staffAccessId, this.staffPassword);
         PapiCommand command = new PapiCommand.Builder(this.papiProperties, "GET")
-            .uri(this.getPublicBaseUri() + "api")
+            .uri(this.getPublicBaseUriDefaultApiVersion() + "api")
             .debug(this.debug)
             .staffPassword(staffSecret)
             .build();
@@ -389,7 +394,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         // to be passed on to the guest library.
         String patronAccessToken = this.getPatronAccessToken(userId, userPin, response);
         PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
-            .uri(this.getPublicBaseUri() + "patron/" + userId + "/basicdata?addresses=true&notes=true")
+            .uri(this.getPublicBaseUriDefaultApiVersion() + "patron/" + userId + "/basicdata?addresses=true&notes=true")
             .debug(this.debug)
             .patronAccessToken(patronAccessToken) // which not get filled if staff password is non-empty.
             .build();
@@ -409,7 +414,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
             patronToken = this.getPatronAccessToken(userId, userPin, response);
         }
         PapiCommand command = new PapiCommand.Builder(papiProperties, "GET")
-            .uri(this.getPublicBaseUri() + "patron/" + userId)
+            .uri(this.getPublicBaseUriDefaultApiVersion() + "patron/" + userId)
             .debug(this.debug)
             .staffPassword(staffSecret)
             .build();

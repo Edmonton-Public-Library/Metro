@@ -42,14 +42,16 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 # What's new
 
-## Version 3.01.00a
+## Version 3.01.00
 * Polaris PAPI ILSes need to rename the `version` key in the `papi.properties` file to `api-version`.
 ```xml
 <entry key="version">v1</entry>
 <!-- becomes -->
 <entry key="api-version">v1</entry>
 ```
-* Polaris API version `v1` has a known issue where it fails to update an account if the update information includes a birthdate, but the account's birthdate is empty or null. The fix is to use version 2 (`v2`) of the API. To set PAPI to use version 2 change the following in the `papi.properties` file. 
+* A known issue exists in PAPI `v1` where birthdates cannot be added to accounts with null birthdate values. To resolve this issue and align data types between the `PatronRegistrationCreate` and `PatronRegistrationUpdate` web services, PAPI `v2` has been released on select systems.
+Currently, `v2` includes only the `PatronRegistrationCreate` and `PatronRegistrationUpdate` methods. The MeCard server will automatically use these `v2` methods when the `api-version` parameter is set to `v2`.
+To configure PAPI to use version 2, modify the `papi.properties` file as follows: 
 ```xml
 <entry key="api-version">v2</entry>
 ```

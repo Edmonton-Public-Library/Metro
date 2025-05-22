@@ -22,7 +22,6 @@ package site.trac;
 
 import java.text.ParseException;
 import java.util.Properties;
-import mecard.Protocol;
 import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.config.ConfigFileTypes;

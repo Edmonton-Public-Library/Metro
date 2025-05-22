@@ -67,6 +67,7 @@ public class PapiAuthenticationData implements AuthenticationData
      * @param password String of the customer's password.
      * @return XML string version of the PAPI Patron authentication data document.
      */
+    @Override
     public String getStaffAuthentication(String domain, String userId, String password)
     {
 //      <PatronAuthenticationData xmlns:i="http://www.w3.org/2001/XMLSchemainstance">
