@@ -49,9 +49,7 @@ The Metro server supports the following strategies to manage customer registrati
 <!-- becomes -->
 <entry key="api-version">v1</entry>
 ```
-* A known issue exists in PAPI `v1` where birthdates cannot be added to accounts with null birthdate values. To resolve this issue and align data types between the `PatronRegistrationCreate` and `PatronRegistrationUpdate` web services, PAPI `v2` has been released on select systems.
-Currently, `v2` includes only the `PatronRegistrationCreate` and `PatronRegistrationUpdate` methods. The MeCard server will automatically use these `v2` methods when the `api-version` parameter is set to `v2`.
-To configure PAPI to use version 2, modify the `papi.properties` file as follows: 
+* A new version of API is available for PAPI that addresses minor issues with birthdates and normalizes datatypes across similar web service calls.MeCard can now optionally switch between `v1` & `v2`.
 ```xml
 <entry key="api-version">v2</entry>
 ```
