@@ -56,6 +56,7 @@ import mecard.polaris.papi.PapiXmlResponse;
 import mecard.polaris.papi.PapiAuthenticationData;
 import mecard.polaris.papi.TokenCache;
 import mecard.security.AuthenticationData;
+import mecard.util.VersionComparator;
 
 /**
  * This class supports customer registration commands using the Polaris API 
@@ -82,7 +83,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
     private final String languageId;
     private final String appId;
     private final String orgId;
-    
+    private final String loginBranchId;
     PapiRequestBuilder(boolean debug)
     {
         // read all the properties from the Polaris table
@@ -95,6 +96,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         this.languageId        = papiProperties.getProperty(PapiPropertyTypes.LANGUAGE_ID.toString());
         this.appId             = papiProperties.getProperty(PapiPropertyTypes.APP_ID.toString());
         this.orgId             = papiProperties.getProperty(PapiPropertyTypes.ORG_ID.toString());
+        this.loginBranchId     = papiProperties.getProperty(PapiPropertyTypes.LOGON_BRANCH_ID.toString());
         // Get the papi version because iii removes functions from API over minor
         // versions of their web service. For example 7.0 allows query of the api version
         // 7.1 does not! Default to 7.0, it has more functionality than 7.1.
@@ -136,7 +138,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         return uriSB.toString();
     }
     
-    private String getPublicBaseUri(String version)
+    private String getPublicBaseUriSpecificVersion(String version)
     {
         StringBuilder uriSB = new StringBuilder();
         uriSB.append(this.host)
@@ -314,7 +316,7 @@ public class PapiRequestBuilder extends ILSRequestBuilder
             .set(customerReceipt)
             .build();
         return new PapiCommand.Builder(papiProperties, "POST")
-            .uri(this.getPublicBaseUri(this.apiVersion) + "patron")
+            .uri(this.getPublicBaseUriSpecificVersion(this.apiVersion) + "patron")
             .debug(this.debug)
             .bodyXML(papiCustomer.toString())
             .staffPassword(staffSecret)
@@ -328,8 +330,8 @@ public class PapiRequestBuilder extends ILSRequestBuilder
             CustomerLoadNormalizer normalizer)
     {
         //
-        // Note Patron Update Data request: PUT /public/1/patron/{PatronBarcode}
-        //  https://dewey.polarislibrary.com/PAPIService//REST/public/{api-version}/{LangID}/{AppID}/{OrgID}/patron/{PatronBarcode}?ignoresa=true
+        // Note Patron Update Data request: PUT /public/v1/patron/{PatronBarcode}
+        //  https://dewey.polarislibrary.com/PAPIService//REST/public/{api-version}/{LangID}/{AppID}/{OrgID}/patron/{PatronBarcode}[?ignoresa=true]
         // with the patrons XML data as body.
         // NOTE: only email, address fields, expiration, phone_voice1,2,3 and password 
         // can be updated. Testing of staff account permission-related changes TBD.
@@ -361,8 +363,13 @@ public class PapiRequestBuilder extends ILSRequestBuilder
         {
             System.out.println("UPDATE XML body: " + papiCustomer.toString());
         }
+        String url = this.getPublicBaseUriSpecificVersion(this.apiVersion) + "patron/" + userId;
+        if (VersionComparator.greaterThanEqualTo(this.apiVersion, "v2"))
+        {
+            url = this.getPublicBaseUriSpecificVersion(this.apiVersion) + "patron/" + userId + "?ignoresa=true";
+        }
         PapiCommand command = new PapiCommand.Builder(papiProperties, "PUT")
-            .uri(this.getPublicBaseUri(this.apiVersion) + "patron/" + userId + "?ignoresa=true")
+            .uri(url)
             .debug(this.debug)
             .bodyXML(papiCustomer.toString())
             .staffPassword(staffSecret)

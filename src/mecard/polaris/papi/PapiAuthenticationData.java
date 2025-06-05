@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022 - 2024  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,6 +129,7 @@ public class PapiAuthenticationData implements AuthenticationData
      * @param password String of the customer's password.
      * @return XML string version of the PAPI Patron authentication data document.
      */
+    @Override
     public String getPatronAuthentication(String userId, String password)
     {
 //      <PatronAuthenticationData xmlns:i="http://www.w3.org/2001/XMLSchemainstance">

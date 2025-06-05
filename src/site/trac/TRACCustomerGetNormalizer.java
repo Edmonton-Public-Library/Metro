@@ -22,6 +22,7 @@ package site.trac;
 
 import api.CustomerMessage;
 import java.util.Properties;
+import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.LibraryPropertyTypes;
@@ -59,5 +60,12 @@ public class TRACCustomerGetNormalizer extends CustomerGetNormalizer
             customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, message.getDateField("PX"));
             customer.set(CustomerFieldTypes.DOB, message.getDateField("BC"));
         }
+        
+        // TRAC puts copious notes in customer note fields and if any 
+        // reciprocal test strings match anything in the note field the
+        // customer will fail, so Stephanie Thero says just don't bother 
+        // with the test because the only reciprocal customers are ME anyway.
+        customer.set(CustomerFieldTypes.ISRECIPROCAL, Protocol.FALSE);
+        
     }
 }
