@@ -31,16 +31,19 @@ The Metro server supports the following strategies to manage customer registrati
 
 | Stategy | Key Word | Get | Test | Update | Create | Status | Description |
 |----------|----------|:---:|:----:|:------:|:------:|:------:|-------------|
-| SIP2 | `sip2` | Y | Y | N | N | Y | |
-| outage | `outage` | Y | Y | Y | Y | Y | Used for planned outages. |
-| Symphony native | `symphony-api` | N | N | Y | Y | N | Uses SSH. |
+| Calgary Public Library API | `calgary-api` | Y | Y | Y | Y | Y | Calgary Public Library only. |
+| Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
+| Loopback | `outage` | Y | Y | Y | Y | Y | Used for planned outages. |
 | Polaris API (PAPI) | `polaris-api` | Y | Y | Y | Y | Y | Supports upto version 7.6. |
 | Polaris SQL | `polaris-sql` | Y | Y | Y | Y | Y | Uses raw SQL statements. |
+| SIP2 | `sip2` | Y | Y | N | N | Y | |
 | SirsiDynix web services | `sirsidynix-api` | Y | Y | Y | Y | Y | Symphony & Horizon |
-| Horizon native | `bimport` | N | N | Y | Y | N | Horizon only. |
-
+| Symphony native | `symphony-api` | N | N | Y | Y | N | Uses SSH. |
 ----------
 # What's new
+
+## Version 4.00.00
+* Support for Calgary Public Library web service API. A home-grown plugin for Symphony.
 
 ## Version 3.01.00
 * Polaris PAPI ILSes need to rename the `version` key in the `papi.properties` file to `api-version`.

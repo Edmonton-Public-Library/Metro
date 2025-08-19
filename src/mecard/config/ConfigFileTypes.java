@@ -33,6 +33,7 @@ public enum ConfigFileTypes
     BIMPORT_CITY_MAPPING, // Maps city names to codes for Horizon users.
     PAPI,      // Polaris API
     SIRSIDYNIX_API,       // SirsiDynix API
+    CALGARYPUBLICLIBRARY_API,
     POLARIS_SQL,   // Used for general POLARIS_SQL API transactions.
     DEBUG, // used with DummyResponder, this file contains canned results to return to client.
     VARS,  // System variables like PATH, UPATH, etc.
