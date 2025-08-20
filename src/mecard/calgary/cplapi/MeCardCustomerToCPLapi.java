@@ -42,8 +42,8 @@ public class MeCardCustomerToCPLapi
     
     public MeCardCustomerToCPLapi(Customer customer, MeCardDataToCPLapiData.QueryType type)
     {
-        // Read the Symphony specific properties from the symphony.properties file.
-        Properties props = PropertyReader.getProperties(ConfigFileTypes.CALGARYPUBLICLIBRARY_API);
+        // Read the cplapi specific properties from the cplapi.properties file.
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.CPL_API);
         customerTable = MeCardDataToCPLapiData.getInstanceOf(type);
     }
 }

@@ -42,7 +42,7 @@ import mecard.util.PlaceNameWGet;
  */
 public class PropertyReader
 {
-    public final static String VERSION           = "4.04.04_DEV"; // server version
+    public final static String VERSION           = "4.00.00_DEV"; // server version
     /** Including this tag with a value like 'user&#64;server.com', will cause 
      * commands to be run remotely through secure shell (ssh).
      * The tag is optional. Leaving it out means 
@@ -54,6 +54,7 @@ public class PropertyReader
     private static String CONFIG_DIR             = "";
     private static String BIMPORT_PROPERTY_FILE  = "bimport.properties";
     private static String SYMPHONY_PROPERTY_FILE = "symphony.properties";
+    private static String CPL_API_FILE           = "cplapi.properties";
     private static String SIRSIDYNIX_API_FILE    = "sdapi.properties";
     private static String POLARIS_PAPI_FILE      = "papi.properties";
     private static String ENVIRONMENT_FILE       = "environment.properties";
@@ -66,6 +67,7 @@ public class PropertyReader
     private static String REGIONAL_NAMES_CONFIG_FILE = "region_config.properties"; // Where to get the properties by URL.
     private static String REGIONAL_NAMES_FILE    = "region.properties"; // File that contains the actual names locally.
         // There are no mandatory variables, so no checking is done.
+    private static Properties cplAPI;             // Default properties needed by Calgary web servcies.
     private static Properties sirsidynixAPI;      // Default properties needed by SirsiDynix web servcies.
     private static Properties polarisAPI;         // Default properties needed by Polaris.
     private static Properties symphony;           // Default properties needed to create a user in Symphony.
@@ -138,6 +140,7 @@ public class PropertyReader
         BIMPORT_PROPERTY_FILE  = CONFIG_DIR + BIMPORT_PROPERTY_FILE;
         SYMPHONY_PROPERTY_FILE = CONFIG_DIR + SYMPHONY_PROPERTY_FILE;
         SIRSIDYNIX_API_FILE    = CONFIG_DIR + SIRSIDYNIX_API_FILE;
+        CPL_API_FILE           = CONFIG_DIR + CPL_API_FILE;
         POLARIS_PAPI_FILE      = CONFIG_DIR + POLARIS_PAPI_FILE;
         MESSAGES_PROPERTY_FILE = CONFIG_DIR + MESSAGES_PROPERTY_FILE;
         ENVIRONMENT_FILE       = CONFIG_DIR + ENVIRONMENT_FILE;
@@ -240,6 +243,20 @@ public class PropertyReader
                 return city;
             }
 
+            case CPL_API -> {
+                cplAPI = readPropertyFile(PropertyReader.CPL_API_FILE);
+                // now check that all mandetory values are here.
+                for (CPLapiPropertyTypes pType : CPLapiPropertyTypes.values())
+                {
+                    if (cplAPI.get(pType.toString()) == null)
+                    {
+                        String msg = "'" + pType + "' unset in " + PropertyReader.CPL_API_FILE;
+                        Logger.getLogger(PropertyReader.class.getName()).log(Level.SEVERE, msg, new ConfigurationException());
+                    }
+                }
+                return cplAPI;
+            }
+            
             case DEBUG -> {
                 debugProperties = readPropertyFile(PropertyReader.DEBUG_SETTINGS_FILE);
                 // now check that all mandetory values are here.

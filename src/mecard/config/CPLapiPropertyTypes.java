@@ -27,26 +27,27 @@ package mecard.config;
 public enum CPLapiPropertyTypes 
 {
     LOAD_DIR("load-dir"), // Directory where to find customer files to load and storage for loaded customers.
-    
     ENV("env-file-path"),
     CACHE_PATH("cache-path"),
+    HOST("host"),
     BASE_URL("base-url"),
     // DO NOT uncomment the following unless you intend to make it a required field.
     // PORT("port"), Optional in sdapi.properties. Including it here will throw an exception if not set.
-    API_KEY("x-api-key"),
-    WEB_SERVICE_VERSION("web-service-version"),
+    // API_KEY See .env file
+    API_VERSION("api-version"),
     CONNECTION_TIMEOUT("connection-timeout"),
     HTTP_VERSION("http-version"),
     DEBUG("debug");
     // These will be added by CPL but confirm with Carolyn.
-//    UserLibrary: CENT
-//    UserProfile: CPLAWB
-//    ChargeHistoryRule: CIRCRULE
-//    Residence: CPLAWB
-//    AutoRenew: Y
-//    NotifyVia: EMAIL
-//    ContactForFundraising: NO
-//    ReceiveLibraryNews: NO
+//    DEFAULT_USER_LIBRARY("default-user-library"),
+//    DEFAULT_USER_PROFILE("default-user-profile"),
+//    DEFAULT_CHARGE_HISTORY_RULE("default-charge-history-rule"),
+//    DEFAULT_RESIDENCE("default-residence"),
+//    DEFAULT_AUTO_RENEW("default-auto-renew"),
+//    DEFAULT_NOTIFY_VIA("default-notify-via"),
+//    DEFAULT_CONTACT_FOR_FUNDRAISING("default-contact-for-fundraising"),
+//    DEFAULT_RECEIVE_LIBRARY_NEWS("default-receive-library-news");
+    
 //    DEFAULT_PROFILE("default-profile"),
 //    DEFAULT_LIBRARY("default-library"),
 //    DEFAULT_LANGUAGE("default-language"),

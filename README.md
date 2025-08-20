@@ -43,7 +43,40 @@ The Metro server supports the following strategies to manage customer registrati
 # What's new
 
 ## Version 4.00.00
-* Support for Calgary Public Library web service API. A home-grown plugin for Symphony.
+* Support for Calgary Public Library web service API. A home-grown web service for SirsiDynix Symphony ILS.
+
+### CPL Properties File
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>
+    Calgary Public Library Web Service settings.
+  </comment>
+  <entry key="load-dir">/home/anisbet/MeCard/logs/Customers</entry>
+  <entry key="env-file-path">/home/anisbet/MeCard/.env</entry>
+  <entry key="cache-path">/home/anisbet</entry>
+  <entry key="host">https://host.service.net</entry>
+  <entry key="base-url">/api/MeLibraries</entry>
+  <entry key="api-version">v1</entry>
+  <entry key="connection-timeout">10</entry>
+  <entry key="http-version">2.0</entry>
+  <entry key="debug">true</entry>
+  <!-- <entry key="port">443</entry>, Optional in cplapi.properties. Including it here will throw an exception if not set. -->
+</properties>
+```
+
+### CPL .env File
+```bash
+# .env file for CPL MeCard server. 
+# This file is used for Calgary Pulic Library API key. 
+
+# Application settings
+API_KEY="aaaa-bbbbb-ccccc-ddf778"
+
+# Potentially other secure settings.
+```
 
 ## Version 3.01.00
 * Polaris PAPI ILSes need to rename the `version` key in the `papi.properties` file to `api-version`.

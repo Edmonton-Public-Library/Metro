@@ -18,17 +18,23 @@
  * MA 02110-1301, USA.
  *
  */
+
 package mecard.calgary.cplapi;
 
 import api.Command;
-import api.CommandStatus;
 import api.HttpCommandStatus;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import mecard.ResponseTypes;
 import mecard.config.CPLapiPropertyTypes;
 import mecard.exception.ConfigurationException;
 
@@ -38,6 +44,7 @@ import mecard.exception.ConfigurationException;
  */
 public class CPLWebServiceCommand implements Command
 {
+
     public enum HttpVerb
     {
         GET,
@@ -45,13 +52,12 @@ public class CPLWebServiceCommand implements Command
     }
     
     public final static int DEFAULT_PORT = 443;
-    
     private static URI uri;
     private static CPLWebServiceCommand.HttpVerb httpMethod;
     private static boolean debug;
     private static HttpClient httpClient;
     private static HttpRequest.BodyPublisher jsonBodyText;
-    private static String sessionToken;
+    private static String apiKeyToken;
     private HttpCommandStatus status;
     
     public static class Builder
@@ -63,9 +69,10 @@ public class CPLWebServiceCommand implements Command
         private int connectionTimeout;
         private HttpClient.Version httpVersion;
         private String baseUrl;
+        private String host;
         private int port;
         private URI uri;
-        private String sessionToken;
+        private String apiKey;
         
         public Builder(
                 Properties wsConfigs, 
@@ -98,7 +105,7 @@ public class CPLWebServiceCommand implements Command
             catch (NumberFormatException | ConfigurationException e)
             {
                 System.out.println("""
-                                *warn: invalid port number set in sdapi.properties 
+                                *warn: invalid port number set in cplapi.properties 
                                 value must be an integer between 0 and 65,535 (though
                                 0 - 1023 are reserved). Using default HTTPS port 443.
                                    """);
@@ -118,7 +125,7 @@ public class CPLWebServiceCommand implements Command
                     this.httpVersion = HttpClient.Version.HTTP_2;
                     break;
             }
-            
+            this.host    = this.webServiceProperties.getProperty(CPLapiPropertyTypes.HOST.toString());
             this.baseUrl = this.webServiceProperties.getProperty(CPLapiPropertyTypes.BASE_URL.toString());
             
             // Connection timeout
@@ -130,7 +137,7 @@ public class CPLWebServiceCommand implements Command
             catch (NumberFormatException e)
             {
                 System.out.println("""
-                    *warn: invalid connection timeout set in sdapi.properties 
+                    *warn: invalid connection timeout set in cplapi.properties 
                     value must be an integer. Defaulting to 10 seconds.
                                    """);
                 this.connectionTimeout = 10;
@@ -169,13 +176,13 @@ public class CPLWebServiceCommand implements Command
         /**
          * Takes a session token from a successful login, and applies it to the
          * request. An empty string is also permitted.
-         * @param sessionToken
+         * @param apiKey
          * @return Builder object.
          */
-        public Builder sessionToken(String sessionToken)
+        public Builder apiKey(String apiKey)
         {
             // Session token for methods that require staff permissions.
-            this.sessionToken = sessionToken;
+            this.apiKey = apiKey;
             return this;
         }
         
@@ -192,14 +199,16 @@ public class CPLWebServiceCommand implements Command
             StringBuilder urlString = new StringBuilder();
             if (this.port != DEFAULT_PORT)
             {
-                urlString.append(this.baseUrl)
+                urlString.append(this.host)
                         .append(":").append(this.port)
+                        .append(this.baseUrl)
                         .append("/")
                         .append(endpoint);
             }
             else
             {
-                urlString.append(this.baseUrl)
+                urlString.append(host)
+                        .append(this.baseUrl)
                         .append("/")
                         // remember to include the leading '/' in your the endpoint arg!
                         .append(endpoint);
@@ -231,24 +240,140 @@ public class CPLWebServiceCommand implements Command
         CPLWebServiceCommand.debug         = builder.debug;
         CPLWebServiceCommand.httpMethod    = builder.httpMethod;
         CPLWebServiceCommand.jsonBodyText  = builder.bodyText;
-        // Headers
         
         // URL string with endpoint.
         CPLWebServiceCommand.uri           = builder.uri;
-        CPLWebServiceCommand.sessionToken  = builder.sessionToken;
+        CPLWebServiceCommand.apiKeyToken   = builder.apiKey;
         // Create the httpClient.
         CPLWebServiceCommand.httpClient    = HttpClient.newBuilder()
             .version(builder.httpVersion)
             .connectTimeout(Duration.ofSeconds(builder.connectionTimeout))
             .build();
         if (CPLWebServiceCommand.debug)
-            System.out.println("SDWebService toString: " + CPLWebServiceCommand.httpClient.toString());
+            System.out.println("CPLWebServiceCommand toString: " + CPLWebServiceCommand.httpClient.toString());
+    }
+    
+    
+    
+    @Override
+    public HttpCommandStatus execute()
+    {
+        try
+        {
+            HttpRequest request = null;
+            HttpResponse<String> response;
+            switch(CPLWebServiceCommand.httpMethod)
+            {
+                case GET -> {
+                    // Search, Get user info.
+                    request = HttpRequest.newBuilder()
+                        .GET()
+                        .uri(CPLWebServiceCommand.uri)
+                        .setHeader("Accept", "application/json")
+                        .setHeader("X-Api-Key", CPLWebServiceCommand.apiKeyToken)
+                        .setHeader("Content-Type", "application/json")
+                        .build();
+                }
+                case POST -> {
+                    
+                    request = HttpRequest.newBuilder()
+                        .POST(CPLWebServiceCommand.jsonBodyText)
+                        .uri(CPLWebServiceCommand.uri)
+                        .setHeader("Accept", "application/json")
+                        .setHeader("X-Api-Key", CPLWebServiceCommand.apiKeyToken)
+                        .setHeader("Content-Type", "application/json")
+                        .build();
+
+                }
+                default -> { }
+            }
+            if (CPLWebServiceCommand.debug)
+            {
+                if (request.headers() != null)
+                    System.out.println("HEADERS include:" + request.headers());
+                System.out.println("METHOD:" + request.method());
+            }
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            status = new HttpCommandStatus(response);
+            
+            HttpHeaders responseHeaders = response.headers();
+            // Show the command results if debug.
+            if (CPLWebServiceCommand.debug)
+            {
+                System.out.println("HEADERS RETURNED:");
+                responseHeaders.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
+                System.out.println("   CODE RETURNED: '" + status.getStatus()+ "'.");
+                System.out.println("CONTOUT RETURNED: '" + status.getStdout()+ "'.");
+                System.out.println("CONTERR RETURNED: '" + status.getStderr()+ "'.");
+            }
+        } 
+        catch (InterruptedException ex)
+        {
+            status = new HttpCommandStatus();
+            status.setEnded(ResponseTypes.UNAVAILABLE.ordinal());
+            System.out.println(ex.getMessage());
+        } 
+        catch (IOException ex)
+        {
+            status = new HttpCommandStatus();
+            status.setEnded(ResponseTypes.FAIL.ordinal());
+            System.out.println(ex.getMessage());
+        } 
+        return status;
     }
     
     @Override
-    public CommandStatus execute()
+    public String toString()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        StringBuilder out = new StringBuilder();
+        out.append(CPLWebServiceCommand.uri)
+            .append(" ")
+            .append(CPLWebServiceCommand.httpMethod)
+            .append("\n");
+        if (status != null)
+        {
+            if (status.getResponse() != null)
+            {
+                // Output responseHeaders, and obfuscate the security apiKeyToken.
+                for (Map.Entry<String, List<String>> header : status.getResponse().headers().map().entrySet()) 
+                {
+                    String headerName = header.getKey();
+                    String headerValue = String.join(",", header.getValue());
+
+                    // Check if the header is the apiKeyToken and obfuscate if it is
+                    if ("sessionToken".equalsIgnoreCase(headerName)) 
+                    {
+                        // Replace with obfuscated text or mask part of the token
+                        headerValue = obfuscateToken(headerValue);
+                    }
+                    out.append(headerName).append(": ").append(headerValue).append("\n");
+                }
+                out.append("URI: ").append(status.getResponse().uri()).append("\n");
+            }
+            out.append("status:")
+                    .append(status.getStatus())
+                    .append("\n")
+                    .append("body:")
+                    .append(status.getStdout());
+        } 
+        else
+        {
+            out.append("<pending response>");
+        }
+        return out.toString();
+    }
+    
+    private static String obfuscateToken(String token) 
+    {
+        // Adjust the obfuscation logic as needed, e.g., show first 10 characters only
+        if (token.length() > 10) 
+        {
+            return token.substring(0, 5) + "**********";
+        } 
+        else 
+        {
+            return "**********"; // in case token is too short
+        }
     }
     
 }

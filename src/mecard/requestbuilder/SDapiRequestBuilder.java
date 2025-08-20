@@ -64,7 +64,7 @@ import mecard.sirsidynix.sdapi.SDapiUserPatronSearchCustomerResponse;
 import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
 import mecard.sirsidynix.sdapi.SDapiUserPatronKeyCustomerResponse;
-import mecard.sirsidynix.sdapi.WebServiceDummyCommand;
+import mecard.webservice.WebServiceDummyCommand;
 import site.CustomerLoadNormalizer;
 
 /**

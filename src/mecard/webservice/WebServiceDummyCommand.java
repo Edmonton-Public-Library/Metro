@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.sirsidynix.sdapi;
+package mecard.webservice;
 
 import api.Command;
 import api.HttpCommandStatus;
