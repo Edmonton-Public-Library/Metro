@@ -32,6 +32,8 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import mecard.exception.ConfigurationException;
 import mecard.security.CPLapiSecurity;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -46,15 +48,15 @@ public class CPLWebServiceCommandTest
     public CPLWebServiceCommandTest() 
     {
         this.cplApiProperties = PropertyReader.getProperties(ConfigFileTypes.CPL_API);
-        JsonObject userGson = new JsonObject();
-        userGson.addProperty("name", "John Doe");
-        userGson.addProperty("age", 30);
-        userGson.addProperty("isEmployee", true);
-        
-        // Pretty print the JSON
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        System.out.println("Simple GSON example:");
-        System.out.println(gson.toJson(userGson));
+//        JsonObject userGson = new JsonObject();
+//        userGson.addProperty("name", "John Doe");
+//        userGson.addProperty("age", 30);
+//        userGson.addProperty("isEmployee", true);
+//        
+//        // Pretty print the JSON
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        System.out.println("Simple GSON example:");
+//        System.out.println(gson.toJson(userGson));
     }
 
     /**
@@ -63,11 +65,6 @@ public class CPLWebServiceCommandTest
     @Test
     public void testExecute() {
         System.out.println("==execute==");
-////        POST: https://{{HOST}}/{{WEBAPP}}/user/staff/login
-////        Body: {
-////        "login": "{{staffId}}",
-////        "password": "{{staffPassword}}"
-////        }
         // Get staff ID and password from the .env file
         String envFilePath = cplApiProperties.getProperty(CPLapiPropertyTypes.ENV.toString());
         
@@ -86,7 +83,6 @@ public class CPLWebServiceCommandTest
         {
             CPLapiSecurity sds = new CPLapiSecurity(envFilePath);
             this.apiKey = sds.getApiKey();
-            System.out.println(">>>api-key:" + this.apiKey);
         } 
         catch (IOException e) 
         {
@@ -96,33 +92,82 @@ public class CPLWebServiceCommandTest
                 API_KEY="aaaa-bbbb-ccccc-dddd"
                 """ + e);
         }
-        String baseUrl     = cplApiProperties.getProperty(CPLapiPropertyTypes.BASE_URL.toString());
-        System.out.println(">>>endpoint:" + baseUrl + "/GetStatus");
         CPLWebServiceCommand command = new CPLWebServiceCommand.Builder(cplApiProperties, "GET")
-            .endpoint(baseUrl + "/GetStatus")
+            .endpoint("/GetStatus")
             .apiKey(apiKey)
+            .setDebug(false)
             .build();
         
         HttpCommandStatus result = command.execute();
-        System.out.println("Status request OUTPUT: '" + result.getStdout() + "'");
+        System.out.print("GetStatus test");
+        assertTrue(result.getHttpStatusCode() == 200);
+        System.out.println(" succeeded");
         
-//        System.out.println("==toString==\n" + command.toString());
+        // Test verify if a customer exists with the wrong PIN.
+        String cardNumber = "29065024681012";
+        String pin = "2468101211111";
+        CPLapiCardNumberPin cardNumberPin = new CPLapiCardNumberPin(cardNumber, pin);
+        CPLWebServiceCommand verifyCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/VerifyCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(false)
+            .build();
+        HttpCommandStatus verifyStatus = verifyCustomerCommand.execute();
+        System.out.print("VerifyCustomer test bad PIN");
+        assertFalse(verifyStatus.getHttpStatusCode() == 200);
+        System.out.println(" succeeded");
+        
+        // Test verify with correct PIN
+        // Now the correct one.
+        pin = "24681012";
+        cardNumberPin = new CPLapiCardNumberPin(cardNumber, pin);
+        verifyCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/VerifyCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(false)
+            .build();
+        verifyStatus = verifyCustomerCommand.execute();
+        System.out.print("VerifyCustomer test good PIN");
+        assertTrue(verifyStatus.getHttpStatusCode() == 200);
+        System.out.println(" succeeded");
         
         
         // Test getting customer data
-//        String userKey = "301585";
-//        CPLWebServiceCommand getCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
-//            .endpoint("VerifyCustomer")
-//            .apiKey(this.apiKey)
-//            .build();
-//        HttpCommandStatus getCustomerResult = getCustomerCommand.execute();
-        
-//        SDapiResponse testGetCustomerData =                
-//            (SDapiUserPatronKeyCustomerResponse) 
-//                SDapiUserPatronKeyCustomerResponse.parseJson(getCustomerResult.getStdout());
-        
+        cardNumber = "29065024681012";
+        pin = "246810120000";
+        cardNumberPin = new CPLapiCardNumberPin(cardNumber, pin);
+        CPLWebServiceCommand getCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/GetCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(false)
+            .build();
+        HttpCommandStatus status = getCustomerCommand.execute();
+        CPLapiResponse testGetCustomerData =                 
+                CPLapiGetCustomerResponse.parseJson(status.getStdout());
+        System.out.print("GetCustomer test bad PIN");
+        assertFalse(testGetCustomerData.succeeded());
+        System.out.println(" succeeded");
 //        System.out.println("GET_CUSTOMER data: " + testGetCustomerData.toString());
         
+        // Test getting customer with correct PIN.
+        pin = "24681012";
+        cardNumberPin = new CPLapiCardNumberPin(cardNumber, pin);
+        getCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/GetCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(false)
+            .build();
+        status = getCustomerCommand.execute();
+        testGetCustomerData =                 
+                CPLapiGetCustomerResponse.parseJson(status.getStdout());
+        System.out.print("GetCustomer test good PIN");
+        assertTrue(testGetCustomerData.succeeded());
+        System.out.println(" succeeded");
+        System.out.println("GET_CUSTOMER data: " + testGetCustomerData.toString());
     }
 
     /**
@@ -138,33 +183,33 @@ public class CPLWebServiceCommandTest
 //        "password": "{{staffPassword}}"
 //        }
 
-        String envFilePath = cplApiProperties.getProperty(CPLapiPropertyTypes.ENV.toString());
-        if (envFilePath == null || envFilePath.isBlank())
-        {
-            throw new ConfigurationException("""
-                **error, the sdapi.properties file does not contain an entry
-                for the environment file (.env). The entry should look like this example:
-                <entry key="env-file-path">/MeCard/path/to/.env</entry>
-                Add entry or check for spelling mistakes.
-                 """);
-        }
-
-
-        // Read the staff ID and password.
-        try 
-        {
-            CPLapiSecurity sds = new CPLapiSecurity(envFilePath);
-            this.apiKey = sds.getApiKey();
-            System.out.println(">>>api-key:" + this.apiKey);
-        } 
-        catch (IOException e) 
-        {
-            System.out.println("""
-                **error, expected an .env file but it is missing or can't be found.
-                The .env file should include entries for the API key. For example,
-                API_KEY="aaaa-bbbb-cccc-dddd"
-                """ + e);
-        }
+//        String envFilePath = cplApiProperties.getProperty(CPLapiPropertyTypes.ENV.toString());
+//        if (envFilePath == null || envFilePath.isBlank())
+//        {
+//            throw new ConfigurationException("""
+//                **error, the sdapi.properties file does not contain an entry
+//                for the environment file (.env). The entry should look like this example:
+//                <entry key="env-file-path">/MeCard/path/to/.env</entry>
+//                Add entry or check for spelling mistakes.
+//                 """);
+//        }
+//
+//
+//        // Read the staff ID and password.
+//        try 
+//        {
+//            CPLapiSecurity sds = new CPLapiSecurity(envFilePath);
+//            this.apiKey = sds.getApiKey();
+//            System.out.println(">>>api-key:" + this.apiKey);
+//        } 
+//        catch (IOException e) 
+//        {
+//            System.out.println("""
+//                **error, expected an .env file but it is missing or can't be found.
+//                The .env file should include entries for the API key. For example,
+//                API_KEY="aaaa-bbbb-cccc-dddd"
+//                """ + e);
+//        }
 
 //        String loginBodyText = "{\"api-key\":\""+this.apiKey +"\"}";
 //        // TODO: Fix

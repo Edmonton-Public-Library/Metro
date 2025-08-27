@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com>
  */
-public class PapiAuthenticationData implements AuthenticationData
+public class PapiAuthenticationData extends AuthenticationData
 {
     enum PatronTag {
         Barcode,

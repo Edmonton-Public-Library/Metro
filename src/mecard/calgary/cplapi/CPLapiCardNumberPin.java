@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024 - 2025 Edmonton Public Library
+ *    Copyright (C) 2025  Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,38 +18,46 @@
  * MA 02110-1301, USA.
  *
  */
-package mecard.sirsidynix.sdapi;
+
+package mecard.calgary.cplapi;
 
 import mecard.security.AuthenticationData;
 
 /**
- *
+ * Simple methods to get customer card number and pin as json.
  * @author anisbet
  */
-public class SDapiAuthenticationData extends AuthenticationData
+public class CPLapiCardNumberPin extends AuthenticationData
 {
-    @Override
-    public String getPatronAuthentication(String userId, String password)
+    
+    public CPLapiCardNumberPin(){}
+    
+    public CPLapiCardNumberPin(String cardNumber, String pin)
     {
-        //        {
-        //            "login": "{{staffId}}",
-        //            "password": "{{staffPassword}}"
-        //        }
+        this.userId = cardNumber;
+        this.password = pin;
+    }
+    
+    @Override
+    public String getPatronAuthentication(String cardNumber, String pin)
+    {
         StringBuilder loginBodyText = new StringBuilder();
-        loginBodyText.append("{\"login\": \"")
-                .append(userId)
-                .append("\", \"password\": \"")
-                .append(password).append("\"}");
+        loginBodyText.append("{\"cardNumber\": \"")
+                .append(cardNumber)
+                .append("\", \"pin\": \"")
+                .append(pin).append("\"}");
         return loginBodyText.toString();
     }
     
     @Override
-    public String getStaffAuthentication(String domain, String userId, String password)
+    public String getStaffAuthentication(String domain, String cardNumber, String pin)
     {
-        //        {
-        //            "login": "{{patronId}}",
-        //            "password": "{{patronPassword}}"
-        //        }
-        return getPatronAuthentication(userId, password);
+        return getPatronAuthentication(cardNumber, pin);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.getPatronAuthentication(this.userId, this.password);
     }
 }

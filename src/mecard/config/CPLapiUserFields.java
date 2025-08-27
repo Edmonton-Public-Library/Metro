@@ -50,7 +50,9 @@ public enum CPLapiUserFields
     // "key": "city"
     CITY("city"),
     GENDER("gender"),
-    PROVINCE("province");
+    PROVINCE("province"),
+    PROFILE("profile"),
+    STATUS("status");
     
     private final String type;
 

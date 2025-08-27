@@ -73,6 +73,7 @@ public class CPLWebServiceCommand implements Command
         private int port;
         private URI uri;
         private String apiKey;
+        private String endpoint;
         
         public Builder(
                 Properties wsConfigs, 
@@ -194,26 +195,7 @@ public class CPLWebServiceCommand implements Command
          */
         public Builder endpoint(String endpoint)
         {
-            // Add this together into : https://{{HOST}}/{{WEBAPP}}/user/staff/login
-            // or in our case https://sdmtlws01.sirsidynix.net/edpltest_ilsws
-            StringBuilder urlString = new StringBuilder();
-            if (this.port != DEFAULT_PORT)
-            {
-                urlString.append(this.host)
-                        .append(":").append(this.port)
-                        .append(this.baseUrl)
-                        .append("/")
-                        .append(endpoint);
-            }
-            else
-            {
-                urlString.append(host)
-                        .append(this.baseUrl)
-                        .append("/")
-                        // remember to include the leading '/' in your the endpoint arg!
-                        .append(endpoint);
-            }
-            this.uri = URI.create(urlString.toString());
+            this.endpoint = endpoint;
             return this;
         }
         
@@ -224,6 +206,24 @@ public class CPLWebServiceCommand implements Command
          */
         public CPLWebServiceCommand build()
         {
+            // Add this together into : https://{{HOST}}/{{WEBAPP}}/user/staff/login
+            // or in our case https://sdmtlws01.sirsidynix.net/edpltest_ilsws
+            StringBuilder urlString = new StringBuilder();
+            if (this.port != DEFAULT_PORT)
+            {
+                urlString.append(this.host)
+                        .append(":").append(this.port)
+                        .append(this.baseUrl)
+                        .append(this.endpoint);
+            }
+            else
+            {
+                urlString.append(this.host)
+                        .append(this.baseUrl)
+                        // remember to include the leading '/' in your the endpoint arg!
+                        .append(this.endpoint);
+            }
+            this.uri = URI.create(urlString.toString());
             return new CPLWebServiceCommand(this);
         }
     }
@@ -269,9 +269,8 @@ public class CPLWebServiceCommand implements Command
                     request = HttpRequest.newBuilder()
                         .GET()
                         .uri(CPLWebServiceCommand.uri)
-                        .setHeader("Accept", "application/json")
+                        .setHeader("Accept", "*/*")
                         .setHeader("X-Api-Key", CPLWebServiceCommand.apiKeyToken)
-                        .setHeader("Content-Type", "application/json")
                         .build();
                 }
                 case POST -> {
@@ -279,9 +278,9 @@ public class CPLWebServiceCommand implements Command
                     request = HttpRequest.newBuilder()
                         .POST(CPLWebServiceCommand.jsonBodyText)
                         .uri(CPLWebServiceCommand.uri)
-                        .setHeader("Accept", "application/json")
+                        .setHeader("Accept", "*/*")
                         .setHeader("X-Api-Key", CPLWebServiceCommand.apiKeyToken)
-                        .setHeader("Content-Type", "application/json")
+                        .setHeader("Content-Type", "application/json-patch+json")
                         .build();
 
                 }
@@ -302,9 +301,10 @@ public class CPLWebServiceCommand implements Command
             {
                 System.out.println("HEADERS RETURNED:");
                 responseHeaders.map().forEach((k,v) -> System.out.println("  " + k + ":" + v));
-                System.out.println("   CODE RETURNED: '" + status.getStatus()+ "'.");
-                System.out.println("CONTOUT RETURNED: '" + status.getStdout()+ "'.");
-                System.out.println("CONTERR RETURNED: '" + status.getStderr()+ "'.");
+                System.out.println("        statusCODE: '" + response.statusCode() + "'.");
+                System.out.println("   status RETURNED: '" + status.getStatus()+ "'.");
+                System.out.println("statusOUT RETURNED: '" + status.getStdout()+ "'.");
+                System.out.println("statusERR RETURNED: '" + status.getStderr()+ "'.");
             }
         } 
         catch (InterruptedException ex)

@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,10 +24,12 @@ package mecard.security;
  * 
  * @author Andrew Nisbet <andrew at dev-ils.com> 
  */
-public interface AuthenticationData 
+public abstract class AuthenticationData 
 {
+    protected String userId;
+    protected String password;
     
-    public String getPatronAuthentication(String userId, String password);
+    public abstract String getPatronAuthentication(String userId, String password);
     
-    public String getStaffAuthentication(String domain, String userId, String password);
+    public abstract String getStaffAuthentication(String domain, String userId, String password);
 }
