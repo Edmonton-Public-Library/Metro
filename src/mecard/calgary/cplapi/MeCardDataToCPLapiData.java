@@ -20,12 +20,21 @@
  */
 package mecard.calgary.cplapi;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import mecard.config.CPLapiUserFields;
 import mecard.customer.MeCardDataToNativeData;
 
 /**
- *
- * @author anisbet
+ * Storage container that provides a standard interface to use when converting
+ * MeCard customer data into a format that can be used by the target ILS, or 
+ * web service.
+ * 
+ * @author Andrew Nisbet andrew at dev-ils.com
  */
 public class MeCardDataToCPLapiData implements MeCardDataToNativeData
 {
@@ -36,304 +45,282 @@ public class MeCardDataToCPLapiData implements MeCardDataToNativeData
         UPDATE;
     }
     
-    static MeCardDataToNativeData getInstanceOf(QueryType type) 
+    static MeCardDataToCPLapiData getInstanceOf(QueryType type) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return new MeCardDataToCPLapiData(type, false);
     }
     
-
-    @Override
-    public String getData() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getHeader() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getValue(String key) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public boolean setValue(String key, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public boolean renameKey(String originalkey, String replacementKey) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Set<String> getKeys() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public boolean deleteValue(String key) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private MeCardDataToCPLapiData(QueryType type, boolean debug)
+    {   }
+    
+    public String toJson() 
+    {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
     
-//        import com.google.gson.Gson;
-//    import com.google.gson.annotations.SerializedName;
-//    import java.time.LocalDate;
-//    import java.time.format.DateTimeFormatter;
-//
-//    public class MeCardCustomer {
-//
-//        @SerializedName("cardNumber")
-//        private String cardNumber;
-//
-//        @SerializedName("pin")
-//        private String pin;
-//
-//        @SerializedName("firstName")
-//        private String firstName;
-//
-//        @SerializedName("lastName")
-//        private String lastName;
-//
-//        @SerializedName("birthDate")
-//        private String birthDate; // Format: YYYY-MM-DD
-//
-//        @SerializedName("gender")
-//        private String gender;
-//
-//        @SerializedName("emailAddress")
-//        private String emailAddress;
-//
-//        @SerializedName("phoneNumber")
-//        private String phoneNumber;
-//
-//        @SerializedName("address")
-//        private String address;
-//
-//        @SerializedName("city")
-//        private String city;
-//
-//        @SerializedName("province")
-//        private String province;
-//
-//        @SerializedName("postalCode")
-//        private String postalCode;
-//
-//        @SerializedName("expiryDate")
-//        private String expiryDate; // Format: YYYY-MM-DD
-//
-//        // Default constructor
-//        public MeCardCustomer() {}
-//
-//        // Constructor with all fields
-//        public MeCardCustomer(String cardNumber, String pin, String firstName, String lastName,
-//                             String birthDate, String gender, String emailAddress, String phoneNumber,
-//                             String address, String city, String province, String postalCode,
-//                             String expiryDate) {
-//            this.cardNumber = cardNumber;
-//            this.pin = pin;
-//            this.firstName = firstName;
-//            this.lastName = lastName;
-//            this.birthDate = birthDate;
-//            this.gender = gender;
-//            this.emailAddress = emailAddress;
-//            this.phoneNumber = phoneNumber;
-//            this.address = address;
-//            this.city = city;
-//            this.province = province;
-//            this.postalCode = postalCode;
-//            this.expiryDate = expiryDate;
-//        }
-//
-//        // Getters and Setters
-//        public String getCardNumber() {
-//            return cardNumber;
-//        }
-//
-//        public void setCardNumber(String cardNumber) {
-//            this.cardNumber = cardNumber;
-//        }
-//
-//        public String getPin() {
-//            return pin;
-//        }
-//
-//        public void setPin(String pin) {
-//            this.pin = pin;
-//        }
-//
-//        public String getFirstName() {
-//            return firstName;
-//        }
-//
-//        public void setFirstName(String firstName) {
-//            this.firstName = firstName;
-//        }
-//
-//        public String getLastName() {
-//            return lastName;
-//        }
-//
-//        public void setLastName(String lastName) {
-//            this.lastName = lastName;
-//        }
-//
-//        public String getBirthDate() {
-//            return birthDate;
-//        }
-//
-//        public void setBirthDate(String birthDate) {
-//            this.birthDate = birthDate;
-//        }
-//
-//        // Helper method to set birth date from LocalDate
-//        public void setBirthDate(LocalDate birthDate) {
-//            this.birthDate = birthDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
-//        }
-//
-//        // Helper method to get birth date as LocalDate
-//        public LocalDate getBirthDateAsLocalDate() {
-//            return birthDate != null ? LocalDate.parse(birthDate) : null;
-//        }
-//
-//        public String getGender() {
-//            return gender;
-//        }
-//
-//        public void setGender(String gender) {
-//            this.gender = gender;
-//        }
-//
-//        public String getEmailAddress() {
-//            return emailAddress;
-//        }
-//
-//        public void setEmailAddress(String emailAddress) {
-//            this.emailAddress = emailAddress;
-//        }
-//
-//        public String getPhoneNumber() {
-//            return phoneNumber;
-//        }
-//
-//        public void setPhoneNumber(String phoneNumber) {
-//            this.phoneNumber = phoneNumber;
-//        }
-//
-//        public String getAddress() {
-//            return address;
-//        }
-//
-//        public void setAddress(String address) {
-//            this.address = address;
-//        }
-//
-//        public String getCity() {
-//            return city;
-//        }
-//
-//        public void setCity(String city) {
-//            this.city = city;
-//        }
-//
-//        public String getProvince() {
-//            return province;
-//        }
-//
-//        public void setProvince(String province) {
-//            this.province = province;
-//        }
-//
-//        public String getPostalCode() {
-//            return postalCode;
-//        }
-//
-//        public void setPostalCode(String postalCode) {
-//            this.postalCode = postalCode;
-//        }
-//
-//        public String getExpiryDate() {
-//            return expiryDate;
-//        }
-//
-//        public void setExpiryDate(String expiryDate) {
-//            this.expiryDate = expiryDate;
-//        }
-//
-//        // Helper method to set expiry date from LocalDate
-//        public void setExpiryDate(LocalDate expiryDate) {
-//            this.expiryDate = expiryDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
-//        }
-//
-//        // Helper method to get expiry date as LocalDate
-//        public LocalDate getExpiryDateAsLocalDate() {
-//            return expiryDate != null ? LocalDate.parse(expiryDate) : null;
-//        }
-//
-//        // Convert to JSON string
-//        public String toJson() {
-//            Gson gson = new Gson();
-//            return gson.toJson(this);
-//        }
-//
-//        // Create from JSON string
-//        public static MeCardCustomer fromJson(String json) {
-//            Gson gson = new Gson();
-//            return gson.fromJson(json, MeCardCustomer.class);
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "MeCardCustomer{" +
-//                    "cardNumber='" + cardNumber + '\'' +
-//                    ", firstName='" + firstName + '\'' +
-//                    ", lastName='" + lastName + '\'' +
-//                    ", birthDate='" + birthDate + '\'' +
-//                    ", gender='" + gender + '\'' +
-//                    ", emailAddress='" + emailAddress + '\'' +
-//                    ", phoneNumber='" + phoneNumber + '\'' +
-//                    ", address='" + address + '\'' +
-//                    ", city='" + city + '\'' +
-//                    ", province='" + province + '\'' +
-//                    ", postalCode='" + postalCode + '\'' +
-//                    ", expiryDate='" + expiryDate + '\'' +
-//                    '}';
-//        }
-//
-//        // Example usage
-//        public static void main(String[] args) {
-//            // Create a new customer
-//            MeCardCustomer customer = new MeCardCustomer();
-//            customer.setCardNumber("1234-5678-9012-3456");
-//            customer.setPin("1234");
-//            customer.setFirstName("John");
-//            customer.setLastName("Doe");
-//            customer.setBirthDate("1990-05-15");
-//            customer.setGender("Male");
-//            customer.setEmailAddress("john.doe@example.com");
-//            customer.setPhoneNumber("555-123-4567");
-//            customer.setAddress("123 Main Street");
-//            customer.setCity("Toronto");
-//            customer.setProvince("Ontario");
-//            customer.setPostalCode("M5V 3A8");
-//            customer.setExpiryDate("2025-12-31");
-//
-//            // Convert to JSON
-//            String json = customer.toJson();
-//            System.out.println("Customer as JSON:");
-//            System.out.println(json);
-//
-//            // Convert from JSON
-//            MeCardCustomer customerFromJson = MeCardCustomer.fromJson(json);
-//            System.out.println("\nCustomer from JSON:");
-//            System.out.println(customerFromJson);
-//        }
-//    }
+    /**
+     * Creates matching.
+     * @return properly formatted customer data string for the table this represents.
+     */
+    @Override
+    public String getData() 
+    {
+        return this.toJson();
+    }
+
+    /**
+     *
+     * @return properly formatted customer header string for the table this represents.
+     */
+    @Override
+    public String getHeader() 
+    {   
+        return "";
+    }
+
+    /**
+     * 
+     * @return name of the formatted table.
+     */
+    @Override
+    public String getName() 
+    {
+        return MeCardDataToCPLapiData.class.toString();
+    }
+
+    /**
+     * Returns the CPL API data value for a given key ME Card data key. 
+     * For example you can request .
+     * @param key
+     * @return the originalValue associated with this key, or an empty 
+     * string if the key is not present.
+     */
+    @Override
+    public String getValue(String key) 
+    {        
+        if (key.equals(CPLapiUserFields.USER_ID.toString()))
+            return this.getBarcode() != null ? this.getBarcode() : "";
+        else if (key.equals(CPLapiUserFields.USER_FIRST_NAME.toString()))
+            return this.getFirstName() != null ? this.getFirstName() : "";
+        else if (key.equals(CPLapiUserFields.USER_LAST_NAME.toString()))
+            return this.getLastName() != null ? this.getLastName() : "";
+        else if (key.equals(CPLapiUserFields.USER_ID.toString()))
+            return this.getBarcode() != null ? this.getBarcode() : "";
+        else if (key.equals(CPLapiUserFields.EMAIL.toString()))
+            return this.getEmail() != null ? this.getEmail() : "";
+        else if (key.equals(CPLapiUserFields.PROFILE.toString()))
+            return this.getProfile() != null ? this.getProfile() : "";
+        else if (key.equals(CPLapiUserFields.PHONE.toString()))
+            return this.getPhone() != null ? this.getPhone() : "";
+        else if (key.equals(CPLapiUserFields.USER_BIRTHDATE.toString()))
+            return this.getBirthDate() != null ? this.getBirthDate() : "";
+        else if (key.equals(CPLapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
+            return this.getExpiry() != null ? this.getExpiry() : "";
+        else if (key.equals(CPLapiUserFields.CITY.toString()))
+            return this.getCity() != null ? this.getCity() : "";
+        else if (key.equals(CPLapiUserFields.PROVINCE.toString()))
+            return this.getProvince() != null ? this.getProvince() : "";
+        else if (key.equals(CPLapiUserFields.STREET.toString()))
+            return this.getStreet() != null ? this.getStreet() : "";
+        else if (key.equals(CPLapiUserFields.POSTALCODE.toString()))
+            return this.getPostalCode() != null ? this.getPostalCode() : "";
+        else if (key.equals(CPLapiUserFields.USER_PASSWORD.toString()))
+            return this.getPassword() != null ? this.getPassword() : "";
+        else if (key.equals(CPLapiUserFields.GENDER.toString()))
+            return this.getGender() != null ? this.getGender() : "";
+        else if (key.equals(CPLapiUserFields.STATUS.toString()))
+            return this.getStatus() != null ? this.getStatus() : "";
+        else
+        {
+            System.out.println("*warning, request to get '" + key 
+                + "' but MeCardDataToCPLapiData doesn't know what that is.");
+            return "";
+        }    
+    }
+
+    @Override
+    public boolean setValue(String key, String value) 
+    {
+        // this is only used on updates.
+        if (key.equals(CPLapiUserFields.USER_FIRST_NAME.toString()))
+            this.setFirstName(value);
+        else if (key.equals(CPLapiUserFields.USER_LAST_NAME.toString()))
+            this.setLastName(value);
+        else if (key.equals(CPLapiUserFields.USER_ID.toString()))
+            this.setBarcode(value);
+        else if (key.equals(CPLapiUserFields.EMAIL.toString()))
+            this.setEmail(value);
+        else if (key.equals(CPLapiUserFields.PROFILE.toString()))
+            this.setProfile(value);
+        else if (key.equals(CPLapiUserFields.PHONE.toString()))
+            this.setPhone(value);
+        else if (key.equals(CPLapiUserFields.USER_BIRTHDATE.toString()))
+            this.setBirthDate(value);
+        else if (key.equals(CPLapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
+            this.setExpiry(value);
+        else if (key.equals(CPLapiUserFields.CITY.toString()))
+            this.setCity(value);
+        else if (key.equals(CPLapiUserFields.PROVINCE.toString()))
+            this.setProvince(value);
+        else if (key.equals(CPLapiUserFields.STREET.toString()))
+            this.setStreet(value);
+        else if (key.equals(CPLapiUserFields.POSTALCODE.toString()))
+            this.setPostalCode(value);
+        else if (key.equals(CPLapiUserFields.USER_PASSWORD.toString()))
+            this.setPassword(value);
+        else if (key.equals(CPLapiUserFields.GENDER.toString()))
+            this.setGender(value);
+        else if (key.equals(CPLapiUserFields.STATUS.toString()))
+            this.setStatus(value);
+        else
+        {
+            System.out.println("*warning, request to set '" + key + "' with '"
+                + value + "' but MeCardDataToCPLapiData doesn't know what that is.");
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * Gives an old key a new name. If the old key doesn't exist no change is made.
+     * @param oldKeyName the original key name.
+     * @param newKeyName the new name for the key
+     * @return true if the key was renamed and false if there was no 
+     * original key.
+     */
+    @Override
+    public boolean renameKey(String oldKeyName, String newKeyName) 
+    {
+        String originalValue = this.getValue(oldKeyName);
+        // this is only used on updates.
+        if (originalValue != null)
+        {
+            if (this.setValue(newKeyName, originalValue))
+            {
+                return this.deleteValue(oldKeyName);
+            }
+            else
+            {
+                System.out.println("*warning, no such key " 
+                        + oldKeyName + ". No changes made.");
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    @SerializedName("cardNumber")
+    private String cardNumber;
+    @SerializedName("pin")
+    private String pin;
+    @SerializedName("firstName")
+    private String firstName;
+    @SerializedName("lastName")
+    private String lastName;
+    @SerializedName("birthDate")
+    private String birthDate;
+    @SerializedName("gender")
+    private String gender;
+    @SerializedName("emailAddress")
+    private String emailAddress;
+    @SerializedName("phoneNumber")
+    private String phoneNumber;
+    @SerializedName("address")
+    private String address;
+    @SerializedName("city")
+    private String city;
+    @SerializedName("province")
+    private String province;
+    @SerializedName("postalCode")
+    private String postalCode;
+    @SerializedName("expiryDate")
+    private String expiryDate;
+    @SerializedName("status")
+    private String status;
+    @SerializedName("profile")
+    private String profile;
+
+    // Getters for all fields
+    private String getBarcode() { return this.cardNumber != null ? this.cardNumber : ""; }
+    private String getPassword() { return this.pin != null ? this.pin : ""; }
+    private String getBirthDate() { return this.birthDate != null ? this.birthDate : ""; }
+    private String getFirstName() { return this.firstName != null ? this.firstName : ""; }
+    private String getLastName() { return this.lastName != null ? this.lastName : ""; }
+    private String getExpiry() { return this.expiryDate != null ? this.expiryDate : ""; }
+    private String getProfile() { return profile != null ? profile : ""; }
+    private String getEmail() { return this.emailAddress != null ? this.emailAddress : ""; }
+    private String getPostalCode() { return this.postalCode != null ? this.postalCode : ""; }
+    private String getPhone() { return this.phoneNumber != null ? this.phoneNumber : ""; }
+    private String getStreet() { return this.address != null ? this.address : ""; }
+    private String getCity() { return this.city != null ? this.city : ""; }
+    private String getProvince() { return this.province != null ? this.province : ""; }
+    private String getGender() { return this.gender != null ? this.gender : ""; }
+    private String getStatus() { return this.status != null ? this.status : ""; }
+    
+    // Setters for all methods.
+    private void setBarcode(String str) { this.cardNumber = str; }
+    private void setPassword(String str) { this.pin = str; }
+    private void setBirthDate(String str) { this.birthDate = str; }
+    private void setFirstName(String str) { this.firstName = str; }
+    private void setLastName(String str) { this.lastName = str; }
+    private void setExpiry(String str) { this.expiryDate = str; }
+    private void setProfile(String str) { this.profile = str; }
+    private void setEmail(String str) { this.emailAddress = str; }
+    private void setPostalCode(String str) { this.postalCode = str; }
+    private void setPhone(String str) { this.phoneNumber = str; }
+    private void setStreet(String str) { this.address = str; }
+    private void setCity(String str) { this.city = str; }
+    private void setProvince(String str) { this.province = str; }
+    private void setGender(String str) { this.gender = str; }
+    private void setStatus(String str) { this.status = str; }
+
+    /**
+     * Provides a of all of the customer's data values as understood from
+     * Calgary Public Library's API perspective.
+     * in a generalized way.
+     * @return 
+     */
+    @Override
+    public Set<String> getKeys() 
+    {
+        List<String> columns = new ArrayList<>();
+        for (CPLapiUserFields field : CPLapiUserFields.values()) 
+        {
+            // only include fields that have values.
+            if (! this.getValue(field.toString()).isBlank())
+            {
+                columns.add(field.toString());
+            }
+        }
+        @SuppressWarnings("unchecked")
+        Set<String> s = new LinkedHashSet(columns);
+        return s;
+    }
+
+    @Override
+    public boolean deleteValue(String key) 
+    {
+        for (CPLapiUserFields field : CPLapiUserFields.values()) 
+        {
+            if (field.toString().equals(key)) 
+            {
+                this.setValue(key, null);
+                return true;
+            }
+        }
+ 
+        System.out.println("*warning, request to delete '" + key
+            + "' but MeCardDataToCPLapiData doesn't know what that is.");
+        return false;
+    }
+
+    
+    @Override
+    public String toString() 
+    {
+        return this.toJson();
+    }
     
 }
