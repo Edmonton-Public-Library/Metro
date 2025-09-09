@@ -63,8 +63,6 @@ public class MeCardCustomerToSDapi extends MeCardCustomerToNativeFormat
         }
         customerTable.setValue(SDapiUserFields.USER_ID.toString(), 
             customer.get(CustomerFieldTypes.ID));
-        customerTable.setValue(SDapiUserFields.USER_PASSWORD.toString(), 
-            customer.get(CustomerFieldTypes.PIN));
         customerTable.setValue(SDapiUserFields.USER_FIRST_NAME.toString(), 
             customer.get(CustomerFieldTypes.FIRSTNAME));
         customerTable.setValue(SDapiUserFields.USER_LAST_NAME.toString(), 
