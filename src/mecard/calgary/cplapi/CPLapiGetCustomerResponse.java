@@ -199,24 +199,25 @@ public class CPLapiGetCustomerResponse
     private String getStatus() { return this.status != null ? this.status : ""; }
     
     // Setters for all methods.
-    private void setBarcode(String str) { this.cardNumber = str; }
-    private void setPassword(String str) { this.pin = str; }
-    private void setBirthDate(String str) { this.birthDate = str; }
-    private void setFirstName(String str) { this.firstName = str; }
-    private void setLastName(String str) { this.lastName = str; }
-    private void setExpiry(String str) { this.expiryDate = str; }
-    private void setProfile(String str) { profile = str; }
-    private void setEmail(String str) { this.emailAddress = str; }
-    private void setPostalCode(String str) { this.postalCode = str; }
-    private void setPhone(String str) { this.phoneNumber = str; }
-    private void setStreet(String str) { this.address = str; }
-    private void setCity(String str) { this.city = str; }
-    private void setProvince(String str) { this.province = str; }
-    private void setGender(String str) { this.gender = str; }
-    private void setStatus(String str) { this.status = str; }
+//    private void setBarcode(String str) { this.cardNumber = str; }
+//    private void setPassword(String str) { this.pin = str; }
+//    private void setBirthDate(String str) { this.birthDate = str; }
+//    private void setFirstName(String str) { this.firstName = str; }
+//    private void setLastName(String str) { this.lastName = str; }
+//    private void setExpiry(String str) { this.expiryDate = str; }
+//    private void setProfile(String str) { profile = str; }
+//    private void setEmail(String str) { this.emailAddress = str; }
+//    private void setPostalCode(String str) { this.postalCode = str; }
+//    private void setPhone(String str) { this.phoneNumber = str; }
+//    private void setStreet(String str) { this.address = str; }
+//    private void setCity(String str) { this.city = str; }
+//    private void setProvince(String str) { this.province = str; }
+//    private void setGender(String str) { this.gender = str; }
+//    private void setStatus(String str) { this.status = str; }
 
     // Static method to parse JSON
-    public static CPLapiResponse parseJson(String jsonString) {
+    public static CPLapiResponse parseJson(String jsonString) 
+    {
         Gson gson = new Gson();
         CPLapiResponse errors = gson.fromJson(jsonString, CPLapiErrorResponse.class);
         if (errors.succeeded())
@@ -226,7 +227,8 @@ public class CPLapiGetCustomerResponse
     }
     
     @Override
-    public String toString() {
+    public String toString() 
+    {
         String p = this.getPassword();
         if (! p.isBlank())
             p = "******";

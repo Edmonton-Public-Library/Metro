@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2019  Edmonton Public Library
+ *    Copyright (C) 2019 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import mecard.Protocol;
 import mecard.config.ConfigFileTypes;
 import mecard.config.LibraryPropertyTypes;
@@ -77,8 +79,9 @@ public class DateComparer
     public final static long MILLISECONDS_PER_YEAR = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_YEAR;
     public final static long MILLISECONDS_PER_DAY = MILLS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY;
     public final static long MILLISECONDS_PER_MINUTE = MILLS_IN_SECOND * SECONDS_IN_MINUTE;
+    private static final String DATE_PATTERN = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
+    private static final Pattern datePattern = Pattern.compile(DATE_PATTERN);
     
-
     /**
      * Returns the absolute difference between date one (d1) and date two (d2)
      * in years.
@@ -221,7 +224,8 @@ public class DateComparer
     
     /**
      * Converts a timestamp to an ANSI date.
-     * @param timeStampString in 'yyyy-MM-dd'T'HH:mm:ss' format.
+     * @param timeStampString in 'yyyy-MM-dd'T'HH:mm:ss' format, or 'yyyy-MM-dd'
+     * and the timestamp is assumed to be "'T'00:00:00'.
      * @return ANSI format date 'yyyyMMdd', or empty string if there was an error
      * parsing the supplied date.
      */
@@ -229,11 +233,21 @@ public class DateComparer
     {
         if (Text.isUnset(timeStampString))
         {
-                return "";
+            return "";
         }
         try
         {
-            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Matcher dateAloneMatcher = datePattern.matcher(timeStampString);
+            DateFormat sdf;
+            if (dateAloneMatcher.matches())
+            {
+                sdf = new SimpleDateFormat("yyyy-MM-dd");
+                
+            }
+            else
+            {
+                sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            }
             Date date = sdf.parse(timeStampString);
             return new SimpleDateFormat("yyyyMMdd").format(date);
         } catch (ParseException ex)

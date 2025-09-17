@@ -71,7 +71,7 @@ public class CPLWebServiceCommandTest
         if (envFilePath == null || envFilePath.isBlank())
         {
             throw new ConfigurationException("""
-                **error, the sdapi.properties file does not contain an entry
+                **error, the cplapi.properties file does not contain an entry
                 for the environment file (.env). The entry should look like this example:
                 <entry key="env-file-path">/MeCard/path/to/.env</entry>
                 Add entry or check for spelling mistakes.
@@ -131,7 +131,7 @@ public class CPLWebServiceCommandTest
         verifyStatus = verifyCustomerCommand.execute();
         System.out.print("VerifyCustomer test good PIN");
         assertTrue(verifyStatus.getHttpStatusCode() == 200);
-        System.out.println(" succeeded");
+        System.out.println(" succeeded with '" + verifyStatus.toString() + "'");
         
         
         // Test getting customer data
@@ -168,6 +168,45 @@ public class CPLWebServiceCommandTest
         assertTrue(testGetCustomerData.succeeded());
         System.out.println(" succeeded");
         System.out.println("GET_CUSTOMER data: " + testGetCustomerData.toString());
+        assertFalse(this.isInvalidCredentialsMessageIgnoreCase(testGetCustomerData.errorMessage()));
+        // Test getting customer with incorrect PIN.
+        pin = "24681012wrong";
+        cardNumberPin = new CPLapiCardNumberPin(cardNumber, pin);
+        getCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/GetCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(false)
+            .build();
+        status = getCustomerCommand.execute();
+        testGetCustomerData =                 
+                CPLapiGetCustomerResponse.parseJson(status.getStdout());
+        System.out.print("GetCustomer test BAD PIN");
+        assertFalse(testGetCustomerData.succeeded());
+        System.out.println(" succeeded");
+        System.out.println("GET_CUSTOMER (error) data: " + testGetCustomerData.toString()
+            + "code->" + status.getHttpStatusCode() + "<-"
+            + "out->" + status.getStdout() 
+            + "<-err=>" + status.getStderr() + "<=");
+        
+        System.out.println("GET_CUSTOMER (error) data:-+- " + testGetCustomerData.errorMessage());
+        System.out.println("GET_CUSTOMER (error) data toString():-+- " + testGetCustomerData.toString());
+        assertTrue(this.isInvalidCredentialsMessageIgnoreCase(testGetCustomerData.errorMessage()));
+    }
+    
+    /**
+     * Tests if a string contains the invalid credentials message (case-insensitive)
+     * @param message The string to test
+     * @return true if the message matches the pattern, false otherwise
+     */
+    public boolean isInvalidCredentialsMessageIgnoreCase(String message) {
+        if (message == null) {
+            return false;
+        }
+        
+        // Pattern: CardNumber/PinNumber: [Invalid Credentials.] (case-insensitive)
+        String pattern = "(?i)cardnumber/pinnumber: \\[invalid credentials\\.\\]";
+        return message.matches(pattern);
     }
 
     /**

@@ -34,6 +34,7 @@ public class CPLapiGetCustomerResponseTest {
     
     private final String jsonSuccess;
     private final String jsonFail;
+    private final String jsonError;
     
     public CPLapiGetCustomerResponseTest() 
     {
@@ -75,6 +76,11 @@ public class CPLapiGetCustomerResponseTest {
                         "postalCode": null
                      }
                      """;
+        jsonError = """
+                    {"type":"https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    "title":"One or more validation errors occurred.",
+                    "status":400,"traceId":"40001997-0000-fe00-b63f-84710c7967bb",
+                    "errors":{"CardNumber/PinNumber":["Invalid Credentials."]}}""";
     }
 
     /**
@@ -106,6 +112,25 @@ public class CPLapiGetCustomerResponseTest {
         instance = 
                 (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
         assertEquals("Account not found.", instance.errorMessage());
+        CPLapiResponse instance2 = 
+                CPLapiGetCustomerResponse.parseJson(jsonError);
+        assertTrue(this.isInvalidCredentialsMessageIgnoreCase(instance2.errorMessage()));
+    }
+    
+    /**
+     * Tests if a string contains the invalid credentials message (case-insensitive)
+     * @param message The string to test
+     * @return true if the message matches the pattern, false otherwise
+     */
+    public boolean isInvalidCredentialsMessageIgnoreCase(String message) {
+        if (message == null) 
+        {
+            return false;
+        }
+        
+        // Pattern: CardNumber/PinNumber: [Invalid Credentials.] (case-insensitive)
+        String pattern = "(?i)cardnumber/pinnumber: \\[invalid credentials\\.\\]";
+        return message.matches(pattern);
     }
 
     /**

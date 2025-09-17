@@ -1,7 +1,7 @@
 /**
 *
 * This class is part of the Metro, MeCard project.
-*    Copyright (C) 2013 - 2024  Edmonton Public Library, Edmonton public Library.
+*    Copyright (C) 2013 - 2025  Edmonton Public Library, Edmonton public Library.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -91,12 +91,12 @@ public class DateComparerTest
     {
         System.out.println("==getYearsOld==");
         String date = "19630822"; // "08/22/1963"
-        int expResult = 61;
+        int expResult = 62;
         int result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
         
         date = "20130408";
-        expResult = 11;
+        expResult = 12;
         result = DateComparer.getYearsOld(date);
         assertEquals(expResult, result);
 //        
@@ -156,7 +156,7 @@ public class DateComparerTest
     }
     
     /**
-     * Test of dateInFutre method, of class DateComparer.
+     * Test of dateInFuture method, of class DateComparer.
      */
 //    @Test
 //    public void testDateInFuture()
@@ -206,7 +206,9 @@ public class DateComparerTest
         // * PAPI timestamp: yyyy-MM-dd'T'HH:mm:ss
         // * Standard date:  yyyy-MM-dd
         // * ANSI date: yyyyMMdd
-        String expResult = "2024-12-17 00:00:00";
+//////////// Depending on how the date format is set in config... 
+//       String expResult = "2024-12-17 00:00:00";          
+        String expResult = "2024-12-17";
         String result = "";
         try
         {
@@ -298,7 +300,9 @@ public class DateComparerTest
         // * PAPI timestamp: yyyy-MM-dd'T'HH:mm:ss
         // * Standard date:  yyyy-MM-dd
         // * ANSI date: yyyyMMdd
-        String expResult = "2021-12-31 00:00:00";
+        //////////// Depending on how the date format is set in config... 
+//        String expResult = "2021-12-31 00:00:00";
+        String expResult = "2021-12-31";
         String result;
         try
         {
@@ -321,7 +325,9 @@ public class DateComparerTest
         // * PAPI timestamp: yyyy-MM-dd'T'HH:mm:ss
         // * Standard date:  yyyy-MM-dd
         // * ANSI date: yyyyMMdd
-        expResult = "2000-02-29 00:00:00";
+        //////////// Depending on how the date format is set in config... 
+//        expResult = "2000-02-29 00:00:00";
+        expResult = "2000-02-29";
         try
         {
             System.out.println("ANSIToConfigDate: " + DateComparer.ANSIToConfigDate(ANSIDate));
@@ -409,6 +415,12 @@ public class DateComparerTest
         // <ExpirationDate>2022-07-30T19:38:30</ExpirationDate>
         // 2022-07-30T19:38:30
         date = "2022-07-30T19:38:30";
+        expResult = "20220730";
+        result = DateComparer.getANSIDateFromDateTimestamp(date);
+        System.out.println("THIS IS THE RESULT: '" + result + "'");
+        assertEquals(expResult, result);
+        
+        date = "2022-07-30";
         expResult = "20220730";
         result = DateComparer.getANSIDateFromDateTimestamp(date);
         System.out.println("THIS IS THE RESULT: '" + result + "'");
