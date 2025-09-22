@@ -52,11 +52,11 @@ public class CPLapiToMeCardCustomer extends NativeFormatToMeCardCustomer
     public Customer getCustomer(String jsonResponse) 
     {
         Customer customer = new Customer();
-        CPLapiGetCustomerResponse customerData;
+        CPLapiCustomerResponse customerData;
         try
         {
             customerData = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonResponse);
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonResponse);
         }
         catch (NullPointerException | JsonSyntaxException e)
         {

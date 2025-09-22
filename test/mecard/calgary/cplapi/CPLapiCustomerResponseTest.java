@@ -30,13 +30,13 @@ import org.junit.Test;
  *
  * @author anisbet
  */
-public class CPLapiGetCustomerResponseTest {
+public class CPLapiCustomerResponseTest {
     
     private final String jsonSuccess;
     private final String jsonFail;
     private final String jsonError;
     
-    public CPLapiGetCustomerResponseTest() 
+    public CPLapiCustomerResponseTest() 
     {
         jsonSuccess = """
                      {
@@ -84,36 +84,36 @@ public class CPLapiGetCustomerResponseTest {
     }
 
     /**
-     * Test of succeeded method, of class CPLapiGetCustomerResponse.
+     * Test of succeeded method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testSucceeded() 
     {
         System.out.println("==succeeded==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertEquals(true, instance.succeeded());
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals(false, instance.succeeded());
     }
 
     /**
-     * Test of errorMessage method, of class CPLapiGetCustomerResponse.
+     * Test of errorMessage method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testErrorMessage() 
     {
         System.out.println("==errorMessage==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         String expResult = "";
         String result = instance.errorMessage();
         assertEquals(expResult, result);
         instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals("Account not found.", instance.errorMessage());
         CPLapiResponse instance2 = 
-                CPLapiGetCustomerResponse.parseJson(jsonError);
+                CPLapiCustomerResponse.parseJson(jsonError);
         assertTrue(this.isInvalidCredentialsMessageIgnoreCase(instance2.errorMessage()));
     }
     
@@ -134,28 +134,28 @@ public class CPLapiGetCustomerResponseTest {
     }
 
     /**
-     * Test of getCustomerProfile method, of class CPLapiGetCustomerResponse.
+     * Test of getCustomerProfile method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testGetCustomerProfile() 
     {
         System.out.println("==getCustomerProfile==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertEquals("CPL_ADULT", instance.getCustomerProfile());
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertFalse(instance.getCustomerProfile().isBlank());
     }
 
     /**
-     * Test of getField method, of class CPLapiGetCustomerResponse.
+     * Test of getField method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testGetField() 
     {
         System.out.println("==getField==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertEquals("BILLY", instance.getField(CPLapiUserFields.USER_LAST_NAME.toString()));
         assertEquals("Balzac", instance.getField(CPLapiUserFields.USER_FIRST_NAME.toString()));
         assertEquals("CPL_ADULT", instance.getField(CPLapiUserFields.PROFILE.toString()));
@@ -170,112 +170,112 @@ public class CPLapiGetCustomerResponseTest {
         assertEquals("Male", instance.getField(CPLapiUserFields.GENDER.toString()));
         assertEquals("1234 37 Avenue", instance.getField(CPLapiUserFields.STREET.toString()));
         assertEquals("123456", instance.getField(CPLapiUserFields.USER_PASSWORD.toString()));
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals("BLOCKED", instance.getStanding());
         assertEquals("", instance.getField(CPLapiUserFields.USER_PASSWORD.toString()));
     }
 
     /**
-     * Test of getDateField method, of class CPLapiGetCustomerResponse.
+     * Test of getDateField method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testGetDateField() 
     {
         System.out.println("==getDateField==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertEquals("2026-08-22", instance.getDateField(CPLapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
         assertEquals("2000-02-29", instance.getDateField(CPLapiUserFields.USER_BIRTHDATE.toString()));
         assertEquals("", instance.getDateField(CPLapiUserFields.USER_FIRST_NAME.toString()));
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals("", instance.getDateField(CPLapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
         assertEquals("", instance.getDateField(CPLapiUserFields.USER_BIRTHDATE.toString()));
         assertEquals("", instance.getDateField(CPLapiUserFields.USER_FIRST_NAME.toString()));
     }
 
     /**
-     * Test of isEmpty method, of class CPLapiGetCustomerResponse.
+     * Test of isEmpty method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testIsEmpty() 
     {
         System.out.println("==isEmpty==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertTrue(instance.isEmpty(CPLapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertFalse(instance.isEmpty(CPLapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
     }
 
     /**
-     * Test of getStanding method, of class CPLapiGetCustomerResponse.
+     * Test of getStanding method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testGetStanding() 
     {
         System.out.println("==getStanding==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertEquals("OK", instance.getStanding());
         assertTrue(instance.isInGoodStanding());
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals("BLOCKED", instance.getStanding());
         assertFalse(instance.isInGoodStanding());
     }
 
     /**
-     * Test of cardReportedLost method, of class CPLapiGetCustomerResponse.
+     * Test of cardReportedLost method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testCardReportedLost() 
     {
         System.out.println("==cardReportedLost==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertFalse(instance.cardReportedLost());
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertTrue(instance.cardReportedLost());
     }
 
     /**
-     * Test of isInGoodStanding method, of class CPLapiGetCustomerResponse.
+     * Test of isInGoodStanding method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testIsInGoodStanding() {
         System.out.println("==isInGoodStanding==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertTrue(instance.isInGoodStanding());
-        instance = (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        instance = (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals("BLOCKED", instance.getStanding());
         assertFalse(instance.isInGoodStanding());
     }
 
     /**
-     * Test of parseJson method, of class CPLapiGetCustomerResponse.
+     * Test of parseJson method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testParseJson() 
     {
         System.out.println("==parseJson==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertNotNull(instance.toString());
-        CPLapiGetCustomerResponse instance2 = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonFail);
+        CPLapiCustomerResponse instance2 = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonFail);
         assertEquals("", instance2.getField(CPLapiUserFields.USER_PASSWORD.toString()));
         System.out.println(instance2.toString());
         assertNotNull(instance2.toString());
     }
 
     /**
-     * Test of toString method, of class CPLapiGetCustomerResponse.
+     * Test of toString method, of class CPLapiCustomerResponse.
      */
     @Test
     public void testToString() {
         System.out.println("==toString==");
-        CPLapiGetCustomerResponse instance = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(jsonSuccess);
+        CPLapiCustomerResponse instance = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(jsonSuccess);
         assertNotNull(instance.toString());
         System.out.println(instance.toString());
     }

@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import mecard.config.CPLapiUserFields;
 
-public class CPLapiGetCustomerResponse 
+public class CPLapiCustomerResponse 
         extends CPLapiResponse
         implements CustomerMessage
 {
@@ -221,7 +221,7 @@ public class CPLapiGetCustomerResponse
         Gson gson = new Gson();
         CPLapiResponse errors = gson.fromJson(jsonString, CPLapiErrorResponse.class);
         if (errors.succeeded())
-            return gson.fromJson(jsonString, CPLapiGetCustomerResponse.class);
+            return gson.fromJson(jsonString, CPLapiCustomerResponse.class);
         else
             return errors;
     }

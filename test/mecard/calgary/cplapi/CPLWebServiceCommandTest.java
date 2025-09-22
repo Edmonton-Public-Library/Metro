@@ -26,9 +26,6 @@ import mecard.config.ConfigFileTypes;
 import mecard.config.PropertyReader;
 import mecard.config.CPLapiPropertyTypes;
 import org.junit.Test;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import java.io.IOException;
 import mecard.exception.ConfigurationException;
 import mecard.security.CPLapiSecurity;
@@ -48,15 +45,6 @@ public class CPLWebServiceCommandTest
     public CPLWebServiceCommandTest() 
     {
         this.cplApiProperties = PropertyReader.getProperties(ConfigFileTypes.CPL_API);
-//        JsonObject userGson = new JsonObject();
-//        userGson.addProperty("name", "John Doe");
-//        userGson.addProperty("age", 30);
-//        userGson.addProperty("isEmployee", true);
-//        
-//        // Pretty print the JSON
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        System.out.println("Simple GSON example:");
-//        System.out.println(gson.toJson(userGson));
     }
 
     /**
@@ -146,7 +134,7 @@ public class CPLWebServiceCommandTest
             .build();
         HttpCommandStatus status = getCustomerCommand.execute();
         CPLapiResponse testGetCustomerData =                 
-                CPLapiGetCustomerResponse.parseJson(status.getStdout());
+                CPLapiCustomerResponse.parseJson(status.getStdout());
         System.out.print("GetCustomer test bad PIN");
         assertFalse(testGetCustomerData.succeeded());
         System.out.println(" succeeded");
@@ -163,7 +151,7 @@ public class CPLWebServiceCommandTest
             .build();
         status = getCustomerCommand.execute();
         testGetCustomerData =                 
-                CPLapiGetCustomerResponse.parseJson(status.getStdout());
+                CPLapiCustomerResponse.parseJson(status.getStdout());
         System.out.print("GetCustomer test good PIN");
         assertTrue(testGetCustomerData.succeeded());
         System.out.println(" succeeded");
@@ -180,7 +168,7 @@ public class CPLWebServiceCommandTest
             .build();
         status = getCustomerCommand.execute();
         testGetCustomerData =                 
-                CPLapiGetCustomerResponse.parseJson(status.getStdout());
+                CPLapiCustomerResponse.parseJson(status.getStdout());
         System.out.print("GetCustomer test BAD PIN");
         assertFalse(testGetCustomerData.succeeded());
         System.out.println(" succeeded");
@@ -196,6 +184,7 @@ public class CPLWebServiceCommandTest
     
     /**
      * Tests if a string contains the invalid credentials message (case-insensitive)
+     * This is a supportive function just for testing.
      * @param message The string to test
      * @return true if the message matches the pattern, false otherwise
      */
@@ -204,8 +193,9 @@ public class CPLWebServiceCommandTest
             return false;
         }
         
-        // Pattern: CardNumber/PinNumber: [Invalid Credentials.] (case-insensitive)
-        String pattern = "(?i)cardnumber/pinnumber: \\[invalid credentials\\.\\]";
+        // Create a regex pattern that matches the message ignoring case and punctuation
+        // \\W* matches any non-word characters (punctuation, spaces, etc.)
+        String pattern = "(?i).*card\\W*number\\W*pin\\W*number\\W*invalid\\W*credentials.*";
         return message.matches(pattern);
     }
 

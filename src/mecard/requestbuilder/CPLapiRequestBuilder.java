@@ -29,6 +29,7 @@ import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import mecard.QueryTypes;
 import static mecard.QueryTypes.CREATE_CUSTOMER;
@@ -40,20 +41,21 @@ import mecard.Response;
 import mecard.ResponseTypes;
 import mecard.calgary.cplapi.CPLWebServiceCommand;
 import mecard.calgary.cplapi.CPLapiCardNumberPin;
-import mecard.calgary.cplapi.CPLapiGetCustomerResponse;
+import mecard.calgary.cplapi.CPLapiCustomerResponse;
 import mecard.calgary.cplapi.CPLapiResponse;
 import mecard.calgary.cplapi.CPLapiToMeCardCustomer;
 import mecard.config.ConfigFileTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
 import mecard.config.SDapiPropertyTypes;
-import mecard.config.SDapiUserFields;
 import mecard.customer.Customer;
+import mecard.customer.DumpUser;
+import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import mecard.exception.ConfigurationException;
 import mecard.security.CPLapiSecurity;
-import mecard.sirsidynix.sdapi.SDapiResponse;
-import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
+import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
+import mecard.sirsidynix.sdapi.MeCardDataToSDapiData;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -74,7 +76,7 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
     public CPLapiRequestBuilder(boolean debug)
     {
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
-        this.cplapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        this.cplapiProperties = PropertyReader.getProperties(ConfigFileTypes.CPL_API);
         String envFilePath = this.cplapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
         this.debug = debug;
         String loadDirProperty = this.cplapiProperties.getProperty(SDapiPropertyTypes.LOAD_DIR.toString());
@@ -122,7 +124,29 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Convert the ME Card data to CPL api JSON object.
+        MeCardCustomerToNativeFormat jsonNativeUpdateCustomer = 
+                        new MeCardCustomerToSDapi(customer, MeCardDataToSDapiData.QueryType.UPDATE);
+        // apply library centric normalization to the customer account.
+        // TODO: Revisit this as it is set to use SSH and native Symphony API now.
+        normalizer.finalize(customer, jsonNativeUpdateCustomer, response);
+        // Output the customer's data as a receipt in case they come back with questions.
+        List<String> customerReceipt = jsonNativeUpdateCustomer.getFormattedCustomer();
+        if (this.debug)
+        {
+            System.out.println("UPDATE JSON body: " + jsonNativeUpdateCustomer.toString());
+        }
+        // Create a receipt incase something goes wrong.
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.json)
+            .set(customerReceipt)
+            .build();
+        CPLWebServiceCommand updateCommand = new CPLWebServiceCommand.Builder(cplapiProperties, "POST")
+            .endpoint("/UpdateCustomer")
+            .apiKey(this.apiKey)
+            .setDebug(this.debug)
+            .bodyText(jsonNativeUpdateCustomer.toString())
+            .build();
+        return updateCommand;
     }
 
     @Override
@@ -161,14 +185,17 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
             return false;
         }
         
-        // Pattern: CardNumber/PinNumber: [Invalid Credentials.] (case-insensitive)
-        String pattern = "(?i)cardnumber/pinnumber: \\[invalid credentials\\.\\]";
+        // Create a regex pattern that matches the message ignoring case and punctuation
+        // \\W* matches any non-word characters (punctuation, spaces, etc.)
+        String pattern = "(?i).*card\\W*number\\W*pin\\W*number\\W*invalid\\W*credentials.*";
         return message.matches(pattern);
     }
 
     @Override
     public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response) 
     {
+        String nullResponseMessage = """
+                                     possibly the web service is down or too busy""";
         switch (commandType)
         {
             case GET_STATUS -> {
@@ -181,7 +208,7 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                     {
                         System.out.println(new Date() + " getStatus() responded as expected.");
                     }
-                    response.setCode(ResponseTypes.OK);
+                    response.setCode(ResponseTypes.SUCCESS);
                     response.setCustomer(null);
                     return true;
                 }
@@ -212,28 +239,82 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                     response.setCustomer(null);
                     return true;
                 }
-                // else We can convert an error response using the CPLapiGetCustomerResponse object.
-                CPLapiResponse customerResponse = CPLapiGetCustomerResponse.parseJson(status.getStdout());
-                // which will contain the following error message:
-                // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
-                if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
+                // else We can convert an error response using the CPLapiCustomerResponse object.
+                CPLapiResponse customerResponse;
+                try
                 {
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                    customerResponse= CPLapiCustomerResponse.parseJson(status.getStdout());
+                
+                    // which will contain the following error message:
+                    // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
+                    if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
+                    {
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                    }
+                    else
+                    {
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    }
+                    response.setCustomer(null);
+                    if (this.debug)
+                    { 
+                        System.out.println(new Date() + """
+                                       TEST_CUSTOMER returned: """ + customerResponse.errorMessage());
+                    }
                 }
-                else
+                catch (NullPointerException | JsonSyntaxException e)
                 {
-                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    System.out.println("*error, " + e.getMessage() + nullResponseMessage);
+                    response.setCode(ResponseTypes.UNAVAILABLE);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    return false;
                 }
-                response.setCustomer(null);
-                if (this.debug)
-                { 
-                    System.out.println(new Date() + """
-                                   TEST_CUSTOMER returned: """ + customerResponse.errorMessage());
-                }
-                return false;  // Stub
+                return false;
             }
             case GET_CUSTOMER -> {
-                return false; // Stub
+                // Cast the status to HttpCommandStatus to get the error code.
+                HttpCommandStatus httpCommandStatus = (HttpCommandStatus)status;
+                if (httpCommandStatus.getHttpStatusCode() == 200)
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + " GetCustomer() succeeded.");
+                    }
+                    response.setCode(ResponseTypes.OK);
+                    response.setCustomer(null);
+                    return true;
+                }
+                // else We can convert an error response using the CPLapiCustomerResponse object.
+                CPLapiResponse customerResponse;
+                try
+                {
+                    customerResponse = CPLapiCustomerResponse.parseJson(status.getStdout());
+                
+                    // which will contain the following error message:
+                    // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
+                    if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
+                    {
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
+                    }
+                    else
+                    {
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+                    }
+                    response.setCustomer(null);
+                    if (this.debug)
+                    { 
+                        System.out.println(new Date() + """
+                                       GET_CUSTOMER returned: """ + customerResponse.errorMessage());
+                    }
+                } 
+                catch (NullPointerException | JsonSyntaxException e)
+                {
+                    System.out.println("*error, " + e.getMessage() + nullResponseMessage);
+                    response.setCode(ResponseTypes.UNAVAILABLE);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    return false;
+                }
+                return false;
             }
             case UPDATE_CUSTOMER -> {
                 return false; // Stub
@@ -260,8 +341,8 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout) 
     {
-        CPLapiGetCustomerResponse customerResponse = 
-                (CPLapiGetCustomerResponse) CPLapiGetCustomerResponse.parseJson(stdout);
+        CPLapiCustomerResponse customerResponse = 
+                (CPLapiCustomerResponse) CPLapiCustomerResponse.parseJson(stdout);
         return customerResponse;
     }
 

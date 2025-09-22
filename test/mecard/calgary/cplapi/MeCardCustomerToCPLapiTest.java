@@ -31,7 +31,6 @@ import mecard.Request;
 import mecard.config.CPLapiUserFields;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
-import mecard.customer.MeCardDataToNativeData;
 import org.junit.Test;
 
 /**
