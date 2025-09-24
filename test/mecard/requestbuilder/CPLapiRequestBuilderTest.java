@@ -46,27 +46,28 @@ public class CPLapiRequestBuilderTest
 {
     private final Customer updateCustomer;
     private final Customer createCustomer;
+    private final String customerJsonData;
     
     public CPLapiRequestBuilderTest() 
     {
-        //        String updateCustomerData = """
-        //                                  {
-        //                                      "cardNumber": "29065024681012",
-        //                                      "pin": "24681012",
-        //                                      "firstName": "Generic",
-        //                                      "lastName": "Account",
-        //                                      "birthDate": "2020-01-01",
-        //                                      "gender": "NOTELL",
-        //                                      "emailAddress": "andrew@dev-ils.com",
-        //                                      "phoneNumber": null,
-        //                                      "address": "11950 Country Village Link NE",
-        //                                      "city": "CALGARY",
-        //                                      "province": "AB",
-        //                                      "postalCode": "T3K 6E3",
-        //                                      "expiryDate": "2027-08-22",
-        //                                      "status": "OK",
-        //                                      "profile": "ADULT"
-        //     }""";
+        customerJsonData = """
+                                  {
+                                      "cardNumber": "29065024681012",
+                                      "pin": "24681012",
+                                      "firstName": "Generic",
+                                      "lastName": "Account",
+                                      "birthDate": "2020-01-01",
+                                      "gender": "NOTELL",
+                                      "emailAddress": "andrew@dev-ils.com",
+                                      "phoneNumber": null,
+                                      "address": "11950 Country Village Link NE",
+                                      "city": "CALGARY",
+                                      "province": "AB",
+                                      "postalCode": "T3K 6E3",
+                                      "expiryDate": "2027-08-22",
+                                      "status": "OK",
+                                      "profile": "ADULT"
+        }""";
         String custUpdateReq = """
                             {
                                "code":"UPDATE_CUSTOMER",
@@ -209,17 +210,32 @@ public class CPLapiRequestBuilderTest
      * Test of testCustomerExists method, of class CPLapiRequestBuilder.
      */
     @Test
-    public void testTestCustomerExists() {
-        System.out.println("testCustomerExists");
-        String userId = "";
-        String userPin = "";
-        Response response = null;
-        CPLapiRequestBuilder instance = null;
-        Command expResult = null;
-        Command result = instance.testCustomerExists(userId, userPin, response);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testTestCustomerExists() 
+    {
+        System.out.println("==testCustomerExists==");
+        String userId = "29065024681012";
+        String userPin = "24681012";
+        Response response = new Response();
+        CPLapiRequestBuilder requestBuilder = new CPLapiRequestBuilder(true);
+        String expResult = """
+                            https://cplwebapitest-ecfwb9fbbxg5b2ev.canadacentral-01.azurewebsites.net/api/MeLibraries/VerifyCustomer POST
+                            <pending response>""";
+        Command command = requestBuilder.testCustomerExists(userId, userPin, response);
+//        System.out.println("LOOK HERE:" + command.toString());
+        assertEquals(expResult, command.toString());
+        HttpCommandStatus status = (HttpCommandStatus) command.execute();
+//        System.out.println("Status:" + status.getStdout());
+//        requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
+        assertTrue(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
+        assertTrue(status.getHttpStatusCode() == 200);
+        
+        userId = "290650246899999";
+        userPin = "24681012";
+        command = requestBuilder.testCustomerExists(userId, userPin, response);
+        status = (HttpCommandStatus) command.execute();
+        assertFalse(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
+        System.out.println("RESP:" + response.getCode() + " => " + response.getMessage());
+        assertTrue(response.getCode() == ResponseTypes.USER_NOT_FOUND);
     }
 
     /**
@@ -243,14 +259,14 @@ public class CPLapiRequestBuilderTest
             "Some other error message",
         };
         CPLapiRequestBuilder requestBuilder = new CPLapiRequestBuilder(true);
-        System.out.println("Testing valid matches:");
+//        System.out.println("Testing valid matches:");
         for (String msg : validTestMessages) 
         {
 //            System.out.println(msg + " -> " + requestBuilder.isInvalidCredentialsMessageIgnoreCase(msg));
             assertTrue(requestBuilder.isInvalidCredentialsMessageIgnoreCase(msg));
         }
         
-        System.out.println("\nTesting invalid matches:");
+//        System.out.println("\nTesting invalid matches:");
         for (String msg : inValidTestMessages) 
         {
 //            System.out.println(msg + " -> " + requestBuilder.isInvalidCredentialsMessageIgnoreCase(msg));
@@ -279,46 +295,62 @@ public class CPLapiRequestBuilderTest
      * Test of tidy method, of class CPLapiRequestBuilder.
      */
     @Test
-    public void testTidy() {
-        System.out.println("tidy");
-        CPLapiRequestBuilder instance = null;
-        boolean expResult = false;
-        boolean result = instance.tidy();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testTidy() 
+    {
+        System.out.println("==tidy==");
+        // Trivial test since tidy is not required for this service.
+        CPLapiRequestBuilder requestBuilder = new CPLapiRequestBuilder(true);
+        assertTrue(requestBuilder.tidy());
     }
 
     /**
      * Test of getCustomerMessage method, of class CPLapiRequestBuilder.
      */
     @Test
-    public void testGetCustomerMessage() {
-        System.out.println("getCustomerMessage");
-        String stdout = "";
-        CPLapiRequestBuilder instance = null;
-        CustomerMessage expResult = null;
-        CustomerMessage result = instance.getCustomerMessage(stdout);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetCustomerMessage() 
+    {
+        System.out.println("==getCustomerMessage==");
+        String expectedResult = "{cardNumber='29065024681012', pin='******', firstName='Generic', lastName='Account', birthDate='2020-01-01', gender='NOTELL', emailAddress='andrew@dev-ils.com', phoneNumber='', address='11950 Country Village Link NE', city='CALGARY', province='AB', postalCode='T3K 6E3', expiryDate='2027-08-22', profile='ADULT', status='OK'}";
+        CPLapiRequestBuilder instance = new CPLapiRequestBuilder(true);
+        CustomerMessage result = instance.getCustomerMessage(this.customerJsonData);
+        assertEquals(result.getField("cardNumber"), "29065024681012");
+        assertEquals(result.getField("heartRate"), "");
+        assertEquals(result.getField("pin"), "24681012");
+//        System.out.println("CDgt:'" + result + "'");
+//        System.out.println("CDex:'" + expectedResult + "'");
+        assertTrue(expectedResult.compareTo(result.toString()) == 0);
     }
 
     /**
      * Test of getCustomerCommand method, of class CPLapiRequestBuilder.
      */
     @Test
-    public void testGetCustomerCommand() {
-        System.out.println("getCustomerCommand");
-        String userId = "";
-        String userPin = "";
-        Response response = null;
-        CPLapiRequestBuilder instance = null;
-        Command expResult = null;
-        Command result = instance.getCustomerCommand(userId, userPin, response);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetCustomerCommand() 
+    {
+        System.out.println("==getCustomerCommand==");
+        String userId = "29065024681012";
+        String userPin = "24681012";
+        Response response = new Response();
+        CPLapiRequestBuilder requestBuilder = new CPLapiRequestBuilder(true);
+        String expResult = """
+                            https://cplwebapitest-ecfwb9fbbxg5b2ev.canadacentral-01.azurewebsites.net/api/MeLibraries/GetCustomer POST
+                            <pending response>""";
+        Command command = requestBuilder.getCustomerCommand(userId, userPin, response);
+//        System.out.println("LOOK HERE:" + command.toString());
+        assertEquals(expResult, command.toString());
+        HttpCommandStatus status = (HttpCommandStatus) command.execute();
+        
+        System.out.println("response:" + response.getCustomer());
+        assertTrue(requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response));
+        assertTrue(status.getHttpStatusCode() == 200);
+        
+        userId = "290650246899999";
+        userPin = "24681012";
+        command = requestBuilder.getCustomerCommand(userId, userPin, response);
+        status = (HttpCommandStatus) command.execute();
+        assertFalse(requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response));
+        System.out.println("GET RESP:" + response.getCode() + " => " + response.getMessage());
+        assertTrue(response.getCode() == ResponseTypes.USER_PIN_INVALID);
     }
 
     /**
@@ -328,10 +360,11 @@ public class CPLapiRequestBuilderTest
     public void testGetCustomerLoadDirectory() 
     {
         System.out.println("==testGetCustomerLoadDirectory==");
-        Response response = new Response();
+        String expected = """
+                          /home/anisbet/MeCard/logs/Customers/""";
         SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(true);
-        System.out.println("LOAD DIR:" + requestBuilder.getCustomerLoadDirectory());
-        assertTrue(requestBuilder.getCustomerLoadDirectory() instanceof String);
+//        System.out.println("LOAD DIR:" + requestBuilder.getCustomerLoadDirectory());
+        assertTrue(requestBuilder.getCustomerLoadDirectory().compareTo(expected) == 0);
     }
     
 }

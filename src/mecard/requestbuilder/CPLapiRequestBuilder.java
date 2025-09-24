@@ -209,13 +209,11 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                         System.out.println(new Date() + " getStatus() responded as expected.");
                     }
                     response.setCode(ResponseTypes.SUCCESS);
-                    response.setCustomer(null);
                     return true;
                 }
                 // anything other than 200 is a problem, but users shouldn't see 
                 // any cryptic error codes or messages.
                 response.setCode(ResponseTypes.UNAVAILABLE);
-                response.setCustomer(null);
                 response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
                 // But do log it.
                 if (this.debug)
@@ -235,8 +233,7 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                     {
                         System.out.println(new Date() + " VerifyCustomer() found the customer.");
                     }
-                    response.setCode(ResponseTypes.OK);
-                    response.setCustomer(null);
+                    response.setCode(ResponseTypes.SUCCESS);
                     return true;
                 }
                 // else We can convert an error response using the CPLapiCustomerResponse object.
@@ -244,18 +241,18 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                 try
                 {
                     customerResponse= CPLapiCustomerResponse.parseJson(status.getStdout());
-                
-                    // which will contain the following error message:
+                    
+                    // The service as currently implemented returns a 
+                    // status code 400 if the cardNumber AND/OR pin are incorrect
+                    // which is okay for verifying a customer since its results
+                    // are only visible to the Metro server.
+                    // The response JSON will contain the following error message:
                     // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
                     if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
                     {
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                    }
-                    else
-                    {
+                        response.setCode(ResponseTypes.USER_NOT_FOUND);
                         response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                     }
-                    response.setCustomer(null);
                     if (this.debug)
                     { 
                         System.out.println(new Date() + """
@@ -281,7 +278,6 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                         System.out.println(new Date() + " GetCustomer() succeeded.");
                     }
                     response.setCode(ResponseTypes.OK);
-                    response.setCustomer(null);
                     return true;
                 }
                 // else We can convert an error response using the CPLapiCustomerResponse object.
@@ -294,13 +290,13 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                     // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
                     if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
                     {
+                        response.setCode(ResponseTypes.USER_PIN_INVALID);
                         response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
                     }
-                    else
-                    {
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                    }
-                    response.setCustomer(null);
+//                    else
+//                    {
+//                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
+//                    }
                     if (this.debug)
                     { 
                         System.out.println(new Date() + """
@@ -349,7 +345,15 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
     @Override
     public Command getCustomerCommand(String userId, String userPin, Response response) 
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        CPLapiCardNumberPin cardNumberPin = new CPLapiCardNumberPin(userId, userPin);
+        CPLWebServiceCommand getCustomerCommand = 
+                new CPLWebServiceCommand.Builder(this.cplapiProperties, "POST")
+            .endpoint("/GetCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(this.debug)
+            .build();
+        return getCustomerCommand;
     }
     
     /**
