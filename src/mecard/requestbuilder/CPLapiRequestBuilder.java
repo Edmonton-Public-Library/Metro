@@ -44,6 +44,8 @@ import mecard.calgary.cplapi.CPLapiCardNumberPin;
 import mecard.calgary.cplapi.CPLapiCustomerResponse;
 import mecard.calgary.cplapi.CPLapiResponse;
 import mecard.calgary.cplapi.CPLapiToMeCardCustomer;
+import mecard.calgary.cplapi.MeCardCustomerToCPLapi;
+import mecard.calgary.cplapi.MeCardDataToCPLapiData;
 import mecard.config.ConfigFileTypes;
 import mecard.config.MessagesTypes;
 import mecard.config.PropertyReader;
@@ -54,8 +56,6 @@ import mecard.customer.MeCardCustomerToNativeFormat;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import mecard.exception.ConfigurationException;
 import mecard.security.CPLapiSecurity;
-import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
-import mecard.sirsidynix.sdapi.MeCardDataToSDapiData;
 import site.CustomerLoadNormalizer;
 
 /**
@@ -116,30 +116,64 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
     }
 
     @Override
-    public Command getCreateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
+    public Command getCreateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer) 
     {
         // Convert the ME Card data to CPL api JSON object.
         MeCardCustomerToNativeFormat jsonNativeUpdateCustomer = 
-                        new MeCardCustomerToSDapi(customer, MeCardDataToSDapiData.QueryType.UPDATE);
+            new MeCardCustomerToCPLapi(customer, MeCardDataToCPLapiData.QueryType.CREATE);
         // apply library centric normalization to the customer account.
         // TODO: Revisit this as it is set to use SSH and native Symphony API now.
         normalizer.finalize(customer, jsonNativeUpdateCustomer, response);
-        // Output the customer's data as a receipt in case they come back with questions.
+        // Output the customer's data as a receipt in case they come back with questions
+        // or there was an issue with updating the account, the info sent is kept
+        // until cleaned up.
         List<String> customerReceipt = jsonNativeUpdateCustomer.getFormattedCustomer();
         if (this.debug)
         {
-            System.out.println("UPDATE JSON body: " + jsonNativeUpdateCustomer.toString());
+            System.out.println("CREATE JSON body: " + jsonNativeUpdateCustomer.toString());
         }
         // Create a receipt incase something goes wrong.
         new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.json)
             .set(customerReceipt)
             .build();
+        // Create the actual web service call object.
+        CPLWebServiceCommand createCustomerCommand = new CPLWebServiceCommand.Builder(cplapiProperties, "POST")
+            .endpoint("/AddCustomer")
+            .apiKey(this.apiKey)
+            .setDebug(this.debug)
+            .bodyText(jsonNativeUpdateCustomer.toString())
+            .build();
+        return createCustomerCommand;
+    }
+
+    @Override
+    public Command getUpdateUserCommand(
+            Customer customer, 
+            Response response, 
+            CustomerLoadNormalizer normalizer) 
+    {
+        // Convert the ME Card data to CPL api JSON object.
+        MeCardCustomerToNativeFormat jsonNativeUpdateCustomer = 
+            new MeCardCustomerToCPLapi(customer, MeCardDataToCPLapiData.QueryType.UPDATE);
+        // apply library centric normalization to the customer account.
+        // TODO: Revisit this as it is set to use SSH and native Symphony API now.
+        normalizer.finalize(customer, jsonNativeUpdateCustomer, response);
+        // Output the customer's data as a receipt in case they come back with questions
+        // or there was an issue with updating the account, the info sent is kept
+        // until cleaned up.
+        List<String> customerReceipt = jsonNativeUpdateCustomer.getFormattedCustomer();
+//        if (this.debug)
+//        {
+            System.out.println("+++++++++UPDATE JSON body: " + jsonNativeUpdateCustomer.toString());
+//        }
+        // Create a receipt incase something goes wrong.
+        new DumpUser.Builder(customer, this.loadDir, DumpUser.FileType.json)
+            .set(customerReceipt)
+            .build();
+        // Create the actual web service call object.
         CPLWebServiceCommand updateCommand = new CPLWebServiceCommand.Builder(cplapiProperties, "POST")
             .endpoint("/UpdateCustomer")
             .apiKey(this.apiKey)
@@ -187,12 +221,15 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
         
         // Create a regex pattern that matches the message ignoring case and punctuation
         // \\W* matches any non-word characters (punctuation, spaces, etc.)
-        String pattern = "(?i).*card\\W*number\\W*pin\\W*number\\W*invalid\\W*credentials.*";
+        String pattern = "(?i).*\\W*invalid\\W*credentials.*";
         return message.matches(pattern);
     }
 
     @Override
-    public boolean isSuccessful(QueryTypes commandType, CommandStatus status, Response response) 
+    public boolean isSuccessful(
+            QueryTypes commandType, 
+            CommandStatus status, 
+            Response response) 
     {
         String nullResponseMessage = """
                                      possibly the web service is down or too busy""";
@@ -241,24 +278,16 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                 try
                 {
                     customerResponse= CPLapiCustomerResponse.parseJson(status.getStdout());
-                    
-                    // The service as currently implemented returns a 
-                    // status code 400 if the cardNumber AND/OR pin are incorrect
-                    // which is okay for verifying a customer since its results
-                    // are only visible to the Metro server.
-                    // The response JSON will contain the following error message:
-                    // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
-                    if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
-                    {
-                        response.setCode(ResponseTypes.USER_NOT_FOUND);
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-                    }
+                    response.setCode(ResponseTypes.USER_NOT_FOUND);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
                     if (this.debug)
                     { 
                         System.out.println(new Date() + """
                                        TEST_CUSTOMER returned: """ + customerResponse.errorMessage());
                     }
                 }
+                // If nothing was returned, or the JSON was broken tell the 
+                // user to come back later.
                 catch (NullPointerException | JsonSyntaxException e)
                 {
                     System.out.println("*error, " + e.getMessage() + nullResponseMessage);
@@ -285,22 +314,19 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                 try
                 {
                     customerResponse = CPLapiCustomerResponse.parseJson(status.getStdout());
-                
+                    // I've sent a message to Calgary asking if we can add more
+                    // error codes to help customers figure out what they might
+                    // be doing wrong, they write:
+                    // For authentication, we never inform the user if the card 
+                    // or PIN is incorrect. They work together. This is for security purposes.
                     // which will contain the following error message:
                     // 'CardNumber/PinNumber: [Invalid Credentials.]' if there was a PIN User name error.
-                    if (this.isInvalidCredentialsMessageIgnoreCase(customerResponse.errorMessage()))
-                    {
-                        response.setCode(ResponseTypes.USER_PIN_INVALID);
-                        response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
-                    }
-//                    else
-//                    {
-//                        response.setResponse(messageProperties.getProperty(MessagesTypes.ACCOUNT_NOT_FOUND.toString()));
-//                    }
+                    response.setCode(ResponseTypes.USER_PIN_INVALID);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.USERID_PIN_MISMATCH.toString()));
                     if (this.debug)
                     { 
                         System.out.println(new Date() + """
-                                       GET_CUSTOMER returned: """ + customerResponse.errorMessage());
+                            GET_CUSTOMER returned: """ + customerResponse.errorMessage());
                     }
                 } 
                 catch (NullPointerException | JsonSyntaxException e)
@@ -313,10 +339,207 @@ public class CPLapiRequestBuilder extends ILSRequestBuilder
                 return false;
             }
             case UPDATE_CUSTOMER -> {
-                return false; // Stub
+                // The best case; the customer is successfully updated. In this
+                // case there is a status code '200', but no body text.
+                HttpCommandStatus httpUpdateCommandStatus = (HttpCommandStatus)status;
+                if (httpUpdateCommandStatus.getHttpStatusCode() == 200)
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + " customer updated successfully.");
+                    }
+                    response.setCode(ResponseTypes.SUCCESS);
+                    return true;
+                }
+                
+                // There are a bunch of issues that can happen with an update
+                // and create account call.
+                // If the account can't be found - this would be very unusual 
+                // because a call was just made to find the account and it said
+                // it existed... In any case the return body text doesn't contain
+                // an error message, just a "title": "User not found."
+                if (httpUpdateCommandStatus.getHttpStatusCode() == 404)
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + " customer not updated because the account wasn't found.");
+                    }
+                    response.setCode(ResponseTypes.USER_NOT_FOUND);
+                    response.setResponse(apiKey);
+                    return false;
+                }
+                // There is a special error if the supplied expiry is too distant
+                // in the future.
+                // {
+                //   "type": "https://tools.ietf.org/html/rfc7231#section-6.6.4",
+                //   "title": "Year must be less than 2038",
+                //   "status": 503,
+                //   "traceId": "400017b9-0000-f200-b63f-84710c7967bb"
+                //}
+                if (httpUpdateCommandStatus.getHttpStatusCode() == 503)
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + """
+                            customer not updated because of a 503 error.
+                            This can happen if expiry is too far in the future (>2038),
+                            but there may be another issue with dates on the account.""");
+                    }
+                    response.setCode(ResponseTypes.FAIL);
+                    String failedExpiry = messageProperties.getProperty(
+                            MessagesTypes.ACCOUNT_NOT_UPDATED.toString()) +
+                            " The customer's expiry may be too far in the future.";
+                    response.setResponse(failedExpiry);
+                    return false;
+                }
+                // The other errors can happen if there is missing data.
+                // We should report them to the customer so they have some 
+                // details when they talk to staff.
+                CPLapiResponse customerErrorResponse;
+                try
+                {
+                    customerErrorResponse = CPLapiCustomerResponse.parseJson(status.getStdout());
+                    // In the worst case you will get the following message.
+                    // {
+                    //   "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    //   "title": "One or more validation errors occurred.",
+                    //   "status": 400,
+                    //   "traceId": "40001-blah",
+                    //   "errors": {
+                    //       "firstName": [
+                    //           "Firstname is required."
+                    //       ],
+                    //       "lastName": [
+                    //           "Lastname is required."
+                    //       ],
+                    //       "emailAddress": [
+                    //           "Email is required."
+                    //       ],
+                    //       "address.street": [
+                    //           "Street is required."
+                    //       ],
+                    //       "address.city": [
+                    //           "City is required."
+                    //       ],
+                    //       "address.province": [
+                    //           "Province is required."
+                    //       ],
+                    //       "address.postalCode": [
+                    //           "Postal code is required."
+                    //       ]
+                    //   }
+                    //}
+                    // In any and all of these cases the response object will 
+                    // parse and concatinate all the meaningful data together
+                    // into a human readable response message.
+                    response.setCode(ResponseTypes.FAIL);
+                    String completeMessage = messageProperties.getProperty(MessagesTypes.FAIL_COMPLETENESS_TEST.toString())
+                            + " " + customerErrorResponse.errorMessage();
+                    response.setResponse(completeMessage);
+                    if (this.debug)
+                    { 
+                        System.out.println(new Date() + """
+                            UPDATE_CUSTOMER failed with: """ + customerErrorResponse.errorMessage());
+                    }
+                } 
+                catch (NullPointerException | JsonSyntaxException e)
+                {
+                    System.out.println("*error, " + e.getMessage() + nullResponseMessage);
+                    response.setCode(ResponseTypes.UNAVAILABLE);
+                    response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                    return false;
+                }
+                return false;
             }
             case CREATE_CUSTOMER -> {
-                return false; // Stub
+                // The best case; the customer is successfully updated. In this
+                // case there is a status code '200', but no body text.
+                HttpCommandStatus httpUpdateCommandStatus = (HttpCommandStatus)status;
+                if (httpUpdateCommandStatus.getHttpStatusCode() == 200)
+                {
+                    if (this.debug)
+                    {
+                        System.out.println(new Date() + " customer created!.");
+                    }
+                    response.setCode(ResponseTypes.SUCCESS);
+                    return true;
+                }
+                if (httpUpdateCommandStatus.getHttpStatusCode() == 400)
+                {
+                    // The other errors can happen if there is missing data, 
+                    // or the account already exists.
+                    // We should report them to the customer so they have some 
+                    // details when they talk to staff.
+                    CPLapiResponse customerErrorResponse;
+                    try
+                    {
+                        customerErrorResponse = CPLapiCustomerResponse.parseJson(status.getStdout());
+                        //  {
+                        //    "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                        //    "title": "One or more validation errors occurred.",
+                        //    "status": 400,
+                        //    "traceId": "40004984-0000-db00-b63f-84710c7967bb",
+                        //    "errors": {
+                        //        "pinNumber": [
+                        //            "Pinnumber is required."
+                        //        ],
+                        //        "firstName": [
+                        //            "Firstname is required."
+                        //        ],
+                        //        "lastName": [
+                        //            "Lastname is required."
+                        //        ],
+                        //        "birthDate": [
+                        //            "Birth date is required."
+                        //        ],
+                        //        "emailAddress": [
+                        //            "Email is required."
+                        //        ],
+                        //        "address.street": [
+                        //            "Street is required."
+                        //        ],
+                        //        "address.city": [
+                        //            "City is required."
+                        //        ],
+                        //        "address.province": [
+                        //            "Province is required."
+                        //        ],
+                        //        "address.postalCode": [
+                        //            "Postal code is required."
+                        //        ]
+                        //    }
+                        //}
+                        // or 
+                        //{
+                        //        "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                        //        "title": "One or more validation errors occurred.",
+                        //        "status": 400,
+                        //        "traceId": "4002f3f2-0000-f800-b63f-84710c7967bb",
+                        //        "errors": {
+                        //            "cardNumber": [
+                        //                "User already exists."
+                        //            ]
+                        //        }
+                        //    }
+                        // In any and all of these cases the response object will 
+                        // parse and concatinate all the meaningful data together
+                        // into a human readable response message.
+                        response.setCode(ResponseTypes.FAIL);
+                        response.setResponse(customerErrorResponse.errorMessage());
+                        System.out.println(new Date() + """
+                            CREATE_CUSTOMER failed with: """ + customerErrorResponse.errorMessage());
+                        
+                        return false;
+                    } 
+                    catch (NullPointerException | JsonSyntaxException e)
+                    {
+                        System.out.println("*error, " + e.getMessage() + nullResponseMessage);
+                        response.setCode(ResponseTypes.UNAVAILABLE);
+                        response.setResponse(messageProperties.getProperty(MessagesTypes.UNAVAILABLE_SERVICE.toString()));
+                        return false;
+                    }
+                }
+                return false;
             }
             default -> { // This should never happen, but we've heard that before.
                 response.setCode(ResponseTypes.CONFIG_ERROR);

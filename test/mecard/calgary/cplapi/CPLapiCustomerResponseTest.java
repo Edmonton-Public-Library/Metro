@@ -114,7 +114,7 @@ public class CPLapiCustomerResponseTest {
         assertEquals("Account not found.", instance.errorMessage());
         CPLapiResponse instance2 = 
                 CPLapiCustomerResponse.parseJson(jsonError);
-        assertTrue(this.isInvalidCredentialsMessageIgnoreCase(instance2.errorMessage()));
+        assertEquals("Invalid Credentials", instance2.errorMessage());
     }
     
     /**
@@ -129,7 +129,8 @@ public class CPLapiCustomerResponseTest {
         }
         
         // Pattern: CardNumber/PinNumber: [Invalid Credentials.] (case-insensitive)
-        String pattern = "(?i)cardnumber/pinnumber: \\[invalid credentials\\.\\]";
+//        String pattern = "(?i).*card\\W*number\\W*pin\\W*number\\W*invalid\\W*credentials.*";
+        String pattern = "(?i).*\\W*invalid\\W*credentials.*";
         return message.matches(pattern);
     }
 

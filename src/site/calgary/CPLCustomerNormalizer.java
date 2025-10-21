@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2013 - 2025 Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,14 @@
 */
 package site.calgary;
 
+import java.util.Properties;
 import mecard.Response;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import site.SymphonyNormalizer;
 import mecard.customer.MeCardCustomerToNativeFormat;
@@ -33,17 +37,20 @@ import mecard.customer.MeCardCustomerToNativeFormat;
  * The local library may require certain modifications to a customer account
  * such as minimum PIN width, or application of a computed bStat value.
  * 
- * For Shortgrass Library System the actions are to load the customer's default account information
+ * For Calgary Library System the actions are no longer required since they
+ * use a home-grown API service to interface to their ILS.
+ * The service can be changed back to Symphony via the environment.properties
+ * file to load the customer's default account information
  * required by Symphony.
  * @author Andrew Nisbet <anisbet@epl.ca>
  */
 public final class CPLCustomerNormalizer extends SymphonyNormalizer
 {
-//    private final boolean debug;
-    
+    private Properties envProperties;
     public CPLCustomerNormalizer(boolean debug)
     {
         super(debug);
+        this.envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
     }
 
     /**
@@ -58,52 +65,57 @@ public final class CPLCustomerNormalizer extends SymphonyNormalizer
     @Override
     public void finalize(Customer rawCustomer, MeCardCustomerToNativeFormat formattedCustomer, Response response)
     {
-        // This loads all the mandatory values on SymphonyPropertyTypes.
-        this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
-        // Currently Calgary uses PHONE1 to store the customer's phone number: 
-        formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
-                FlatUserFieldTypes.PHONE.toString(),
-                FlatUserFieldTypes.PHONE_1.toString());
-        // And yet another variation of "CITY/PROV" not "CITY/STATE".
-        formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
-                FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
-                FlatUserFieldTypes.CITY_SLASH_PROV.toString());
-        
-        // Here we will compute USER_CATEGORY3: sex. Test the 
-        // unformattedCustomer for sex and set it like you set USER_CATEGORY2
-        if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .startsWith("symphony"))
         {
-            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-                "FEMALE"
-            );
-        }
-        else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
-        {
-            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-                "MALE"
-            );
-        }
-        // else CPL doesn't have a category of unknown, so either MALE, FEMALE
-        // or no USER_CATEGORY3 at all.
+            // This loads all the mandatory values on SymphonyPropertyTypes.
+            this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
+            // Currently Calgary uses PHONE1 to store the customer's phone number: 
+            formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
+                    FlatUserFieldTypes.PHONE.toString(),
+                    FlatUserFieldTypes.PHONE_1.toString());
+            // And yet another variation of "CITY/PROV" not "CITY/STATE".
+            formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
+                    FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
+                    FlatUserFieldTypes.CITY_SLASH_PROV.toString());
 
-        
-        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(),
-            FlatUserFieldTypes.USER_CATEGORY1.toString(),
-            "CPLAWB" // TODO test for default load.
-        );
-        
-        // This doesn't load by default, but I don't have time to find out why,
-        // this will force the issue.
-        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(),
-            FlatUserFieldTypes.USER_CATEGORY4.toString(),
-            "ALL"
-        );
-        
-        // Suppress preferred user name.
-        formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
-            FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
-        );
+            // Here we will compute USER_CATEGORY3: sex. Test the 
+            // unformattedCustomer for sex and set it like you set USER_CATEGORY2
+            if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+            {
+                formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                    "FEMALE"
+                );
+            }
+            else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+            {
+                formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                    "MALE"
+                );
+            }
+            // else CPL doesn't have a category of unknown, so either MALE, FEMALE
+            // or no USER_CATEGORY3 at all.
+
+
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(),
+                FlatUserFieldTypes.USER_CATEGORY1.toString(),
+                "CPLAWB" // TODO test for default load.
+            );
+
+            // This doesn't load by default, but I don't have time to find out why,
+            // this will force the issue.
+            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(),
+                FlatUserFieldTypes.USER_CATEGORY4.toString(),
+                "ALL"
+            );
+
+            // Suppress preferred user name.
+            formattedCustomer.removeField(FlatUserTableTypes.USER.name(),
+                FlatUserFieldTypes.USER_PREFERRED_NAME.toString()
+            );
+        }
     }
 }

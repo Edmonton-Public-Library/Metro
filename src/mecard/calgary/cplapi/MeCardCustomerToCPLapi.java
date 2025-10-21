@@ -261,4 +261,10 @@ public class MeCardCustomerToCPLapi extends MeCardCustomerToNativeFormat
     {
         return this.customerTable.deleteValue(fieldName);
     }
+    
+    @Override
+    public String toString()
+    {
+        return this.customerTable.toString();
+    }
 }

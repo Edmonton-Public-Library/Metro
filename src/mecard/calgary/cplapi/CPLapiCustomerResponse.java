@@ -229,25 +229,32 @@ public class CPLapiCustomerResponse
     @Override
     public String toString() 
     {
-        String p = this.getPassword();
-        if (! p.isBlank())
-            p = "******";
-        return "{" +
-                "cardNumber='" + this.getBarcode() + '\'' +
-                ", pin='" + p + '\'' +
-                ", firstName='" + this.getField("firstName") + '\'' +
-                ", lastName='" + this.getField("lastName") + '\'' +
-                ", birthDate='" + this.getField("birthDate") + '\'' +
-                ", gender='" + this.getField("gender") + '\'' +
-                ", emailAddress='" + this.getField("emailAddress") + '\'' +
-                ", phoneNumber='" + this.getField("phoneNumber") + '\'' +
-                ", address='" + this.getField("address") + '\'' +
-                ", city='" + this.getField("city") + '\'' +
-                ", province='" + this.getField("province") + '\'' +
-                ", postalCode='" + this.getField("postalCode") + '\'' +
-                ", expiryDate='" + this.getField("expiryDate") + '\'' +
-                ", profile='" + this.getField("profile") + '\'' +
-                ", status='" + this.getField("status") + '\'' +
-                '}';
+        if (this.succeeded())
+        {
+            String p = this.getPassword();
+            if (! p.isBlank())
+                p = "******";
+            return "{" +
+                    "cardNumber='" + this.getBarcode() + '\'' +
+                    ", pin='" + p + '\'' +
+                    ", firstName='" + this.getField("firstName") + '\'' +
+                    ", lastName='" + this.getField("lastName") + '\'' +
+                    ", birthDate='" + this.getField("birthDate") + '\'' +
+                    ", gender='" + this.getField("gender") + '\'' +
+                    ", emailAddress='" + this.getField("emailAddress") + '\'' +
+                    ", phoneNumber='" + this.getField("phoneNumber") + '\'' +
+                    ", address='" + this.getField("address") + '\'' +
+                    ", city='" + this.getField("city") + '\'' +
+                    ", province='" + this.getField("province") + '\'' +
+                    ", postalCode='" + this.getField("postalCode") + '\'' +
+                    ", expiryDate='" + this.getField("expiryDate") + '\'' +
+                    ", profile='" + this.getField("profile") + '\'' +
+                    ", status='" + this.getField("status") + '\'' +
+                    '}';
+        }
+        else
+        {
+            return this.errorMessage();
+        }
     }
 }

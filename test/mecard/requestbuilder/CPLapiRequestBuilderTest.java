@@ -33,6 +33,7 @@ import mecard.QueryTypes;
 import mecard.Request;
 import mecard.Response;
 import mecard.ResponseTypes;
+import mecard.config.CustomerFieldTypes;
 import mecard.customer.Customer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import org.junit.Test;
@@ -45,62 +46,63 @@ import site.CustomerLoadNormalizer;
 public class CPLapiRequestBuilderTest 
 {
     private final Customer updateCustomer;
-    private final Customer createCustomer;
     private final String customerJsonData;
     
     public CPLapiRequestBuilderTest() 
     {
         customerJsonData = """
-                                  {
-                                      "cardNumber": "29065024681012",
-                                      "pin": "24681012",
-                                      "firstName": "Generic",
-                                      "lastName": "Account",
-                                      "birthDate": "2020-01-01",
-                                      "gender": "NOTELL",
-                                      "emailAddress": "andrew@dev-ils.com",
-                                      "phoneNumber": null,
-                                      "address": "11950 Country Village Link NE",
-                                      "city": "CALGARY",
-                                      "province": "AB",
-                                      "postalCode": "T3K 6E3",
-                                      "expiryDate": "2027-08-22",
-                                      "status": "OK",
-                                      "profile": "ADULT"
+        {
+            "cardNumber": "29065024681012",
+            "pin": "24681012",
+            "firstName": "Generic",
+            "lastName": "Account",
+            "birthDate": "2020-01-01",
+            "gender": "NOTELL",
+            "emailAddress": "andrew@dev-ils.com",
+            "phoneNumber": null,
+            "address": "11950 Country Village Link NE",
+            "city": "CALGARY",
+            "province": "AB",
+            "postalCode": "T3K 6E3",
+            "expiryDate": "2027-08-22",
+            "status": "OK",
+            "profile": "ADULT"
         }""";
-        String custUpdateReq = """
-                            {
-                               "code":"UPDATE_CUSTOMER",
-                               "authorityToken":"12345678",
-                               "userId":"29065024681012",
-                               "pin":"24681012",
-                               "customer":"{
-                                    \\"ID\\":\\"29065024681012\\",
-                                    \\"PIN\\":\\"24681012\\",
-                                    \\"PREFEREDNAME\\":\\"Generic, Account\\",
-                                    \\"STREET\\":\\"11950 Country Village Link NE\\",
-                                    \\"CITY\\":\\"CALGARY\\",
-                                    \\"PROVINCE\\":\\"AB\\",
-                                    \\"POSTALCODE\\":\\"T3K 6E3\\",
-                                    \\"SEX\\":\\"M\\",
-                                    \\"EMAIL\\":\\"ilsteam@epl.ca\\",
-                                    \\"PHONE\\":\\"7804964058\\",
-                                    \\"DOB\\":\\"20010822\\",
-                                    \\"PRIVILEGE_EXPIRES\\":\\"20270822\\",
-                                    \\"RESERVED\\":\\"X\\",
-                                    \\"ALTERNATE_ID\\":\\"X\\",
-                                    \\"ISVALID\\":\\"Y\\",
-                                    \\"ISMINAGE\\":\\"Y\\",
-                                    \\"ISRECIPROCAL\\":\\"N\\",
-                                    \\"ISRESIDENT\\":\\"Y\\",
-                                    \\"ISGOODSTANDING\\":\\"Y\\",
-                                    \\"ISLOSTCARD\\":\\"N\\",
-                                    \\"FIRSTNAME\\":\\"Generic\\",
-                                    \\"LASTNAME\\":\\"Account\\"
-                                    }"
-                               }""";
+        //String custUpdateReq = """
+        //                    {
+        //                       "code":"UPDATE_CUSTOMER",
+        //                       "authorityToken":"12345678",
+        //                       "userId":"29065024681012",
+        //                       "pin":"24681012",
+        //                       "customer":"{
+        //                            \\"ID\\":\\"29065024681012\\",
+        //                            \\"PIN\\":\\"24681012\\",
+        //                            \\"PREFEREDNAME\\":\\"Generic, Account\\",
+        //                            \\"STREET\\":\\"11950 Country Village Link NE\\",
+        //                            \\"CITY\\":\\"CALGARY\\",
+        //                            \\"PROVINCE\\":\\"AB\\",
+        //                            \\"POSTALCODE\\":\\"T3K 6E3\\",
+        //                            \\"SEX\\":\\"M\\",
+        //                            \\"EMAIL\\":\\"ilsteam@epl.ca\\",
+        //                            \\"PHONE\\":\\"7804964058\\",
+        //                            \\"DOB\\":\\"20010822\\",
+        //                            \\"PRIVILEGE_EXPIRES\\":\\"20270822\\",
+        //                            \\"RESERVED\\":\\"X\\",
+        //                            \\"ALTERNATE_ID\\":\\"X\\",
+        //                            \\"ISVALID\\":\\"Y\\",
+        //                            \\"ISMINAGE\\":\\"Y\\",
+        //                            \\"ISRECIPROCAL\\":\\"N\\",
+        //                            \\"ISRESIDENT\\":\\"Y\\",
+        //                            \\"ISGOODSTANDING\\":\\"Y\\",
+        //                            \\"ISLOSTCARD\\":\\"N\\",
+        //                            \\"FIRSTNAME\\":\\"Generic\\",
+        //                            \\"LASTNAME\\":\\"Account\\"
+        //                            }"
+        //                       }""";
+//        String custUpdateReq = "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"29065024681012\",\"pin\":\"24681012\",\"customer\":\"{\\\"ID\\\":\\\"29065024681012\\\",\\\"PIN\\\":\\\"24681012\\\",\\\"PREFEREDNAME\\\":\\\"Generic, Account\\\",\\\"STREET\\\":\\\"11950 Country Village Link NE\\\\",\\\"CITY\\\":\\\"CALGARY\\\",\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"T3K 6E3\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsadmins@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"20010822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20270822\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Generic\\\",\\\"LASTNAME\\\":\\\"Account\\\"}\"}";
+        String createCustomerData = "{\"code\":\"UPDATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"29065024681012\",\"pin\":\"24681012\",\"customer\":\"{\\\"ID\\\":\\\"29065024681012\\\",\\\"PIN\\\":\\\"24681012\\\",\\\"PREFEREDNAME\\\":\\\"Generic, Account\\\",\\\"STREET\\\":\\\"11950 Country Village Link NE\\\",\\\"CITY\\\":\\\"CALGARY\\\",\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"T3K 6E3\\\",\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsadmins@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"20010822\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20270822\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Generic\\\",\\\"LASTNAME\\\":\\\"Account\\\"}\"}";
         RequestDeserializer deserializer = new RequestDeserializer();
-        Request request = deserializer.getDeserializedRequest(custUpdateReq);
+        Request request = deserializer.getDeserializedRequest(createCustomerData);
         this.updateCustomer = request.getCustomer();
         
         String custCreateReq = """
@@ -137,55 +139,49 @@ public class CPLapiRequestBuilderTest
                                }""";
         deserializer = new RequestDeserializer();
         request = deserializer.getDeserializedRequest(custCreateReq);
-        this.createCustomer = request.getCustomer();
+        request.getCustomer();
     }
 
     /**
      * Test of getFormatter method, of class CPLapiRequestBuilder.
      */
     @Test
-    public void testGetFormatter() {
-        System.out.println("getFormatter");
-        CPLapiRequestBuilder instance = null;
-        NativeFormatToMeCardCustomer expResult = null;
-        NativeFormatToMeCardCustomer result = instance.getFormatter();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getCreateUserCommand method, of class CPLapiRequestBuilder.
-     */
-    @Test
-    public void testGetCreateUserCommand() {
-        System.out.println("getCreateUserCommand");
-        Customer customer = null;
-        Response response = null;
-        CustomerLoadNormalizer normalizer = null;
-        CPLapiRequestBuilder instance = null;
-        Command expResult = null;
-        Command result = instance.getCreateUserCommand(customer, response, normalizer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetFormatter() 
+    {
+        System.out.println("==getFormatter==");
+        CPLapiRequestBuilder instance = new CPLapiRequestBuilder(true);
+        NativeFormatToMeCardCustomer cpl2mecard = instance.getFormatter();
+        Customer customer = cpl2mecard.getCustomer(this.customerJsonData);
+        System.out.println("Customer: "+customer.toString());
+        assertTrue(customer.get(CustomerFieldTypes.LASTNAME).equalsIgnoreCase("Account"));
+        System.out.println("customer gender ====>" + customer.get(CustomerFieldTypes.SEX));
+        // This shows that the value 'NOTELL' gets converted to a default value 'X'.
+        assertTrue(customer.get(CustomerFieldTypes.SEX).equalsIgnoreCase("X"));
     }
 
     /**
      * Test of getUpdateUserCommand method, of class CPLapiRequestBuilder.
      */
     @Test
-    public void testGetUpdateUserCommand() {
-        System.out.println("getUpdateUserCommand");
-        Customer customer = null;
-        Response response = null;
-        CustomerLoadNormalizer normalizer = null;
-        CPLapiRequestBuilder instance = null;
-        Command expResult = null;
-        Command result = instance.getUpdateUserCommand(customer, response, normalizer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetUpdateUserCommand()
+    {
+        System.out.println("==getUpdateUserCommand==");
+        
+        Response response = new Response();
+        CustomerLoadNormalizer normalizer = CustomerLoadNormalizer.getInstanceOf(true);
+
+//        Command command = requestBuilder.getUpdateUserCommand(testCustomer, response, normalizer);
+//        HttpCommandStatus status = (HttpCommandStatus) command.execute();
+//        System.out.println("-------Status:" + status.getStdout());
+//        assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
+        
+        
+        
+        CPLapiRequestBuilder requestBuilder = new CPLapiRequestBuilder(true);
+        Command command = requestBuilder.getUpdateUserCommand(this.updateCustomer, response, normalizer);
+        HttpCommandStatus status = (HttpCommandStatus) command.execute();
+        System.out.println("-------Status:" + status.getStdout());
+        assertTrue(requestBuilder.isSuccessful(QueryTypes.UPDATE_CUSTOMER, status, response));
     }
 
     /**
@@ -224,15 +220,18 @@ public class CPLapiRequestBuilderTest
 //        System.out.println("LOOK HERE:" + command.toString());
         assertEquals(expResult, command.toString());
         HttpCommandStatus status = (HttpCommandStatus) command.execute();
-//        System.out.println("Status:" + status.getStdout());
+        System.out.println("Status:" + status.getStdout());
 //        requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response);
         assertTrue(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
         assertTrue(status.getHttpStatusCode() == 200);
         
         userId = "290650246899999";
         userPin = "24681012";
+        response = new Response();
         command = requestBuilder.testCustomerExists(userId, userPin, response);
         status = (HttpCommandStatus) command.execute();
+        System.out.println("        CHECK HERE=>" + status.toString());
+//        assertTrue
         assertFalse(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
         System.out.println("RESP:" + response.getCode() + " => " + response.getMessage());
         assertTrue(response.getCode() == ResponseTypes.USER_NOT_FOUND);
@@ -251,7 +250,8 @@ public class CPLapiRequestBuilderTest
             "cardnumber/pinnumber: [invalid credentials.]",
             "Error: CardNumber/PinNumber: [Invalid Credentials.] Please try again.",
             "CardNumber/PinNumber: [Invalid Credentials]",  // Missing period
-            "CardNumber/PinNumber: Invalid Credentials."   // Missing brackets
+            "CardNumber/PinNumber: Invalid Credentials.",
+            "Invalid Credentials"   // Missing brackets
         };
         
         String[] inValidTestMessages = {
@@ -272,23 +272,6 @@ public class CPLapiRequestBuilderTest
 //            System.out.println(msg + " -> " + requestBuilder.isInvalidCredentialsMessageIgnoreCase(msg));
             assertFalse(requestBuilder.isInvalidCredentialsMessageIgnoreCase(msg));
         }
-    }
-
-    /**
-     * Test of isSuccessful method, of class CPLapiRequestBuilder.
-     */
-    @Test
-    public void testIsSuccessful() {
-        System.out.println("isSuccessful");
-        QueryTypes commandType = null;
-        CommandStatus status = null;
-        Response response = null;
-        CPLapiRequestBuilder instance = null;
-        boolean expResult = false;
-        boolean result = instance.isSuccessful(commandType, status, response);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -316,8 +299,8 @@ public class CPLapiRequestBuilderTest
         assertEquals(result.getField("cardNumber"), "29065024681012");
         assertEquals(result.getField("heartRate"), "");
         assertEquals(result.getField("pin"), "24681012");
-//        System.out.println("CDgt:'" + result + "'");
-//        System.out.println("CDex:'" + expectedResult + "'");
+        System.out.println("CDgt:'" + result + "'");
+        System.out.println("CDex:'" + expectedResult + "'");
         assertTrue(expectedResult.compareTo(result.toString()) == 0);
     }
 

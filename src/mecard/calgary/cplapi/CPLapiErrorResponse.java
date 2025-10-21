@@ -44,6 +44,38 @@ public class CPLapiErrorResponse extends CPLapiResponse
     //      }
     //    }
     
+    // But also
+    //    {
+    //   "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+    //   "title": "One or more validation errors occurred.",
+    //   "status": 400,
+    //   "traceId": "40001f80-0000-db00-b63f-84710c7967bb",
+    //   "errors": {
+    //       "firstName": [
+    //           "Firstname is required."
+    //       ],
+    //       "lastName": [
+    //           "Lastname is required."
+    //       ],
+    //       "emailAddress": [
+    //           "Email is required."
+    //       ],
+    //       "address.street": [
+    //           "Street is required."
+    //       ],
+    //       "address.city": [
+    //           "City is required."
+    //       ],
+    //       "address.province": [
+    //           "Province is required."
+    //       ],
+    //       "address.postalCode": [
+    //           "Postal code is required."
+    //       ]
+    //   }
+    //}
+
+    
     // Static method to parse JSON
     public static CPLapiErrorResponse parseJson(String jsonString) 
     {
@@ -61,15 +93,16 @@ public class CPLapiErrorResponse extends CPLapiResponse
     @Override
     public String errorMessage() 
     {
-        StringBuilder sb = new StringBuilder();
-        // Access errors
-        if (getErrors() != null) 
-        {
-            getErrors().forEach((key, value) -> {
-                sb.append(key).append(": ").append(value);
-            });
-        }
-        return sb.toString();
+//        StringBuilder sb = new StringBuilder();
+//        // Access errors
+//        if (getErrors() != null) 
+//        {
+//            getErrors().forEach((key, value) -> {
+//                sb.append(key).append(": ").append(value);
+//            });
+//        }
+//        return sb.toString();
+        return this.getAllErrorMessages();
     }
     
     
@@ -117,6 +150,28 @@ public class CPLapiErrorResponse extends CPLapiResponse
     private Map<String, List<String>> getErrors() 
     {
         return errors;
+    }
+    
+    public String getAllErrorMessages() 
+    {
+        StringBuilder allMessages = new StringBuilder();
+        if (errors != null) 
+        {
+            for (List<String> messages : errors.values()) 
+            {
+                for (String message : messages)
+                {
+                    allMessages.append(message.replace("[", "").replace("]", "").replace(".", ", "));
+                }
+            }
+        }
+        if (allMessages.length() > 0)
+        {
+            if (allMessages.lastIndexOf(",") >= 0)
+                return allMessages.substring(0, allMessages.lastIndexOf(","));
+            return allMessages.toString();
+        }
+        return allMessages.toString();
     }
     
     @Override

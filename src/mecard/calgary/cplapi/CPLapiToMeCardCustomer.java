@@ -64,6 +64,7 @@ public class CPLapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         }
         // Populate customer data from response.
         customer.set(CustomerFieldTypes.ID, customerData.getField(CPLapiUserFields.USER_ID.toString()));
+        customer.set(CustomerFieldTypes.PIN, customerData.getField(CPLapiUserFields.USER_PASSWORD.toString()));
         customer.set(CustomerFieldTypes.FIRSTNAME, customerData.getField(CPLapiUserFields.USER_FIRST_NAME.toString()));
         customer.set(CustomerFieldTypes.LASTNAME, customerData.getField(CPLapiUserFields.USER_LAST_NAME.toString()));
         customer.set(CustomerFieldTypes.EMAIL, customerData.getField(CPLapiUserFields.EMAIL.toString()));

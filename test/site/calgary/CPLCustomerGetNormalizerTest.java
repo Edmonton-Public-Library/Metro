@@ -1,9 +1,33 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2013 - 2025 Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 
 package site.calgary;
 
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
 import mecard.sip.SIPCustomerMessage;
 import mecard.sip.SIPMessage;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
 import mecard.util.Address3;
 import mecard.util.DateComparer;
 import mecard.util.Phone;
@@ -24,8 +48,10 @@ public class CPLCustomerGetNormalizerTest
     private final String nonResident;
     private final String expired;
     private final String lost;
+    private Properties envProperties;
     public CPLCustomerGetNormalizerTest()
     {
+        this.envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
 //        Charge Privileges Denied :          Y
 //        Renewal Privileges Denied :         Y
 //        Recall Privileges Denied :          Y
@@ -57,79 +83,103 @@ public class CPLCustomerGetNormalizerTest
     public void testGetCustomerProfile()
     {
         System.out.println("===getCustomerProfile===");
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(goodStanding);
-        System.out.println("GOOD:>>"+sipMessage + "<<");
-        this.printContents(sipMessage);
-        
-        
-        sipMessage = new SIPCustomerMessage(suspended);
-        System.out.println("suspended:>>"+sipMessage + "<<");
-        this.printContents(sipMessage);
-       
-        
-        sipMessage = new SIPCustomerMessage(juvenile);
-        System.out.println("juvenile:>>"+sipMessage + "<<");
-        this.printContents(sipMessage);
-        
-        
-        sipMessage = new SIPCustomerMessage(nonResident);
-        System.out.println("nonResident:>>"+sipMessage + "<<");
-        this.printContents(sipMessage);
-        
-        
-        sipMessage = new SIPCustomerMessage(expired);
-        System.out.println("expired:>>"+sipMessage + "<<");
-        this.printContents(sipMessage);
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .startsWith("sip"))
+        {
+            SIPCustomerMessage sipMessage = new SIPCustomerMessage(goodStanding);
+            System.out.println("GOOD:>>"+sipMessage + "<<");
+            this.printContents(sipMessage);
+
+
+            sipMessage = new SIPCustomerMessage(suspended);
+            System.out.println("suspended:>>"+sipMessage + "<<");
+            this.printContents(sipMessage);
+
+
+            sipMessage = new SIPCustomerMessage(juvenile);
+            System.out.println("juvenile:>>"+sipMessage + "<<");
+            this.printContents(sipMessage);
+
+
+            sipMessage = new SIPCustomerMessage(nonResident);
+            System.out.println("nonResident:>>"+sipMessage + "<<");
+            this.printContents(sipMessage);
+
+
+            sipMessage = new SIPCustomerMessage(expired);
+            System.out.println("expired:>>"+sipMessage + "<<");
+            this.printContents(sipMessage);
+        } else {
+            // Since CPL has moved to their own home-grown API 
+            // there is no need to make special site-specific 
+            // alterations to the data returned. It is all done 
+            // in the CPLapiToMeCardCustomer class.
+            assertTrue(true);
+        }
         
     }
     
     private void printContents(SIPMessage sipMessage)
     {
-        System.out.println(CustomerFieldTypes.ID + ":" + sipMessage.getField("AA"));
-        System.out.println(CustomerFieldTypes.PREFEREDNAME + ":" + sipMessage.getField("AE"));
-        System.out.println(CustomerFieldTypes.RESERVED + ":" + sipMessage.getField("AF"));
-        System.out.println(CustomerFieldTypes.EMAIL + ":" +  sipMessage.getField("BE"));
-        // Phone object
-        Phone phone = new Phone(sipMessage.getField("BF"));
-        System.out.println(CustomerFieldTypes.PHONE + ":" + phone.getUnformattedPhone());
-        // Privilege date dates: horizon uses PE and puts profile in PA.
-        // The test is slightly less expensive 
-        String cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PA"));
-        if (DateComparer.isAnsiDate(cleanDate))
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .startsWith("sip"))
         {
-            System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
-        }
-        // PE can also be privilege expires, so if PA fails try this field.
-        else
+            System.out.println(CustomerFieldTypes.ID + ":" + sipMessage.getField("AA"));
+            System.out.println(CustomerFieldTypes.PREFEREDNAME + ":" + sipMessage.getField("AE"));
+            System.out.println(CustomerFieldTypes.RESERVED + ":" + sipMessage.getField("AF"));
+            System.out.println(CustomerFieldTypes.EMAIL + ":" +  sipMessage.getField("BE"));
+            // Phone object
+            Phone phone = new Phone(sipMessage.getField("BF"));
+            System.out.println(CustomerFieldTypes.PHONE + ":" + phone.getUnformattedPhone());
+            // Privilege date dates: horizon uses PE and puts profile in PA.
+            // The test is slightly less expensive 
+            String cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PA"));
+            if (DateComparer.isAnsiDate(cleanDate))
+            {
+                System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
+            }
+            // PE can also be privilege expires, so if PA fails try this field.
+            else
+            {
+                cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PE"));
+                System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
+            }
+            // DOB same thing
+            cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PB"));
+            if (DateComparer.isAnsiDate(cleanDate))
+            {
+                System.out.println(CustomerFieldTypes.DOB + ":" + DateComparer.cleanAnsiDateTime(sipMessage.getField("PB"))); // Strathcona.
+            }
+            else
+            {
+                cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PD"));
+                System.out.println(CustomerFieldTypes.DOB + ":" + cleanDate);
+            }
+            System.out.println(CustomerFieldTypes.SEX + ":" + sipMessage.getField("PF"));
+            // Complete address
+            System.out.println("===ADDRESS===\nShould be in field BD>>"
+                    + sipMessage.getField("BD") + "<<");
+            Address3 address = new Address3(sipMessage.getField("BD"));
+            System.out.println(CustomerFieldTypes.STREET + ":" + address.getStreet());
+            System.out.println(CustomerFieldTypes.CITY + ":" + address.getCity());
+            System.out.println(CustomerFieldTypes.PROVINCE + ":" + address.getProvince());
+            System.out.println(CustomerFieldTypes.POSTALCODE + ":" + address.getPostalCode());
+            // Next careful, EPL gloms the phone on the end of the address, but if a lib returns
+            // the phone in the correct field parsing this will erase the phone we already
+            // collected.
+            System.out.println(CustomerFieldTypes.PHONE + ":" + address.getPhone());
+            System.out.println("===ADDRESS===\n\n");
+        } 
+        else 
         {
-            cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PE"));
-            System.out.println(CustomerFieldTypes.PRIVILEGE_EXPIRES + ":" + cleanDate);
+            // Since CPL has moved to their own home-grown API 
+            // there is no need to make special site-specific 
+            // alterations to the data returned. It is all done 
+            // in the CPLapiToMeCardCustomer class.
+            System.out.println("CPL is not configured to use SIP2 interface. Nothing to do.");
         }
-        // DOB same thing
-        cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PB"));
-        if (DateComparer.isAnsiDate(cleanDate))
-        {
-            System.out.println(CustomerFieldTypes.DOB + ":" + DateComparer.cleanAnsiDateTime(sipMessage.getField("PB"))); // Strathcona.
-        }
-        else
-        {
-            cleanDate = DateComparer.cleanAnsiDateTime(sipMessage.getField("PD"));
-            System.out.println(CustomerFieldTypes.DOB + ":" + cleanDate);
-        }
-        System.out.println(CustomerFieldTypes.SEX + ":" + sipMessage.getField("PF"));
-        // Complete address
-        System.out.println("===ADDRESS===\nShould be in field BD>>"
-                + sipMessage.getField("BD") + "<<");
-        Address3 address = new Address3(sipMessage.getField("BD"));
-        System.out.println(CustomerFieldTypes.STREET + ":" + address.getStreet());
-        System.out.println(CustomerFieldTypes.CITY + ":" + address.getCity());
-        System.out.println(CustomerFieldTypes.PROVINCE + ":" + address.getProvince());
-        System.out.println(CustomerFieldTypes.POSTALCODE + ":" + address.getPostalCode());
-        // Next careful, EPL gloms the phone on the end of the address, but if a lib returns
-        // the phone in the correct field parsing this will erase the phone we already
-        // collected.
-        System.out.println(CustomerFieldTypes.PHONE + ":" + address.getPhone());
-        System.out.println("===ADDRESS===\n\n");
     }
 
     /**
@@ -139,12 +189,22 @@ public class CPLCustomerGetNormalizerTest
     public void testGetMessage()
     {
         System.out.println("==getMessage==");
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
-        sipMessage = new SIPCustomerMessage(this.lost);
-        assertTrue(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
-        assertTrue(sipMessage.isTrue(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
-        assertFalse(sipMessage.isFalse(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .startsWith("sip"))
+        {
+            SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            sipMessage = new SIPCustomerMessage(this.lost);
+            assertTrue(sipMessage.isReported(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            assertTrue(sipMessage.isTrue(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+            assertFalse(sipMessage.isFalse(SIPCustomerMessage.PATRON_STATUS_FLAGS.CARD_REPORTED_LOST));
+        } 
+        else 
+        {
+            // See the CPLapiToMeCardCustomerTest class for how this is done.
+            assertTrue(true);
+        }
     }
 
     /**
@@ -154,8 +214,18 @@ public class CPLCustomerGetNormalizerTest
     public void testGetStanding()
     {
         System.out.println("==getStanding==");
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertFalse(sipMessage.cardReportedLost());
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .startsWith("sip"))
+        {
+            SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.cardReportedLost());
+        }
+        else
+        {
+            // See the CPLapiToMeCardCustomerTest class for how this is done.
+            assertTrue(true);
+        }
     }
 
     /**
@@ -165,63 +235,73 @@ public class CPLCustomerGetNormalizerTest
     public void testCardReportedLost()
     {
         System.out.println("==cardReportedLost==");
-//        ####### LOST card user
-//        sent:63                               AO|AA29065023801673|AD1234|AY1AZF3A8
-//        recv:64YYYY          00020140328    150819000000000000000000000000AO|AA29065023801673|AETest Metro, Adult Lostcard|AQCROW|BZ0050|CA0000|CB0099|BLY|CQY|BV0.00|BD123 Reside Rd NW CALGARY, AB T3G 3G3|BF403-123-4567|BHUSD|PA20150108    235900|PD19580103|PCADULT|PEAR|PGFEMALE|PHALL|DB$32.99|DM$500.00|AFUser BARRED|AY1AZAF1D
-//
-//        Response code:64
-//        Patron Information Response
-//          (O) Patron Status : YYYY          
-//                Charge Privileges Denied :          Y
-//                Renewal Privileges Denied :         Y
-//                Recall Privileges Denied :          Y
-//                Hold Privileges Denied:             Y
-//                Card Reported Lost :                 
-//                Too Many Items Charged :             
-//                Too many Items Overdue :             
-//                Too Many Renewals :                  
-//                Too Many Claims Of Items Returned :  
-//                Too Many Items Lost :                
-//                Excessive Outstanding Fines :        
-//                Excessive Outstanding Fees :         
-//                Recall Overdue :                     
-//                Too Many Items Billed :              
-//          (F) Language:                      000
-//          (F) Transaction Date:              20140328    150819
-//          (F) Hold Items Count:              0000
-//          (F) Overdue Items Count:           0000
-//          (F) Charged Items Count:           0000
-//          (F) Fine Items Count:              0000
-//          (F) Recall Items Count:            0000
-//          (F) Unavailable Hold Items Count:  0000
-//          (R) Institution Id:
-//          (R) Patron Identifier:29065023801673
-//          (R) Personal Name:Test Metro, Adult Lostcard
-//          (R) Patron Library:CROW
-//          (O) Hold Items Limit:0050:
-//          (O) Overdue Items Limit:0000:
-//          (O) Charged Items Limit:0099:
-//          (O) Valid Patron:Y:
-//          (O) Valid Patron Password:Y:
-//          (O) Fee Amount:0.00
-//          (O) Home Address:123 Reside Rd NW CALGARY, AB T3G 3G3
-//          (O) Home Phone Number:403-123-4567
-//          (O) Currency Type:USD:
-//          (O) Expiration Date:20150108    235900
-//          (O) Birth date:19580103
-//          (O) Profile:ADULT
-//          (O) User Category 1:AR
-//          (O) User Category 3:FEMALE
-//          (O) User Category 4:ALL
-//          (O) DB INVALID DATA CODE FOR THIS MESSAGE:$32.99
-//          (O) DM INVALID DATA CODE FOR THIS MESSAGE:$500.00
-//          (O) Screen Message:User BARRED
-//          (R) Sequence Number : 1 :  matches what was sent
-//          (R) Checksum : AF1D : Checksum OK
-        SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
-        assertFalse(sipMessage.cardReportedLost());
-        sipMessage = new SIPCustomerMessage(this.lost);
-        assertTrue(sipMessage.cardReportedLost());
+        if (envProperties.getProperty(
+                LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .startsWith("sip"))
+        {
+            //        ####### LOST card user
+            //        sent:63                               AO|AA29065023801673|AD1234|AY1AZF3A8
+            //        recv:64YYYY          00020140328    150819000000000000000000000000AO|AA29065023801673|AETest Metro, Adult Lostcard|AQCROW|BZ0050|CA0000|CB0099|BLY|CQY|BV0.00|BD123 Reside Rd NW CALGARY, AB T3G 3G3|BF403-123-4567|BHUSD|PA20150108    235900|PD19580103|PCADULT|PEAR|PGFEMALE|PHALL|DB$32.99|DM$500.00|AFUser BARRED|AY1AZAF1D
+            //
+            //        Response code:64
+            //        Patron Information Response
+            //          (O) Patron Status : YYYY          
+            //                Charge Privileges Denied :          Y
+            //                Renewal Privileges Denied :         Y
+            //                Recall Privileges Denied :          Y
+            //                Hold Privileges Denied:             Y
+            //                Card Reported Lost :                 
+            //                Too Many Items Charged :             
+            //                Too many Items Overdue :             
+            //                Too Many Renewals :                  
+            //                Too Many Claims Of Items Returned :  
+            //                Too Many Items Lost :                
+            //                Excessive Outstanding Fines :        
+            //                Excessive Outstanding Fees :         
+            //                Recall Overdue :                     
+            //                Too Many Items Billed :              
+            //          (F) Language:                      000
+            //          (F) Transaction Date:              20140328    150819
+            //          (F) Hold Items Count:              0000
+            //          (F) Overdue Items Count:           0000
+            //          (F) Charged Items Count:           0000
+            //          (F) Fine Items Count:              0000
+            //          (F) Recall Items Count:            0000
+            //          (F) Unavailable Hold Items Count:  0000
+            //          (R) Institution Id:
+            //          (R) Patron Identifier:29065023801673
+            //          (R) Personal Name:Test Metro, Adult Lostcard
+            //          (R) Patron Library:CROW
+            //          (O) Hold Items Limit:0050:
+            //          (O) Overdue Items Limit:0000:
+            //          (O) Charged Items Limit:0099:
+            //          (O) Valid Patron:Y:
+            //          (O) Valid Patron Password:Y:
+            //          (O) Fee Amount:0.00
+            //          (O) Home Address:123 Reside Rd NW CALGARY, AB T3G 3G3
+            //          (O) Home Phone Number:403-123-4567
+            //          (O) Currency Type:USD:
+            //          (O) Expiration Date:20150108    235900
+            //          (O) Birth date:19580103
+            //          (O) Profile:ADULT
+            //          (O) User Category 1:AR
+            //          (O) User Category 3:FEMALE
+            //          (O) User Category 4:ALL
+            //          (O) DB INVALID DATA CODE FOR THIS MESSAGE:$32.99
+            //          (O) DM INVALID DATA CODE FOR THIS MESSAGE:$500.00
+            //          (O) Screen Message:User BARRED
+            //          (R) Sequence Number : 1 :  matches what was sent
+            //          (R) Checksum : AF1D : Checksum OK
+            SIPCustomerMessage sipMessage = new SIPCustomerMessage(this.goodStanding);
+            assertFalse(sipMessage.cardReportedLost());
+            sipMessage = new SIPCustomerMessage(this.lost);
+            assertTrue(sipMessage.cardReportedLost());
+        }
+        else
+        {
+            // See the CPLapiToMeCardCustomerTest class for how this is done.
+            assertTrue(true);
+        }
     }
     
 }

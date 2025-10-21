@@ -27,8 +27,12 @@ import mecard.config.PropertyReader;
 import mecard.config.CPLapiPropertyTypes;
 import org.junit.Test;
 import java.io.IOException;
+import mecard.config.CPLapiUserFields;
+import mecard.config.CustomerFieldTypes;
+import mecard.customer.Customer;
 import mecard.exception.ConfigurationException;
 import mecard.security.CPLapiSecurity;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -41,17 +45,20 @@ public class CPLWebServiceCommandTest
     
     private final Properties cplApiProperties;
     private String apiKey;
+    private boolean isCreateCustomerTest;
 
     public CPLWebServiceCommandTest() 
     {
         this.cplApiProperties = PropertyReader.getProperties(ConfigFileTypes.CPL_API);
+        this.isCreateCustomerTest = false;
     }
 
     /**
      * Test of execute method, of class SDWebServiceCommand.
      */
     @Test
-    public void testExecute() {
+    public void testExecute() 
+    {
         System.out.println("==execute==");
         // Get staff ID and password from the .env file
         String envFilePath = cplApiProperties.getProperty(CPLapiPropertyTypes.ENV.toString());
@@ -103,7 +110,12 @@ public class CPLWebServiceCommandTest
             .build();
         HttpCommandStatus verifyStatus = verifyCustomerCommand.execute();
         System.out.print("VerifyCustomer test bad PIN");
-        assertFalse(verifyStatus.getHttpStatusCode() == 200);
+        // The API no longer requires the correct pin because the one on 
+        // record might not be the one from another library, and the consequence
+        // is the metro server will interpret the failed pin as the customer
+        // not existing in the database yet and attempt to create rather than 
+        // update the existing account.
+        assertTrue(verifyStatus.getHttpStatusCode() == 200);
         System.out.println(" succeeded");
         
         // Test verify with correct PIN
@@ -180,6 +192,93 @@ public class CPLWebServiceCommandTest
         System.out.println("GET_CUSTOMER (error) data:-+- " + testGetCustomerData.errorMessage());
         System.out.println("GET_CUSTOMER (error) data toString():-+- " + testGetCustomerData.toString());
         assertTrue(this.isInvalidCredentialsMessageIgnoreCase(testGetCustomerData.errorMessage()));
+        
+        // The update the customer.
+        pin = "24681012";
+        cardNumberPin = new CPLapiCardNumberPin(cardNumber, pin);
+        getCustomerCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/GetCustomer")
+            .apiKey(this.apiKey)
+            .bodyText(cardNumberPin.toString())
+            .setDebug(false)
+            .build();
+        status = getCustomerCommand.execute();
+        CPLapiResponse testUpdateCustomerData = 
+                CPLapiCustomerResponse.parseJson(status.getStdout());
+        System.out.print("GetCustomer test good PIN");
+        assertTrue(testUpdateCustomerData.succeeded());
+        System.out.println(" succeeded");
+        System.out.println("=====testUpdateCustomerData GET_CUSTOMER data: " + testUpdateCustomerData.toString());
+        
+        // Modify the data and update the account
+        CPLapiToMeCardCustomer cplApiToMeCardCustomer = new CPLapiToMeCardCustomer();
+        Customer customer = cplApiToMeCardCustomer.getCustomer(testUpdateCustomerData.toString());
+        System.out.println("---Customer Before: "+customer.toString());
+        customer.set(CustomerFieldTypes.CITY, "Czar");
+        customer.set(CustomerFieldTypes.PHONE, "7805551212");
+        customer.set(CustomerFieldTypes.DOB, "19710720");
+        System.out.println("---Customer After: "+customer.toString());
+        // Convert the customer back to a CPLJson Object.
+        MeCardCustomerToCPLapi cplUpdateCustomer = new MeCardCustomerToCPLapi(customer, MeCardDataToCPLapiData.QueryType.UPDATE);
+        assertEquals("Czar", cplUpdateCustomer.getValue(CPLapiUserFields.CITY.toString()));
+        System.out.println("---CPLUpdateCustomer City: "+cplUpdateCustomer.getValue(CPLapiUserFields.CITY.toString()));
+        System.out.println("---CPLUpdateCustomer PIN: "+cplUpdateCustomer.getValue(CPLapiUserFields.USER_PASSWORD.toString()));
+        System.out.println("---CPLUpdateCustomer Phone: "+cplUpdateCustomer.getValue(CPLapiUserFields.PHONE.toString()));
+        System.out.println("---CPLUpdateCustomer DOB: "+cplUpdateCustomer.getValue(CPLapiUserFields.USER_BIRTHDATE.toString()));
+        
+        CPLWebServiceCommand updateCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+            .endpoint("/UpdateCustomer")
+            .apiKey(this.apiKey)
+            .setDebug(true)
+            .bodyText(cplUpdateCustomer.toString())
+            .build();
+        status = updateCommand.execute();
+        System.out.println("---Status: "+status.toString());
+        if (status.getHttpStatusCode() != 200)
+        {
+            CPLapiResponse testUpdateCustomerCommand = 
+                    CPLapiCustomerResponse.parseJson(status.getStdout());
+            assertFalse(testUpdateCustomerCommand.succeeded());
+            System.out.println("---Errors reported: "+customer.toString());
+        }
+        else
+        {
+            assertTrue(status.getHttpStatusCode() == 200);
+        }
+        
+        // Test the create customer function.
+        if (this.isCreateCustomerTest)
+        {
+            CPLapiToMeCardCustomer createCustomer = new CPLapiToMeCardCustomer();
+            customer = createCustomer.getCustomer(testUpdateCustomerData.toString());
+            customer.set(CustomerFieldTypes.ID, "21221091234567");
+            customer.set(CustomerFieldTypes.PIN, "1234");
+            customer.set(CustomerFieldTypes.FIRSTNAME, "Andrew");
+            customer.set(CustomerFieldTypes.LASTNAME, "Nisbet");
+            customer.set(CustomerFieldTypes.DOB, "19630822");
+            System.out.println("---Customer After: "+customer.toString());
+            // Convert the customer back to a CPLJson Object.
+            MeCardCustomerToCPLapi cplCreateCustomer = new MeCardCustomerToCPLapi(customer, MeCardDataToCPLapiData.QueryType.CREATE);
+            CPLWebServiceCommand createCommand = new CPLWebServiceCommand.Builder(cplApiProperties, "POST")
+                .endpoint("/AddCustomer")
+                .apiKey(this.apiKey)
+                .setDebug(true)
+                .bodyText(cplCreateCustomer.toString())
+                .build();
+            status = createCommand.execute();
+            System.out.println("---Create Status: "+status.toString());
+            if (status.getHttpStatusCode() == 400)
+            {
+                CPLapiResponse testUpdateCustomerCommand = 
+                        CPLapiCustomerResponse.parseJson(status.getStdout());
+                assertFalse(testUpdateCustomerCommand.succeeded());
+                System.out.println("---Errors reported: "+customer.toString());
+            }
+            else
+            {
+                assertTrue(status.getHttpStatusCode() == 200);
+            }
+        }
     }
     
     /**
@@ -188,14 +287,15 @@ public class CPLWebServiceCommandTest
      * @param message The string to test
      * @return true if the message matches the pattern, false otherwise
      */
-    public boolean isInvalidCredentialsMessageIgnoreCase(String message) {
+    public boolean isInvalidCredentialsMessageIgnoreCase(String message) 
+    {
         if (message == null) {
             return false;
         }
         
         // Create a regex pattern that matches the message ignoring case and punctuation
         // \\W* matches any non-word characters (punctuation, spaces, etc.)
-        String pattern = "(?i).*card\\W*number\\W*pin\\W*number\\W*invalid\\W*credentials.*";
+        String pattern = "(?i).*\\W*invalid\\W*credentials.*";
         return message.matches(pattern);
     }
 

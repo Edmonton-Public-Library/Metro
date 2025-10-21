@@ -33,6 +33,8 @@ public class CPLapiErrorResponseTest
 {
     private final String errorJson;
     private final String nonErrorJson;
+    private final String lotsOfErrors;
+    private final String createErrors;
     
     public CPLapiErrorResponseTest() 
     {
@@ -51,25 +53,68 @@ public class CPLapiErrorResponseTest
         """;
         
         nonErrorJson = """
-                     {
-                        "cardNumber": "21221012345678",
-                        "birthDate": "2000-02-29",
-                        "firstName": "Balzac",
-                        "lastName": "BILLY",
-                        "expiryDate": "2026-08-22",
-                        "profile": "CPL_ADULT",
-                        "status": "OK",
-                        "address": "1234 37 Avenue",
-                        "city": "Calgary",
-                        "province": "Alberta",
-                        "phoneNumber": "780-333-4444",
-                        "emailAddress": "ilsadmins@epl.ca",
-                        "gender": "Male",
-                        "pin": "123456",
-                        "postalCode": "T5J-2V4"
-                     }
-                     """;
-
+        {
+           "cardNumber": "21221012345678",
+           "birthDate": "2000-02-29",
+           "firstName": "Balzac",
+           "lastName": "BILLY",
+           "expiryDate": "2026-08-22",
+           "profile": "CPL_ADULT",
+           "status": "OK",
+           "address": "1234 37 Avenue",
+           "city": "Calgary",
+           "province": "Alberta",
+           "phoneNumber": "780-333-4444",
+           "emailAddress": "ilsadmins@epl.ca",
+           "gender": "Male",
+           "pin": "123456",
+           "postalCode": "T5J-2V4"
+        }
+        """;
+        this.lotsOfErrors = """
+        {
+           "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+           "title": "One or more validation errors occurred.",
+           "status": 400,
+           "traceId": "40001f80-0000-db00-b63f-84710c7967bb",
+           "errors": {
+               "firstName": [
+                   "Firstname is required."
+               ],
+               "lastName": [
+                   "Lastname is required."
+               ],
+               "emailAddress": [
+                   "Email is required."
+               ],
+               "address.street": [
+                   "Street is required."
+               ],
+               "address.city": [
+                   "City is required."
+               ],
+               "address.province": [
+                   "Province is required."
+               ],
+               "address.postalCode": [
+                   "Postal code is required."
+               ]
+           }
+        }""";
+        
+        this.createErrors = """
+                            {
+                                "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                                "title": "One or more validation errors occurred.",
+                                "status": 400,
+                                "traceId": "4002f3f2-0000-f800-b63f-84710c7967bb",
+                                "errors": {
+                                    "cardNumber": [
+                                        "User already exists."
+                                    ]
+                                }
+                            }
+                            """;
     }
 
     /**
@@ -105,7 +150,9 @@ public class CPLapiErrorResponseTest
         System.out.println("==errorMessage==");
         CPLapiErrorResponse instance = 
                 (CPLapiErrorResponse) CPLapiErrorResponse.parseJson(errorJson);
-        assertEquals("CardNumber/PinNumber: [Invalid Credentials.]", instance.errorMessage());
+//        assertEquals("CardNumber/PinNumber: [Invalid Credentials.]", instance.errorMessage());
+        assertEquals("Invalid Credentials", instance.errorMessage());
+        System.out.println(">>>>>" + instance.getAllErrorMessages());
     }
 
     /**
@@ -117,7 +164,7 @@ public class CPLapiErrorResponseTest
         System.out.println("==getErrors==");
         CPLapiErrorResponse instance = 
                 (CPLapiErrorResponse) CPLapiErrorResponse.parseJson(errorJson);
-        assertEquals("CardNumber/PinNumber: [Invalid Credentials.]", instance.errorMessage());
+        assertEquals("Invalid Credentials", instance.errorMessage());
         assertEquals("400", instance.getStatus());
         
         instance = 
@@ -125,6 +172,19 @@ public class CPLapiErrorResponseTest
         assertTrue(instance.succeeded());
         assertEquals("", instance.errorMessage());
         assertEquals("", instance.getStatus());
+        
+        instance = 
+                (CPLapiErrorResponse) CPLapiErrorResponse.parseJson(lotsOfErrors);
+        assertFalse(instance.succeeded());
+//        System.out.println(">>>>" + instance.errorMessage());
+        String errors = """
+                        Firstname is required, Lastname is required, Email is required, Street is required, City is required, Province is required, Postal code is required""";
+        assertEquals(errors, instance.errorMessage());
+        
+        instance = 
+                (CPLapiErrorResponse) CPLapiErrorResponse.parseJson(this.createErrors);
+        assertFalse(instance.succeeded());
+        System.out.println("create error 400: >>>>" + instance.errorMessage());
     }
 
     /**
@@ -192,7 +252,7 @@ public class CPLapiErrorResponseTest
         System.out.println("==getStatus==");
         CPLapiErrorResponse instance = 
                 (CPLapiErrorResponse) CPLapiErrorResponse.parseJson(errorJson);
-        assertEquals("CardNumber/PinNumber: [Invalid Credentials.]", instance.errorMessage());
+        assertEquals("Invalid Credentials", instance.errorMessage());
         assertEquals("400", instance.getStatus());
         
         instance = 
