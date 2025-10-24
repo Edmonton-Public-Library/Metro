@@ -34,7 +34,7 @@ public class CPLapiCustomerResponse
     @Override
     public boolean succeeded() 
     {
-        return ! this.cardNumber.isBlank();
+        return ! (this.cardNumber == null || this.cardNumber.isBlank());
     }
 
     @Override
