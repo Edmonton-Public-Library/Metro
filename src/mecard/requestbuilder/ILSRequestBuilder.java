@@ -123,6 +123,11 @@ public abstract class ILSRequestBuilder
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'BIMPORT' ");
             return new BImportRequestBuilder(debug);
         }
+        else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.CALGARY_API.toString()))
+        {
+            if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'CALGARY-API' ");
+            return new CPLapiRequestBuilder(debug);
+        }
         else if (configRequestedService.equalsIgnoreCase(ResponderMethodTypes.SIP2.toString()))
         {
             if (debug) System.out.println(ILSRequestBuilder.class.getName() + " MAP: 'SIP2' ");

@@ -46,7 +46,7 @@ The Metro server supports the following strategies to manage customer registrati
 * Support for Calgary Public Library web service API. A home-grown web service for SirsiDynix Symphony ILS.
 
 ### CPL Properties File
-
+The file needs to be called `cplapi.properties`.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -68,6 +68,7 @@ The Metro server supports the following strategies to manage customer registrati
 ```
 
 ### CPL .env File
+The file is called `.env`.
 ```bash
 # .env file for CPL MeCard server. 
 # This file is used for Calgary Pulic Library API key. 

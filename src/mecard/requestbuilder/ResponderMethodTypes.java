@@ -30,6 +30,7 @@ package mecard.requestbuilder;
 public enum ResponderMethodTypes
 {
     SYMPHONY_API("symphony-api"), // Command line API through SSH.
+    CALGARY_API("calgary-api"),   // Proprietary to CPL.
     SIP2("sip2"),
     BIMPORT("bimport"), 
     DEBUG("dummy"),   // Used for testing.
