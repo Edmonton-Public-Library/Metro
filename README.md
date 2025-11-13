@@ -47,7 +47,7 @@ For the last few years, there has been a shift toward using birthdates as the ca
 
 Initially, the customer's category is compared to the juvenile categories specified in `environment.properties`. If the customer's category matches one on the list the account is rejected.
 
-Some systems, such as `Polaris`, don't expose customer categorization in information requests. For these systems, the Metro server must rely on birthdates to confirm the customer's age. Any date found in the birthdate field must be far enough in the past to pass the minimum age test. The author does not condone the use of false birthdates in customer accounts on `Polaris` or any other ILS system.
+Some systems, such as `Polaris`, don't expose customer categorization in information requests. For these systems, the Metro server **must** rely on birthdates to confirm the customer's age. Any date found in the birthdate field must be far enough in the past to pass the minimum age test. The author does not condone the use of false birthdates in customer accounts but realizes that it may be necessary on `Polaris` or similar systems.
 
 **There are no configuration changes in this update.**
 
