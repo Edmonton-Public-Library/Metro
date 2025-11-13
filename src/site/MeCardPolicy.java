@@ -431,10 +431,12 @@ public class MeCardPolicy
             }
             if (customer.isEmpty(CustomerFieldTypes.PRIVILEGE_EXPIRES))
             {
-                if (debug) 
-                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed expiry requirement.");
-                sBuff.append(":privilege expiry");
-                returnValue = false;
+                String expiry = DateComparer.getFutureDate(MeCardPolicy.MAXIMUM_EXPIRY_DAYS);
+                customer.set(CustomerFieldTypes.PRIVILEGE_EXPIRES, expiry);
+//                if (debug) 
+//                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed expiry requirement.");
+//                sBuff.append(":privilege expiry");
+//                returnValue = false;
             }
             if (customer.isEmpty(CustomerFieldTypes.STREET))
             {
