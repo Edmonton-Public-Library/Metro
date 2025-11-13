@@ -42,6 +42,15 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 # What's new
 
+## Version 4.01.00
+For the last few years, there has been a shift toward using birthdates as the canonical source to test whether a registrant is old enough to consent to sharing their personal information. This version reverts to emphasizing the use of account categories as libraries opt to remove birthdates from accounts. For SirsiDynix ILSes, these categories are called `profiles` or `bTypes`.
+
+Initially, the customer's category is compared to the juvenile categories specified in `environment.properties`. If the customer's category matches one on the list the account is rejected.
+
+Some systems, such as `Polaris`, don't expose customer categorization in information requests. For these systems, the Metro server must rely on birthdates to confirm the customer's age. Any date found in the birthdate field must be far enough in the past to pass the minimum age test. The author does not condone the use of false birthdates in customer accounts on `Polaris` or any other ILS system.
+
+**There are no configuration changes in this update.**
+
 ## Version 4.00.00
 * Support for Calgary Public Library web service API. A home-grown web service for SirsiDynix Symphony ILS.
 
@@ -464,7 +473,19 @@ To check the settings and trouble shoot, run:
 and set the configuration manually from the prunmgr.exe.
 
 # Unix Installation
-Andrew to prepare new tarball for installation by editing the MeCard server version number in the `Makefile` in the `MeCard/` directory on the development VM, then running
+For systems that just require a refresh, that is you are moving to a different version of Ubuntu I found the following to be very helpful with an update that I just did at Shortgrass. Please check if the following has been completed.
+ 
+* The Ubuntu server currently offered requires too many changes, so instead recommend using Ubuntu Desktop with LTS support. 
+* You should have the sudo password for the user you are logged in as.
+Ensure Java 17 JDK installed and you can run it from the command line with `java -version`. You should see something like this `java -version openjdk version "17.0.16" 2025-07-15`
+* Install JSVC, the [daemon service application offered by Apache](https://commons.apache.org/proper/commons-daemon/jsvc.html). You _should_ be able to do it with `sudo apt update; sudo apt install jsvc` but check the docs.
+* Back up your entire currently working metro directory by logging in, then cd; tar cvf metro_backup.tar metro/; we will be referencing many of the files from the old system including, but not limited to `metro/config/* metro/mecard.service metro/unix/service.sh metro/unix/loaduser.sh` and `metro/Makefile`.
+Copy or move the tarball created in the previous step to the new machine under the metro directory. **DO NOT UNTAR the archive**.
+* Ensure that the systemd daemon is installed and running. A simple way to check is `systemd --version`. If it's running you will see something like: `systemd 249 (249.11-0ubuntu3.16)` Another way is `[ "$(ps -p 1 -o comm=)" = "systemd" ] && echo "systemd is running" || echo "systemd is not running"`
+* You should be familiar with either `nano` or `vi` for editing files.
+
+
+Andrew will prepare a new tarball for installation by editing the MeCard server version number in the `Makefile` in the `MeCard/` directory on the development VM, then running
 `ox:~/MeCard/make dist_unix`
 
 ## Ubuntu dependencies

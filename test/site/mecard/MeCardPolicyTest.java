@@ -109,7 +109,7 @@ public class MeCardPolicyTest
         MeCardPolicy p = MeCardPolicy.getInstanceOf(false);
         CustomerMessage customerMessage = new SIPCustomerMessage(meta);
         boolean result = p.isMinimumAgeByDate(c, customerMessage, sb);
-//        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
+//        System.out.println("C's DOB is:"+c.get(CustomerFieldTypes.DOB));
         assertTrue(true == result);
        
         String modeMeta = "64YYYY      Y   00020130606    115820000000000000000100000000AO|"
@@ -122,7 +122,7 @@ public class MeCardPolicyTest
         c.set(CustomerFieldTypes.DOB, "20050101");
         customerMessage = new SIPCustomerMessage(modeMeta);
         result = p.isMinimumAgeByDate(c, customerMessage, sb);
-        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
+        System.out.println("C's DOB is:"+c.get(CustomerFieldTypes.DOB));
         assertTrue(result);
         
         result = p.isMinimumAgeByDate(c, customerMessage, sb);
@@ -139,8 +139,23 @@ public class MeCardPolicyTest
         c.set(CustomerFieldTypes.DOB, "20350101");
         customerMessage = new SIPCustomerMessage(modeMeta);
         result = p.isMinimumAgeByDate(c, customerMessage, sb);
-        System.out.println("C's Age is:"+c.get(CustomerFieldTypes.DOB));
+        System.out.println("C's DOB is:"+c.get(CustomerFieldTypes.DOB));
+        System.out.println("Response message reads:"+sb.toString());
         assertFalse(result);
+        
+        modeMeta = "64              00020251103    092216000300020014000000030007AO|AA29065015012362|AEGillard, Barbara|AQCENT|BZ0050|CA0000|CB0099|BLY|CQY|BV0.00|BD800 3 Street SE CALGARY, AB" +
+"T2G 2E7|BEbarb.gillard@calgarylibrary.ca|BF403-510-1658|BHCAD|PD|PCSTAFF|PGFEMALE|DB$0.00|DM$500.00|AFUser DELINQUENT|AY1AZB02E";
+        sb = new StringBuilder();
+//        c.set(CustomerFieldTypes.DOB, "20350101");
+        CustomerMessage customerMessage2 = new SIPCustomerMessage(modeMeta);
+        String custReq =
+                "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\",\"userId\":\"\",\"pin\":\"\",\"customer\":\"{\\\"ID\\\":\\\"29065015012362\\\",\\\"PIN\\\":\\\"64058\\\",\\\"PREFEREDNAME\\\":\\\"Gillard, Barbara\\\",\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\",\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\",\\\"SEX\\\":\\\"F\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\",\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"X\\\",\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\",\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\",\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\",\\\"ISRECIPROCAL\\\":\\\"N\\\",\\\"ISRESIDENT\\\":\\\"Y\\\",\\\"ISGOODSTANDING\\\":\\\"Y\\\",\\\"ISLOSTCARD\\\":\\\"N\\\",\\\"FIRSTNAME\\\":\\\"Barbara\\\",\\\"LASTNAME\\\":\\\"Gillard\\\"}\"}";
+        RequestDeserializer deserializer = new RequestDeserializer();
+        Request request = deserializer.getDeserializedRequest(custReq);
+        Customer customer = request.getCustomer();
+        result = p.isMinimumAgeByDate(customer, customerMessage2, sb);
+        System.out.println(">>>> C's DOB is:"+customer.get(CustomerFieldTypes.DOB));
+        assertTrue(result);
     }
     
 /**

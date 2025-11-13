@@ -3,7 +3,7 @@
 # distribution to each participating library.
 ########################################################################
 
-VERSION=2.01.01
+VERSION=4.01.XX
 ARCHIVE=Metro_${VERSION}
 CONFIGS=config_templates/*.properties
 UNIX_DIR=unix/*

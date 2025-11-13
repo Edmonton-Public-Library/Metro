@@ -235,14 +235,6 @@ public class MeCardPolicy
      */
     public boolean isInGoodStanding(Customer customer, CustomerMessage message, StringBuilder s)
     {
-        // test if an explict value is available. This may shortcut testing below
-        // so that any value in the environment.properties file will have no effect.
-//        if (message.isInGoodStanding() == false)
-//        {
-//            customer.set(CustomerFieldTypes.ISGOODSTANDING, Protocol.FALSE);
-//            s.append(failGoodstandingTest);
-//            return false;
-//        }
         // But the above test is not reliable; many libraries use the status message
         // as the means to signal customers are not in good standing.
         // because EPL uses SIP to get customer information we can assume that
@@ -293,6 +285,7 @@ public class MeCardPolicy
             {
                 customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
                 s.append(failMinAgeTest);
+                System.out.println("Customer '" + customer.get(CustomerFieldTypes.ID) + "' failed minimum age with profile:'"+customerAgeCategory+"'");
                 return false;
             }
         }
@@ -300,15 +293,13 @@ public class MeCardPolicy
         // prove that they are min age, so let's check that.
         // If there is a DOB for the customer check that the computed date is
         // greater than the min age.
-        if (customer.isEmpty(CustomerFieldTypes.DOB) == false)
+        if (! customer.hasValidBirthDate())
         {
-            // to get here the library doesn't have juvenile types so we need to compute by date.
-            if (this.isMinimumAgeByDate(customer, meta, s) == false)
-            {
-                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
-                s.append(failMinAgeTest);
-                return false;
-            }
+            customer.set(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
+            s.append(failMinAgeTest);
+            System.out.println("Customer '" + customer.get(CustomerFieldTypes.ID) + "' has a recorded DOB of '"
+                    +customer.get(CustomerFieldTypes.DOB)+"' which is too young to consent to share their information.");
+            return false;
         }
         // All else can pass through, so in summary:
         // If they didn't match a Juv customerProfile AND their computed date is less 
@@ -320,44 +311,47 @@ public class MeCardPolicy
 
     /**
      * Tests if the customer is of minimum age. If a date field is available
-     * this method will compute how many years old the customer is. If the date
-     * field is empty, compute using the abstract method isMinimumAge().
+     * this method will compute how many years old the customer is.
      * Use this if you don't have any profiles that separate juveniles from Adults.
      *
      * @param customer
      * @param meta The extra customer data that the ILS returned when it was
      * queried with getCustomer, but is not required by MeCard customer
-     * creation. Things like PROFILE and bType. Usually a SIP2 message.
+     * creation. Things like PROFILE and bType.
      * @param s the return message if the customer failed this test.
      * @return true if the customer was of minimum age and false otherwise.
      */
     public boolean isMinimumAgeByDate(Customer customer, CustomerMessage meta, StringBuilder s)
     {
-        if (customer.isEmpty(CustomerFieldTypes.DOB))
+        if (customer.hasValidBirthDate())
         {
-            if (debug)
-                System.out.println("customer " + customer.get(CustomerFieldTypes.ID) + " failed minimum age requirement.");
-            s.append("date of birth not set.");
-            return false;
-        }
-        String dateOfBirth = customer.get(CustomerFieldTypes.DOB);
-        try
-        {
-            int yearsOld = DateComparer.getYearsOld(dateOfBirth);
-            if (yearsOld >= MeCardPolicy.MINIMUM_YEARS_OF_AGE)
+            String dob = customer.get(CustomerFieldTypes.DOB);
+            try 
             {
-                customer.set(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
-                return true;
+                if (DateComparer.getYearsOld(dob) < MeCardPolicy.minimumAge())
+                {
+                    if (debug)
+                    {
+                        System.out.println("customer " + customer.get(CustomerFieldTypes.ID)
+                                + " tested but failed minimum age." 
+                                + customer.get(CustomerFieldTypes.DOB));
+                    }
+                    s.append(failMinAgeTest);
+                    return false;
+                }
+            } 
+            // If there is a problem with parsing the value it's not valid.
+            catch (ParseException ex)
+            {
+                if (debug)
+                {
+                    System.out.println("*warning: " + customer.get(CustomerFieldTypes.ID)
+                        + " date of birth caused a parsing exception. '" 
+                        + customer.get(CustomerFieldTypes.DOB) + "'");
+                }
             }
-        } catch (ParseException ex)
-        {
-            if (debug)
-                System.out.println("customer " + customer.get(CustomerFieldTypes.ID)+ " tested but failed parse DOB.");
-            s.append("invalid birth date.");
-            return false; // no longer an issue to not have a date. Some libraries don't collect them.
         }
-        s.append(failMinAgeTest);
-        return false;
+        return true;
     }
 
     /**
@@ -475,7 +469,7 @@ public class MeCardPolicy
             if (! customer.hasValidBirthDate())
             {
                 if (debug) 
-                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" failed birthdate which is required to test for minimum age.");
+                    System.out.println("customer "+customer.get(CustomerFieldTypes.ID)+" invalid birthdate.");
                 sBuff.append(":birthdate");
                 returnValue = false;
             }

@@ -198,41 +198,22 @@ public class Customer
     
     /**
      * Sets the date of birth for a customer. The argument date is tested and
-     * set only if found to be a valid date. 
+     * if found to be invalid because it is mangled of less than min age, the
+     * default value is used instead. 
      * @param dob date of birth.
      * @return true if the dob was a valid date is greater than or equal to at
      * least Policies.minimumAge()
      */
     public boolean setDob(String dob)
     {
-        if (dob == null || dob.isBlank())
+        this.customerFields.put(CustomerFieldTypes.DOB, dob);
+        if (! this.hasValidBirthDate())
         {
-            this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
-            return false;
-        }
-        // The DateComparer is leinent on what it considers a date, so test for ANSI now.
-        if (! dob.matches("\\d{8}"))
-        {
-            this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
-            return false;
-        }
-        try 
-        {
-            if (DateComparer.getYearsOld(dob) >= MeCardPolicy.minimumAge())
-            {
-                this.customerFields.put(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
-                this.customerFields.put(CustomerFieldTypes.DOB, dob);
-                return true;
-            }
-        } 
-        catch (ParseException ex) 
-        {
-            this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
             this.customerFields.put(CustomerFieldTypes.ISMINAGE, Protocol.FALSE);
             return false;
         }
-        this.customerFields.put(CustomerFieldTypes.DOB, Protocol.DEFAULT_FIELD_VALUE);
-        return false;
+        this.customerFields.put(CustomerFieldTypes.ISMINAGE, Protocol.TRUE);
+        return true;
     }
     
     /**
@@ -242,27 +223,15 @@ public class Customer
     public boolean hasValidBirthDate()
     {
         String dob = this.get(CustomerFieldTypes.DOB);
+        // This is an optional field! It is valid to be blank or contain the
+        // default value.
         if (dob == null || dob.isBlank() || dob.equals(Protocol.DEFAULT_FIELD_VALUE))
         {
-            return false;
+            return true;
         }
+        // If it has a value check and see if it is a valid ANSI date.
         // The DateComparer is leinent on what it considers a date, so test for ANSI now.
-        if (! dob.matches("\\d{8}"))
-        {
-            return false;
-        }
-        try 
-        {
-            if (DateComparer.getYearsOld(dob) >= MeCardPolicy.minimumAge())
-            {
-                return true;
-            }
-        } 
-        catch (ParseException ex) 
-        {
-            return false;
-        }
-        return false;
+        return dob.matches("\\d{8}");
     }
     
     /**

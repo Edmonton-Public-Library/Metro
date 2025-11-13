@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2022  Edmonton Public Library
+ *    Copyright (C) 2022 - 2025 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ public class CustomerTest
     public void testSet() {
         System.out.println("==set==");
         Customer customer = new Customer();
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
         customer.set(CustomerFieldTypes.DOB, "20010206");
         assertTrue(customer.hasValidBirthDate());
@@ -142,9 +142,11 @@ public class CustomerTest
     public void testGet() {
         System.out.println("==get==");
         Customer customer = new Customer();
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
         customer.set(CustomerFieldTypes.DOB, "20010206");
+//        System.out.println(">>>" + customer.get(CustomerFieldTypes.DOB)
+//        + "=> " + customer.get(CustomerFieldTypes.ISMINAGE));
         assertTrue(customer.get(CustomerFieldTypes.ISMINAGE).equals("Y"));
         assertTrue(customer.get(CustomerFieldTypes.ISRECIPROCAL).equals("X"));
     }
@@ -156,7 +158,7 @@ public class CustomerTest
     public void testIsFlagSetTrue() {
         System.out.println("==isFlagSetTrue==");
         Customer customer = new Customer();
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
         customer.set(CustomerFieldTypes.DOB, "20010206");
         assertTrue(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
@@ -177,7 +179,7 @@ public class CustomerTest
     public void testIsFlagSetFalse() {
         System.out.println("==isFlagSetFalse==");
         Customer customer = new Customer();
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
         customer.set(CustomerFieldTypes.DOB, "20010206");
         assertTrue(customer.isFlagSetTrue(CustomerFieldTypes.ISMINAGE));
@@ -191,7 +193,7 @@ public class CustomerTest
     public void testIsFlagDefined() {
         System.out.println("==isFlagDefined==");
         Customer customer = new Customer();
-        assertFalse(customer.hasValidBirthDate());
+        
         assertFalse(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
         customer.set(CustomerFieldTypes.DOB, "20010206");
         assertTrue(customer.isFlagDefined(CustomerFieldTypes.ISMINAGE));
@@ -204,23 +206,27 @@ public class CustomerTest
     public void testHasValidBirthDate() {
         System.out.println("==isValidBirthDate==");
         Customer customer = new Customer();
-        assertFalse(customer.hasValidBirthDate());
+        // Birthdate is optional so empty or default 'X' is okay.
+        assertTrue(customer.hasValidBirthDate());
         customer.set(CustomerFieldTypes.DOB, "20010206");
         assertTrue(customer.hasValidBirthDate());
         customer.set(CustomerFieldTypes.DOB, "20240206");
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         customer.set(CustomerFieldTypes.DOB, "1234567ab");
         assertFalse(customer.hasValidBirthDate());
         customer.setDob("19630822");
         assertTrue(customer.hasValidBirthDate());
         customer.setDob("");
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         customer.setDob(null);
-        assertFalse(customer.hasValidBirthDate());
+        assertTrue(customer.hasValidBirthDate());
         customer.set(CustomerFieldTypes.DOB, "20010206");
         assertTrue(customer.hasValidBirthDate());
         System.out.println(">>>" + customer.toString());
-        
+        customer.set(CustomerFieldTypes.DOB, "");
+        assertTrue(customer.hasValidBirthDate());
+        customer.set(CustomerFieldTypes.DOB, null);
+        assertTrue(customer.hasValidBirthDate());
         
         
         // Try the problem customer's birthdate.
