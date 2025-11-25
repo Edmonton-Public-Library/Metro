@@ -27,7 +27,8 @@ install_windows:
 dist_unix:
 	-rm ${ARCHIVE}.tar
 	tar cvf ${ARCHIVE}.tar ${CONFIGS} ${DIST_FILES} ${UNIX_DIR} logs/Customers ${UNIX_READMES}
-
+	sudo cp ${ARCHIVE}.tar ../Shared/
+	
 sandbox:
 	cp papi.properties.sandbox papi.properties
 
