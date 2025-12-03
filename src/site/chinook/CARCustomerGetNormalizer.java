@@ -21,7 +21,14 @@
 package site.chinook;
 
 import api.CustomerMessage;
+import java.util.Properties;
+import mecard.Protocol;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SDapiUserFields;
+import mecard.config.SupportedProtocolTypes;
 import mecard.customer.Customer;
 import site.CustomerGetNormalizer;
 
@@ -42,27 +49,57 @@ public class CARCustomerGetNormalizer extends CustomerGetNormalizer
             Customer customer, 
             CustomerMessage message)
     {
-                // parse the string appart.
-//        sent:63                               AO|AA25021000719291|AD1861|AY1AZF3AF
-//
-//        recv:64              00020140304    070512000000000000000000000000AO|AA21817002446849|AEGAMACHE, ARMAND|AQLPL|BZ9999|CA9999|CB9999|BLY|CQY|BV 0.00|BDBOX 43 LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234|BEpwauters@hotmail.com|BF403-555-1234|BHUSD|PA20150218    235900|PD|PCLPLADULT|PELETHCITY|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY0AZACA0
-
-        // here we will fill in the customer attributes with the contents of s- the SIP message.
-        // TODO: Shortgrass uses "PG" for "MALE" or "FEMALE"
-        String sex = message.getField("PG");
-        if (sex.isEmpty() == false)
+        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIP2.toString()))
         {
-            
-            if (sex.compareToIgnoreCase("MALE") == 0)
+            // parse the string appart.
+            //        sent:63                               AO|AA25021000719291|AD1861|AY1AZF3AF
+            //
+            //        recv:64              00020140304    070512000000000000000000000000AO|AA21817002446849|AEGAMACHE, ARMAND|AQLPL|BZ9999|CA9999|CB9999|BLY|CQY|BV 0.00|BDBOX 43 LETHBRIDGE, ALBERTA T1J 3Y3 403-555-1234|BEpwauters@hotmail.com|BF403-555-1234|BHUSD|PA20150218    235900|PD|PCLPLADULT|PELETHCITY|PFADULT|PGMALE|DB$0.00|DM$500.00|AFOK|AY0AZACA0
+
+            // here we will fill in the customer attributes with the contents of s- the SIP message.
+            // TODO: Shortgrass uses "PG" for "MALE" or "FEMALE"
+            String sex = message.getField("PG");
+            if (sex.isEmpty() == false)
             {
-                // send the first letter, "M" or "F"
-                customer.set(CustomerFieldTypes.SEX, "M");
+                if (sex.compareToIgnoreCase("MALE") == 0)
+                {
+                    // send the first letter, "M" or "F"
+                    customer.set(CustomerFieldTypes.SEX, "M");
+                }
+                else if (sex.compareToIgnoreCase("FEMALE") == 0)
+                {
+                    // send the first letter, "M" or "F"
+                    customer.set(CustomerFieldTypes.SEX, "F");
+                }
             }
-            else if (sex.compareToIgnoreCase("FEMALE") == 0)
+        }
+        else if (envProperties.getProperty(LibraryPropertyTypes.GET_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIRSIDYNIX_API.toString()))
+        {
+            String gender = message.getField(SDapiUserFields.CATEGORY03.toString());
+            if (! gender.isBlank())
             {
-                // send the first letter, "M" or "F"
-                customer.set(CustomerFieldTypes.SEX, "F");
+                if (gender.compareToIgnoreCase("MALE") == 0)
+                {
+                    // send the first letter, "M" or "F"
+                    gender = Protocol.MALE;
+                }
+                else if (gender.compareToIgnoreCase("FEMALE") == 0)
+                {
+                    gender = Protocol.FEMALE;
+                }
+                else
+                {
+                    gender = Protocol.DEFAULT_FIELD_VALUE;
+                }
             }
+            else
+            {
+                gender = Protocol.DEFAULT_FIELD_VALUE;
+            }
+            customer.set(CustomerFieldTypes.SEX, gender);
         }
     }
 }

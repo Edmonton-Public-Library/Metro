@@ -1,6 +1,6 @@
 /*
 * Metro allows customers from any affiliate library to join any other member library.
-*    Copyright (C) 2013  Edmonton Public Library
+*    Copyright (C) 2013 - 2025 Edmonton Public Library
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,16 @@
 */
 package site.chinook;
 
+import java.util.Properties;
 import mecard.Response;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
 import mecard.config.FlatUserTableTypes;
 import mecard.config.FlatUserFieldTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SDapiUserFields;
+import mecard.config.SupportedProtocolTypes;
 import mecard.customer.Customer;
 import site.SymphonyNormalizer;
 import mecard.customer.MeCardCustomerToNativeFormat;
@@ -60,43 +66,70 @@ public final class CARCustomerNormalizer extends SymphonyNormalizer
     {
         // This loads all the mandatory values on SymphonyPropertyTypes.
         this.loadDefaultProfileAttributes(rawCustomer, formattedCustomer, response);
-        // Currently Shortgrass uses USER_CATEGORY2 to store the 
-        // customer's age category but future versions of metro may be required to register 
-        // Juveniles. If that is the case you need only get the customers age from the 
-        // Minimum age flag or compute on DOB then set the formattedCustomer 
-        // field as: 
-        formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-            FlatUserFieldTypes.USER_CATEGORY2.toString(), 
-            "ADULT"
-        );
-        // Here we will compute USER_CATEGORY3: sex. Test the 
-        // unformattedCustomer for sex and set it like you set USER_CATEGORY2
-        if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+        Properties envProperties = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        if (envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SYMPHONY_API.toString()))
         {
+            
+            // Currently Chinook uses USER_CATEGORY2 to store the 
+            // customer's age category but future versions of metro may be required to register 
+            // Juveniles. If that is the case you need only get the customers age from the 
+            // Minimum age flag or compute on DOB then set the formattedCustomer 
+            // field as: 
             formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-                "FEMALE"
+                FlatUserFieldTypes.USER_CATEGORY2.toString(), 
+                "ADULT"
             );
+            // Here we will compute USER_CATEGORY3: sex. Test the 
+            // unformattedCustomer for sex and set it like you set USER_CATEGORY2
+            if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+            {
+                formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                    "FEMALE"
+                );
+            }
+            else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+            {
+                formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                    "MALE"
+                );
+            }
+            else
+            {
+                formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
+                    FlatUserFieldTypes.USER_CATEGORY3.toString(), 
+                    "UNKNOWN"
+                );
+            }
+
+            // Chinook Arch uses CITYPROV instead of default CITY/STATE in the
+            // address 1 table so let's rename that field.
+            formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
+                    FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
+                    FlatUserFieldTypes.CITY_PROV.toString());
         }
-        else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+        else if (envProperties.getProperty(LibraryPropertyTypes.CREATE_SERVICE.toString())
+                .equalsIgnoreCase(SupportedProtocolTypes.SIRSIDYNIX_API.toString()))
         {
-            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-                "MALE"
-            );
+            formattedCustomer.insertValue("", SDapiUserFields.CATEGORY02.toString(), "ADULT");
+            // Here we will compute USER_CATEGORY3: sex. Test the 
+            // unformattedCustomer for sex and set it like you set USER_CATEGORY2
+            if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("F"))
+            {
+                formattedCustomer.insertValue("", SDapiUserFields.CATEGORY03.toString(), "FEMALE");
+            }
+            else if (rawCustomer.get(CustomerFieldTypes.SEX).startsWith("M"))
+            {
+                formattedCustomer.insertValue("", SDapiUserFields.CATEGORY03.toString(), "MALE");
+            }
+            else
+            {
+                formattedCustomer.insertValue("", SDapiUserFields.CATEGORY03.toString(), "UNKNOWN");
+            }
+            formattedCustomer.renameField("", SDapiUserFields.CITY_SLASH_STATE.toString(),
+                SDapiUserFields.PROV.toString());
         }
-        else
-        {
-            formattedCustomer.insertValue(FlatUserTableTypes.USER.name(), 
-                FlatUserFieldTypes.USER_CATEGORY3.toString(), 
-                "UNKNOWN"
-            );
-        }
-        
-        // Chinook Arch uses CITYPROV instead of default CITY/STATE in the
-        // address 1 table so let's rename that field.
-        formattedCustomer.renameField(FlatUserTableTypes.USER_ADDR1.name(),
-                FlatUserFieldTypes.CITY_SLASH_STATE.toString(),
-                FlatUserFieldTypes.CITY_PROV.toString());
     }
 }
