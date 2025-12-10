@@ -523,8 +523,8 @@ jsvc –help #or other jsvc command.
 * Download the `Metro_x.xx.xx.tar` ball to the VM.
 * Un-tar the `Metro_x.xx.xx.tar` ball in the `$METRO_HOME` directory.
 * Edit the *.properties files appropriate to your site, and either copy them to `$METRO_HOME` directory or if you like a cleaner install, create and  move them to a `$METRO_HOME/config` directory. The files in template_config can be your backup.
-* Edit the `service.sh` script to suit your environment, noting where the `*.properties` files can be found.
-* Edit the `mecard.service` file to suit your environment and follow System Service Installation notes to install and test it.
+* Edit the [`service.sh` script](#example-servicesh) to suit your environment, noting where the `*.properties` files can be found.
+* Edit the [`mecard.service` file](#sample-mecardservice-file) to suit your environment and follow System Service Installation notes to install and test it.
 * Ensure the metro user can use password-less access to the ILS. See Setting up SSH for more information.
 
 ## Updating the MeCard service (Linux)
