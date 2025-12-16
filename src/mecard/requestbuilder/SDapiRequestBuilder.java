@@ -276,11 +276,18 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             // Get customer info by user key.
             String userKey = loginResponse.toString();
             // String params  = "includeFields=*,address1{*},circRecordList{*}";
-            return new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+            SDWebServiceCommand patronKeyCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
                 .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
                 .build();
+            
+            if (this.debug)
+            {
+                System.out.println(patronKeyCommand.toString());
+            }
+            
+            return patronKeyCommand;
         }
         else
         {
@@ -364,6 +371,10 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             .setOverrideCode("USER_PRIVILEGE_OVRCD/" + this.staffOverrideCode)
             .setDebug(this.debug)
             .build();
+        if (this.debug)
+        {
+            System.out.println(createCustomerCommand.toString());
+        }
         return createCustomerCommand;
     }
 
@@ -378,6 +389,11 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
                 .build();
+        
+        if (this.debug)
+        {
+            System.out.println(searchPatron.toString());
+        }
         // Execute and if successful create a request for customer info by 
         // search by user key.
         HttpCommandStatus status = searchPatron.execute();
@@ -462,7 +478,10 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             .bodyText(this.getSessionToken(response))
             .setDebug(this.debug)
             .build();
-        
+        if (this.debug)
+        {
+            System.out.println(command.toString());
+        }
         return command;
     }
 
@@ -470,11 +489,16 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     public Command testCustomerExists(String userId, String userPin, Response response) 
     {
         // A basic test if the customer has an account is to do a search as the staff account.
-        return new SDWebServiceCommand.Builder(sdapiProperties, "GET")
+        SDWebServiceCommand testCustomerExists = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
                 .endpoint("/user/patron/search?rw=1&q=ID:"+userId)
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
-                .build();        
+                .build();
+        if (this.debug)
+        {
+            System.out.println(testCustomerExists.toString());
+        }
+        return testCustomerExists;
     }
 
     @Override

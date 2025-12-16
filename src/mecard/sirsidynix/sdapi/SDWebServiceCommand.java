@@ -391,7 +391,8 @@ public class SDWebServiceCommand implements Command
     public String toString()
     {
         StringBuilder out = new StringBuilder();
-        out.append(SDWebServiceCommand.uri)
+        out.append(">>>URI: ")
+            .append(SDWebServiceCommand.uri.toString())
             .append(" ")
             .append(SDWebServiceCommand.httpMethod)
             .append("\n");
