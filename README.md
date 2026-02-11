@@ -636,6 +636,7 @@ Red Hat Enterprise Linux release 8.2 (Ootpa)
  
  
 ## Setting up SSH
+If you **must** use a password to SSH to the ILS [see here](#sshpass-installation).
 * First log in on the MeCard server as the metro user and generate a pair of authentication keys. Do not enter a passphrase.
  `metro@mecard:~$ ssh-keygen -t rsa`
 * Generating public/private rsa key pair.
@@ -690,6 +691,15 @@ sudo firewall-cmd --add-port=2004/tcp
 sudo firewall-cmd --runtime-to-permanent
 sudo systemctl restart firewalld
 ```
+
+### `sshpass` Installation
+On some systems (Shortgrass) it was necessary to the application `sshpass` because a password-less access was not possible. 
+* `sudo add-apt-repository universe`
+* `sudo apt update`
+* `sudo apt upgrade # if necessary`
+* `sudo apt install sshpass -y`
+* Update `loaduser.sh` to include a path to the password file `~/config/ssh_password.txt` or similar.
+
 
 # Known Issues
 
