@@ -42,6 +42,18 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 # What's new
 
+## Version 4.01.01_a
+To date, all (modern) Sirsi Dynix web services allow searching for customers with the endpoint `/user/patron/search?{params}`, but no more. As of some undesclosed version (Sirsi Dynix's documentation still says this is valid), you can now use `/user/patron/barcode` or `/user/patron/key`. To specify which version you need two new optional parameters have been added to the `sdapi.properties` file:
+* `use-patron-search-method` which is **optional**, `search` is default but anything else will use the `/user/patron/barcode` endpoint.
+* `use-starred-parameters` which will use `?includeFields=*,address1{*},circRecordList{*}` where possible and `?includeFields=*,address1,circRecordList` where the system does not support the former '*'ed parameters. Default: if missing or set to 'true' uses starred format, or `{*}`.
+### Optional SDapi Properties Example
+```xml
+  <!-- ... sdapi.properties etc... -->
+  <entry key="use-patron-search-method">search</entry> <!-- or 'barcode' or 'key' case insensitive. -->
+  <entry key="use-starred-parameters">false</entry> <!-- true or false. Default true. -->
+  <!-- sdapi.properties continued... -->
+```
+
 ## Version 4.01.00
 For the last few years, there has been a shift toward using birthdates as the canonical source to test whether a registrant is old enough to consent to sharing their personal information. This version reverts to emphasizing the use of account categories as libraries opt to remove birthdates from accounts. For SirsiDynix ILSes, these categories are called `profiles` or `bTypes`.
 

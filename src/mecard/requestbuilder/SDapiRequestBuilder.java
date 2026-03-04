@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024 - 2025 Edmonton Public Library
+ *    Copyright (C) 2024 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             String userKey = loginResponse.toString();
             // String params  = "includeFields=*,address1{*},circRecordList{*}";
             SDWebServiceCommand patronKeyCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-                .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
+                .endpoint("/user/patron/key/" + userKey + getPatronFormattedInformationQueryString())
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
                 .build();
@@ -303,6 +303,39 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 .setStdout(response.getMessage())
                 .build();
         }
+    }
+    
+    /**
+     * This method simply creates the additional query parameters for the 
+     * /user/patron/{key}{barcode}/{DATA}?{your_query_here}. This is 
+     * required because some versions of Symphony web services use 
+     * '?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D' while others
+     * will fail if the address1 or circRecordsList include the additional "{*}".
+     * 
+     * Adding the additional optional switch 'use-starred-parameters' set to false
+     * will not include the '{*}'. The default is true to be backwards compatible.
+     * 
+     * A cleaner way to do this would be to do it by the Web Services version
+     * number but I'm not sure it is tied to the version number or a capricious 
+     * notion of Sirsi Dynix developers. Their most up-to-date documentation 
+     * says the '{*}' is required.
+     * 
+     * @return String - query appropriate for the version / configuration of 
+     * the library's web services.
+     */
+    protected String getPatronFormattedInformationQueryString()
+    {
+        // Get the optional value from the sdapi.properties. By default this 
+        // gets turned on, but if the key appears and it is not a valid 'false'
+        // (case-insensitive), the returned value will be false, ergo, no
+        // '{*}'.
+        boolean useStarredParams = Boolean.parseBoolean(this.sdapiProperties.getProperty("use-starred-parameters", "true"));
+        String queryParams = "includeFields=*,address1,circRecordList";
+        if (useStarredParams)
+            queryParams = "includeFields=*,address1%7B*%7D,circRecordList%7B*%7D";
+        if (this.debug)
+            System.out.println("use-starred-parameters:'"+useStarredParams+"' '"+queryParams+"'");
+        return queryParams;
     }
     
     /**
@@ -377,15 +410,53 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         }
         return createCustomerCommand;
     }
+    
+    /**
+     * To date, all (modern) Sirsi Dynix web services allow the following searches:
+     * '"/user/patron/search?rw=1&q=ID:"+barcode', and while SD's current documentation
+     * still contains this endpoint, some system's (Chinook Arch) do not. Instead
+     * their system can use either:
+     * <ul>
+     * <li>/user/patron/key/{USER_KEY}</li>
+     * <li>/user/patron/barcode/{USER_BARCODE}</li>
+     * </ul>
+     * This instance of the Metro server will support '/user/patron/barcode' and
+     * '/user/patron/search'. For backward compatability '/user/patron/search'
+     * will be the default if 'use-patron-search-method' is not included in sdapi.properties,
+     * or the value of 'use-patron-search-method' is set to 'search'. The other possible
+     * value is 'barcode'.
+     * 
+     * @param userId Customer barcode. Can also be modified to use key.
+     * @return String - endpoint of customer search preferred by the system's
+     * config / version of Sirsi Dynix's web services.
+     */
+    protected String getPreferredPatronSearchMethod(String userId)
+    {
+        // Get the optional value from the sdapi.properties. By default this 
+        // gets turned on, but if the key appears and it is not 'search'
+        // (case-insensitive), the returned value will be '/user/patron/barcode'.
+        String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
+        String endPoint;
+        if (useSearchString.equalsIgnoreCase("barcode"))
+            endPoint = "/user/patron/barcode/" + userId + "?" + this.getPatronFormattedInformationQueryString();
+        else if (useSearchString.equalsIgnoreCase("key"))
+            endPoint = "/user/patron/key/" + userId + "?" + this.getPatronFormattedInformationQueryString();
+        else
+            // ?rw=1&q=ID:21221012345678&includeFields=*,address1{*}
+            endPoint = "/user/patron/search?rw=1&q=ID:" + userId + "&" + this.getPatronFormattedInformationQueryString()  ;
+        if (this.debug)
+            System.out.println("use-patron-search-method:'"+useSearchString+"' '"+endPoint+"'");
+        return endPoint;
+    }
 
     @Override
     public Command getUpdateUserCommand(Customer customer, Response response, CustomerLoadNormalizer normalizer) 
     {
         // first get the customer's key.
         String barcode = customer.get(CustomerFieldTypes.ID);
-        
+        String endPoint = getPreferredPatronSearchMethod(barcode);
         SDWebServiceCommand searchPatron = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-                .endpoint("/user/patron/search?rw=1&q=ID:"+barcode)
+                .endpoint(endPoint+barcode+getPatronFormattedInformationQueryString())
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
                 .build();
@@ -489,8 +560,9 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     public Command testCustomerExists(String userId, String userPin, Response response) 
     {
         // A basic test if the customer has an account is to do a search as the staff account.
+        String endPoint = this.getPreferredPatronSearchMethod(userId);
         SDWebServiceCommand testCustomerExists = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-                .endpoint("/user/patron/search?rw=1&q=ID:"+userId)
+                .endpoint(endPoint)
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
                 .build();

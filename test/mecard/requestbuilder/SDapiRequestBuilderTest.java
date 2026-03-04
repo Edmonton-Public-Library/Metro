@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2025 Edmonton Public Library
+ *    Copyright (C) 2024 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,15 @@ import static org.junit.Assert.*;
 
 import api.Command;
 import api.HttpCommandStatus;
+import java.util.Properties;
 import json.RequestDeserializer;
 import mecard.QueryTypes;
 import mecard.Request;
 import mecard.Response;
 import mecard.ResponseTypes;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.PropertyReader;
 import mecard.customer.Customer;
 import mecard.customer.NativeFormatToMeCardCustomer;
 import org.junit.Test;
@@ -188,6 +191,34 @@ public class SDapiRequestBuilderTest
     }
 
     /**
+     * Test of getPreferredPatronSearchMethod() method, of class SDapiRequestBuilder.
+     */
+    @Test
+    public void getPreferredPatronSearchMethod()
+    {
+        System.out.println("==getPreferredPatronSearchMethod==");
+        Properties sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String useSearchString = sdapiProperties.getProperty("use-patron-search-method", "DEFAULT-'search' no setting in sdapi.properties");
+        System.out.println(" GETTING PREFERRED PATRON SEARCH METHOD:" + useSearchString);
+        SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(false);
+        System.out.println(" requestBuilder returns:'" + requestBuilder.getPreferredPatronSearchMethod("21221012345678") + "'");
+    }
+    
+    /**
+     * Test of getPatronFormattedInformationQueryString() method, of class SDapiRequestBuilder.
+     */
+    @Test
+    public void getPatronFormattedInformationQueryString()
+    {
+        System.out.println("==getPatronFormattedInformationQueryString==");
+        Properties sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String queryParamString = sdapiProperties.getProperty("use-starred-parameters", "DEFAULT-'true' no setting in sdapi.properties");
+        System.out.println(" GETTING FORMATTED QUERY STRING:" + queryParamString);
+        SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(false);
+        System.out.println(" requestBuilder returns:'" + requestBuilder.getPatronFormattedInformationQueryString()+ "'");
+    }
+    
+    /**
      * Test of getStatusCommand method, of class SDapiRequestBuilder.
      */
     @Test
@@ -268,7 +299,7 @@ public class SDapiRequestBuilderTest
     public void testGetCustomerLoadDirectory() 
     {
         System.out.println("==testGetCustomerLoadDirectory==");
-        Response response = new Response();
+        
         SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(true);
         System.out.println("LOAD DIR:" + requestBuilder.getCustomerLoadDirectory());
         assertTrue(requestBuilder.getCustomerLoadDirectory() instanceof String);
