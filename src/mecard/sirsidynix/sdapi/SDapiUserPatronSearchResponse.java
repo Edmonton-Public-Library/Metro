@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,18 +24,39 @@ package mecard.sirsidynix.sdapi;
 import api.CustomerMessage;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
+import mecard.config.LibraryPropertyTypes;
+import mecard.config.PropertyReader;
 import mecard.config.SDapiUserFields;
 
-public class SDapiUserPatronSearchCustomerResponse 
-        extends SDapiResponse
-        implements CustomerMessage
+public class SDapiUserPatronSearchResponse 
+        extends PatronSearchResponse
 {
+    /**
+     * This 'totalResults' is NOT returned in the /user/patron/barcode/{barcode}
+     * endpoint response or the /user/patron/key/{KEY}. This value will be null
+     * and un-parse-able if either of those methods are used. 
+     */
     @SerializedName("totalResults")
     private Integer totalResults;
     
+    @Override
     public int getTotalResults()
     {
+        if (this.totalResults == null)
+        {
+            if (this.result == null)
+                if (this.getField(SDapiUserFields.USER_ID.toString()).isBlank())
+                    this.totalResults = 0;
+                else
+                    this.totalResults = 1;
+            else
+                this.totalResults = this.result.size();
+        }
+        
         return this.totalResults;
     }
     
@@ -45,7 +66,7 @@ public class SDapiUserPatronSearchCustomerResponse
     @Override
     public boolean succeeded() 
     {
-        return this.totalResults == 1;
+        return this.getTotalResults() == 1;
     }
 
     // Failed response
@@ -81,7 +102,7 @@ public class SDapiUserPatronSearchCustomerResponse
     }
 
     @Override
-    public String getField(String fieldName) 
+    public String getField(String fieldName)
     {
         try
         {
@@ -99,6 +120,8 @@ public class SDapiUserPatronSearchCustomerResponse
                 return this.getCustomerFields().getEmail();
             if (fieldName.equals(SDapiUserFields.PROFILE.toString()))
                 return this.getCustomerFields().getProfile();
+            if (fieldName.equals(SDapiUserFields.STANDING.toString()))
+                return this.getCustomerFields().getStanding();
             if (fieldName.equals(SDapiUserFields.PHONE.toString()))
                 return this.getCustomerFields().getPhone();
             if (fieldName.equals(SDapiUserFields.USER_BIRTHDATE.toString()))
@@ -151,36 +174,37 @@ public class SDapiUserPatronSearchCustomerResponse
     @Override
     public boolean isEmpty(String fieldName) 
     {
-        try
-        {
-            return this.getField(fieldName).isBlank();
-        }
-        catch (NullPointerException ne)
-        {
-            return true;
-        }
+        return this.getField(fieldName).isBlank();
     }
 
     @Override
     public String getStanding()
     {
-        try
-        {
-            if (getCustomerFields().standing != null)
-                return getCustomerFields().standing.getKey();
-        } 
-        catch (NullPointerException ne)
-        {
-            return "";
-        }
-        return "";
+        return this.getField(SDapiUserFields.STANDING.toString());
     }
 
     @Override
     public boolean cardReportedLost() 
     {
         // Check the if the PROFILE is LOST or LOSTCARD.
-        return this.getCustomerProfile().equals("LOST") || this.getCustomerProfile().equals("LOSTCARD");
+//        return this.getCustomerProfile().equals("LOST") || this.getCustomerProfile().equals("LOSTCARD");
+        String customerCardProfile = this.getCustomerProfile();
+        List<String> lostTypes = new ArrayList<>();
+        Properties props       = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
+        // Find the lostcard sentinal types.
+        // read optional fields from environment. Should be ',' separated.
+        // <entry key="lost-card-sentinel">LOST, LOSTCARD</entry>
+        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.LOST_CARD_SENTINEL, lostTypes);
+
+        // Non-residents
+        for (String str: lostTypes)
+        {
+            if (customerCardProfile.equalsIgnoreCase(str)) // Test fails lost card.
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -279,6 +303,7 @@ public class SDapiUserPatronSearchCustomerResponse
 
         // Convenience method for nested resources
         private String getProfile() { return profile != null ? profile.getKey() : null; }
+        private String getStanding() { return standing != null ? standing.getKey() : null; }
 
         // Method to find specific address by code
         private String findAddressByCode(String addressCode) 
@@ -333,7 +358,7 @@ public class SDapiUserPatronSearchCustomerResponse
     // Static method to parse JSON
     public static SDapiResponse parseJson(String jsonString) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonString, SDapiUserPatronSearchCustomerResponse.class);
+        return gson.fromJson(jsonString, SDapiUserPatronSearchResponse.class);
     }
 
     // Getter to easily access the first result

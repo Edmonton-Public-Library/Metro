@@ -54,15 +54,17 @@ import mecard.security.SDapiSecurity;
 import mecard.security.TokenManager;
 import mecard.sirsidynix.sdapi.MeCardCustomerToSDapi;
 import mecard.sirsidynix.sdapi.MeCardDataToSDapiData;
+import mecard.sirsidynix.sdapi.PatronSearchResponse;
 import mecard.sirsidynix.sdapi.SDWebServiceCommand;
 import mecard.sirsidynix.sdapi.SDapiAuthenticationData;
 import mecard.sirsidynix.sdapi.SDapiCustomerCreateResponse;
 import mecard.sirsidynix.sdapi.SDapiCustomerUpdateResponse;
 import mecard.sirsidynix.sdapi.SDapiResponse;
 import mecard.sirsidynix.sdapi.SDapiUserPatronLoginResponse;
-import mecard.sirsidynix.sdapi.SDapiUserPatronSearchCustomerResponse;
+import mecard.sirsidynix.sdapi.SDapiUserPatronSearchResponse;
 import mecard.sirsidynix.sdapi.SDapiUserStaffLoginResponse;
 import mecard.sirsidynix.sdapi.SDapiToMeCardCustomer;
+import mecard.sirsidynix.sdapi.SDapiUserPatronBarcodeResponse;
 import mecard.sirsidynix.sdapi.SDapiUserPatronKeyCustomerResponse;
 import mecard.webservice.WebServiceDummyCommand;
 import site.CustomerLoadNormalizer;
@@ -443,7 +445,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             endPoint = "/user/patron/key/" + userId + "?" + this.getPatronFormattedInformationQueryString();
         else
             // ?rw=1&q=ID:21221012345678&includeFields=*,address1{*}
-            endPoint = "/user/patron/search?rw=1&q=ID:" + userId + "&" + this.getPatronFormattedInformationQueryString()  ;
+            endPoint = "/user/patron/search?rw=1&q=ID:" + userId + "&" + this.getPatronFormattedInformationQueryString();
         if (this.debug)
             System.out.println("use-patron-search-method:'"+useSearchString+"' '"+endPoint+"'");
         return endPoint;
@@ -474,10 +476,20 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         }
         
         // Search for customer info with the user key later.
-        SDapiUserPatronSearchCustomerResponse searchResponse; 
+        PatronSearchResponse searchResponse; 
         try
         {
-            searchResponse = (SDapiUserPatronSearchCustomerResponse) SDapiUserPatronSearchCustomerResponse.parseJson(status.getStdout());
+            String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
+            if (useSearchString.equalsIgnoreCase("barcode") ||
+                    useSearchString.equalsIgnoreCase("key"))
+            {
+                searchResponse = (SDapiUserPatronBarcodeResponse) SDapiUserPatronBarcodeResponse.parseJson(status.getStdout());
+            }
+            else
+            {
+                searchResponse = (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(status.getStdout());
+            }
+            
             if (searchResponse.succeeded())
             {
                 String userKey = searchResponse.getField(SDapiUserFields.USER_KEY.toString());
@@ -621,11 +633,21 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             }
             // Search for the barcode with the staff account.
             case TEST_CUSTOMER -> {
-                SDapiUserPatronSearchCustomerResponse searchResponse; 
+                PatronSearchResponse searchResponse; 
                 try
                 {
-                    searchResponse = (SDapiUserPatronSearchCustomerResponse) 
-                            SDapiUserPatronSearchCustomerResponse.parseJson(status.getStdout());
+                    String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
+                    if (useSearchString.equalsIgnoreCase("barcode") ||
+                            useSearchString.equalsIgnoreCase("key"))
+                    {
+                        searchResponse = (SDapiUserPatronBarcodeResponse) 
+                            SDapiUserPatronBarcodeResponse.parseJson(status.getStdout());
+                    }
+                    else
+                    {
+                        searchResponse = (SDapiUserPatronSearchResponse) 
+                            SDapiUserPatronSearchResponse.parseJson(status.getStdout());
+                    }
                     if (searchResponse.succeeded())
                     {
                         if (this.debug)
@@ -820,8 +842,21 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        SDapiUserPatronSearchCustomerResponse customerResponse = 
-                (SDapiUserPatronSearchCustomerResponse) SDapiUserPatronSearchCustomerResponse.parseJson(stdout);
+        String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
+        PatronSearchResponse customerResponse;
+        if (useSearchString.equalsIgnoreCase("barcode") ||
+                useSearchString.equalsIgnoreCase("key"))
+        {
+            customerResponse = (SDapiUserPatronBarcodeResponse) 
+                SDapiUserPatronBarcodeResponse.parseJson(stdout);
+        }
+        else
+        {
+            customerResponse = (SDapiUserPatronSearchResponse) 
+                SDapiUserPatronSearchResponse.parseJson(stdout);
+        }
+//        SDapiUserPatronSearchResponse customerResponse = 
+//                (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(stdout);
         return customerResponse;
     }
     
