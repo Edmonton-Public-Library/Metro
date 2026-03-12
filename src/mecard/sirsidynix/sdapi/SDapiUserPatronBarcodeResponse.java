@@ -21,15 +21,12 @@
 
 package mecard.sirsidynix.sdapi;
 
-import api.CustomerMessage;
 import java.util.List;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import java.util.*;
 import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
 import mecard.config.PropertyReader;
-import mecard.config.SDapiPropertyTypes;
 import mecard.config.SDapiUserFields;
 
 
@@ -43,38 +40,6 @@ import mecard.config.SDapiUserFields;
 public class SDapiUserPatronBarcodeResponse 
         extends PatronSearchResponse 
 {
-//    @SerializedName("barcode")
-//       private String barcode;
-//
-//       @SerializedName("birthDate")
-//       private String birthDate;
-//
-////        @SerializedName("createdDate")
-////        private String createdDate;
-//
-//       @SerializedName("alternateID")
-//       private String alternateId;
-//
-//       @SerializedName("firstName")
-//       private String firstName;
-//
-//       @SerializedName("lastName")
-//       private String lastName;
-//
-//       @SerializedName("privilegeExpiresDate")
-//       private String expiryDate;
-//
-//       @SerializedName("profile")
-//       private PolicyResource profile;
-//
-//       @SerializedName("standing")
-//       private PolicyResource standing;
-//
-//       @SerializedName("address1")
-//       private List<AddressEntry> address1;
-    //{
-    //  "resource":"/user/patron",
-    //  "key":"218427",
     @SerializedName("key")
     private String userKey;
     private String getUserKey() { return userKey != null ? userKey : ""; }
@@ -229,27 +194,6 @@ public class SDapiUserPatronBarcodeResponse
         }
     }
     
-    @Override
-    public boolean succeeded() 
-    {
-        return (fields != null && ! fields.getBarcode().isBlank());
-    }
-
-    @Override
-    public String errorMessage() 
-    {
-        if (! this.succeeded())
-        {
-            return "Account not found.";
-        }
-        return "";
-    }
-
-    @Override
-    public String getCustomerProfile()
-    {
-        return this.getField(SDapiUserFields.PROFILE.toString());
-    }
 
     @Override
     public String getField(String fieldName) 
@@ -326,47 +270,6 @@ public class SDapiUserPatronBarcodeResponse
         if (date != null && ! date.isBlank())
             return date + time;
         return "";
-    }
-
-    @Override
-    public boolean isEmpty(String fieldName) 
-    {
-        return this.getField(fieldName).isBlank();
-    }
-
-    @Override
-    public String getStanding() 
-    {
-        return this.getField(SDapiUserFields.STANDING.toString());
-    }
-
-    @Override
-    public boolean cardReportedLost() 
-    {
-//        return this.getCustomerProfile().equals("LOST") || this.getCustomerProfile().equals("LOSTCARD");
-        String customerCardProfile = this.getCustomerProfile();
-        List<String> lostTypes = new ArrayList<>();
-        Properties props       = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
-        // Find the lostcard sentinal types.
-        // read optional fields from environment. Should be ',' separated.
-        // <entry key="lost-card-sentinel">LOST, LOSTCARD</entry>
-        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.LOST_CARD_SENTINEL, lostTypes);
-
-        // Non-residents
-        for (String str: lostTypes)
-        {
-            if (customerCardProfile.equalsIgnoreCase(str)) // Test fails lost card.
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isInGoodStanding() 
-    {
-        return "OK".equals(this.getStanding());
     }
 
     @Override

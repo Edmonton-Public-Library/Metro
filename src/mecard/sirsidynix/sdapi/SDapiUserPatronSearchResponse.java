@@ -21,15 +21,9 @@
 
 package mecard.sirsidynix.sdapi;
 
-import api.CustomerMessage;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import mecard.config.ConfigFileTypes;
-import mecard.config.LibraryPropertyTypes;
-import mecard.config.PropertyReader;
 import mecard.config.SDapiUserFields;
 
 public class SDapiUserPatronSearchResponse 
@@ -62,31 +56,6 @@ public class SDapiUserPatronSearchResponse
     
     @SerializedName("result")
     private List<CustomerResult> result;
-
-    @Override
-    public boolean succeeded() 
-    {
-        return this.getTotalResults() == 1;
-    }
-
-    // Failed response
-    //{
-    //   "searchQuery": "ID:212210123456789",
-    //   "startRow": 1,
-    //   "lastRow": 10,
-    //   "rowsPerPage": 10,
-    //   "totalResults": 0,
-    //   "result": []
-    //}
-    @Override
-    public String errorMessage() 
-    {
-        if (! this.succeeded())
-        {
-            return "Account not found.";
-        }
-        return "";
-    }
 
     @Override
     public String getCustomerProfile() 
@@ -169,48 +138,6 @@ public class SDapiUserPatronSearchResponse
         if (date != null && ! date.isBlank())
             return date + time;
         return "";
-    }
-
-    @Override
-    public boolean isEmpty(String fieldName) 
-    {
-        return this.getField(fieldName).isBlank();
-    }
-
-    @Override
-    public String getStanding()
-    {
-        return this.getField(SDapiUserFields.STANDING.toString());
-    }
-
-    @Override
-    public boolean cardReportedLost() 
-    {
-        // Check the if the PROFILE is LOST or LOSTCARD.
-//        return this.getCustomerProfile().equals("LOST") || this.getCustomerProfile().equals("LOSTCARD");
-        String customerCardProfile = this.getCustomerProfile();
-        List<String> lostTypes = new ArrayList<>();
-        Properties props       = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
-        // Find the lostcard sentinal types.
-        // read optional fields from environment. Should be ',' separated.
-        // <entry key="lost-card-sentinel">LOST, LOSTCARD</entry>
-        PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.LOST_CARD_SENTINEL, lostTypes);
-
-        // Non-residents
-        for (String str: lostTypes)
-        {
-            if (customerCardProfile.equalsIgnoreCase(str)) // Test fails lost card.
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isInGoodStanding() 
-    {
-        return "OK".equals(this.getStanding());
     }
 
     // Inner class to represent the result
