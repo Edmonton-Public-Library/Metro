@@ -103,6 +103,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         checkouts, and renew dates.
     */
     private String staffOverrideCode;
+    private String useSearchString;
     
     @SuppressWarnings("FieldMayBeFinal")
     private long tokenExpiry;
@@ -119,7 +120,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         String loadDirProperty = this.sdapiProperties.getProperty(SDapiPropertyTypes.LOAD_DIR.toString());
         // Which looks like <entry key="load-dir">/home/anisbet/MeCard/logs/Customers</entry>
         this.loadDir = loadDirProperty + File.separator;
-        
+        this.useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
         
         // Get the SDapi properties file and set up a token manager.
         this.tokenManager = new TokenManager();
@@ -437,17 +438,16 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         // Get the optional value from the sdapi.properties. By default this 
         // gets turned on, but if the key appears and it is not 'search'
         // (case-insensitive), the returned value will be '/user/patron/barcode'.
-        String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
         String endPoint;
-        if (useSearchString.equalsIgnoreCase("barcode"))
+        if (this.useSearchString.equalsIgnoreCase("barcode"))
             endPoint = "/user/patron/barcode/" + userId + "?" + this.getPatronFormattedInformationQueryString();
-        else if (useSearchString.equalsIgnoreCase("key"))
+        else if (this.useSearchString.equalsIgnoreCase("key"))
             endPoint = "/user/patron/key/" + userId + "?" + this.getPatronFormattedInformationQueryString();
         else
             // ?rw=1&q=ID:21221012345678&includeFields=*,address1{*}
             endPoint = "/user/patron/search?rw=1&q=ID:" + userId + "&" + this.getPatronFormattedInformationQueryString();
         if (this.debug)
-            System.out.println("use-patron-search-method:'"+useSearchString+"' '"+endPoint+"'");
+            System.out.println("use-patron-search-method:'"+this.useSearchString+"' '"+endPoint+"'");
         return endPoint;
     }
 
@@ -479,9 +479,8 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         PatronSearchResponse searchResponse; 
         try
         {
-            String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
-            if (useSearchString.equalsIgnoreCase("barcode") ||
-                    useSearchString.equalsIgnoreCase("key"))
+            if (this.useSearchString.equalsIgnoreCase("barcode") ||
+                    this.useSearchString.equalsIgnoreCase("key"))
             {
                 searchResponse = (SDapiUserPatronBarcodeResponse) SDapiUserPatronBarcodeResponse.parseJson(status.getStdout());
             }
@@ -636,9 +635,8 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
                 PatronSearchResponse searchResponse; 
                 try
                 {
-                    String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
-                    if (useSearchString.equalsIgnoreCase("barcode") ||
-                            useSearchString.equalsIgnoreCase("key"))
+                    if (this.useSearchString.equalsIgnoreCase("barcode") ||
+                            this.useSearchString.equalsIgnoreCase("key"))
                     {
                         searchResponse = (SDapiUserPatronBarcodeResponse) 
                             SDapiUserPatronBarcodeResponse.parseJson(status.getStdout());
@@ -842,10 +840,9 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
     @Override
     public CustomerMessage getCustomerMessage(String stdout)
     {
-        String useSearchString = this.sdapiProperties.getProperty("use-patron-search-method", "search");
         PatronSearchResponse customerResponse;
-        if (useSearchString.equalsIgnoreCase("barcode") ||
-                useSearchString.equalsIgnoreCase("key"))
+        if (this.useSearchString.equalsIgnoreCase("barcode") ||
+                this.useSearchString.equalsIgnoreCase("key"))
         {
             customerResponse = (SDapiUserPatronBarcodeResponse) 
                 SDapiUserPatronBarcodeResponse.parseJson(stdout);

@@ -42,10 +42,15 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 # What's new
 
-## Version 4.01.01_a
+## Version 4.01.01_b
 To date, all (modern) Sirsi Dynix web services allow searching for customers with the endpoint `/user/patron/search?{params}`, but no more. As of some undesclosed version (Sirsi Dynix's documentation still says this is valid), you can now use `/user/patron/barcode` or `/user/patron/key`. To specify which version you need two new optional parameters have been added to the `sdapi.properties` file:
 * `use-patron-search-method` which is **optional**, `search` is default but anything else will use the `/user/patron/barcode` endpoint.
 * `use-starred-parameters` which will use `?includeFields=*,address1{*},circRecordList{*}` where possible and `?includeFields=*,address1,circRecordList` where the system does not support the former '*'ed parameters. Default: if missing or set to 'true' uses starred format, or `{*}`.
+* SDapi web service customer search responses now check all the lost card sentinals in the `environment.properties` file. Usually this is `LOST` and `LOSTCARD` but putting `STOLEN` in this setting will also be counted as a lost card. Here is an example from the **`environment.properties`** file.
+```xml
+<entry key="lost-card-sentinel">LOST, LOSTCARD, STOLEN</entry>
+```
+
 ### Optional SDapi Properties Example
 ```xml
   <!-- ... sdapi.properties etc... -->

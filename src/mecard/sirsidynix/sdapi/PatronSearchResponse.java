@@ -93,7 +93,6 @@ public abstract class PatronSearchResponse
     @Override
     public boolean cardReportedLost() 
     {
-//        return this.getCustomerProfile().equals("LOST") || this.getCustomerProfile().equals("LOSTCARD");
         String customerCardProfile = this.getCustomerProfile();
         List<String> lostTypes = new ArrayList<>();
         Properties props       = PropertyReader.getProperties(ConfigFileTypes.ENVIRONMENT);
@@ -102,7 +101,7 @@ public abstract class PatronSearchResponse
         // <entry key="lost-card-sentinel">LOST, LOSTCARD</entry>
         PropertyReader.loadDelimitedEntry(props, LibraryPropertyTypes.LOST_CARD_SENTINEL, lostTypes);
 
-        // Non-residents
+        // lost card profiles.
         for (String str: lostTypes)
         {
             if (customerCardProfile.equalsIgnoreCase(str)) // Test fails lost card.
