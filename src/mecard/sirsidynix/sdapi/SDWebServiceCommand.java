@@ -382,8 +382,21 @@ public class SDWebServiceCommand implements Command
         {
             status = new HttpCommandStatus();
             status.setEnded(ResponseTypes.FAIL.ordinal());
+            if (debug)
+                status.setStderr(ex.getLocalizedMessage());
             System.out.println(ex.getMessage());
-        } 
+        }
+        catch (NullPointerException ex)
+        {
+            System.out.println(
+                "Null pointer exception: " + 
+                System.lineSeparator() + 
+                ex.getMessage());
+            status = new HttpCommandStatus();
+            status.setEnded(ResponseTypes.FAIL.ordinal());
+            if (debug)
+                status.setStderr(ex.getLocalizedMessage());
+        }
         return status;
     }
     

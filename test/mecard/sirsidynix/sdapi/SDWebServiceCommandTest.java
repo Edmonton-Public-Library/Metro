@@ -123,13 +123,16 @@ public class SDWebServiceCommandTest
         TokenManager tokenManager = new TokenManager();
         tokenManager.writeTokenFromStdout("sessionToken", result.getStdout(), Duration.ofMinutes(10));
         assertNotNull(result);
+        System.out.println("RESULT: '" + result.toString() + "'");
         assertTrue(result.getStatus() == ResponseTypes.SUCCESS);
         assertFalse(tokenManager.isTokenExpired(50L));
         
         // Test getting customer data
         String userKey = "301585";
         SDWebServiceCommand getCustomerCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-            .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
+//            .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1%7B*%7D,circRecordList%7B*%7D")
+                // Special for ChinookArch
+            .endpoint("/user/patron/key/" + userKey + "?includeFields=*,address1,circRecordList")
             .sessionToken(tokenManager.getToken())
             .build();
         HttpCommandStatus getCustomerResult = getCustomerCommand.execute();

@@ -177,15 +177,18 @@ public class SDapiRequestBuilderTest
         String userPin = "0000";
         Response response = new Response();
         SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(false);
-
+        System.out.println(">>getCustomerCommand Customer: got here.");
         Command command = requestBuilder.getCustomerCommand(userId, userPin, response);
+        System.out.println(">>getCustomerCommand Customer: command=>" + command.toString());
         HttpCommandStatus status = (HttpCommandStatus) command.execute();
+        System.out.println(">>getCustomerCommand Customer: " + System.lineSeparator()
+            + status.getStdout() + System.lineSeparator());
         NativeFormatToMeCardCustomer customerFormatter = requestBuilder.getFormatter();
         // Use the formatter to convert the returned sdapi info into a ME customer object.
         Customer customer = customerFormatter.getCustomer(status.getStdout());
-//        response.setCustomer(customer);
-//        System.out.println(">>getCustomerCommand Customer: " + System.lineSeparator()
-//            + customer.toString());
+        response.setCustomer(customer);
+        System.out.println(">>getCustomerCommand Customer: " + System.lineSeparator()
+            + customer.toString());
         assertTrue(requestBuilder.isSuccessful(QueryTypes.GET_CUSTOMER, status, response));
         assertTrue(customer.get(CustomerFieldTypes.ID).compareTo(userId) == 0);
     }
@@ -230,7 +233,7 @@ public class SDapiRequestBuilderTest
 
         Command command = requestBuilder.getStatusCommand(response);
         HttpCommandStatus status = (HttpCommandStatus) command.execute();
-//        System.out.println("Status:" + status.getStdout());
+        System.out.println("Status:" + status.getStdout());
         requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
         assertTrue(requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response));
         assertTrue(response.getCode() == ResponseTypes.SUCCESS);
@@ -253,9 +256,9 @@ public class SDapiRequestBuilderTest
         NativeFormatToMeCardCustomer customerFormatter = requestBuilder.getFormatter();
         // Use the formatter to convert the returned sdapi info into a ME customer object.
         Customer customer = customerFormatter.getCustomer(status.getStdout());
-//        response.setCustomer(customer);
-//        System.out.println(">>getCustomerCommand Customer: " + System.lineSeparator()
-//            + customer.toString());
+        response.setCustomer(customer);
+        System.out.println(">>getCustomerExists Customer: " + System.lineSeparator()
+            + customer.toString());
         assertTrue(requestBuilder.isSuccessful(QueryTypes.TEST_CUSTOMER, status, response));
         assertTrue(customer.get(CustomerFieldTypes.ID).compareTo(userId) == 0);
         

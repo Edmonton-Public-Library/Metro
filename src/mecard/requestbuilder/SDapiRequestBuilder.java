@@ -116,7 +116,7 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         this.messageProperties = PropertyReader.getProperties(ConfigFileTypes.MESSAGES);
         this.sdapiProperties = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
         String envFilePath = this.sdapiProperties.getProperty(SDapiPropertyTypes.ENV.toString());
-        this.debug = debug;
+        this.debug = Boolean.parseBoolean(this.sdapiProperties.getProperty(SDapiPropertyTypes.DEBUG.toString()));
         String loadDirProperty = this.sdapiProperties.getProperty(SDapiPropertyTypes.LOAD_DIR.toString());
         // Which looks like <entry key="load-dir">/home/anisbet/MeCard/logs/Customers</entry>
         this.loadDir = loadDirProperty + File.separator;
@@ -267,6 +267,10 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             .build();
         
         HttpCommandStatus status = loginCustomer.execute();
+        if (this.debug)
+        {
+            System.out.println("GET_CUSTOMER response:" + status.toString());
+        }
         SDapiResponse loginResponse = 
                         (SDapiUserPatronLoginResponse) 
                             SDapiUserPatronLoginResponse.parseJson(status.getStdout());
@@ -279,8 +283,10 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
             // Get customer info by user key.
             String userKey = loginResponse.toString();
             // String params  = "includeFields=*,address1{*},circRecordList{*}";
+            // or if sdapi.properties <entry key="use-starred-parameters">false</entry>
+            // String params  = "includeFields=*,address1,circRecordList";
             SDWebServiceCommand patronKeyCommand = new SDWebServiceCommand.Builder(sdapiProperties, "GET")
-                .endpoint("/user/patron/key/" + userKey + getPatronFormattedInformationQueryString())
+                .endpoint("/user/patron/key/" + userKey + "?" + getPatronFormattedInformationQueryString())
                 .sessionToken(this.getSessionToken(response))
                 .setDebug(this.debug)
                 .build();
