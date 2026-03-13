@@ -561,9 +561,13 @@ public class SDapiRequestBuilder extends ILSRequestBuilder
         // This query relies on the user being able to login but 
         // another method is to allow a staff search of the customer with 
         // https://{{HOST}}/{{WEBAPP}}/user/staff/login
+        SDapiAuthenticationData staffAuthData = new SDapiAuthenticationData();
+        String loginBodyText = staffAuthData.getPatronAuthentication(
+                this.sdApiSecurity.getStaffId(), 
+                this.sdApiSecurity.getStaffPassword());
         SDWebServiceCommand command = new SDWebServiceCommand.Builder(sdapiProperties, "POST")
             .endpoint("/user/staff/login")
-            .bodyText(this.getSessionToken(response))
+            .bodyText(loginBodyText)
             .setDebug(this.debug)
             .build();
         if (this.debug)

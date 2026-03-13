@@ -229,11 +229,11 @@ public class SDapiRequestBuilderTest
     {
         System.out.println("==getStatusCommand==");
         Response response = new Response();
-        SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(false);
+        SDapiRequestBuilder requestBuilder = new SDapiRequestBuilder(true);
 
         Command command = requestBuilder.getStatusCommand(response);
         HttpCommandStatus status = (HttpCommandStatus) command.execute();
-        System.out.println("Status:" + status.getStdout());
+        System.out.println("######### Status:" + status.getStdout());
         requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response);
         assertTrue(requestBuilder.isSuccessful(QueryTypes.GET_STATUS, status, response));
         assertTrue(response.getCode() == ResponseTypes.SUCCESS);

@@ -98,6 +98,14 @@ public class SDapiUserStaffLoginResponseTest
 //        System.out.println(">>>>" + testResponse.errorMessage());
         boolean result = testResponse.succeeded();
         assertEquals(expResult, result);
+        
+//        jsonString = "Bad request";
+//        SDapiUserStaffLoginResponse testResponse1 = (SDapiUserStaffLoginResponse) SDapiUserStaffLoginResponse.parseJson(jsonString);
+//        expResult = false;
+////        System.out.println(">>>" + testResponse.getSessionToken());
+////        System.out.println(">>>>" + testResponse.errorMessage());
+//        result = testResponse1.succeeded();
+//        assertEquals(expResult, result);
     }
 
     /**
