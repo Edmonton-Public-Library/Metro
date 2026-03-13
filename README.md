@@ -42,6 +42,9 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 # What's new
 
+## Version 4.01.01_c
+* Minor bug fixes including SD api get status command.
+
 ## Version 4.01.01_b
 To date, all (modern) Sirsi Dynix web services allow searching for customers with the endpoint `/user/patron/search?{params}`, but no more. As of some undesclosed version (Sirsi Dynix's documentation still says this is valid), you can now use `/user/patron/barcode` or `/user/patron/key`. To specify which version you need two new optional parameters have been added to the `sdapi.properties` file:
 * `use-patron-search-method` which is **optional**, `search` is default but anything else will use the `/user/patron/barcode` endpoint.
