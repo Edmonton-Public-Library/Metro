@@ -42,7 +42,7 @@ The Metro server supports the following strategies to manage customer registrati
 ----------
 # What's new
 
-## Version 4.01.01_c Through 4.01.01_d
+## Version 4.01.01_c Through 4.01.01_e
 * Minor bug fixes including SD api get status command.
 
 ## Version 4.01.01_b
