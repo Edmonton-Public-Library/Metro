@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024 - 2025 Edmonton Public Library
+ *    Copyright (C) 2024 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,11 @@ package mecard.sirsidynix.sdapi;
 
 import com.google.gson.JsonSyntaxException;
 import java.util.List;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
 import mecard.config.CustomerFieldTypes;
+import mecard.config.PropertyReader;
+import mecard.config.SDapiPropertyTypes;
 import mecard.config.SDapiUserFields;
 import mecard.customer.Customer;
 import mecard.customer.NativeFormatToMeCardCustomer;
@@ -37,6 +41,20 @@ import site.MeCardPolicy;
  */
 public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
 {
+    protected String cityProvinceSetting = "";
+    protected boolean debug;
+
+    public SDapiToMeCardCustomer() 
+    {
+        super();
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        this.cityProvinceSetting = props.getProperty("use-city-province", "false");
+        String d = props.getProperty(SDapiPropertyTypes.DEBUG.toString(), "true");
+        this.debug = Boolean.parseBoolean(d);
+        if (this.debug)
+            System.out.println("useCityProvince set to " + cityProvinceSetting );
+    }
+    
 
     @Override
     public Customer getCustomer(List<String> list) 
@@ -70,7 +88,7 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         customer.set(CustomerFieldTypes.EMAIL, customerData.getField(SDapiUserFields.EMAIL.toString()));
         customer.set(CustomerFieldTypes.STREET, customerData.getField(SDapiUserFields.STREET.toString()));
         customer.set(CustomerFieldTypes.POSTALCODE, customerData.getField(SDapiUserFields.POSTALCODE.toString()));
-        // This actually just returns the city value.
+            // This actually just returns the city value.
         customer.set(CustomerFieldTypes.CITY, customerData.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
         // Use this for the province.
         customer.set(CustomerFieldTypes.PROVINCE, customerData.getField(SDapiUserFields.PROV.toString()));
