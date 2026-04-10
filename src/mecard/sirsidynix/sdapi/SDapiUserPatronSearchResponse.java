@@ -24,6 +24,9 @@ package mecard.sirsidynix.sdapi;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import mecard.config.SDapiUserFields;
 
 public class SDapiUserPatronSearchResponse 
@@ -97,8 +100,8 @@ public class SDapiUserPatronSearchResponse
                 return this.getDateField(fieldName);
             if (fieldName.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
                 return this.getDateField(fieldName);
-            if (fieldName.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-                // returns city Edmonton not the CITY/STATE value of 'Edmonton, Alberta'.
+            if (fieldName.equals(SDapiUserFields.CITYPROV.toString()))
+                // returns city Edmonton not the CITYPROV value of 'Edmonton, Alberta'.
                 return this.getCustomerFields().getCity();
             if (fieldName.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
                 // returns city Edmonton not the CITY/STATE value of 'Edmonton, Alberta'.
@@ -253,12 +256,44 @@ public class SDapiUserPatronSearchResponse
         // This may need to be dynamic based on ILS setup.
         private String getCity() 
         {
+            return this.getCityProvOrState(0);
+        }
+        
+        private String getCityProvOrState(int which)
+        {
+            int city = 0;
+            int provState = 1;
+         
+            if (which < 0 || which > 1)
+            {
+                System.out.println("error: request for out of range value in getCityProvOrState()!");
+            }
+
+
+            Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+            String useCityProvinceFieldName = props.getProperty("use-city-province", "false");
             try
             {
-                String[] words = 
-                        findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
-                                .replaceAll("[^a-zA-Z ]", "").split("\\s+");
-                return words[0];
+                String[] words;
+                if (useCityProvinceFieldName.equalsIgnoreCase("true"))
+                {
+                    words = findAddressByCode(SDapiUserFields.CITYPROV.toString())
+                        .replaceAll("[^a-zA-Z ]", "").split("\\s+");
+                }
+                else
+                {
+                    words = findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
+                        .replaceAll("[^a-zA-Z ]", "").split("\\s+");
+                }
+                if (which == city)
+                    return words[city];
+                else if (which == provState)
+                    return words[provState];
+                else
+                {
+                    System.out.println("error: request for out of range value in getCityProvOrState() in SDapiUserPatronSearchResponse!");
+                    return "_unset_, AB";
+                }
             }
             catch (IndexOutOfBoundsException e)
             {
@@ -268,17 +303,7 @@ public class SDapiUserPatronSearchResponse
         
         private String getProvince()
         {
-            try
-            {
-                String[] words = 
-                        findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
-                                .replaceAll("[^a-zA-Z ]", "").split("\\s+");
-                return words[1];
-            }
-            catch (IndexOutOfBoundsException e)
-            {
-                return "";
-            }
+            return this.getCityProvOrState(1);
         }
     }
 

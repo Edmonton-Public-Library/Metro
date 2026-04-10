@@ -87,8 +87,8 @@ public class MeCardCustomerToSDapi extends MeCardCustomerToNativeFormat
         if (useCityProvinceSetting.equalsIgnoreCase("true"))
         {
             if (this.debug)
-                System.out.println("Using CITY_SLASH_PROV");
-            customerTable.setValue(SDapiUserFields.CITY_SLASH_PROV.toString(), 
+                System.out.println("Using CITYPROV");
+            customerTable.setValue(SDapiUserFields.CITYPROV.toString(), 
                 citySlashProvince);
         }
         else

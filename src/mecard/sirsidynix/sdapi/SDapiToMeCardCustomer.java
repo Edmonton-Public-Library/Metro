@@ -41,18 +41,18 @@ import site.MeCardPolicy;
  */
 public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
 {
-    protected String cityProvinceSetting = "";
+    protected String useCityProvinceFieldName = "";
     protected boolean debug;
 
     public SDapiToMeCardCustomer() 
     {
         super();
         Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
-        this.cityProvinceSetting = props.getProperty("use-city-province", "false");
+        this.useCityProvinceFieldName = props.getProperty("use-city-province", "false");
         String d = props.getProperty(SDapiPropertyTypes.DEBUG.toString(), "true");
         this.debug = Boolean.parseBoolean(d);
         if (this.debug)
-            System.out.println("useCityProvince set to " + cityProvinceSetting );
+            System.out.println("useCityProvince set to " + useCityProvinceFieldName );
     }
     
 
@@ -88,8 +88,16 @@ public class SDapiToMeCardCustomer extends NativeFormatToMeCardCustomer
         customer.set(CustomerFieldTypes.EMAIL, customerData.getField(SDapiUserFields.EMAIL.toString()));
         customer.set(CustomerFieldTypes.STREET, customerData.getField(SDapiUserFields.STREET.toString()));
         customer.set(CustomerFieldTypes.POSTALCODE, customerData.getField(SDapiUserFields.POSTALCODE.toString()));
+        if (this.useCityProvinceFieldName.equalsIgnoreCase("true"))
+        {
             // This actually just returns the city value.
-        customer.set(CustomerFieldTypes.CITY, customerData.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+            customer.set(CustomerFieldTypes.CITY, customerData.getField(SDapiUserFields.CITYPROV.toString()));
+        }
+        else
+        {
+            // This actually just returns the city value.
+            customer.set(CustomerFieldTypes.CITY, customerData.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+        }
         // Use this for the province.
         customer.set(CustomerFieldTypes.PROVINCE, customerData.getField(SDapiUserFields.PROV.toString()));
         customer.set(CustomerFieldTypes.PHONE, customerData.getField(SDapiUserFields.PHONE.toString()));

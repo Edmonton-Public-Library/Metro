@@ -22,6 +22,9 @@
 package mecard.sirsidynix.sdapi;
 
 
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import mecard.config.SDapiUserFields;
 import static org.junit.Assert.*;
 
@@ -37,6 +40,7 @@ public class SDapiUserPatronSearchResponseTest
     private final String userPatronSearchFailed;
     private final String userPatronSearchLite;
     private final String userPatronSearchLost;
+    private boolean useCityProv;
 
     public SDapiUserPatronSearchResponseTest() 
     {
@@ -51,8 +55,179 @@ public class SDapiUserPatronSearchResponseTest
                         "result": []
                      }
                      """;
-        
-        userPatronSearchFullInfo = """
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String useCityProvinceFieldName = props.getProperty("use-city-province", "false");
+        useCityProv = Boolean.parseBoolean(useCityProvinceFieldName);
+        if (useCityProv)
+        {
+            userPatronSearchFullInfo = """
+                     {
+                        "searchQuery": "ID:21221012345678",
+                        "startRow": 1,
+                        "lastRow": 1,
+                        "rowsPerPage": 10,
+                        "totalResults": 1,
+                        "result": [
+                            {
+                                "resource": "/user/patron",
+                                "key": "301585",
+                                "fields": {
+                                    "displayName": "BILLY, Balzac",
+                                    "access": {
+                                        "resource": "/policy/userAccess",
+                                        "key": "PUBLIC"
+                                    },
+                                    "alternateID": "21221012345677",
+                                    "barcode": "21221012345678",
+                                    "birthDate": "2000-02-29",
+                                    "checkoutLocation": {
+                                        "resource": "/policy/location",
+                                        "key": "CHECKEDOUT"
+                                    },
+                                    "createdDate": "2003-11-24",
+                                    "department": "PROD",
+                                    "environment": {
+                                        "resource": "/policy/environment",
+                                        "key": "PUBLIC"
+                                    },
+                                    "firstName": "Balzac",
+                                    "language": {
+                                        "resource": "/policy/language",
+                                        "key": "ENGLISH"
+                                    },
+                                    "lastName": "BILLY",
+                                    "library": {
+                                        "resource": "/policy/library",
+                                        "key": "EPLMNA"
+                                    },
+                                    "middleName": "",
+                                    "preferredName": "",
+                                    "privilegeExpiresDate": null,
+                                    "profile": {
+                                        "resource": "/policy/userProfile",
+                                        "key": "EPL_ADULT"
+                                    },
+                                    "suffix": "",
+                                    "title": "",
+                                    "usePreferredName": false,
+                                    "webAuthID": "",
+                                    "category01": null,
+                                    "category02": {
+                                        "resource": "/policy/patronCategory02",
+                                        "key": "F"
+                                    },
+                                    "category03": null,
+                                    "category04": {
+                                        "resource": "/policy/patronCategory04",
+                                        "key": "NNELS"
+                                    },
+                                    "category05": {
+                                        "resource": "/policy/patronCategory05",
+                                        "key": "ECONSENT"
+                                    },
+                                    "category06": null,
+                                    "category07": null,
+                                    "category08": null,
+                                    "category09": null,
+                                    "category10": null,
+                                    "category11": null,
+                                    "category12": null,
+                                    "claimsReturnedCount": 1,
+                                    "standing": {
+                                        "resource": "/policy/patronStanding",
+                                        "key": "OK"
+                                    },
+                                    "groupId": "BALZAC",
+                                    "address1": [
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "22778",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "ZIP"
+                                                },
+                                                "data": "T5J-2V4"
+                                            }
+                                        },
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "87",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "EMAIL"
+                                                },
+                                                "data": "ilsadmins@epl.ca"
+                                            }
+                                        },
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "88",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "POSTALCODE"
+                                                },
+                                                "data": "T5J-2V4"
+                                            }
+                                        },
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "89",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "PHONE"
+                                                },
+                                                "data": "780-496-4058"
+                                            }
+                                        },
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "22779",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "CARE/OF"
+                                                },
+                                                "data": null
+                                            }
+                                        },
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "90",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "STREET"
+                                                },
+                                                "data": "7 Sir Winston Churchill Sq."
+                                            }
+                                        },
+                                        {
+                                            "resource": "/user/patron/address1",
+                                            "key": "91",
+                                            "fields": {
+                                                "code": {
+                                                    "resource": "/policy/patronAddress1",
+                                                    "key": "CITYPROV"
+                                                },
+                                                "data": "Edmonton, Alberta"
+                                            }
+                                        }
+                                    ],
+                                    "circRecordCount": 0,
+                                    "keepCircHistory": "ALLCHARGES"
+                                }
+                            }
+                        ]
+                     }
+                     """;
+        }
+        else
+        {
+            userPatronSearchFullInfo = """
                      {
                         "searchQuery": "ID:21221012345678",
                         "startRow": 1,
@@ -216,6 +391,7 @@ public class SDapiUserPatronSearchResponseTest
                         ]
                      }
                      """;
+        }
         //  GET: https://{{HOST}}/{{WEBAPP}}/user/patron/search?rw=1&q=ID:21221012345678
         userPatronSearchLite = """
                                {
@@ -476,8 +652,13 @@ public class SDapiUserPatronSearchResponseTest
         assertEquals("2000-02-29T00:00:00", instance.getField(SDapiUserFields.USER_BIRTHDATE.toString()));
         assertEquals("", instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
         assertEquals("T5J-2V4", instance.getField(SDapiUserFields.POSTALCODE.toString()));
-        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
-        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_PROV.toString()));
+        
+        // these fail if the config file is not set to detect CITY/STATE with 
+        // the 'use-city-province' setting in sdapi.properties file.
+        if (useCityProv)
+            assertEquals("Edmonton", instance.getField(SDapiUserFields.CITYPROV.toString()));
+        else
+            assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
         assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
         
         instance = (SDapiUserPatronSearchResponse) SDapiUserPatronSearchResponse.parseJson(userPatronSearchFailed);

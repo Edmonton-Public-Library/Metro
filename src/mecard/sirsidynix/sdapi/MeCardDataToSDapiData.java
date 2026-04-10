@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import mecard.customer.MeCardDataToNativeData;
 import mecard.config.SDapiUserFields;
 
@@ -54,7 +57,9 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     }
 
     private MeCardDataToSDapiData(QueryType type, boolean debug) 
-    {   }
+    {  
+        
+    }
 
     // {
     //    "resource": "/user/patron",
@@ -180,10 +185,10 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             return this.getBirthDate() != null ? this.getBirthDate() : "";
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
             return this.getExpiry() != null ? this.getExpiry() : "";
-        else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
-            return this.getProvince() != null ? this.getProvince() : "";
+        else if (key.equals(SDapiUserFields.CITYPROV.toString()))
+            return this.getCityProvOrState() != null ? this.getCityProvOrState() : "";
         else if (key.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))
-            return this.getCity() != null ? this.getCity() : "";
+            return this.getCityProvOrState() != null ? this.getCityProvOrState() : "";
         else if (key.equals(SDapiUserFields.STREET.toString()))
             return this.getStreet() != null ? this.getStreet() : "";
         else if (key.equals(SDapiUserFields.POSTALCODE.toString()))
@@ -270,7 +275,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setBirthDate(value);
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
             this.setExpiry(value);
-        else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
+        else if (key.equals(SDapiUserFields.CITYPROV.toString()))
             this.setCityProvince(value);
         else if (key.equals(SDapiUserFields.PROV.toString()))
             this.setCityState(value);
@@ -360,6 +365,8 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     @Override
     public Set<String> getKeys() 
     {
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String useCityProvinceFieldName = props.getProperty("use-city-province", "false");
         List<String> columns = new ArrayList<>();
         if (this.getUserKey() != null)
             columns.add(SDapiUserFields.USER_KEY.toString());
@@ -383,12 +390,18 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             columns.add(SDapiUserFields.USER_BIRTHDATE.toString());
         if (this.getExpiry() != null)
             columns.add(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString());
-        if (this.getCity() != null)
-            columns.add(SDapiUserFields.CITY_SLASH_STATE.toString());
-        if (this.getProvince() != null)
-            columns.add(SDapiUserFields.CITY_SLASH_PROV.toString());
-//        if (this.getProvince() != null)
-//            columns.add(SDapiUserFields.PROV.toString());
+        // Check if the use-city-province is set true or false.
+        if (useCityProvinceFieldName.equalsIgnoreCase("true"))
+        {
+            if (this.getCityProvOrState() != null)
+                columns.add(SDapiUserFields.CITYPROV.toString());
+        }
+        else
+        {
+            if (this.getCityProvOrState() != null)
+                columns.add(SDapiUserFields.CITY_SLASH_STATE.toString());
+        }
+        
         if (this.getStreet() != null)
             columns.add(SDapiUserFields.STREET.toString());
         if (this.getPostalCode() != null)
@@ -466,7 +479,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
             this.setBirthDate(null);
         else if (key.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
             this.setExpiry(null);
-        else if (key.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
+        else if (key.equals(SDapiUserFields.CITYPROV.toString()))
             this.setCityProvince(null);
        else if (key.equals(SDapiUserFields.PROV.toString()))
             this.setCityState(null);
@@ -776,7 +789,7 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
         this.fields.address1.add(new Address(
             "/user/patron/address1",
             "1",  // Is this correct as the same as CITY/STATE?
-            new AddressCode("/policy/patronAddress1", "CITY/PROV"),
+            new AddressCode("/policy/patronAddress1", "CITYPROV"),
             cityProvince
         ));
     }
@@ -871,30 +884,33 @@ public class MeCardDataToSDapiData implements MeCardDataToNativeData
     private String getPostalCode() { return findAddressByCode(SDapiUserFields.POSTALCODE.toString()); }
     private String getPhone() { return findAddressByCode(SDapiUserFields.PHONE.toString()); }
     private String getStreet() { return findAddressByCode(SDapiUserFields.STREET.toString()); }
-//    private String getCitySlashState() { return findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString()); }
-    private String getCity() 
-    {
-        try
-        {
-            String[] words = 
-                    findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
-                            .replaceAll("[^a-zA-Z ]", "").split("\\s+");
-            return words[0];
-        }
-        catch (IndexOutOfBoundsException | NullPointerException e)
-        {
-            return null;
-        }
-    }
 
-    private String getProvince()
+    /**
+     * Pass 0 to get the city value as city is the 0-index of the strings array
+     * 'Edmonton' and 'AB'.
+     * Province is the 1st index of 'Edmonton, AB'.
+     * @return String city or state or province whichever is requested in the
+     * sdapi.properties "use-city-province" setting.
+     */
+    private String getCityProvOrState()
     {
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String useCityProvinceFieldName = props.getProperty("use-city-province", "false");
         try
         {
-            String[] words = 
-                    findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
-                            .replaceAll("[^a-zA-Z ]", "").split("\\s+");
-            return words[1];
+            
+            String cityStateOrProv;
+            if (useCityProvinceFieldName.equalsIgnoreCase("true"))
+            {
+                cityStateOrProv = findAddressByCode(SDapiUserFields.CITYPROV.toString())
+                    .replaceAll("[^a-zA-Z ]", "");
+            }
+            else
+            {
+                cityStateOrProv = findAddressByCode(SDapiUserFields.CITY_SLASH_STATE.toString())
+                    .replaceAll("[^a-zA-Z ]", "");
+            }
+            return cityStateOrProv;
         }
         catch (IndexOutOfBoundsException | NullPointerException e)
         {

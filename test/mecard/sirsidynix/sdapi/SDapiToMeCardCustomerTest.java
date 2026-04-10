@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2025 Edmonton Public Library
+ *    Copyright (C) 2025 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,11 @@ import org.junit.Test;
 public class SDapiToMeCardCustomerTest 
 {
     private String customerJson;
+    private boolean testCityState;
 
     public SDapiToMeCardCustomerTest() 
     {
+        this.testCityState = false;
         customerJson = """
                         {
                                "resource": "/user/patron",
@@ -122,7 +124,10 @@ public class SDapiToMeCardCustomerTest
         list.add("                    \"@key\": \"1\",");
         list.add("                    \"code\": {");
         list.add("                        \"@resource\": \"/policy/patronAddress1\",");
-        list.add("                        \"@key\": \"CITY/STATE\"");
+        if (this.testCityState)
+            list.add("                        \"@key\": \"CITY/STATE\"");
+        else
+            list.add("                        \"@key\": \"CITYPROV\"");
         list.add("                    },");
         list.add("                    \"data\": \"Edmonton, AB\"");
         list.add("                },");
@@ -168,7 +173,7 @@ public class SDapiToMeCardCustomerTest
         SDapiToMeCardCustomer instance = new SDapiToMeCardCustomer();
         Customer result = instance.getCustomer(list);
         System.out.println("Customer: "+result.toString());
-        assertTrue(result.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).equalsIgnoreCase("20260228"));
+        assertTrue(result.get(CustomerFieldTypes.PRIVILEGE_EXPIRES).equalsIgnoreCase("20270408"));
     }
 
     /**

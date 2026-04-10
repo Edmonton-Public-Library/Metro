@@ -154,7 +154,7 @@ public class SDapiUserPatronBarcodeResponse
                 String[] words;
                 if (useCityProv)
                 {
-                    words = findAddressByCode(SDapiUserFields.CITY_SLASH_PROV.toString())
+                    words = findAddressByCode(SDapiUserFields.CITYPROV.toString())
                         .replaceAll("[^a-zA-Z ]", "").split("\\s+");
                 }
                 else
@@ -179,7 +179,7 @@ public class SDapiUserPatronBarcodeResponse
                 String[] words;
                 if (useCityProv)
                 {
-                    words = findAddressByCode(SDapiUserFields.CITY_SLASH_PROV.toString())
+                    words = findAddressByCode(SDapiUserFields.CITYPROV.toString())
                                 .replaceAll("[^a-zA-Z ]", "").split("\\s+");
                 }
                 else
@@ -222,7 +222,7 @@ public class SDapiUserPatronBarcodeResponse
                 return this.getDateField(fieldName);
             if (fieldName.equals(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()))
                 return this.getDateField(fieldName);
-            if (fieldName.equals(SDapiUserFields.CITY_SLASH_PROV.toString()))
+            if (fieldName.equals(SDapiUserFields.CITYPROV.toString()))
                 // returns city Edmonton not the CITY/STATE value of 'Edmonton, Alberta'.
                 return this.getCustomerFields().getCity();
             if (fieldName.equals(SDapiUserFields.CITY_SLASH_STATE.toString()))

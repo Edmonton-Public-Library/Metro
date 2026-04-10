@@ -1,7 +1,29 @@
+/*
+ * Metro allows customers from any affiliate library to join any other member library.
+ *    Copyright (C) 2025 - 2026 Edmonton Public Library
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 
 package mecard.sirsidynix.sdapi;
 
 
+import java.util.Properties;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import mecard.config.SDapiUserFields;
 import static org.junit.Assert.*;
 
@@ -333,7 +355,7 @@ public class SDapiUserPatronKeyCustomerResponseTest
                                             "fields": {
                                                 "code": {
                                                     "resource": "/policy/patronAddress1",
-                                                    "key": "CITY/STATE"
+                                                    "key": "CITYPROV"
                                                 },
                                                 "data": "Edmonton, Alberta"
                                             }
@@ -400,13 +422,41 @@ public class SDapiUserPatronKeyCustomerResponseTest
         assertEquals("2000-02-29T00:00:00", instance.getField(SDapiUserFields.USER_BIRTHDATE.toString()));
         assertEquals("", instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
         assertEquals("T5J-2V4", instance.getField(SDapiUserFields.POSTALCODE.toString()));
-        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
-        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_PROV.toString()));
-        assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String useCityProvinceFieldName = props.getProperty("use-city-province", "false");
+        boolean isCityProvinceConfig = Boolean.parseBoolean(useCityProvinceFieldName);
+        // these fail if the config file is not set to detect CITY/STATE with 
+        // the 'use-city-province' setting in sdapi.properties file.
+        if (isCityProvinceConfig)
+        {
+            assertEquals("", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+            assertEquals("", instance.getField(SDapiUserFields.CITYPROV.toString()));
+            assertEquals("", instance.getField(SDapiUserFields.PROV.toString()));
+        }
+        else
+        {
+            assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+            assertEquals("Edmonton", instance.getField(SDapiUserFields.CITYPROV.toString()));
+            assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
+        }
         
+        // jsonSuccess2 has a CITYPROV setting.
         instance = (SDapiUserPatronKeyCustomerResponse) SDapiUserPatronKeyCustomerResponse.parseJson(jsonSuccess2);
         assertEquals("21221087654321", instance.getField(SDapiUserFields.USER_ALTERNATE_ID.toString()));
         assertEquals("301585", instance.getField(SDapiUserFields.USER_KEY.toString()));
+        assertEquals("T5J-2V4", instance.getField(SDapiUserFields.POSTALCODE.toString()));
+        if (isCityProvinceConfig)
+        {
+            assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+            assertEquals("Edmonton", instance.getField(SDapiUserFields.CITYPROV.toString()));
+            assertEquals("Alberta", instance.getField(SDapiUserFields.PROV.toString()));
+        }
+        else
+        {
+            assertEquals("", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
+            assertEquals("", instance.getField(SDapiUserFields.CITYPROV.toString()));
+            assertEquals("", instance.getField(SDapiUserFields.PROV.toString()));
+        }
     }
 
     /**

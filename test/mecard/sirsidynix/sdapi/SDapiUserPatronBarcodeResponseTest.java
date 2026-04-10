@@ -466,7 +466,7 @@ public class SDapiUserPatronBarcodeResponseTest
         assertEquals("2027-03-10T00:00:00", instance.getField(SDapiUserFields.PRIVILEGE_EXPIRES_DATE.toString()));
         assertEquals("T5J 2V4", instance.getField(SDapiUserFields.POSTALCODE.toString()));
         assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_STATE.toString()));
-        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITY_SLASH_PROV.toString()));
+        assertEquals("Edmonton", instance.getField(SDapiUserFields.CITYPROV.toString()));
         assertEquals("AB", instance.getField(SDapiUserFields.PROV.toString()));
         assertEquals("OK", instance.getField(SDapiUserFields.STANDING.toString()));
         assertEquals("21221019003333", instance.getField(SDapiUserFields.USER_ID.toString()));

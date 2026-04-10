@@ -112,7 +112,7 @@ public enum SDapiUserFields
     //                "key": "CITY/STATE"
     CITY_SLASH_STATE("CITY/STATE"),
     PROV("PROV"),
-    CITY_SLASH_PROV("CITYPROV"),
+    CITYPROV("CITYPROV"),
     //"circRecordCount": 0,
     CIRC_RECORD_COUNT("circRecordCount"),
     //"circRecordList": [],

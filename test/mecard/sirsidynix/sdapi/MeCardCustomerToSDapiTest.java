@@ -1,6 +1,6 @@
 /*
  * Metro allows customers from any affiliate library to join any other member library.
- *    Copyright (C) 2024  Edmonton Public Library
+ *    Copyright (C) 2024 - 2026 Edmonton Public Library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,11 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Properties;
 import json.RequestDeserializer;
 import mecard.Request;
+import mecard.config.ConfigFileTypes;
+import mecard.config.PropertyReader;
 import mecard.config.SDapiUserFields;
 import mecard.customer.Customer;
 import mecard.customer.MeCardCustomerToNativeFormat;
@@ -41,9 +44,13 @@ public class MeCardCustomerToSDapiTest {
     private final Customer updateCustomer;
     private final Customer createCustomer;
     List<String> expResult = null;
+    private final boolean isCityProvTest;
     
     public MeCardCustomerToSDapiTest()
     {
+        Properties props = PropertyReader.getProperties(ConfigFileTypes.SIRSIDYNIX_API);
+        String useCityProvinceFieldName = props.getProperty("use-city-province", "false");
+        this.isCityProvTest = Boolean.parseBoolean(useCityProvinceFieldName);
         String custCreateReq = "{\"code\":\"CREATE_CUSTOMER\",\"authorityToken\":\"12345678\","
                 + "\"userId\":\"21221012345678\","
                 + "\"alternateId\":\"21221012345677\","
@@ -53,9 +60,9 @@ public class MeCardCustomerToSDapiTest {
                 + "\\\"PIN\\\":\\\"64058\\\","
                 + "\\\"PREFEREDNAME\\\":\\\"Billy, Balzac\\\","
                 + "\\\"STREET\\\":\\\"12345 123 St.\\\",\\\"CITY\\\":\\\"Edmonton\\\","
-                + "\\\"PROVINCE\\\":\\\"Alberta\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
+                + "\\\"PROVINCE\\\":\\\"AB\\\",\\\"POSTALCODE\\\":\\\"H0H0H0\\\","
                 + "\\\"SEX\\\":\\\"M\\\",\\\"EMAIL\\\":\\\"ilsteam@epl.ca\\\","
-                + "\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"19750822\\\","
+                + "\\\"PHONE\\\":\\\"7804964058\\\",\\\"DOB\\\":\\\"20010822\\\","
                 + "\\\"PRIVILEGE_EXPIRES\\\":\\\"20140602\\\","
                 + "\\\"RESERVED\\\":\\\"X\\\",\\\"ALTERNATE_ID\\\":\\\"X\\\","
                 + "\\\"ISVALID\\\":\\\"Y\\\",\\\"ISMINAGE\\\":\\\"Y\\\","
@@ -68,7 +75,7 @@ public class MeCardCustomerToSDapiTest {
         updateCustomer = request.getCustomer();
                 
         String custUpdateReq = """
-        {"code":"UPDATE_CUSTOMER","authorityToken":"12345678","userId":"21221012345666","pin":"64058","customer":"{\\"ID\\":\\"21221012345666\\",\\"PIN\\":\\"64058\\",\\"PREFEREDNAME\\":\\"Billy, Balzac\\",\\"STREET\\":\\"7 Sir Winston Churchill Square\\",\\"CITY\\":\\"Edmonton\\",\\"PROVINCE\\":\\"Alberta\\",\\"POSTALCODE\\":\\"H0H0H0\\",\\"SEX\\":\\"M\\",\\"EMAIL\\":\\"ilsteam@epl.ca\\",\\"PHONE\\":\\"7804964058\\",\\"DOB\\":\\"20010822\\",\\"PRIVILEGE_EXPIRES\\":\\"20260822\\",\\"RESERVED\\":\\"X\\",\\"ALTERNATE_ID\\":\\"X\\",\\"ISVALID\\":\\"Y\\",\\"ISMINAGE\\":\\"Y\\",\\"ISRECIPROCAL\\":\\"N\\",\\"ISRESIDENT\\":\\"Y\\",\\"ISGOODSTANDING\\":\\"Y\\",\\"ISLOSTCARD\\":\\"N\\",\\"FIRSTNAME\\":\\"Billy\\",\\"LASTNAME\\":\\"Balzac\\"}"}""";
+        {"code":"UPDATE_CUSTOMER","authorityToken":"12345678","userId":"21221012345666","pin":"64058","customer":"{\\"ID\\":\\"21221012345666\\",\\"PIN\\":\\"64058\\",\\"PREFEREDNAME\\":\\"Billy, Balzac\\",\\"STREET\\":\\"7 Sir Winston Churchill Square\\",\\"CITY\\":\\"Edmonton\\",\\"PROVINCE\\":\\"AB\\",\\"POSTALCODE\\":\\"H0H0H0\\",\\"SEX\\":\\"M\\",\\"EMAIL\\":\\"ilsteam@epl.ca\\",\\"PHONE\\":\\"7804964058\\",\\"DOB\\":\\"20010822\\",\\"PRIVILEGE_EXPIRES\\":\\"20140622\\",\\"RESERVED\\":\\"X\\",\\"ALTERNATE_ID\\":\\"X\\",\\"ISVALID\\":\\"Y\\",\\"ISMINAGE\\":\\"Y\\",\\"ISRECIPROCAL\\":\\"N\\",\\"ISRESIDENT\\":\\"Y\\",\\"ISGOODSTANDING\\":\\"Y\\",\\"ISLOSTCARD\\":\\"N\\",\\"FIRSTNAME\\":\\"Billy\\",\\"LASTNAME\\":\\"Balzac\\"}"}""";
         request = deserializer.getDeserializedRequest(custUpdateReq);
         createCustomer = request.getCustomer();
         
@@ -123,7 +130,7 @@ public class MeCardCustomerToSDapiTest {
         //        "@key": "1",
         //        "code": {
         //          "@resource": "/policy/patronAddress1",
-        //          "@key": "CITY/STATE"
+        //          "@key": "CITYPROV" 
         //        },
         //        "data": "Calgary, AB"
         //      },
@@ -149,8 +156,16 @@ public class MeCardCustomerToSDapiTest {
         //  }
         //}
         expResult = new ArrayList<>();
-        expResult.add("""
-        {"resource":"/user/patron","fields":{"barcode":"21221012345666","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2026-08-22","birthDate":"2001-08-22","pin":"64058","keepCircHistory":"ALLCHARGES","library":{"resource":"/policy/library","key":"EPLMNA"},"profile":{"resource":"/policy/userProfile","key":"EPL_METRO"},"access":{"resource":"/policy/userAccess","key":"PUBLIC"},"language":{"resource":"/policy/language","key":"ENGLISH"},"environment":{"resource":"/policy/environment","key":"PUBLIC"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsteam@epl.ca"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"7 Sir Winston Churchill Square"},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, Alberta"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"}]}}""");
+        if (this.isCityProvTest)
+        {
+            expResult.add("""
+            {"resource":"/user/patron","fields":{"barcode":"21221012345666","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2014-06-22","birthDate":"2001-08-22","pin":"64058","keepCircHistory":"ALLCHARGES","library":{"resource":"/policy/library","key":"HQ"},"profile":{"resource":"/policy/userProfile","key":"MECARD"},"access":{"resource":"/policy/userAccess","key":"PUBLIC"},"language":{"resource":"/policy/language","key":"ENGLISH"},"environment":{"resource":"/policy/environment","key":"PUBLIC"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsteam@epl.ca"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"12345 123 St."},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITYPROV"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"}]}}""");
+        }
+        else
+        {
+            expResult.add("""
+            {"resource":"/user/patron","fields":{"barcode":"21221012345666","lastName":"Balzac","firstName":"Billy","privilegeExpiresDate":"2014-06-22","birthDate":"2001-08-22","pin":"64058","keepCircHistory":"ALLCHARGES","library":{"resource":"/policy/library","key":"HQ"},"profile":{"resource":"/policy/userProfile","key":"MECARD"},"access":{"resource":"/policy/userAccess","key":"PUBLIC"},"language":{"resource":"/policy/language","key":"ENGLISH"},"environment":{"resource":"/policy/environment","key":"PUBLIC"},"address1":[{"@resource":"/user/patron/address1","@key":"6","code":{"@resource":"/policy/patronAddress1","@key":"EMAIL"},"data":"ilsteam@epl.ca"},{"@resource":"/user/patron/address1","@key":"4","code":{"@resource":"/policy/patronAddress1","@key":"STREET"},"data":"12345 123 St."},{"@resource":"/user/patron/address1","@key":"1","code":{"@resource":"/policy/patronAddress1","@key":"CITY/STATE"},"data":"Edmonton, AB"},{"@resource":"/user/patron/address1","@key":"5","code":{"@resource":"/policy/patronAddress1","@key":"POSTALCODE"},"data":"H0H 0H0"},{"@resource":"/user/patron/address1","@key":"2","code":{"@resource":"/policy/patronAddress1","@key":"PHONE"},"data":"780-496-4058"}]}}""");
+        }
     }
 
     /**
@@ -243,7 +258,6 @@ public class MeCardCustomerToSDapiTest {
         assertEquals(true, instance.containsKey(SDapiUserFields.USER_PASSWORD.toString()));
         assertEquals(true, instance.containsKey(SDapiUserFields.LANGUAGE.toString()));
         assertEquals(false, instance.containsKey(SDapiUserFields.USER_ALTERNATE_ID.toString()));
-        
     }
 
     /**
@@ -253,18 +267,29 @@ public class MeCardCustomerToSDapiTest {
     public void testGetValue() 
     {
         System.out.println("==getValue==");
+        // === note that all the values for USER_LIBRARY, LANGUAGE, USER_ACCESS 
+        // are taken from the values in the sdapi.properties file locally.
         MeCardCustomerToSDapi instance = new MeCardCustomerToSDapi(updateCustomer, MeCardDataToSDapiData.QueryType.UPDATE);
         assertEquals("Billy", instance.getValue(SDapiUserFields.USER_FIRST_NAME.toString()));
         assertEquals("Balzac", instance.getValue(SDapiUserFields.USER_LAST_NAME.toString()));
         assertEquals("21221012345678", instance.getValue(SDapiUserFields.USER_ID.toString()));
         assertEquals("H0H 0H0", instance.getValue(SDapiUserFields.POSTALCODE.toString()));
         assertEquals("PUBLIC", instance.getValue(SDapiUserFields.USER_ACCESS.toString()));
-        assertEquals("1975-08-22", instance.getValue(SDapiUserFields.USER_BIRTHDATE.toString()));
-        assertEquals("EPLMNA", instance.getValue(SDapiUserFields.USER_LIBRARY.toString()));
+        assertEquals("2001-08-22", instance.getValue(SDapiUserFields.USER_BIRTHDATE.toString()));
+        assertEquals("HQ", instance.getValue(SDapiUserFields.USER_LIBRARY.toString()));
         assertEquals("780-496-4058", instance.getValue(SDapiUserFields.PHONE.toString()));
         assertEquals("64058", instance.getValue(SDapiUserFields.USER_PASSWORD.toString()));
         assertEquals("ENGLISH", instance.getValue(SDapiUserFields.LANGUAGE.toString()));
         assertEquals("", instance.getValue(SDapiUserFields.USER_ALTERNATE_ID.toString()));
+        
+        if (this.isCityProvTest)
+        {
+            assertEquals("Edmonton, AB", instance.getValue(SDapiUserFields.CITYPROV.toString()));
+        }
+        else
+        {
+            assertEquals("Edmonton, AB", instance.getValue(SDapiUserFields.CITY_SLASH_STATE.toString()));
+        }
     }
 
 
